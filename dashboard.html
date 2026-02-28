@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeekReap - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">SeekReap</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Upload</a>
+                <a href="/dashboard.html" class="nav-link active">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="dashboard-card">
+            <h1>Job Dashboard</h1>
+            <div id="jobList" class="job-list">
+                <div class="loading">Loading jobs...</div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script>
+        async function loadJobs() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/api/submissions`);
+                const jobs = await response.json();
+                
+                const jobList = document.getElementById('jobList');
+                
+                if (jobs.length === 0) {
+                    jobList.innerHTML = '<div class="no-jobs">No jobs found</div>';
+                    return;
+                }
+
+                jobList.innerHTML = jobs.map(job => `
+                    <div class="job-item ${job.status}" onclick="window.location.href='/job.html?id=${job.job_id}'">
+                        <h4>Job #${job.job_id} (${job.job_type})</h4>
+                        <p>Status: ${job.status}</p>
+                        <p>Created: ${new Date(job.created_at).toLocaleString()}</p>
+                        ${job.completed_at ? `<p>Completed: ${new Date(job.completed_at).toLocaleString()}</p>` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading jobs:', error);
+                document.getElementById('jobList').innerHTML = 
+                    '<div class="error">Error loading jobs. Please try again.</div>';
+            }
+        }
+
+        // Load jobs on page load
+        loadJobs();
+        
+        // Refresh every 10 seconds
+        setInterval(loadJobs, 10000);
+    </script>
+</body>
+</html>
