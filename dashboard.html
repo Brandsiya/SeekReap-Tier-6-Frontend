@@ -30,7 +30,7 @@
     <script>
         async function loadJobs() {
             try {
-                const response = await fetch(`${CONFIG.API_BASE}/api/submissions);
+                const response = await fetch(`${CONFIG.API_BASE}/api/submissions`);
                 const jobs = await response.json();
                 
                 const jobList = document.getElementById('jobList');
@@ -55,10 +55,7 @@
             }
         }
 
-        // Load jobs on page load
         loadJobs();
-        
-        // Refresh every 10 seconds
         setInterval(loadJobs, 10000);
     </script>
 </body>

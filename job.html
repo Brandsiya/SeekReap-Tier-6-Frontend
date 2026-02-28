@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SeekReap - Job Details</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -106,9 +106,8 @@
             }
         }
 
-        // Start polling
-        pollInterval = setInterval(fetchJob, CONFIG.POLL_INTERVAL);
-        fetchJob(); // Immediate first fetch
+        pollInterval = setInterval(fetchJob, 3000);
+        fetchJob();
 
         window.addEventListener('beforeunload', stopPolling);
     </script>
