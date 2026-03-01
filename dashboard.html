@@ -30,31 +30,39 @@
     <script>
         async function loadJobs() {
             try {
+                console.log('Fetching jobs from:', CONFIG.API_BASE + '/api/submissions');
                 const response = await fetch(`${CONFIG.API_BASE}/api/submissions`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const jobs = await response.json();
-                
+                console.log('Received jobs:', jobs);
+
                 const jobList = document.getElementById('jobList');
-                
-                if (jobs.length === 0) {
+
+                if (!jobs || jobs.length === 0) {
                     jobList.innerHTML = '<div class="no-jobs">No jobs found</div>';
                     return;
                 }
 
                 jobList.innerHTML = jobs.map(job => `
-                    <div class="job-item ${job.status}" onclick="window.location.href='/job.html?id=${job.job_id}'">
-                        <h4>Job #${job.job_id} (${job.job_type})</h4>
-                        <p>Status: ${job.status}</p>
-                        <p>Created: ${new Date(job.created_at).toLocaleString()}</p>
+                    <div class="job-item ${job.status || 'pending'}" onclick="window.location.href='/job.html?id=${job.job_id}'">
+                        <h4>Job #${job.job_id} (${job.job_type || 'url'})</h4>
+                        <p>Status: ${job.status || 'pending'}</p>
+                        <p>Created: ${job.created_at ? new Date(job.created_at).toLocaleString() : 'Unknown'}</p>
                         ${job.completed_at ? `<p>Completed: ${new Date(job.completed_at).toLocaleString()}</p>` : ''}
                     </div>
                 `).join('');
             } catch (error) {
                 console.error('Error loading jobs:', error);
-                document.getElementById('jobList').innerHTML = 
-                    '<div class="error">Error loading jobs. Please try again.</div>';
+                document.getElementById('jobList').innerHTML =
+                    `<div class="error">Error loading jobs: ${error.message}. Please try again.</div>`;
             }
         }
 
+        // Load jobs immediately and then every 10 seconds
         loadJobs();
         setInterval(loadJobs, 10000);
     </script>
