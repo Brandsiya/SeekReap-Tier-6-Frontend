@@ -1,25 +1,30 @@
-// Configuration
+const API_BASE_URL = "https://seekreap-backend-tif2gmgi4q-uc.a.run.app";
 
-
-
-
-const API_BASE_URL = "https://seekreap-backend-308655322607.us-central1.run.app";
-
-// Logic to check Backend Health or Auth status
 async function checkBackendStatus() {
     try {
         const response = await fetch(`${API_BASE_URL}/health`);
         const data = await response.json();
-        console.log("Tier-5 Backend Status:", data.status);
+        console.log("✅ SeekReap Engine: Online (Tier " + data.tier + ")");
     } catch (error) {
-        console.error("Backend Connection Failed:", error);
+        console.error("❌ Connection failed:", error);
     }
 }
 
-// Simple Redirect Guard (Optional)
-function init() {
-    console.log("SeekReap Landing Initialized");
-    checkBackendStatus();
+async function submitScan(videoUrl) {
+    const statusEl = document.getElementById("scan-status");
+    statusEl.innerText = "Initiating Tier-4 Worker...";
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/analyze`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: videoUrl })
+        });
+        const data = await response.json();
+        statusEl.innerText = "Scan Queued: " + data.job_id;
+    } catch (error) {
+        statusEl.innerText = "Error: Could not reach scanner.";
+    }
 }
 
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', checkBackendStatus);
