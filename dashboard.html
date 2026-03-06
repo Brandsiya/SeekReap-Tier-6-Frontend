@@ -3,27 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SeekReap | Creator Dashboard</title>
+    <title>SeekReap | Dashboard</title>
     <link rel="stylesheet" href="assets/css/landing.css">
     <style>
-        .card { background: var(--card); border-radius: 12px; padding: 2rem; margin-top: 2rem; border: 1px solid #1e293b; }
+        .card { background: var(--card); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; border: 1px solid #1e293b; }
+        .history-item { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #1e293b; font-size: 0.9rem; }
+        .status-pill { padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; text-transform: uppercase; }
+        .completed { color: #00ffc8; background: rgba(0,255,200,0.1); }
+        .pending { color: #facc15; background: rgba(250,204,21,0.1); }
         input { background: #0f172a; border: 1px solid #334155; color: white; padding: 1rem; border-radius: 8px; width: 100%; margin-bottom: 1rem; }
-        #scan-status { margin-top: 1rem; color: var(--primary); font-family: monospace; }
     </style>
 </head>
 <body>
     <div class="container">
         <header style="padding: 2rem 0; display: flex; justify-content: space-between; align-items: center;">
             <h2 style="margin:0; color:var(--primary);">SEEKREAP</h2>
-            <a href="index.html" style="color:var(--muted); text-decoration:none;">Logout</a>
+            <nav><a href="index.html" style="color:var(--muted); text-decoration:none;">Sign Out</a></nav>
         </header>
 
         <div class="card">
-            <h3>Deploy New Content Scan</h3>
-            <p style="font-size: 0.9rem;">Enter a YouTube or TikTok URL to trigger the platform-wide scanning engine.</p>
-            <input type="text" id="video-url" placeholder="https://www.youtube.com/watch?v=...">
-            <button class="btn-primary" onclick="submitScan(document.getElementById('video-url').value)">Start Analysis</button>
-            <div id="scan-status">System Ready</div>
+            <h3>New Content Analysis</h3>
+            <input type="text" id="video-url" placeholder="Paste YouTube/TikTok link here...">
+            <button class="btn-primary" onclick="submitScan()">Deploy Scan</button>
+            <div id="scan-status">Ready for ingestion.</div>
+        </div>
+
+        <div class="card">
+            <h3>Recent Scan Infrastructure</h3>
+            <div id="history-list">Loading scan history...</div>
         </div>
     </div>
     <script src="assets/js/app.js"></script>
