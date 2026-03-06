@@ -3,50 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SeekReap - Video Verification</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>SeekReap Tier-6 Dashboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="/" class="nav-logo">SeekReap</a>
-            <div class="nav-links">
-                <a href="/" class="nav-link active">Upload</a>
-                <a href="/dashboard.html" class="nav-link">Dashboard</a>
-            </div>
+    <h1>🌾 SeekReap Tier-6 Dashboard</h1>
+    
+    <!-- System Health Status -->
+    <div id="system-health">Checking system health...</div>
+
+    <!-- Task Submission Form -->
+    <h2>📤 Create New Task</h2>
+    <form id="task-form">
+        <div class="form-group">
+            <label for="task-type">Task Type:</label>
+            <select id="task-type" required>
+                <option value="video_render">🎥 Video Render</option>
+                <option value="data_sync">🔄 Data Sync</option>
+                <option value="image_analysis">🖼️ Image Analysis</option>
+                <option value="smoke_test">🧪 Smoke Test</option>
+            </select>
         </div>
-    </nav>
-
-    <main class="container">
-        <div class="upload-card">
-            <h1>Upload Video for Verification</h1>
-            
-            <div class="upload-section">
-                <h3>Option 1: Upload Video File</h3>
-                <input type="file" id="fileInput" accept="video/*" class="file-input">
-                <div id="fileName" class="file-name"></div>
-            </div>
-
-            <div class="upload-section">
-                <h3>Option 2: YouTube URL</h3>
-                <input type="url" id="urlInput" placeholder="https://youtube.com/watch?v=..." class="url-input">
-            </div>
-
-            <button id="submitBtn" class="submit-btn">Submit</button>
-            <div id="status" class="status-message"></div>
+        
+        <div class="form-group">
+            <label for="input-url">Source URL:</label>
+            <input type="url" id="input-url" placeholder="https://..." required>
         </div>
-
-        <div id="results" class="results-card" style="display: none;">
-            <h2>Verification Results</h2>
-            <div id="jobDetails" class="job-details"></div>
-            <div id="progress" class="progress-container" style="display: none;">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            <div id="resultData" class="result-data"></div>
+        
+        <div class="form-group">
+            <label for="notes">Notes (optional):</label>
+            <textarea id="notes" placeholder="Add any additional information..."></textarea>
         </div>
-    </main>
+        
+        <button type="submit" id="submit-btn">Submit to Tier-6</button>
+        <div id="form-result"></div>
+    </form>
 
-    <script src="js/config.js?v=2"></script>
-    <script src="js/app.js"></script>
+    <!-- Submission History -->
+    <h2>📋 Recent Submissions</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Status</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody id="history-body">
+            <tr><td colspan="3" class="loading">Loading history...</td></tr>
+        </tbody>
+    </table>
+
+    <!-- Scripts -->
+    <script src="config.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
