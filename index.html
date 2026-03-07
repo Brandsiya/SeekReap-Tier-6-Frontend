@@ -3,73 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SeekReap Tier-6 Dashboard</title>
-    <link rel="stylesheet" href="assets/css/landing.css">
+    <title>SeekReap Processing</title>
+    <link rel="stylesheet" href="/assets/css/loader.css">
 </head>
 <body>
-    <h1>🌾 SeekReap Tier-6 Dashboard</h1>
-    
-    <section class="hero">
-    <div class="container">
-        <span class="badge">Tier-6 Intelligence Platform</span>
-        <h1>Stop Losing Your Content’s <span class="highlight">Revenue</span></h1>
-        <p>SeekReap scans, verifies, and protects your intellectual property across the digital ecosystem using our automated multi-tier engine.</p>
-        
-        <div class="cta-group">
-            <a href="dashboard.html" class="btn-primary">Enter Dashboard</a>
-            <a href="#how-it-works" class="btn-secondary">How We Protect You</a>
+    <div class="loader-container">
+        <h1 class="logo">SeekReap</h1>
+        <div class="scanner">
+            <div class="ring"></div>
+            <div class="ring2"></div>
+            <div class="core"></div>
         </div>
+        <p id="status">Initializing AI Analysis...</p>
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+        <p class="note">Running monetization safety analysis. This may take a few seconds.</p>
     </div>
-    </section>
-
-    <!-- System Health Status -->
-    <div id="system-health">Checking system health...</div>
-
-    <!-- Task Submission Form -->
-    <h2>📤 Create New Task</h2>
-    <form id="task-form">
-        <div class="form-group">
-            <label for="task-type">Task Type:</label>
-            <select id="task-type" required>
-                <option value="video_render">🎥 Video Render</option>
-                <option value="data_sync">🔄 Data Sync</option>
-                <option value="image_analysis">🖼️ Image Analysis</option>
-                <option value="smoke_test">🧪 Smoke Test</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="input-url">Source URL:</label>
-            <input type="url" id="input-url" placeholder="https://..." required>
-        </div>
-        
-        <div class="form-group">
-            <label for="notes">Notes (optional):</label>
-            <textarea id="notes" placeholder="Add any additional information..."></textarea>
-        </div>
-        
-        <button type="submit" id="submit-btn">Submit to Tier-6</button>
-        <div id="form-result"></div>
-    </form>
-
-    <!-- Submission History -->
-    <h2>📋 Recent Submissions</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Status</th>
-                <th>Timestamp</th>
-            </tr>
-        </thead>
-        <tbody id="history-body">
-            <tr><td colspan="3" class="loading">Loading history...</td></tr>
-        </tbody>
-    </table>
-
-    <!-- Scripts -->
-    <script src="config.js"></script>
-    <script src="assets/js/app.js"></script>
-
+    <script src="/assets/js/loader.js"></script>
 </body>
 </html>
+
