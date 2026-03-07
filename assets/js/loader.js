@@ -1,20 +1,26 @@
-const messages = ["Scanning video structure...", "Checking monetization policies...", "Analyzing visual elements...", "Evaluating audio patterns...", "Preparing analysis report..."];
-let i = 0;
-const statusElement = document.getElementById("status");
+const messages = [
+    "Scanning video structure...",
+    "Checking monetization policies...",
+    "Analyzing visual elements...",
+    "Evaluating audio patterns...",
+    "Detecting copyright signals...",
+    "Calculating monetization risk...",
+    "Preparing analysis report..."
+];
 
-setInterval(() => {
-    if (statusElement) {
-        statusElement.innerText = messages[i];
-        i = (i + 1) % messages.length;
+let i = 0;
+const statusEl = document.getElementById("status");
+
+const messageInterval = setInterval(() => {
+    if (statusEl) {
+        statusEl.innerText = messages[i];
+        i++;
+        if (i >= messages.length) i = 0;
     }
 }, 1200);
 
-// Smart Redirect
+// Redirect to dashboard (index.html) after 8 seconds
 setTimeout(() => {
-    const user = localStorage.getItem("seekreap_user");
-    if (user) {
-        window.location.href = "dashboard.html";
-    } else {
-        window.location.href = "index.html";
-    }
-}, 8500);
+    clearInterval(messageInterval);
+    window.location.href = "index.html";
+}, 8000);
