@@ -30,10 +30,10 @@ async function submitScan() {
     statusEl.innerText = "📡 Routing to Tier-4 Worker...";
     
     try {
-        const response = await fetch(`${API_BASE_URL}/analyze`, {
+        const response = await fetch(`${API_BASE_URL}/api/tasks`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
+            body: JSON.stringify({ creator_id: "user_123", title: "Web Scan", content_type: "video", 
                 url: videoUrl,
                 user_id: user ? user.uid : "anonymous" 
             })
@@ -53,7 +53,7 @@ async function fetchScanHistory() {
     if (!historyList) return;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/history`);
+        const response = await fetch(`${API_BASE_URL}/api/submissions`);
         const data = await response.json(); // Assuming your backend returns a list
         
         historyList.innerHTML = data.map(item => `
