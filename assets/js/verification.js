@@ -24,10 +24,16 @@ function updatePreview(src) {
     ytContainer.innerHTML = '';
 
     if (ytId) {
-        const embedUrl = `https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1&showinfo=0&autoplay=0`;
+        // Use -nocookie for better embed stability
+        // enablejsapi=1 & origin allow the iframe to stay captured in your domain
+        const origin = window.location.origin;
+        const embedUrl = `https://www.youtube-nocookie.com/embed/${ytId}?rel=0&modestbranding=1&showinfo=0&autoplay=0&enablejsapi=1&origin=${origin}`;
+        
         ytContainer.innerHTML = `<iframe
             src="${embedUrl}"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            style="width:100%; height:100%;"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen>
         </iframe>`;
         ytContainer.classList.remove('hidden');
@@ -66,7 +72,6 @@ verifyBtn.addEventListener('click', function () {
     }
 
     overlay.style.display = 'flex';
-
     const tier = document.querySelector('input[name="tier"]:checked').value;
     const platform = document.querySelector('input[name="platform"]:checked').value;
 
