@@ -3,36 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SeekReap | Dashboard</title>
+    <title>SeekReap | Audit Report</title>
+    <link rel="stylesheet" href="assets/css/index.css">
     <link rel="stylesheet" href="assets/css/dashboard.css">
-    <style>
-        .card { background: var(--card); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; border: 1px solid #1e293b; }
-        .history-item { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #1e293b; font-size: 0.9rem; }
-        .status-pill { padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; text-transform: uppercase; }
-        .completed { color: #00ffc8; background: rgba(0,255,200,0.1); }
-        .pending { color: #facc15; background: rgba(250,204,21,0.1); }
-        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 1rem; border-radius: 8px; width: 100%; margin-bottom: 1rem; }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <header style="padding: 2rem 0; display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="margin:0; color:var(--primary);">SEEKREAP</h2>
-            <nav><a href="index.html" style="color:var(--muted); text-decoration:none;">Sign Out</a></nav>
+    <div class="report-container">
+        <header>
+            <div class="brand">SEEKREAP <span class="tier-badge" id="display-tier">TIER ?</span></div>
+            <div class="timestamp" id="display-date">SCAN DATE: --/--/----</div>
         </header>
 
-        <div class="card">
-            <h3>New Content Analysis</h3>
-            <input type="text" id="video-url" placeholder="Paste YouTube/TikTok link here...">
-            <button class="btn-primary" onclick="submitScan()">Deploy Scan</button>
-            <div id="scan-status">Ready for ingestion.</div>
-        </div>
+        <section class="status-banner">
+            <div class="glow-ring"></div>
+            <h2>ANALYSIS COMPLETE</h2>
+            <p>Monetization signals have been secured and audited.</p>
+        </section>
 
-        <div class="card">
-            <h3>Recent Scan Infrastructure</h3>
-            <div id="history-list">Loading scan history...</div>
-        </div>
+        <main class="grid-layout">
+            <div class="card data-box">
+                <h3>FILE METADATA</h3>
+                <ul id="metadata-list">
+                    <li><span class="label">Source:</span> <span class="val" id="res-source">---</span></li>
+                    <li><span class="label">Name:</span> <span class="val" id="res-name">---</span></li>
+                    <li><span class="label">Size:</span> <span class="val" id="res-size">---</span></li>
+                    <li><span class="label">Duration:</span> <span class="val" id="res-duration">---</span></li>
+                </ul>
+            </div>
+
+            <div class="card signal-box">
+                <h3>POLICY SCAN</h3>
+                <div class="signal-item">
+                    <span>Copyright Risk</span>
+                    <div class="bar-bg"><div class="bar-fill green" style="width: 92%"></div></div>
+                </div>
+                <div class="signal-item">
+                    <span>Ad-Suitability</span>
+                    <div class="bar-bg"><div class="bar-fill blue" style="width: 85%"></div></div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <button onclick="window.location.href='verification.html'" class="back-btn">NEW SCAN</button>
+        </footer>
     </div>
-    <script src="assets/js/app.js"></script>
+
+    <script>
+        const data = JSON.parse(sessionStorage.getItem('seekreap_results'));
+        if (data) {
+            document.getElementById('display-tier').innerText = `TIER ${data.tier || 5}`;
+            document.getElementById('display-date').innerText = `SCAN DATE: ${new Date(data.timestamp).toLocaleDateString()}`;
+            document.getElementById('res-source').innerText = data.source || 'Unknown';
+            document.getElementById('res-name').innerText = data.name || 'External Link';
+            document.getElementById('res-size').innerText = data.size || 'N/A';
+            document.getElementById('res-duration').innerText = data.duration || 'N/A';
+        } else {
+            document.body.innerHTML = "<h1>No Scan Data Found. Please return to verification.</h1>";
+        }
+    </script>
 </body>
 </html>
