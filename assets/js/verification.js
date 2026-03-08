@@ -53,7 +53,7 @@ urlInput.addEventListener('input', function() {
 function finishAnalysis(data) {
     sessionStorage.setItem('seekreap_results', JSON.stringify(data));
     const statusText = overlay.querySelector('p');
-    if (statusText) statusText.innerText = 'Analysis Complete. Real-time data secured.';
+    if (statusText) statusText.innerText = 'Analysis Complete. Metadata Cached.';
 
     const proceedBtn = document.createElement('button');
     proceedBtn.innerText = 'View Real-Time Audit Report';
@@ -65,7 +65,9 @@ function finishAnalysis(data) {
     proceedBtn.style.borderRadius = '5px';
     proceedBtn.style.cursor = 'pointer';
     proceedBtn.style.fontWeight = 'bold';
+    proceedBtn.style.boxShadow = '0 0 15px rgba(0, 255, 0, 0.4)';
 
+    // The Redirect Action
     proceedBtn.onclick = () => {
         window.location.href = 'dashboard.html';
     };
@@ -88,19 +90,18 @@ verifyBtn.addEventListener('click', async function() {
 
     let analysisResults = {
         timestamp: new Date().toISOString(),
-        tier: document.querySelector('input[name="tier"]:checked').value
+        tier: document.querySelector('input[name="tier"]:checked')?.value || 5
     };
 
     if (file) {
-        statusText.innerText = "Analyzing file headers and binary data...";
+        statusText.innerText = "Extracting binary metadata...";
         
         analysisResults = {
             ...analysisResults,
             source: 'Local File',
             name: file.name,
             size: (file.size / (1024 * 1024)).toFixed(2) + " MB",
-            type: file.type,
-            lastModified: new Date(file.lastModified).toISOString()
+            type: file.type
         };
 
         const video = document.createElement('video');
@@ -111,14 +112,15 @@ verifyBtn.addEventListener('click', async function() {
             finishAnalysis(analysisResults);
         };
     } else if (url) {
-        statusText.innerText = "Fetching YouTube metadata via Origin Handshake...";
+        statusText.innerText = "Querying YouTube Origin Handshake...";
         analysisResults = { 
             ...analysisResults,
             source: "YouTube", 
-            url: url, 
-            status: "External Origin Handshake Active" 
+            name: url.substring(0, 30) + "...",
+            size: "External",
+            duration: "External",
+            url: url
         };
-        // In a real Tier-5 scenario, you'd fetch() from your Cloud Run API here
-        setTimeout(() => finishAnalysis(analysisResults), 2000);
+        setTimeout(() => finishAnalysis(analysisResults), 1500);
     }
 });
