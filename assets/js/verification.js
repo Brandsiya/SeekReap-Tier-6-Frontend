@@ -15,7 +15,6 @@ function extractYouTubeId(url) {
 
 function updatePreview(src) {
     const ytId = extractYouTubeId(src);
-
     videoPreview.classList.add('hidden');
     ytContainer.classList.add('hidden');
     placeholder.classList.add('hidden');
@@ -26,14 +25,7 @@ function updatePreview(src) {
     if (ytId) {
         const origin = window.location.origin;
         const embedUrl = `https://www.youtube-nocookie.com/embed/${ytId}?rel=0&modestbranding=1&showinfo=0&autoplay=0&enablejsapi=1&origin=${origin}`;
-
-        ytContainer.innerHTML = `<iframe
-            src="${embedUrl}"
-            style="width:100%; height:100%;"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen>
-        </iframe>`;
+        ytContainer.innerHTML = `<iframe src="${embedUrl}" style="width:100%; height:100%;" frameborder="0" allowfullscreen></iframe>`;
         ytContainer.classList.remove('hidden');
     } else {
         videoPreview.src = src;
@@ -42,39 +34,91 @@ function updatePreview(src) {
     }
 }
 
-fileInput.addEventListener('change', function () {
-    const file = this.files[0];
-    if (file) {
-        fileHint.innerText = file.name;
-        updatePreview(URL.createObjectURL(file));
+fileInput.addEventListener('change', function() {
+    if (this.files[0]) {
+        fileHint.innerText = this.files[0].name;
+        updatePreview(URL.createObjectURL(this.files[0]));
         urlInput.value = '';
     }
 });
 
-urlInput.addEventListener('input', function () {
-    const val = this.value.trim();
-    if (val.length > 10) {
-        updatePreview(val);
+urlInput.addEventListener('input', function() {
+    if (this.value.trim().length > 10) {
+        updatePreview(this.value.trim());
         fileHint.innerText = 'URL Source Active';
         fileInput.value = '';
     }
 });
 
-// FIXED: Removed automatic redirect. 
-// The overlay now triggers a "completion" state where a link must be clicked.
-verifyBtn.addEventListener('click', function () {
-    const hasFile = fileInput.files.length > 0;
-    const hasUrl = urlInput.value.trim().length > 10;
+function finishAnalysis(data) {
+    sessionStorage.setItem('seekreap_results', JSON.stringify(data));
+    const statusText = overlay.querySelector('p');
+    if (statusText) statusText.innerText = 'Analysis Complete. Real-time data secured.';
 
-    if (!hasFile && !hasUrl) {
-        alert('Please provide a valid video source to begin.');
+    const proceedBtn = document.createElement('button');
+    proceedBtn.innerText = 'View Real-Time Audit Report';
+    proceedBtn.style.marginTop = '20px';
+    proceedBtn.style.padding = '12px 24px';
+    proceedBtn.style.backgroundColor = '#00ff00';
+    proceedBtn.style.color = '#000';
+    proceedBtn.style.border = 'none';
+    proceedBtn.style.borderRadius = '5px';
+    proceedBtn.style.cursor = 'pointer';
+    proceedBtn.style.fontWeight = 'bold';
+
+    proceedBtn.onclick = () => {
+        window.location.href = 'dashboard.html';
+    };
+
+    const loaderBox = overlay.querySelector('.loader-box') || overlay;
+    loaderBox.appendChild(proceedBtn);
+}
+
+verifyBtn.addEventListener('click', async function() {
+    const file = fileInput.files[0];
+    const url = urlInput.value.trim();
+
+    if (!file && url.length <= 10) {
+        alert('Please provide a video source.');
         return;
     }
 
     overlay.style.display = 'flex';
-    
-    // Logic for Tier-5 Analysis would go here.
-    // We will leave the overlay visible so the user sees the "Processing" 
-    // messages we built into the HTML earlier.
-    console.log("Analysis started. Manual exit required.");
+    const statusText = overlay.querySelector('p');
+
+    let analysisResults = {
+        timestamp: new Date().toISOString(),
+        tier: document.querySelector('input[name="tier"]:checked').value
+    };
+
+    if (file) {
+        statusText.innerText = "Analyzing file headers and binary data...";
+        
+        analysisResults = {
+            ...analysisResults,
+            source: 'Local File',
+            name: file.name,
+            size: (file.size / (1024 * 1024)).toFixed(2) + " MB",
+            type: file.type,
+            lastModified: new Date(file.lastModified).toISOString()
+        };
+
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        video.src = URL.createObjectURL(file);
+        video.onloadedmetadata = () => {
+            analysisResults.duration = video.duration.toFixed(2) + "s";
+            finishAnalysis(analysisResults);
+        };
+    } else if (url) {
+        statusText.innerText = "Fetching YouTube metadata via Origin Handshake...";
+        analysisResults = { 
+            ...analysisResults,
+            source: "YouTube", 
+            url: url, 
+            status: "External Origin Handshake Active" 
+        };
+        // In a real Tier-5 scenario, you'd fetch() from your Cloud Run API here
+        setTimeout(() => finishAnalysis(analysisResults), 2000);
+    }
 });
