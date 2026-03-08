@@ -24,11 +24,9 @@ function updatePreview(src) {
     ytContainer.innerHTML = '';
 
     if (ytId) {
-        // Use -nocookie for better embed stability
-        // enablejsapi=1 & origin allow the iframe to stay captured in your domain
         const origin = window.location.origin;
         const embedUrl = `https://www.youtube-nocookie.com/embed/${ytId}?rel=0&modestbranding=1&showinfo=0&autoplay=0&enablejsapi=1&origin=${origin}`;
-        
+
         ytContainer.innerHTML = `<iframe
             src="${embedUrl}"
             style="width:100%; height:100%;"
@@ -62,20 +60,21 @@ urlInput.addEventListener('input', function () {
     }
 });
 
+// FIXED: Removed automatic redirect. 
+// The overlay now triggers a "completion" state where a link must be clicked.
 verifyBtn.addEventListener('click', function () {
     const hasFile = fileInput.files.length > 0;
     const hasUrl = urlInput.value.trim().length > 10;
 
     if (!hasFile && !hasUrl) {
-        alert('Please provide a valid video source (Upload or URL) to begin.');
+        alert('Please provide a valid video source to begin.');
         return;
     }
 
     overlay.style.display = 'flex';
-    const tier = document.querySelector('input[name="tier"]:checked').value;
-    const platform = document.querySelector('input[name="platform"]:checked').value;
-
-    setTimeout(() => {
-        window.location.href = `index.html?tier=${tier}&platform=${platform}`;
-    }, 2500);
+    
+    // Logic for Tier-5 Analysis would go here.
+    // We will leave the overlay visible so the user sees the "Processing" 
+    // messages we built into the HTML earlier.
+    console.log("Analysis started. Manual exit required.");
 });
