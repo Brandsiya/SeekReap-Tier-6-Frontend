@@ -291,7 +291,7 @@
     proceedBtn.innerHTML = '<i class="fas fa-chart-line"></i> View Protection Report';
     
     proceedBtn.onclick = () => {
-    window.location.href = 'verification-report.html';
+    window.location.href = 'verification_report.html';
     };
     
     proceedContainer.appendChild(proceedBtn);
