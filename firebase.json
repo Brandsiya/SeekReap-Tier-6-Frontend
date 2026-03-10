@@ -5,6 +5,13 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "redirects": [
+      {
+        "source": "/",
+        "destination": "/loader.html",
+        "type": 302
+      }
     ]
   }
 }
