@@ -22,5 +22,5 @@ const messageInterval = setInterval(() => {
 // Redirect to dashboard (index.html) after 8 seconds
 setTimeout(() => {
     clearInterval(messageInterval);
-    window.location.href = "verification.html";
+    window.location.href = "verification_portal.html";
 }, 8000);
