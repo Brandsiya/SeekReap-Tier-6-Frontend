@@ -271,42 +271,77 @@
     showProceedButton();
     }
     
-    // Start Analysis (updated with backend integration)
+    // Generate a simple content hash from a string
+    function hashContent(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+    const chr = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash |= 0;
+    }
+    return Math.abs(hash).toString(16).padStart(16, '0');
+    }
+
+    // Start Analysis — wired to Tier-4 /api/submit
     async function startTier6Analysis(payload) {
     try {
     document.querySelector('#processing-overlay h2').innerText = 'SeekReap AI Analysis';
-    statusText.innerText = "Syncing with SeekReap Cloud (Tier-6)...";
+    statusText.innerText = "Submitting to SeekReap pipeline...";
     updateProcessingProgress(1);
-    
-    // POST to Flask backend
-    try {
-    const response = await fetch('http://localhost:5000/api/submit-scan', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+
+    const contentSource = payload.youtubeId || payload.url || payload.name || Date.now().toString();
+    const contentHash = hashContent(contentSource + payload.timestamp);
+    const creatorId = (window.API_CONFIG && window.API_CONFIG.DEV_CREATOR_ID)
+    || "a8e4fbba-2627-4fbf-98e0-468a47bab8fc";
+    const tier4Url = (window.API_CONFIG && window.API_CONFIG.TIER4_URL)
+    || "https://seekreap-tier4-tif2gmgi4q-uc.a.run.app";
+
+    const tier4Payload = {
+    creator_id: creatorId,
+    content_hash: contentHash,
+    content_url: payload.url || null,
+    content_type: "video",
+    platform: payload.platform || "youtube",
+    tier: payload.tier || "free",
+    metadata: {
+    youtube_id: payload.youtubeId || null,
+    file_name: payload.name || null,
+    file_size: payload.fileSize || null,
+    submitted_at: payload.timestamp
+    }
+    };
+
+    statusText.innerText = "Connecting to Tier-4 Orchestrator...";
+    updateProcessingProgress(2);
+
+    const response = await fetch(tier4Url + "/api/submit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(tier4Payload)
     });
-    
+
     const result = await response.json();
-    
-    if (result.status === "success") {
-    sessionStorage.setItem('last_submission_id', result.submission_id);
-    sessionStorage.setItem('seekreap_results', JSON.stringify(payload));
-    
-    statusText.innerText = "Analysis Recorded. Ready for Audit.";
+
+    if (response.ok && result.submission_id) {
+    sessionStorage.setItem("last_submission_id", result.submission_id);
+    sessionStorage.setItem("seekreap_results", JSON.stringify({
+    ...payload,
+    submission_id: result.submission_id,
+    status: result.status,
+    tier5_dispatch: result.tier5_dispatch
+    }));
+
+    statusText.innerText = "Queued for analysis. Submission ID: " + result.submission_id.slice(0, 8) + "...";
+    updateProcessingProgress(3);
     showProceedButton();
     } else {
-    throw new Error(result.message);
+    throw new Error(result.error || result.detail || "Submission failed");
     }
-    } catch (backendError) {
-    console.warn('Backend not available, using simulation mode:', backendError);
-    // Fallback to simulation if backend is not available
-    await simulateProcessing();
-    }
-    
+
     } catch (err) {
-    document.querySelector('#processing-overlay h2').innerText = 'Error';
+    document.querySelector('#processing-overlay h2').innerText = 'Submission Error';
     statusText.innerText = "Error: " + err.message;
-    console.error(err);
+    console.error("Tier-4 submission error:", err);
     }
     }
     
