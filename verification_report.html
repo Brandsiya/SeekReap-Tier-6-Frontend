@@ -21,7 +21,7 @@
         <div class="nav-status">
             <div class="status-badge">
                 <span class="status-dot"></span>
-                <span>Protected Session</span>
+                <span id="report-status-label">Protected Session</span>
             </div>
             
             <div class="user-profile">
@@ -71,7 +71,7 @@
                         <div class="detail-item">
                             <span class="detail-label">Verification ID</span>
                             <span class="detail-value">
-                                SR-8293FJ2
+                                <span id="report-submission-id">SR-8293FJ2</span>
                                 <span class="verification-badge"><i class="fas fa-check"></i> Verified</span>
                             </span>
                         </div>
@@ -81,15 +81,15 @@
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Video ID</span>
-                            <span class="detail-value">X82AJ9</span>
+                            <span class="detail-value" id="report-video-id">X82AJ9</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Channel</span>
-                            <span class="detail-value">CreatorChannel</span>
+                            <span class="detail-value" id="report-channel">CreatorChannel</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Analysis Date</span>
-                            <span class="detail-value">10 March 2026, 14:22 UTC</span>
+                            <span class="detail-value" id="report-date">10 March 2026, 14:22 UTC</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Service Used</span>
@@ -103,7 +103,7 @@
                             <h3>SeekReap Score</h3>
                             <span class="verification-badge" style="background: rgba(255,255,255,0.2); color: white;">Updated in real-time</span>
                         </div>
-                        <div class="score-number">82 <span style="font-size: 1.2rem; opacity: 0.7;">/100</span></div>
+                        <div class="score-number" id="report-score">82 <span style="font-size: 1.2rem; opacity: 0.7;">/100</span></div>
                         <div class="score-interpretation">
                             <h4>Score Interpretation</h4>
                             <div class="score-table">
@@ -474,6 +474,9 @@
         </div>
     </main>
 
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="config.js"></script>
     <script src="assets/js/verification_report.js"></script>
 
     </body>
