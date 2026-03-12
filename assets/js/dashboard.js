@@ -625,3 +625,163 @@
                 }
             });
         });
+
+// ==============================================
+//   LIVE DATA — Firebase Auth → Tier-6 Backend
+// ==============================================
+(function() {
+    'use strict';
+
+    const BACKEND_URL = (typeof API_CONFIG !== 'undefined' && API_CONFIG.BASE_URL)
+        ? API_CONFIG.BASE_URL
+        : 'https://seekreap-backend-tif2gmgi4q-uc.a.run.app';
+
+    function riskClass(level) {
+        if (!level) return 'low';
+        const l = level.toLowerCase();
+        if (l === 'high')   return 'high';
+        if (l === 'medium') return 'medium';
+        return 'low';
+    }
+
+    function formatDate(iso) {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        const now = new Date();
+        const diff = Math.floor((now - d) / 1000);
+        if (diff < 60)    return 'just now';
+        if (diff < 3600)  return `${Math.floor(diff/60)}m ago`;
+        if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function scoreBar(score) {
+        if (score === null || score === undefined) return '';
+        const pct   = Math.round(score);
+        const color = pct >= 70 ? '#ef4444' : pct >= 35 ? '#f59e0b' : '#10b981';
+        return `<div style="display:flex;align-items:center;gap:6px;min-width:80px;">
+            <div style="flex:1;height:4px;background:#f0f0f0;border-radius:2px;">
+                <div style="width:${pct}%;height:100%;background:${color};border-radius:2px;"></div>
+            </div>
+            <span style="font-size:11px;font-weight:600;color:${color};">${pct}</span>
+        </div>`;
+    }
+
+    function renderDetectionList(submissions) {
+        const list = document.querySelector('.detection-list');
+        if (!list) return;
+        if (!submissions || submissions.length === 0) {
+            list.innerHTML = `<div style="padding:24px;text-align:center;color:#9ca3af;font-size:13px;">
+                No submissions yet. <a href="verification_portal.html" style="color:#667eea;">Run your first scan →</a>
+            </div>`;
+            return;
+        }
+        list.innerHTML = submissions.slice(0, 5).map(s => {
+            const rc      = riskClass(s.risk_level);
+            const title   = s.title || s.content_url || 'Untitled';
+            const channel = s.channel || '';
+            const date    = formatDate(s.submitted_at);
+            const badge   = s.status === 'COMPLETED' ? (s.risk_level || 'Done') : s.status;
+            return `<div class="detection-item ${rc}-risk" style="cursor:pointer;"
+                        onclick="window.location.href='verification_report.html?id=${s.id}'">
+                <div class="detection-icon">
+                    <i class="fab fa-youtube" style="color:#ef4444;"></i>
+                </div>
+                <div class="detection-content" style="flex:1;min-width:0;">
+                    <div class="detection-header">
+                        <span class="detection-title"
+                            style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;"
+                            title="${title}">${title}</span>
+                        <span class="risk-badge ${rc}">${badge}</span>
+                    </div>
+                    <div class="detection-meta">
+                        ${channel ? `<span><i class="fas fa-user"></i> ${channel}</span>` : ''}
+                        <span><i class="fas fa-clock"></i> ${date}</span>
+                        ${s.overall_risk_score !== null ? scoreBar(s.overall_risk_score) : ''}
+                    </div>
+                </div>
+                <a href="verification_report.html?id=${s.id}"
+                   class="action-icon" title="View Report" onclick="event.stopPropagation()">
+                    <i class="fas fa-eye"></i>
+                </a>
+            </div>`;
+        }).join('');
+    }
+
+    function updateKPIs(submissions) {
+        const kpiValues = document.querySelectorAll('.kpi-value');
+        const kpiLabels = document.querySelectorAll('.kpi-label');
+        if (kpiValues.length < 4) return;
+        const total     = submissions.length;
+        const highRisk  = submissions.filter(s => (s.risk_level||'').toLowerCase() === 'high').length;
+        const completed = submissions.filter(s => s.status === 'COMPLETED').length;
+        const pending   = submissions.filter(s => s.status !== 'COMPLETED').length;
+        kpiValues[0].textContent = total;
+        kpiValues[1].textContent = highRisk;
+        kpiValues[2].textContent = completed;
+        kpiValues[3].textContent = pending;
+        if (kpiLabels.length >= 4) {
+            kpiLabels[0].textContent = 'Total Scans';
+            kpiLabels[1].textContent = 'High Risk';
+            kpiLabels[2].textContent = 'Completed';
+            kpiLabels[3].textContent = 'Pending';
+        }
+    }
+
+    function updateCreatorUI(profile) {
+        const displayName = profile.name || profile.email.split('@')[0] || 'Creator';
+        const initials    = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2) || 'CR';
+        document.querySelectorAll('.creator-name').forEach(el => el.textContent = displayName);
+        document.querySelectorAll('#user-avatar, .side-menu-avatar').forEach(el => el.textContent = initials);
+        const sidebarName = document.querySelector('.side-menu-user-info h4');
+        const sidebarMeta = document.querySelector('.side-menu-user-info p');
+        if (sidebarName) sidebarName.textContent = displayName;
+        if (sidebarMeta) sidebarMeta.textContent = `${profile.email} • ${profile.subscription_tier} tier`;
+        const subtitle = document.querySelector('.welcome-subtitle');
+        if (subtitle) subtitle.textContent =
+            `${profile.credits_remaining} scan credits remaining • ${profile.subscription_tier} plan`;
+        document.querySelectorAll('.tier-indicator span:first-of-type').forEach(el => {
+            el.textContent = profile.subscription_tier.charAt(0).toUpperCase() + profile.subscription_tier.slice(1);
+        });
+    }
+
+    async function loadDashboardData(uid) {
+        const headers = { 'X-Creator-ID': uid };
+        try {
+            const [pRes, sRes] = await Promise.all([
+                fetch(`${BACKEND_URL}/api/creator/profile`, { headers }),
+                fetch(`${BACKEND_URL}/api/submissions`,     { headers }),
+            ]);
+            if (pRes.ok)  updateCreatorUI(await pRes.json());
+            if (sRes.ok) {
+                const data = await sRes.json();
+                renderDetectionList(data.submissions || []);
+                updateKPIs(data.submissions || []);
+            }
+        } catch (err) {
+            console.warn('Dashboard live data failed:', err);
+        }
+    }
+
+    function initLiveData() {
+        let attempts = 0;
+        const iv = setInterval(() => {
+            attempts++;
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                clearInterval(iv);
+                firebase.auth().onAuthStateChanged(user => {
+                    if (user) {
+                        loadDashboardData(user.uid);
+                    } else {
+                        window.location.href = 'signup_signin.html';
+                    }
+                });
+            } else if (attempts > 50) {
+                clearInterval(iv);
+                console.warn('Firebase not ready on dashboard');
+            }
+        }, 100);
+    }
+
+    document.addEventListener('DOMContentLoaded', initLiveData);
+})();
