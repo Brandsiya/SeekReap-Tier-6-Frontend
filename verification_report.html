@@ -82,6 +82,10 @@
         <div class="summary-card">
             <div class="summary-grid">
                 <div class="summary-left">
+                    <div id="thumbnailContainer" style="margin-bottom:16px;display:none;">
+                        <img id="thumbnailImg" src="" alt="Video thumbnail"
+                             style="width:100%;max-width:320px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+                    </div>
                     <h2>Content Analysis Summary</h2>
                     <div class="summary-details">
                         <div class="detail-item">
@@ -194,7 +198,7 @@
                 </div>
                 
                 <h4 style="margin-bottom: 15px;">Risk Factors Detected:</h4>
-                <div class="risk-factors">
+                <div class="risk-factors" id="riskFactorsList">
                     <div class="risk-factor-item">
                         <i class="fas fa-check-circle" style="color: var(--success);"></i>
                         <span>No copyright conflicts detected</span>
@@ -223,8 +227,8 @@
                     <i class="fas fa-shield-alt"></i>
                     Risk Level: Low
                 </div>
-                <div><strong>Fingerprint Status:</strong> <i class="fas fa-check-circle" style="color: var(--success);"></i> Unique</div>
-                <div><strong>Similarity Matches:</strong> 0</div>
+                <div id="fingerprintStatusLine"><strong>Fingerprint Status:</strong> <i class="fas fa-check-circle" style="color: var(--success);"></i> Unique</div>
+                <div id="similarityMatchesLine"><strong>Similarity Matches:</strong> <span id="similarityCount">0</span></div>
             </div>
             
             <p style="color: #64748b; margin-bottom: 20px;">
@@ -440,7 +444,7 @@
                 Cross-Platform Monitoring
             </h3>
             
-            <div class="threat-alert success">
+            <div class="threat-alert success" id="threatAlert">
                 <i class="fas fa-check-circle"></i>
                 <div>
                     <strong>No duplicate uploads detected</strong>
@@ -501,7 +505,7 @@
                 <i class="fas fa-robot"></i>
                 Why SeekReap Gave This Score
             </h3>
-            <div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); padding: 20px; border-radius: 12px;">
+            <div style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); padding: 20px; border-radius: 12px;" id="aiExplanationBox">
                 <p style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
                     <i class="fas fa-check-circle" style="color: var(--success);"></i>
                     No matching fingerprints found in database of 2.3M videos
