@@ -138,7 +138,7 @@
         }
 
         try {
-            const resp = await fetch(`${TIER4_URL}/api/results/${submissionId}`);
+            const resp = await fetch(`${TIER4_URL}/api/status/${submissionId}`);
             if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
             const data = await resp.json();
             populateReport(data);
