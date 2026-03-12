@@ -65,11 +65,11 @@
         <!-- ========== NEW: PUBLISHING RECOMMENDATION BANNER ========== -->
         <div class="publishing-banner">
             <div class="publishing-indicator">
-                <div class="indicator-icon safe">
+                <div class="indicator-icon safe" id="publishingIcon">
                     <i class="fas fa-check-circle"></i>
                 </div>
-                <div class="indicator-text">
-                    <h3>SAFE TO PUBLISH</h3>
+                <div class="indicator-text" id="publishingIndicatorText">
+                    <h3 id="publishingVerdict">SAFE TO PUBLISH</h3>
                     <p>SeekReap Risk Score: 82/100 • Recommended Action: Publish with Monitoring Enabled</p>
                 </div>
             </div>
@@ -97,11 +97,11 @@
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Video ID</span>
-                            <span class="detail-value">X82AJ9</span>
+                            <span class="detail-value" id="summaryVideoId">X82AJ9</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Channel</span>
-                            <span class="detail-value">CreatorChannel</span>
+                            <span class="detail-value" id="summaryChannel">CreatorChannel</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Analysis Date</span>
@@ -119,7 +119,7 @@
                             <h3>SeekReap Score</h3>
                             <span class="verification-badge" style="background: rgba(255,255,255,0.2); color: white;">Updated in real-time</span>
                         </div>
-                        <div class="score-number">82 <span style="font-size: 1.2rem; opacity: 0.7;">/100</span></div>
+                        <div class="score-number" id="scoreNumber">82 <span style="font-size: 1.2rem; opacity: 0.7;">/100</span></div>
                         
                         <!-- ========== NEW: RISK BREAKDOWN ========== -->
                         <div class="risk-breakdown">
@@ -180,16 +180,16 @@
             </h3>
             <div class="monetization-card">
                 <div class="monetization-status">
-                    <div class="status-badge-large success">
+                    <div class="status-badge-large success" id="monetizationBadge">
                         <i class="fas fa-check-circle"></i>
                         Likely Eligible
                     </div>
                     <div class="confidence-meter">
                         <span style="font-weight: 500;">Confidence:</span>
                         <div class="confidence-bar">
-                            <div class="confidence-fill" style="width: 84%"></div>
+                            <div class="confidence-fill" id="confidenceFill" style="width: 84%"></div>
                         </div>
-                        <span style="font-weight: 700;">84%</span>
+                        <span style="font-weight: 700;" id="confidencePct">84%</span>
                     </div>
                 </div>
                 
@@ -219,7 +219,7 @@
             </h3>
             
             <div style="display: flex; align-items: center; gap: 30px; flex-wrap: wrap; margin-bottom: 20px;">
-                <div class="risk-meter low">
+                <div class="risk-meter low" id="riskMeter">
                     <i class="fas fa-shield-alt"></i>
                     Risk Level: Low
                 </div>
@@ -251,7 +251,7 @@
                 <div class="audio-details">
                     <div class="detail-item">
                         <span class="detail-label">Audio Fingerprint Hash</span>
-                        <span class="detail-value"><span class="hash-value">8f72a8b1290c4d5e6f7a8b9c</span></span>
+                        <span class="detail-value"><span class="hash-value" id="audioFingerprintHash">8f72a8b1290c4d5e6f7a8b9c</span></span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Audio Similarity Score</span>
@@ -400,7 +400,7 @@
                 <div class="certificate-details">
                     <div class="detail-item">
                         <span class="detail-label">Fingerprint Hash</span>
-                        <span class="detail-value"><span class="hash-value">5af72e82c1d3b4e5f6a7b8c9d0e1f2a3</span></span>
+                        <span class="detail-value"><span class="hash-value" id="certFingerprintHash">5af72e82c1d3b4e5f6a7b8c9d0e1f2a3</span></span>
                     </div>
                 </div>
 
