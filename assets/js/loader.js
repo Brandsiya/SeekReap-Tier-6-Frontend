@@ -23,7 +23,10 @@
     }
 
     function goToReport() {
-        window.location.href = 'verification_report.html';
+        const url = submissionId
+            ? 'verification_report.html?id=' + encodeURIComponent(submissionId)
+            : 'verification_report.html';
+        window.location.href = url;
     }
 
     function goToPortal(msg) {
