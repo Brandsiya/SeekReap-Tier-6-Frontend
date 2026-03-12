@@ -286,6 +286,78 @@
         }
 
         /*==============================================
+        =           PUBLISHING RECOMMENDATION BANNER   =
+        ==============================================*/
+        .publishing-banner {
+            background: linear-gradient(135deg, var(--navy), var(--navy-light));
+            border-radius: 16px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            border-left: 8px solid var(--gold);
+        }
+
+        .publishing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .indicator-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .indicator-icon.safe {
+            color: var(--success);
+        }
+
+        .indicator-icon.caution {
+            color: var(--warning);
+        }
+
+        .indicator-icon.danger {
+            color: var(--danger);
+        }
+
+        .indicator-text h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .indicator-text p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .publishing-action {
+            background: var(--gold);
+            color: var(--navy);
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .publishing-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 184, 0, 0.3);
+        }
+
+        /*==============================================
         =           SUMMARY CARD (Most Important)     =
         ==============================================*/
         .summary-card {
@@ -399,6 +471,53 @@
             margin-bottom: 10px;
         }
 
+        /* Risk Breakdown - NEW */
+        .risk-breakdown {
+            margin: 20px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .risk-breakdown h4 {
+            font-size: 0.9rem;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+
+        .risk-component {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .risk-component span:first-child {
+            width: 120px;
+            opacity: 0.8;
+        }
+
+        .risk-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            margin: 0 10px;
+            overflow: hidden;
+        }
+
+        .risk-fill {
+            height: 100%;
+            background: var(--gold);
+            border-radius: 3px;
+        }
+
+        .risk-component span:last-child {
+            font-weight: 600;
+            min-width: 40px;
+            text-align: right;
+        }
+
         .score-interpretation {
             background: rgba(255,255,255,0.1);
             border-radius: 12px;
@@ -459,6 +578,60 @@
         .section-title i {
             color: var(--gold);
             font-size: 1.3rem;
+        }
+
+        /* Database Sources - NEW */
+        .database-sources {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid var(--border);
+        }
+
+        .database-sources h4 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .source-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .source-tag {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .source-tag i {
+            color: var(--success);
+            margin-right: 6px;
+            font-size: 0.8rem;
+        }
+
+        /* Audio Fingerprint - NEW */
+        .audio-fingerprint {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .audio-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 15px;
         }
 
         /* Monetization Prediction */
@@ -691,7 +864,7 @@
 
         .certificate-details {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             margin: 25px 0;
         }
@@ -722,6 +895,71 @@
             border-radius: 8px;
             font-family: monospace;
             font-size: 0.9rem;
+        }
+
+        /* Evidence Package - NEW */
+        .evidence-package {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .evidence-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .evidence-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .evidence-item i {
+            color: var(--success);
+        }
+
+        /* Legal Disclaimer - NEW */
+        .legal-disclaimer {
+            background: #fef9e7;
+            border-left: 4px solid var(--gold);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .legal-disclaimer h4 {
+            color: var(--navy);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Report Integrity - NEW */
+        .integrity-hash {
+            background: var(--navy);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         /* Recommendations */
@@ -798,15 +1036,14 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .summary-grid {
+            .summary-grid,
+            .certificate-details,
+            .evidence-grid,
+            .audio-details {
                 grid-template-columns: 1fr;
             }
 
             .metadata-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .certificate-details {
                 grid-template-columns: 1fr;
             }
 
@@ -818,5 +1055,15 @@
             .monetization-status {
                 flex-direction: column;
                 align-items: flex-start;
+            }
+
+            .publishing-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .publishing-indicator {
+                flex-direction: column;
+                text-align: center;
             }
         }

@@ -21,7 +21,7 @@
         <div class="nav-status">
             <div class="status-badge">
                 <span class="status-dot"></span>
-                <span id="report-status-label">Protected Session</span>
+                <span>Protected Session</span>
             </div>
             
             <div class="user-profile">
@@ -62,6 +62,22 @@
             </div>
         </div>
 
+        <!-- ========== NEW: PUBLISHING RECOMMENDATION BANNER ========== -->
+        <div class="publishing-banner">
+            <div class="publishing-indicator">
+                <div class="indicator-icon safe">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="indicator-text">
+                    <h3>SAFE TO PUBLISH</h3>
+                    <p>SeekReap Risk Score: 82/100 • Recommended Action: Publish with Monitoring Enabled</p>
+                </div>
+            </div>
+            <a href="#" class="publishing-action">
+                <i class="fas fa-shield-alt"></i> Enable Monitoring
+            </a>
+        </div>
+
         <!-- Top Section — Result Summary Card -->
         <div class="summary-card">
             <div class="summary-grid">
@@ -71,7 +87,7 @@
                         <div class="detail-item">
                             <span class="detail-label">Verification ID</span>
                             <span class="detail-value">
-                                <span id="report-submission-id">SR-8293FJ2</span>
+                                SR-8293FJ2
                                 <span class="verification-badge"><i class="fas fa-check"></i> Verified</span>
                             </span>
                         </div>
@@ -81,15 +97,15 @@
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Video ID</span>
-                            <span class="detail-value" id="report-video-id">X82AJ9</span>
+                            <span class="detail-value">X82AJ9</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Channel</span>
-                            <span class="detail-value" id="report-channel">CreatorChannel</span>
+                            <span class="detail-value">CreatorChannel</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Analysis Date</span>
-                            <span class="detail-value" id="report-date">10 March 2026, 14:22 UTC</span>
+                            <span class="detail-value">10 March 2026, 14:22 UTC</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Service Used</span>
@@ -103,7 +119,33 @@
                             <h3>SeekReap Score</h3>
                             <span class="verification-badge" style="background: rgba(255,255,255,0.2); color: white;">Updated in real-time</span>
                         </div>
-                        <div class="score-number" id="report-score">82 <span style="font-size: 1.2rem; opacity: 0.7;">/100</span></div>
+                        <div class="score-number">82 <span style="font-size: 1.2rem; opacity: 0.7;">/100</span></div>
+                        
+                        <!-- ========== NEW: RISK BREAKDOWN ========== -->
+                        <div class="risk-breakdown">
+                            <h4>Risk Breakdown</h4>
+                            <div class="risk-component">
+                                <span>Video Similarity</span>
+                                <div class="risk-bar"><div class="risk-fill" style="width: 5%"></div></div>
+                                <span>5%</span>
+                            </div>
+                            <div class="risk-component">
+                                <span>Audio Similarity</span>
+                                <div class="risk-bar"><div class="risk-fill" style="width: 12%"></div></div>
+                                <span>12%</span>
+                            </div>
+                            <div class="risk-component">
+                                <span>Policy Risk</span>
+                                <div class="risk-bar"><div class="risk-fill" style="width: 3%"></div></div>
+                                <span>3%</span>
+                            </div>
+                            <div class="risk-component">
+                                <span>Metadata Risk</span>
+                                <div class="risk-bar"><div class="risk-fill" style="width: 2%"></div></div>
+                                <span>2%</span>
+                            </div>
+                        </div>
+
                         <div class="score-interpretation">
                             <h4>Score Interpretation</h4>
                             <div class="score-table">
@@ -138,7 +180,7 @@
             </h3>
             <div class="monetization-card">
                 <div class="monetization-status">
-                    <div class="status-badge-large success" id="report-monetization-status">
+                    <div class="status-badge-large success">
                         <i class="fas fa-check-circle"></i>
                         Likely Eligible
                     </div>
@@ -177,7 +219,7 @@
             </h3>
             
             <div style="display: flex; align-items: center; gap: 30px; flex-wrap: wrap; margin-bottom: 20px;">
-                <div class="risk-meter low" id="report-risk-meter">
+                <div class="risk-meter low">
                     <i class="fas fa-shield-alt"></i>
                     Risk Level: Low
                 </div>
@@ -189,6 +231,41 @@
                 <i class="fas fa-info-circle" style="color: var(--gold); margin-right: 8px;"></i>
                 No matching video fingerprints were detected in the scanned database.
             </p>
+
+            <!-- ========== NEW: DATABASE SOURCES ========== -->
+            <div class="database-sources">
+                <h4><i class="fas fa-database"></i> Database Sources Scanned</h4>
+                <div class="source-tags">
+                    <span class="source-tag"><i class="fas fa-check-circle"></i> YouTube dataset</span>
+                    <span class="source-tag"><i class="fas fa-check-circle"></i> TikTok dataset</span>
+                    <span class="source-tag"><i class="fas fa-check-circle"></i> Instagram dataset</span>
+                    <span class="source-tag"><i class="fas fa-check-circle"></i> Public video archives</span>
+                    <span class="source-tag"><i class="fas fa-check-circle"></i> SeekReap fingerprint registry</span>
+                    <span class="source-tag"><i class="fas fa-check-circle"></i> Licensed music database</span>
+                </div>
+            </div>
+
+            <!-- ========== NEW: AUDIO FINGERPRINT SECTION ========== -->
+            <div class="audio-fingerprint">
+                <h4><i class="fas fa-music"></i> Audio Fingerprint Analysis</h4>
+                <div class="audio-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Audio Fingerprint Hash</span>
+                        <span class="detail-value"><span class="hash-value">8f72a8b1290c4d5e6f7a8b9c</span></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Audio Similarity Score</span>
+                        <span class="detail-value">12%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Music Detection</span>
+                        <span class="detail-value"><i class="fas fa-check-circle" style="color: var(--success);"></i> Non-identical</span>
+                    </div>
+                </div>
+                <p style="color: #64748b; margin-top: 15px; font-size: 0.9rem;">
+                    <i class="fas fa-info-circle" style="color: var(--gold);"></i> Audio fingerprint verified against 2.1M tracks in music database.
+                </p>
+            </div>
 
             <!-- Example of what appears if matches exist -->
             <div class="similarity-match" style="display: none;">
@@ -309,6 +386,18 @@
                         <span class="detail-label">Timestamp</span>
                         <span class="detail-value">2026-03-10T14:22:45Z</span>
                     </div>
+                    <!-- ========== NEW: FINGERPRINT ALGORITHM & VERSION ========== -->
+                    <div class="detail-item">
+                        <span class="detail-label">Fingerprint Algorithm</span>
+                        <span class="detail-value">SR-VID-FP v1.2</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Generated</span>
+                        <span class="detail-value">2026-03-10T14:22:45Z</span>
+                    </div>
+                </div>
+
+                <div class="certificate-details">
                     <div class="detail-item">
                         <span class="detail-label">Fingerprint Hash</span>
                         <span class="detail-value"><span class="hash-value">5af72e82c1d3b4e5f6a7b8c9d0e1f2a3</span></span>
@@ -435,6 +524,20 @@
                 Download Full Report
             </h3>
             <p style="color: #64748b; margin-bottom: 25px;">Complete analysis with all evidence, certificates, and recommendations</p>
+            
+            <!-- ========== NEW: EVIDENCE PACKAGE INDICATOR ========== -->
+            <div class="evidence-package">
+                <h4><i class="fas fa-box"></i> Report Evidence Package</h4>
+                <div class="evidence-grid">
+                    <div class="evidence-item"><i class="fas fa-check-circle"></i> Metadata snapshot</div>
+                    <div class="evidence-item"><i class="fas fa-check-circle"></i> Video fingerprint</div>
+                    <div class="evidence-item"><i class="fas fa-check-circle"></i> Audio fingerprint</div>
+                    <div class="evidence-item"><i class="fas fa-check-circle"></i> Thumbnail fingerprint</div>
+                    <div class="evidence-item"><i class="fas fa-check-circle"></i> Risk analysis results</div>
+                    <div class="evidence-item"><i class="fas fa-check-circle"></i> Ownership timestamp</div>
+                </div>
+            </div>
+
             <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
                 <button class="btn-gold" style="padding: 15px 40px;">
                     <i class="fas fa-file-pdf"></i> Download SeekReap Report (PDF)
@@ -443,10 +546,24 @@
                     <i class="fas fa-file-excel"></i> Export Data (CSV)
                 </button>
             </div>
+
+            <!-- ========== NEW: REPORT INTEGRITY HASH ========== -->
+            <div class="integrity-hash">
+                <span><i class="fas fa-shield-alt"></i> Report Integrity Hash (SHA-256):</span>
+                <span style="font-family: monospace;">7c1e2b3d4a5f67891c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c</span>
+                <i class="fas fa-copy" style="cursor: pointer; opacity: 0.8;" onclick="copyIntegrityHash()"></i>
+            </div>
+
             <p style="margin-top: 15px; font-size: 0.8rem; color: #94a3b8;">
-                Report includes: analysis summary • metadata • risk scores • certificate • recommendations
+                Report includes: analysis summary • metadata • risk scores • certificate • recommendations • evidence package
             </p>
         </section>
+
+        <!-- ========== NEW: LEGAL DISCLAIMER ========== -->
+        <div class="legal-disclaimer">
+            <h4><i class="fas fa-scale-balanced"></i> Legal Disclaimer</h4>
+            <p>This report represents a probabilistic risk analysis based on SeekReap's proprietary fingerprinting, similarity detection, and metadata evaluation systems. The analysis does not guarantee the absence of copyright claims, monetization restrictions, or policy violations by third-party rights holders or platform providers. SeekReap provides informational guidance only and is not a substitute for professional legal advice. Always review platform-specific terms of service before publishing content.</p>
+        </div>
 
         <!-- Dashboard Footer -->
         <div class="dashboard-footer">
@@ -473,11 +590,8 @@
             </p>
         </div>
     </main>
-
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="config.js"></script>
-    <script src="assets/js/verification_report.js"></script>
-
+    
+      <script src="assets/js/verification_report.js"></script>
+    
     </body>
     </html>
