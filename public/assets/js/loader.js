@@ -23,5 +23,5 @@ setInterval(() => {
 // Redirect to existing index.html after animation completes
 // The animation is 8 seconds (from progressMove keyframes)
 setTimeout(() => {
-    window.location.href = '/index.html';
+    window.location.href = '/home.html';
 }, 8000); // Redirect after 8 seconds
