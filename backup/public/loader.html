@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeekReap — Analyzing</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0A1F3D,#05152B);min-height:100vh;display:flex;align-items:center;justify-content:center;color:white;}
+        .loader-container{text-align:center;padding:40px 20px;max-width:400px;width:100%;}
+        .logo{font-size:2rem;font-weight:800;letter-spacing:2px;color:#FFB800;margin-bottom:40px;}
+        .scanner{position:relative;width:120px;height:120px;margin:0 auto 30px;}
+        .ring{position:absolute;inset:0;border:3px solid rgba(255,184,0,0.15);border-radius:50%;}
+        .ring2{position:absolute;inset:10px;border:3px solid transparent;border-top-color:#FFB800;border-radius:50%;animation:spin 1.2s linear infinite;}
+        .core{position:absolute;inset:30px;background:radial-gradient(circle,rgba(255,184,0,0.3),transparent);border-radius:50%;animation:pulse 2s ease-in-out infinite;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+        @keyframes pulse{0%,100%{opacity:0.4;transform:scale(0.9);}50%{opacity:1;transform:scale(1.1);}}
+        #status{font-size:1rem;color:rgba(255,255,255,0.8);margin-bottom:25px;min-height:24px;transition:opacity 0.3s;}
+        .progress-bar{width:100%;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;margin-bottom:20px;}
+        .progress{height:100%;background:linear-gradient(90deg,#FFB800,#FFD966);border-radius:2px;width:5%;transition:width 0.5s ease;}
+        .note{font-size:0.8rem;color:rgba(255,255,255,0.4);line-height:1.6;}
+    </style>
+</head>
+<body>
+    <div class="loader-container">
+        <h1 class="logo">SEEKREAP</h1>
+        <div class="scanner">
+            <div class="ring"></div>
+            <div class="ring2"></div>
+            <div class="core"></div>
+        </div>
+        <p id="status">Initializing AI Analysis...</p>
+        <div class="progress-bar"><div class="progress"></div></div>
+        <p class="note">Running monetization safety analysis.<br>This may take a few seconds.</p>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="config.js"></script>
+    <script>
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (!user) { window.location.href = 'signup_signin.html'; }
+    });
+    </script>
+    <script src="assets/js/loader.js"></script>
+</body>
+</html>

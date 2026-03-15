@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Protection Portal | SeekReap</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/verification_portal.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="top-nav">
+        <div class="brand-logo">
+            <i class="fas fa-shield-alt"></i>
+            SEEKREAP
+        </div>
+        
+        <div class="nav-status">
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span>System Online</span>
+            </div>
+            
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">AC</div>
+                <div class="user-menu">
+                    <button class="user-menu-btn" id="userMenuBtn">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="#"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="#"><i class="fas fa-history"></i> History</a>
+                        <hr>
+                        <a href="#"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="verification-wrapper">
+        <!-- Page Header - Updated with product alignment -->
+        <header class="page-header">
+            <h1>Creator Protection Portal</h1>
+            <p class="subtitle">Pre-Upload Risk Analysis • Copyright Verification • Monetization Protection</p>
+            
+            <div class="product-tags">
+                <span class="product-tag"><i class="fas fa-shield-alt"></i> Pre-Flag Minimization</span>
+                <span class="product-tag"><i class="fas fa-file-signature"></i> Appeal Preparation</span>
+                <span class="product-tag"><i class="fas fa-crown"></i> Creator Protection</span>
+                <span class="product-tag"><i class="fas fa-certificate"></i> Verification Evidence</span>
+            </div>
+            
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Avg. Processing</h4>
+                        <p>2.4 seconds</p>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Success Rate</h4>
+                        <p>98.7%</p>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Platforms</h4>
+                        <p>12 supported</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- SeekReap Promise Banner - NEW -->
+        <div class="promise-banner">
+            <h2><i class="fas fa-shield-alt"></i> What SeekReap Does</h2>
+            <div class="promise-grid">
+                <div class="promise-item">
+                    <h3><i class="fas fa-chart-line"></i> Pre-Flag Risk Analysis</h3>
+                    <p>Detect monetization risks before publishing</p>
+                    <div class="promise-check">
+                        <span><i class="fas fa-check"></i> Monetization eligibility score</span>
+                        <span><i class="fas fa-check"></i> Copyright conflict detection</span>
+                        <span><i class="fas fa-check"></i> Platform policy compliance</span>
+                    </div>
+                </div>
+                <div class="promise-item">
+                    <h3><i class="fas fa-certificate"></i> Verification Certificate</h3>
+                    <p>Prove content ownership with blockchain timestamps</p>
+                    <div class="promise-check">
+                        <span><i class="fas fa-check"></i> Ownership timestamp certificate</span>
+                        <span><i class="fas fa-check"></i> Content fingerprinting</span>
+                        <span><i class="fas fa-check"></i> SHA-256 verification hash</span>
+                    </div>
+                </div>
+                <div class="promise-item">
+                    <h3><i class="fas fa-search"></i> Platform Monitoring</h3>
+                    <p>Detect stolen content across all platforms</p>
+                    <div class="promise-check">
+                        <span><i class="fas fa-check"></i> Cross-platform similarity detection</span>
+                        <span><i class="fas fa-check"></i> Automated takedown requests</span>
+                        <span><i class="fas fa-check"></i> Revenue recovery tracking</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trust Indicator - NEW -->
+        <div class="trust-indicator">
+            <div class="trust-stat">
+                <i class="fas fa-shield-alt"></i>
+                <div>
+                    <span>4,200+</span>
+                    <small>videos verified this week</small>
+                </div>
+            </div>
+            <div class="trust-stat">
+                <i class="fas fa-users"></i>
+                <div>
+                    <span>50,000+</span>
+                    <small>creators protected</small>
+                </div>
+            </div>
+            <div class="trust-stat">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <span>99.9%</span>
+                    <small>uptime</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Tracker - Updated with 5 steps -->
+        <div class="progress-tracker">
+            <div class="progress-step active" id="step1">
+                <div class="step-number">1</div>
+                <div class="step-label">Select Tier</div>
+            </div>
+            <div class="progress-step" id="step2">
+                <div class="step-number">2</div>
+                <div class="step-label">Choose Service</div>
+            </div>
+            <div class="progress-step" id="step3">
+                <div class="step-number">3</div>
+                <div class="step-label">Target Platform</div>
+            </div>
+            <div class="progress-step" id="step4">
+                <div class="step-number">4</div>
+                <div class="step-label">Upload Content</div>
+            </div>
+            <div class="progress-step" id="step5">
+                <div class="step-number">5</div>
+                <div class="step-label">Verify</div>
+            </div>
+        </div>
+
+        <!-- Tier Selection (Step 1) - With tooltips -->
+        <section class="config-section">
+            <div class="section-header">
+                <h3><i class="fas fa-crown" style="color: var(--gold);"></i> 1. Select Verification Tier</h3>
+                <span class="section-badge">Choose your plan</span>
+            </div>
+            <div class="radio-group">
+                <label class="radio-card tier-tooltip" data-tooltip="Basic verification">
+                    <input type="radio" name="tier" value="free" checked>
+                    <span class="tier-card"><i class="fas fa-star"></i> Free</span>
+                </label>
+                <label class="radio-card tier-tooltip" data-tooltip="Verification + monitoring">
+                    <input type="radio" name="tier" value="bronze">
+                    <span class="tier-card"><i class="fas fa-medal"></i> Bronze</span>
+                </label>
+                <label class="radio-card tier-tooltip" data-tooltip="Monitoring + appeal tools">
+                    <input type="radio" name="tier" value="silver">
+                    <span class="tier-card"><i class="fas fa-gem"></i> Silver</span>
+                </label>
+                <label class="radio-card tier-tooltip" data-tooltip="Full creator protection">
+                    <input type="radio" name="tier" value="gold">
+                    <span class="tier-card"><i class="fas fa-crown"></i> Gold</span>
+                </label>
+                <label class="radio-card tier-tooltip" data-tooltip="Enterprise monitoring">
+                    <input type="radio" name="tier" value="custom">
+                    <span class="tier-card"><i class="fas fa-building"></i> Custom</span>
+                </label>
+            </div>
+        </section>
+
+        <!-- Service Selection (Step 2) - Updated with new names and features -->
+        <section class="config-section">
+            <div class="section-header">
+                <h3><i class="fas fa-bolt" style="color: var(--gold);"></i> 2. Choose Your Service</h3>
+                <span class="section-badge">Select service type</span>
+            </div>
+            
+            <div class="service-grid">
+                <!-- Pre-Flag Risk Analysis Card -->
+                <div class="service-card risk" data-service="risk" id="service-risk">
+                    <div class="service-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4>Pre-Flag Risk Analysis</h4>
+                    <p class="service-description">Pre-upload monetization and policy risk detection</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> Monetization eligibility score</li>
+                        <li><i class="fas fa-check"></i> Copyright conflict detection</li>
+                        <li><i class="fas fa-check"></i> Platform policy compliance scan</li>
+                        <li><i class="fas fa-check"></i> Revenue risk prediction</li>
+                        <li><i class="fas fa-check"></i> Pre-flag warning indicators</li>
+                    </ul>
+                    <div class="certificate-badge"><i class="fas fa-certificate"></i> Ownership timestamp certificate</div>
+                </div>
+
+                <!-- Appeal Preparation Toolkit Card -->
+                <div class="service-card appeal" data-service="appeal" id="service-appeal">
+                    <div class="service-icon">
+                        <i class="fas fa-file-signature"></i>
+                    </div>
+                    <h4>Appeal Preparation Toolkit</h4>
+                    <p class="service-description">Automated copyright dispute documentation</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> Evidence timeline builder</li>
+                        <li><i class="fas fa-check"></i> Copyright ownership verification</li>
+                        <li><i class="fas fa-check"></i> Appeal documentation generator</li>
+                        <li><i class="fas fa-check"></i> Platform dispute templates</li>
+                        <li><i class="fas fa-check"></i> Claim tracking dashboard</li>
+                    </ul>
+                </div>
+
+                <!-- Creator Protection Suite Card -->
+                <div class="service-card protection" data-service="protection" id="service-protection">
+                    <div class="service-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>Creator Protection Suite</h4>
+                    <p class="service-description">Full verification, monitoring, and enforcement tools</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> Ownership verification certificate</li>
+                        <li><i class="fas fa-check"></i> 24/7 content monitoring</li>
+                        <li><i class="fas fa-check"></i> Cross-platform similarity detection</li>
+                        <li><i class="fas fa-check"></i> Automated takedown request generator</li>
+                        <li><i class="fas fa-check"></i> Revenue recovery tracking</li>
+                        <li><i class="fas fa-check"></i> Legal escalation support</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Platform Selection (Step 3) - With Multi-Platform option -->
+        <section class="config-section">
+            <div class="section-header">
+                <h3><i class="fas fa-share-alt" style="color: var(--gold);"></i> 3. Target Platform</h3>
+                <span class="section-badge">Select destination</span>
+            </div>
+            <div class="radio-group">
+                <label class="radio-card">
+                    <input type="radio" name="platform" value="youtube" checked>
+                    <span><i class="fab fa-youtube" style="margin-right: 8px; color: #ff0000;"></i> YouTube</span>
+                </label>
+                <label class="radio-card">
+                    <input type="radio" name="platform" value="facebook">
+                    <span><i class="fab fa-facebook" style="margin-right: 8px; color: #1877f2;"></i> Facebook</span>
+                </label>
+                <label class="radio-card">
+                    <input type="radio" name="platform" value="tiktok">
+                    <span><i class="fab fa-tiktok" style="margin-right: 8px;"></i> TikTok</span>
+                </label>
+                <label class="radio-card">
+                    <input type="radio" name="platform" value="instagram">
+                    <span><i class="fab fa-instagram" style="margin-right: 8px; color: #e1306c;"></i> Instagram</span>
+                </label>
+                <label class="radio-card">
+                    <input type="radio" name="platform" value="multi">
+                    <span><i class="fas fa-globe"></i> Multi-Platform Scan</span>
+                </label>
+            </div>
+            <div class="platform-note">
+                <i class="fas fa-info-circle"></i> Multi-Platform Scan checks YouTube, Facebook, TikTok, Instagram simultaneously
+            </div>
+        </section>
+
+        <!-- Content Upload (Step 4) - With analysis info panel -->
+        <section class="config-section">
+            <div class="section-header">
+                <h3><i class="fas fa-cloud-upload-alt" style="color: var(--gold);"></i> 4. Upload Your Content</h3>
+                <span class="section-badge">MP4, MOV, or URL</span>
+            </div>
+
+            <!-- Preview Area -->
+            <div class="preview-container">
+                <div class="video-window-wide">
+                    <video id="main-preview" controls class="hidden full-size"></video>
+                    <div id="youtube-player" class="hidden"></div>
+                    <div id="preview-placeholder">
+                        <div class="placeholder-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <p>Preview area — waiting for media...</p>
+                        <small style="color: #94a3b8;">Supported: MP4, MOV, YouTube URLs</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Controls -->
+            <div class="input-control-bar">
+                <div class="input-method-box">
+                    <div class="file-input-wrapper">
+                        <label for="video-file" class="btn-outline">
+                            <i class="fas fa-folder-open"></i>
+                            Browse Files
+                        </label>
+                        <input type="file" id="video-file" accept="video/*" hidden>
+                        <span id="file-name-hint">No file selected</span>
+                    </div>
+                </div>
+                
+                <div class="method-divider">OR</div>
+                
+                <div class="input-method-box">
+                    <div class="url-input-wrapper">
+                        <i class="fas fa-link"></i>
+                        <input type="url" id="video-url" placeholder="Paste video URL (YouTube supported)">
+                    </div>
+                    <div class="input-hint">
+                        <i class="fas fa-info-circle"></i>
+                        YouTube, Vimeo, and direct video links
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Info Panel - NEW -->
+            <div class="analysis-info">
+                <h4><i class="fas fa-microscope"></i> What SeekReap Will Analyze</h4>
+                <div class="analysis-grid">
+                    <div class="analysis-item"><i class="fas fa-check"></i> Video metadata</div>
+                    <div class="analysis-item"><i class="fas fa-check"></i> Thumbnail fingerprint</div>
+                    <div class="analysis-item"><i class="fas fa-check"></i> Title similarity</div>
+                    <div class="analysis-item"><i class="fas fa-check"></i> Copyright conflict indicators</div>
+                    <div class="analysis-item"><i class="fas fa-check"></i> Monetization policy markers</div>
+                    <div class="analysis-item"><i class="fas fa-check"></i> Audio fingerprinting</div>
+                </div>
+                <div class="supported-sources">
+                    <span><i class="fas fa-check-circle"></i> YouTube</span>
+                    <span><i class="fas fa-check-circle"></i> Vimeo</span>
+                    <span><i class="fas fa-check-circle"></i> Direct Video Upload</span>
+                    <span><i class="fas fa-check-circle"></i> Cloud Storage Links</span>
+                </div>
+            </div>
+
+            <!-- SeekReap Score Preview - NEW -->
+            <div class="score-preview">
+                <div class="score-header">
+                    <h4><i class="fas fa-chart-line"></i> Content Safety Score</h4>
+                    <span class="score-badge">Estimated</span>
+                </div>
+                <div class="score-display">
+                    <span class="score-number">82</span>
+                    <div class="score-labels">
+                        <span class="score-label"><i class="fas fa-shield-alt"></i> Low Copyright Risk</span>
+                        <span class="score-label"><i class="fas fa-chart-line"></i> High Monetization Potential</span>
+                    </div>
+                </div>
+                <div class="score-bar">
+                    <div class="score-fill" style="width: 82%"></div>
+                </div>
+                <div class="score-footer">
+                    <span>Risk: Low</span>
+                    <span>Monetization: 82/100</span>
+                </div>
+            </div>
+
+            <!-- Features Preview -->
+            <div class="features-preview">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h5>Copyright Detection</h5>
+                        <p>AI-powered matching</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h5>Monetization Scan</h5>
+                        <p>Revenue tracking</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-signature"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h5>Legal Preparation</h5>
+                        <p>DMCA-ready evidence</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h5>Real-time Analysis</h5>
+                        <p>&lt; 3 second processing</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Footer - Updated with new destination -->
+        <div class="action-footer">
+            <button class="verify-btn" id="verify-btn">
+                <span class="verify-btn-text">Start Protection Process</span>
+                <span class="verify-btn-icon">
+                    <i class="fas fa-arrow-right"></i>
+                </span>
+            </button>
+            
+            <div class="security-notes">
+                <div class="security-note-item">
+                    <i class="fas fa-lock"></i>
+                    <span>256-bit encrypted</span>
+                </div>
+                <div class="security-note-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>SOC2 compliant</span>
+                </div>
+                <div class="security-note-item">
+                    <i class="fas fa-clock"></i>
+                    <span>30-day retention</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Processing Overlay - Updated with SeekReap AI steps -->
+    <div id="processing-overlay">
+        <div class="overlay-content">
+            <div class="spinner"></div>
+            <h2>SeekReap AI Analysis</h2>
+            <p>Processing your content through protection pipeline</p>
+            
+            <div class="progress-steps" id="progressSteps">
+                <div class="progress-step-item active" id="step1-progress">
+                    <div class="step-indicator"><i class="fas fa-circle"></i></div>
+                    <span>Step 1 — Metadata extraction</span>
+                </div>
+                <div class="progress-step-item" id="step2-progress">
+                    <div class="step-indicator"><i class="fas fa-circle"></i></div>
+                    <span>Step 2 — Fingerprint generation</span>
+                </div>
+                <div class="progress-step-item" id="step3-progress">
+                    <div class="step-indicator"><i class="fas fa-circle"></i></div>
+                    <span>Step 3 — Platform risk analysis</span>
+                </div>
+                <div class="progress-step-item" id="step4-progress">
+                    <div class="step-indicator"><i class="fas fa-circle"></i></div>
+                    <span>Step 4 — Verification certificate creation</span>
+                </div>
+                <div class="progress-step-item" id="step5-progress">
+                    <div class="step-indicator"><i class="fas fa-circle"></i></div>
+                    <span>Step 5 — Report generation</span>
+                </div>
+            </div>
+            
+            <div id="proceed-container"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="config.js"></script>
+    <script>
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (!user) { window.location.href = 'signup_signin.html'; return; }
+        if (window.API_CONFIG) window.API_CONFIG.DEV_CREATOR_ID = user.uid;
+        const avatar = document.getElementById('userAvatar');
+        const name = user.displayName || user.email || 'Creator';
+        if (avatar) avatar.innerText = name.slice(0,2).toUpperCase();
+    });
+    </script>
+    <script src="assets/js/verification_portal.js"></script>
+
+    </body>
+    </html>

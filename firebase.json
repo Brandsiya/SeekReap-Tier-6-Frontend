@@ -1,9 +1,16 @@
 {
   "hosting": {
-    "public": ".",
-    "ignore": ["firebase.json","**/.*","**/node_modules/**"],
-    "redirects": [
-      {"source": "/", "destination": "/signup_signin.html", "type": 302}
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/",
+        "destination": "/loader.html"
+      }
     ]
   }
 }

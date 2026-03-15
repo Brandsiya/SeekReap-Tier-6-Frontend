@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeekReap | Creator Dashboard</title>
+    
+    <!-- Fonts & Icons (external libraries) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- ========================================== -->
+    <!-- ============ EMBEDDED CSS STYLES ========= -->
+    <!-- ========================================== -->
+</head>
+<body>
+    <!-- ========================================== -->
+    <!-- ============ HEADER SECTION ============== -->
+    <!-- ========================================== -->
+    <div class="sticky-wrapper">
+        <header class="main-header">
+            <div class="header-left">
+                <!-- Desktop Hamburger - hidden on big screens (sidebar visible) -->
+                <div class="desktop-hamburger" id="desktop-menu-open">
+                    <span></span><span></span><span></span>
+                </div>
+                
+                <!-- Mobile Hamburger (only on mobile) -->
+                <div class="mobile-hamburger" id="mobile-menu-open">
+                    <span></span><span></span><span></span>
+                </div>
+                
+                <a href="/" class="logo">SeekReap</a>
+            </div>
+
+            <!-- Desktop Search -->
+            <div class="header-search">
+                <div class="search-container">
+                    <input type="text" placeholder="Search dashboard, content, or users...">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#6b7280" style="flex-shrink: 0;">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Header Right Group -->
+            <div class="header-right-group">
+                <div class="header-actions">
+                    <!-- TIER INDICATOR & UPGRADE BUTTON (Desktop only) -->
+                    <div class="tier-indicator">
+                        <i class="fas fa-crown"></i>
+                        <span>Free</span>
+                        <span class="tier-badge">TIER</span>
+                    </div>
+                    <a href="/upgrade" class="upgrade-btn">Upgrade</a>
+                    
+                    <!-- More Menu (Vertical Dots) -->
+                    <div class="more-menu-container">
+                        <button class="more-menu-btn icon-btn" id="more-menu-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                        </button>
+                        <div class="more-menu-dropdown" id="more-menu-dropdown">
+                            <a href="/terms">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 10px; vertical-align: middle;">
+                                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+                                </svg>
+                                Terms of Service
+                            </a>
+                            <a href="/privacy">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 10px; vertical-align: middle;">
+                                    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"/>
+                                </svg>
+                                Privacy Policy
+                            </a>
+                            <hr style="border: 0; border-top: 1px solid #f0f0f0; margin: 5px 0;">
+                            <a href="/support">Support</a>
+                            <a href="/contact">Contact Us</a>
+                            <a href="/docs">API Documentation</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Share Button -->
+                    <button class="icon-btn" id="share-trigger" title="Share">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                        </svg>
+                    </button>
+
+                    <!-- User Avatar -->
+                    <div class="user-avatar" id="user-avatar" title="Creator Profile">
+                        AC
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <!-- Mobile Search Strip -->
+    <div class="search-strip">
+        <div class="search-container">
+            <input type="text" placeholder="Search dashboard...">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#6b7280" style="flex-shrink: 0;">
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Mobile Tier Upgrade Strip -->
+    <div class="mobile-tier-strip">
+        <div class="mobile-tier-indicator">
+            <i class="fas fa-crown"></i>
+            <span>Free Tier</span>
+            <span class="mobile-tier-badge">TIER</span>
+        </div>
+        <a href="/upgrade" class="mobile-upgrade-btn">Upgrade</a>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ========== DASHBOARD MAIN AREA ========== -->
+    <!-- ========================================== -->
+    <div class="dashboard-container">
+        <!-- Side Menu -->
+        <nav class="side-menu" id="side-menu">
+            <button class="side-menu-close" id="menu-close">&times;</button>
+            
+            <div class="side-menu-header">
+                <div class="side-menu-user">
+                    <div class="side-menu-avatar">AC</div>
+                    <div class="side-menu-user-info">
+                        <h4>Alex Chen</h4>
+                        <p>@alexchen • Free Tier</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="side-menu-content">
+                <div class="side-menu-section">
+                    <div class="side-menu-section-title">Main</div>
+                    <a href="#" class="side-menu-item active">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="side-menu-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+                    <a href="#" class="side-menu-item">
+                        <i class="fas fa-video"></i>
+                        <span>My Content</span>
+                        <span class="side-menu-badge">23</span>
+                    </a>
+                </div>
+                
+                <div class="side-menu-section">
+                    <div class="side-menu-section-title">Protection</div>
+                    <a href="#" class="side-menu-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Scans</span>
+                        <span class="side-menu-badge">12</span>
+                    </a>
+                    <a href="#" class="side-menu-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Infringements</span>
+                        <span class="side-menu-badge">5</span>
+                    </a>
+                    <a href="#" class="side-menu-item">
+                        <i class="fas fa-gavel"></i>
+                        <span>Disputes</span>
+                        <span class="side-menu-badge">3</span>
+                    </a>
+                </div>
+                
+                <div class="side-menu-section">
+                    <div class="side-menu-section-title">Monetization</div>
+                    <a href="#" class="side-menu-item">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span>Revenue</span>
+                    </a>
+                    <a href="#" class="side-menu-item">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>Claims</span>
+                        <span class="side-menu-badge">2</span>
+                    </a>
+                </div>
+                
+                <div class="side-menu-section">
+                    <div class="side-menu-section-title">Settings</div>
+                    <a href="#" class="side-menu-item">
+                        <i class="fas fa-user"></i>
+                        <span>Creator Profile</span>
+                    </a>
+                    <a href="#" class="side-menu-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="#" class="side-menu-item">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Help</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="side-menu-footer">
+                <a href="/terms">Terms</a> • 
+                <a href="/privacy">Privacy</a> • 
+                <a href="/logout">Logout</a>
+                <div style="margin-top: 10px;">© 2026 SeekReap</div>
+            </div>
+        </nav>
+        
+        <!-- Overlay for mobile menu -->
+        <div class="overlay" id="overlay"></div>
+        
+        <!-- Main Content Area -->
+        <main class="dashboard-main">
+            <!-- Top Welcome Bar - Fixed layout -->
+            <div class="welcome-bar">
+                <div class="welcome-text">
+                    <h1 class="welcome-title">Welcome back, <span class="creator-name">Alex Chen</span></h1>
+                    <p class="welcome-subtitle">Your content is protected across 8 platforms • Last scan 2 minutes ago</p>
+                </div>
+                <div class="quick-actions">
+                    <button class="action-btn primary" id="newScanBtn">
+                        <i class="fas fa-plus-circle"></i>
+                        New Scan
+                    </button>
+                    <button class="action-btn secondary" id="generateReportBtn">
+                        <i class="fas fa-file-pdf"></i>
+                        Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Cards Row -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon blue">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Protected Content</span>
+                        <span class="kpi-value">1,284</span>
+                        <span class="kpi-trend positive">
+                            <i class="fas fa-arrow-up"></i> +12%
+                        </span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon green">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Active Infringements</span>
+                        <span class="kpi-value">47</span>
+                        <span class="kpi-trend negative">
+                            <i class="fas fa-arrow-down"></i> -8%
+                        </span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon purple">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Revenue Recovered</span>
+                        <span class="kpi-value">$12,847</span>
+                        <span class="kpi-trend positive">
+                            <i class="fas fa-arrow-up"></i> +23%
+                        </span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon orange">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Pending Claims</span>
+                        <span class="kpi-value">12</span>
+                        <span class="kpi-trend neutral">
+                            <i class="fas fa-minus"></i> 0
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3>Infringement Trends</h3>
+                        <div class="card-actions">
+                            <select class="chart-period" id="trendPeriod">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                            </select>
+                            <button class="more-btn"><i class="fas fa-ellipsis-h"></i></button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3>Platform Distribution</h3>
+                        <button class="more-btn"><i class="fas fa-ellipsis-h"></i></button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="platformChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity & Alerts -->
+            <div class="activity-grid">
+                <!-- Recent Detections -->
+                <div class="activity-card">
+                    <div class="card-header">
+                        <h3>Recent Detections</h3>
+                        <a href="#" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="detection-list">
+                        <div class="detection-item high-risk">
+                            <div class="detection-icon">
+                                <i class="fab fa-youtube"></i>
+                            </div>
+                            <div class="detection-content">
+                                <div class="detection-header">
+                                    <span class="detection-title">Summer Vlog 2026</span>
+                                    <span class="risk-badge high">High Risk</span>
+                                </div>
+                                <div class="detection-meta">
+                                    <span><i class="fas fa-user"></i> TechTuber_22</span>
+                                    <span><i class="fas fa-eye"></i> 234K views</span>
+                                    <span><i class="fas fa-clock"></i> 2h ago</span>
+                                </div>
+                            </div>
+                            <button class="action-icon" title="Take Action"><i class="fas fa-gavel"></i></button>
+                        </div>
+
+                        <div class="detection-item medium-risk">
+                            <div class="detection-icon">
+                                <i class="fab fa-tiktok"></i>
+                            </div>
+                            <div class="detection-content">
+                                <div class="detection-header">
+                                    <span class="detection-title">Behind the Scenes</span>
+                                    <span class="risk-badge medium">Medium Risk</span>
+                                </div>
+                                <div class="detection-meta">
+                                    <span><i class="fas fa-user"></i> ViralClips</span>
+                                    <span><i class="fas fa-heart"></i> 45.2K likes</span>
+                                    <span><i class="fas fa-clock"></i> 5h ago</span>
+                                </div>
+                            </div>
+                            <button class="action-icon" title="Take Action"><i class="fas fa-gavel"></i></button>
+                        </div>
+
+                        <div class="detection-item low-risk">
+                            <div class="detection-icon">
+                                <i class="fab fa-instagram"></i>
+                            </div>
+                            <div class="detection-content">
+                                <div class="detection-header">
+                                    <span class="detection-title">Product Review</span>
+                                    <span class="risk-badge low">Low Risk</span>
+                                </div>
+                                <div class="detection-meta">
+                                    <span><i class="fas fa-user"></i> ReviewDaily</span>
+                                    <span><i class="fas fa-heart"></i> 12.1K likes</span>
+                                    <span><i class="fas fa-clock"></i> 1d ago</span>
+                                </div>
+                            </div>
+                            <button class="action-icon" title="Take Action"><i class="fas fa-gavel"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Impact -->
+                <div class="activity-card">
+                    <div class="card-header">
+                        <h3>Revenue Impact</h3>
+                        <div class="pill-tabs">
+                            <button class="pill active" data-period="week">Week</button>
+                            <button class="pill" data-period="month">Month</button>
+                            <button class="pill" data-period="year">Year</button>
+                        </div>
+                    </div>
+                    <div class="revenue-summary">
+                        <div class="revenue-total">
+                            <span class="label">Estimated Lost Revenue</span>
+                            <span class="amount negative">-$3,847</span>
+                        </div>
+                        <div class="recovery-progress">
+                            <div class="progress-label">
+                                <span>Recovery Rate</span>
+                                <span>76%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 76%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="platform-breakdown">
+                        <div class="breakdown-item">
+                            <span class="platform-name"><i class="fab fa-youtube"></i> YouTube</span>
+                            <span class="platform-value">$2,340</span>
+                            <span class="platform-trend positive">+12%</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="platform-name"><i class="fab fa-tiktok"></i> TikTok</span>
+                            <span class="platform-value">$847</span>
+                            <span class="platform-trend positive">+8%</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="platform-name"><i class="fab fa-instagram"></i> Instagram</span>
+                            <span class="platform-value">$423</span>
+                            <span class="platform-trend negative">-3%</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="platform-name"><i class="fab fa-facebook"></i> Facebook</span>
+                            <span class="platform-value">$237</span>
+                            <span class="platform-trend positive">+5%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="actions-card">
+                    <h3>Quick Actions</h3>
+                    <div class="action-grid">
+                        <button class="quick-action">
+                            <i class="fas fa-search"></i>
+                            <span>New Scan</span>
+                        </button>
+                        <button class="quick-action">
+                            <i class="fas fa-file-contract"></i>
+                            <span>File Claim</span>
+                        </button>
+                        <button class="quick-action">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Analytics</span>
+                        </button>
+                        <button class="quick-action">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </button>
+                        <button class="quick-action">
+                            <i class="fas fa-headset"></i>
+                            <span>Support</span>
+                        </button>
+                        <button class="quick-action">
+                            <i class="fas fa-download"></i>
+                            <span>Export</span>
+                        </button>
+                    </div>
+
+                    <!-- Active Disputes -->
+                    <div class="active-disputes">
+                        <h4>Active Disputes <span class="badge">3</span></h4>
+                        <div class="dispute-item">
+                            <span class="dispute-platform"><i class="fab fa-youtube"></i></span>
+                            <span class="dispute-title">Content ID Claim #2384</span>
+                            <span class="dispute-status in-progress">In Progress</span>
+                        </div>
+                        <div class="dispute-item">
+                            <span class="dispute-platform"><i class="fab fa-tiktok"></i></span>
+                            <span class="dispute-title">Copyright Appeal</span>
+                            <span class="dispute-status pending">Pending</span>
+                        </div>
+                        <div class="dispute-item">
+                            <span class="dispute-platform"><i class="fab fa-instagram"></i></span>
+                            <span class="dispute-title">Monetization Review</span>
+                            <span class="dispute-status resolved">Resolved</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Library Table -->
+            <div class="content-library">
+                <div class="card-header">
+                    <h3>Content Library</h3>
+                    <div class="library-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search content...">
+                        </div>
+                        <button class="filter-btn">
+                            <i class="fas fa-filter"></i>
+                            Filter
+                        </button>
+                        <button class="export-btn">
+                            <i class="fas fa-download"></i>
+                            Export
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="content-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Platform</th>
+                                <th>Upload Date</th>
+                                <th>Status</th>
+                                <th>Detections</th>
+                                <th>Revenue Impact</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="title-cell">
+                                    <span class="content-thumbnail" style="background-image: url('https://via.placeholder.com/40x40')"></span>
+                                    Summer Vlog 2026
+                                </td>
+                                <td><i class="fab fa-youtube"></i> YouTube</td>
+                                <td>Mar 12, 2026</td>
+                                <td><span class="status-badge warning">Under Review</span></td>
+                                <td>3 detections</td>
+                                <td class="negative">-$234</td>
+                                <td>
+                                    <button class="table-action"><i class="fas fa-eye"></i></button>
+                                    <button class="table-action"><i class="fas fa-gavel"></i></button>
+                                    <button class="table-action"><i class="fas fa-chart-simple"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="title-cell">
+                                    <span class="content-thumbnail" style="background-image: url('https://via.placeholder.com/40x40')"></span>
+                                    Tutorial: How to Edit
+                                </td>
+                                <td><i class="fab fa-tiktok"></i> TikTok</td>
+                                <td>Mar 10, 2026</td>
+                                <td><span class="status-badge success">Protected</span></td>
+                                <td>1 detection</td>
+                                <td class="positive">+$89</td>
+                                <td>
+                                    <button class="table-action"><i class="fas fa-eye"></i></button>
+                                    <button class="table-action"><i class="fas fa-gavel"></i></button>
+                                    <button class="table-action"><i class="fas fa-chart-simple"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="title-cell">
+                                    <span class="content-thumbnail" style="background-image: url('https://via.placeholder.com/40x40')"></span>
+                                    Product Review 2026
+                                </td>
+                                <td><i class="fab fa-instagram"></i> Instagram</td>
+                                <td>Mar 8, 2026</td>
+                                <td><span class="status-badge danger">Infringement</span></td>
+                                <td>5 detections</td>
+                                <td class="negative">-$567</td>
+                                <td>
+                                    <button class="table-action"><i class="fas fa-eye"></i></button>
+                                    <button class="table-action"><i class="fas fa-gavel"></i></button>
+                                    <button class="table-action"><i class="fas fa-chart-simple"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <span>Showing 1-3 of 1284 items</span>
+                    <div class="pagination">
+                        <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn">4</button>
+                        <span>...</span>
+                        <button class="page-btn">12</button>
+                        <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ============ MODALS SECTION ============= -->
+    <!-- ========================================== -->
+    <div class="modal" id="newScanModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>New Content Scan</h2>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Content URL or File</label>
+                    <div class="url-input-group">
+                        <input type="text" placeholder="Paste YouTube, TikTok, Instagram URL...">
+                        <span class="or-divider">or</span>
+                        <div class="file-upload">
+                            <input type="file" id="fileUpload" accept="video/*">
+                            <label for="fileUpload" class="file-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                Upload File
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Scan Type</label>
+                    <div class="scan-options">
+                        <label class="radio-card">
+                            <input type="radio" name="scanType" checked>
+                            <div class="radio-content">
+                                <strong>Standard Scan</strong>
+                                <span>Basic detection across platforms</span>
+                            </div>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="scanType">
+                            <div class="radio-content">
+                                <strong>Deep Scan</strong>
+                                <span>Advanced AI + monetization analysis</span>
+                            </div>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="scanType">
+                            <div class="radio-content">
+                                <strong>Legal Prep</strong>
+                                <span>Includes evidence package</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Platforms to Scan</label>
+                    <div class="platform-checkboxes">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> <i class="fab fa-youtube"></i> YouTube
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> <i class="fab fa-tiktok"></i> TikTok
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked> <i class="fab fa-instagram"></i> Instagram
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox"> <i class="fab fa-facebook"></i> Facebook
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox"> <i class="fab fa-soundcloud"></i> SoundCloud
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary">Cancel</button>
+                <button class="btn-primary">Start Scan</button>
+            </div>
+        </div>
+    </div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<!-- SeekReap config (Firebase config + API_CONFIG) -->
+<script src="assets/js/config.js"></script>
+<script src="assets/js/dashboard.js"></script>
+
+</body>
+</html>
