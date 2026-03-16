@@ -1,6 +1,6 @@
 // ── Config ────────────────────────────────────────────────────────────
 const TIER4_URL = (window.API_CONFIG && window.API_CONFIG.TIER4_URL)
-    || 'https://seekreap-tier4-tif2gmgi4q-uc.a.run.app';
+    || 'https://seekreap-tier-4-orchestrator-nrn4.onrender.com';
 
 // ── Helpers ───────────────────────────────────────────────────────────
 function setText(id, value) {
