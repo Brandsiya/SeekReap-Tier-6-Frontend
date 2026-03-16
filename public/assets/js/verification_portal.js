@@ -237,7 +237,7 @@
     proceedBtn.innerHTML = '<i class="fas fa-chart-line"></i> View Protection Report';
     
     proceedBtn.onclick = () => {
-    window.location.href = 'verification_report.html';
+    window.location.href = 'verification_report.html?id=' + result.submission_id;
     };
     
     proceedContainer.appendChild(proceedBtn);
@@ -291,10 +291,12 @@
 
     const contentSource = payload.youtubeId || payload.url || payload.name || Date.now().toString();
     const contentHash = hashContent(contentSource + payload.timestamp);
-    const creatorId = (window.API_CONFIG && window.API_CONFIG.DEV_CREATOR_ID)
+    const firebaseUser = (typeof firebase !== 'undefined' && firebase.auth().currentUser);
+    const creatorId = (firebaseUser && firebaseUser.uid)
+    || (window.API_CONFIG && window.API_CONFIG.DEV_CREATOR_ID)
     || "a8e4fbba-2627-4fbf-98e0-468a47bab8fc";
     const tier4Url = (window.API_CONFIG && window.API_CONFIG.TIER4_URL)
-    || "https://seekreap-tier4-tif2gmgi4q-uc.a.run.app";
+    || "https://seekreap-tier4-308655322607.us-central1.run.app";
 
     const tier4Payload = {
     creator_id: creatorId,
@@ -432,3 +434,96 @@
     
     })();
     
+
+//==============================================
+//        REPORT BUTTON FUNCTIONALITY
+//==============================================
+
+// Store submission ID when available
+let currentSubmissionId = null;
+
+// Function to show the report button
+function showReportButton(submissionId) {
+    currentSubmissionId = submissionId;
+    const reportBtn = document.getElementById('view-report-btn');
+    if (reportBtn) {
+        reportBtn.style.display = 'block';
+        reportBtn.onclick = function() {
+            window.location.href = `verification_report.html?id=${submissionId}`;
+        };
+    }
+}
+
+// Modify the existing startProcessing function to capture submission ID
+// Look for where the verify button click handler is
+const originalVerifyHandler = verifyBtn ? verifyBtn.onclick : null;
+
+if (verifyBtn) {
+    verifyBtn.addEventListener('click', function(e) {
+        // Get form data for API submission
+        const formData = {
+            creator_id: window.API_CONFIG?.DEV_CREATOR_ID || 'a8e4fbba-2627-4fbf-98e0-468a47bab8fc',
+            content_hash: generateContentHash(),
+            content_type: 'video',
+            content_url: urlInput?.value || null
+        };
+        
+        // Submit to Tier-4 API
+        fetch('https://seekreap-tier4-308655322607.us-central1.run.app/api/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.submission_id) {
+                currentSubmissionId = data.submission_id;
+                // Store in session for later use
+                sessionStorage.setItem('lastSubmissionId', data.submission_id);
+            }
+        })
+        .catch(error => console.error('Submission error:', error));
+    });
+}
+
+// Monitor processing completion - this assumes your existing code marks steps as complete
+// We'll add an observer to watch for when step 5 becomes active
+const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.target.classList && mutation.target.classList.contains('active')) {
+            const step5 = document.getElementById('step5-progress');
+            if (step5 && step5.classList.contains('active') && currentSubmissionId) {
+                // Processing complete - show the report button after a short delay
+                setTimeout(() => {
+                    showReportButton(currentSubmissionId);
+                }, 1000);
+            }
+        }
+    });
+});
+
+// Start observing step5-progress
+const step5 = document.getElementById('step5-progress');
+if (step5) {
+    observer.observe(step5, { attributes: true, attributeFilter: ['class'] });
+}
+
+// Helper function to generate content hash (simplified)
+function generateContentHash() {
+    const url = urlInput?.value || '';
+    const file = fileInput?.files[0]?.name || '';
+    return url || file || `content_${Date.now()}`;
+}
+
+// Also check session storage for existing submission ID on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const savedId = sessionStorage.getItem('lastSubmissionId');
+    if (savedId) {
+        currentSubmissionId = savedId;
+        // Check if processing might be complete
+        const step5 = document.getElementById('step5-progress');
+        if (step5 && step5.classList.contains('active')) {
+            showReportButton(savedId);
+        }
+    }
+});
