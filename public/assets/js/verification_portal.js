@@ -444,6 +444,20 @@ let currentSubmissionId = null;
 
 // Function to show the report button
 function showReportButton(submissionId) {
+    console.log("showReportButton called with ID:", submissionId);
+    currentSubmissionId = submissionId;
+    const reportBtn = document.getElementById("view-report-btn");
+    console.log("Looking for button, found:", reportBtn ? "Yes" : "No");
+    if (reportBtn) {
+        reportBtn.style.display = "block";
+        reportBtn.onclick = function() {
+            console.log("Button clicked, redirecting to:", `verification_report.html?id=${submissionId}`);
+            window.location.href = `verification_report.html?id=${submissionId}`;
+        };
+    } else {
+        console.error("Report button not found - check HTML ID");
+    }
+}
     currentSubmissionId = submissionId;
     const reportBtn = document.getElementById('view-report-btn');
     if (reportBtn) {
@@ -527,3 +541,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// Debug: Check if button exists when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const reportBtn = document.getElementById('view-report-btn');
+    console.log('Report button found:', reportBtn ? 'Yes' : 'No');
+    if (reportBtn) {
+        console.log('Button HTML:', reportBtn.outerHTML);
+    }
+});
+
+// Test function for manual debugging
+window.testReportButton = function(submissionId) {
+    console.log('Testing with submission ID:', submissionId);
+    const reportBtn = document.getElementById('view-report-btn');
+    if (reportBtn) {
+        reportBtn.style.display = 'block';
+        reportBtn.onclick = function() {
+            window.location.href = `verification_report.html?id=${submissionId}`;
+        };
+        console.log('Button should now be visible and clickable');
+    } else {
+        console.error('Report button not found in DOM');
+    }
+};
