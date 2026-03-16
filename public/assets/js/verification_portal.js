@@ -443,7 +443,7 @@
 let currentSubmissionId = null;
 
 // Function to show the report button
-function showReportButton(submissionId) {
+// function showReportButton(submissionId) {
     console.log("showReportButton called with ID:", submissionId);
     currentSubmissionId = submissionId;
     const reportBtn = document.getElementById("view-report-btn");
@@ -565,3 +565,26 @@ window.testReportButton = function(submissionId) {
         console.error('Report button not found in DOM');
     }
 };
+
+// Simplified report link handler
+function showReportLink(submissionId) {
+    const reportLink = document.getElementById('view-report-link');
+    if (reportLink) {
+        reportLink.href = `verification_report.html?id=${submissionId}`;
+        reportLink.style.display = 'inline-block';
+    }
+}
+
+// Replace the observer to use showReportLink instead
+const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.target.classList && mutation.target.classList.contains('active')) {
+            const step5 = document.getElementById('step5-progress');
+            if (step5 && step5.classList.contains('active') && currentSubmissionId) {
+                setTimeout(() => {
+                    showReportLink(currentSubmissionId);
+                }, 1000);
+            }
+        }
+    });
+});
