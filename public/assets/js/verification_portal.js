@@ -588,3 +588,56 @@ const observer = new MutationObserver(function(mutations) {
         }
     });
 });
+
+// Simple function to show report button with the submission ID
+function showReportButton(submissionId) {
+    console.log('Showing report button for:', submissionId);
+    const btn = document.getElementById('view-report-btn');
+    if (btn) {
+        // Store the submission ID as a data attribute
+        btn.setAttribute('data-submission-id', submissionId);
+        // Make it visible
+        btn.style.display = 'block';
+        // Remove any existing click handlers and add new one
+        btn.onclick = function() {
+            const id = this.getAttribute('data-submission-id');
+            if (id) {
+                window.location.href = 'verification_report.html?id=' + id;
+            }
+            return false;
+        };
+        console.log('Report button is now visible');
+    } else {
+        console.error('Report button not found in DOM');
+    }
+}
+
+// Override the existing observer to use our simple function
+if (typeof observer !== 'undefined') {
+    observer.disconnect();
+}
+
+// Create a new observer
+const newObserver = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.target.classList && mutation.target.classList.contains('active')) {
+            const step5 = document.getElementById('step5-progress');
+            if (step5 && step5.classList.contains('active') && window.currentSubmissionId) {
+                setTimeout(function() {
+                    showReportButton(window.currentSubmissionId);
+                }, 1000);
+            }
+        }
+    });
+});
+
+// Start observing
+const step5Element = document.getElementById('step5-progress');
+if (step5Element) {
+    newObserver.observe(step5Element, { attributes: true, attributeFilter: ['class'] });
+}
+
+// Also expose a manual test function
+window.forceShowReport = function(id) {
+    showReportButton(id || 'test-submission-id');
+};
