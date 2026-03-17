@@ -37,10 +37,10 @@ function riskToConfidence(riskScore) {
 
 // ── Populate UI from API response ─────────────────────────────────────
 function populateReport(data) {
-    const riskScore  = data.risk_score  !== null ? data.risk_score  : null;
+    const riskScore  = data.overall_risk_score !== null && data.overall_risk_score !== undefined ? parseFloat(data.overall_risk_score) : null;
     const riskLevel  = (data.risk_level || 'Low').toLowerCase();   // 'low','medium','high'
     const title      = data.title    || 'Untitled Video';
-    const channel    = data.channel  || '—';
+    const channel    = data.yt_channel || data.channel || '—';
     const videoId    = extractVideoId(data.content_url);
     const thumbHash  = data.visual_phash ? data.visual_phash.slice(0, 16) + '…' : '—';
     const completedAt = formatDate(data.completed_at);
