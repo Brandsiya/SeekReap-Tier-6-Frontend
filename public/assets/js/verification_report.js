@@ -48,7 +48,7 @@ function populateReport(data) {
     const confidence = riskToConfidence(riskScore);
 
     // ── Score ─────────────────────────────────────────────────────────
-    const scoreDisplay = riskScore !== null ? Math.round(100 - riskScore) : '—';
+    const scoreDisplay = riskScore !== null ? Math.round(100 - (riskScore * 100)) : '—';
     setText('scoreNumber', scoreDisplay);
 
     // ── Publishing banner ─────────────────────────────────────────────
