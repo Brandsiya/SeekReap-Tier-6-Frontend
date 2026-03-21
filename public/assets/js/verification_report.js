@@ -335,7 +335,10 @@ function populateReportExtended(data) {
         // Build match cards
         const cards = matches.map(m => {
             const pct = Math.round(m.similarity_score * 100);
-            const badgeColor = pct >= 95 ? 'var(--danger)' : pct >= 85 ? 'var(--warning)' : 'var(--gold)';
+            // Use backend-computed severity — never re-derive from score client-side
+            const sev = m.severity || 'medium';
+            const badgeColor = sev === 'high' ? 'var(--danger)' : sev === 'medium' ? 'var(--warning)' : 'var(--gold)';
+            const sevLabel = sev === 'high' ? 'High Confidence' : sev === 'medium' ? 'Probable Match' : 'Weak Similarity';
             const title = m.matched_title || 'Unknown title';
             const url   = m.matched_url   || '#';
             const detectedDate = m.detected_at ? new Date(m.detected_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '—';
@@ -351,7 +354,7 @@ function populateReportExtended(data) {
                     </div>
                     <div style="text-align:right;">
                         <div style="font-size:1.4rem;font-weight:700;color:${badgeColor};">${pct}%</div>
-                        <div style="font-size:0.75rem;color:#64748b;">similarity</div>
+                        <div style="font-size:0.75rem;color:${badgeColor};font-weight:600;">${sevLabel}</div>
                     </div>
                 </div>
                 <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
