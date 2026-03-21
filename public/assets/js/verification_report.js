@@ -320,7 +320,72 @@ function populateReportExtended(data) {
     }
 
     const simCount = document.getElementById('similarityCount');
-    if (simCount) simCount.textContent = riskLevel === 'low' ? '0' : '—';
+    const matches = Array.isArray(data.matches) ? data.matches : [];
+    if (simCount) simCount.textContent = matches.length;
+
+    // --- P3: Render match cards ---
+    const matchesContainer = document.getElementById('matchesContainer');
+    const noMatchMsg = document.getElementById('noMatchMsg');
+
+    if (matches.length > 0) {
+        // Update fingerprint status line
+        const fpLine2 = document.getElementById('fingerprintStatusLine');
+        if (fpLine2) fpLine2.innerHTML = '<strong>Fingerprint Status:</strong> <i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i> Match Found';
+
+        // Build match cards
+        const cards = matches.map(m => {
+            const pct = Math.round(m.similarity_score * 100);
+            const badgeColor = pct >= 95 ? 'var(--danger)' : pct >= 85 ? 'var(--warning)' : 'var(--gold)';
+            const title = m.matched_title || 'Unknown title';
+            const url   = m.matched_url   || '#';
+            const detectedDate = m.detected_at ? new Date(m.detected_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '—';
+            return `<div class="similarity-match" style="display:block; margin-bottom:12px; padding:14px; background:var(--card-bg); border:1px solid rgba(239,68,68,0.3); border-radius:10px;">
+                <h4 style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                    <i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i>
+                    Duplicate Content Detected
+                </h4>
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                    <div>
+                        <div style="font-weight:600;margin-bottom:4px;">${title}</div>
+                        <div style="font-size:0.85rem;color:#64748b;">Detected: ${detectedDate}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:1.4rem;font-weight:700;color:${badgeColor};">${pct}%</div>
+                        <div style="font-size:0.75rem;color:#64748b;">similarity</div>
+                    </div>
+                </div>
+                <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <span style="font-size:0.82rem;color:#64748b;"><i class="fas fa-fingerprint"></i> ${m.match_type} · ${m.fingerprint_version}</span>
+                    <a href="${url}" target="_blank" rel="noopener"
+                       style="margin-left:auto;padding:5px 12px;border:1px solid var(--gold);border-radius:6px;color:var(--gold);font-size:0.82rem;text-decoration:none;">
+                        <i class="fab fa-youtube"></i> View Original
+                    </a>
+                </div>
+            </div>`;
+        }).join('');
+
+        // Insert after the existing hidden .similarity-match div
+        const existing = document.querySelector('.similarity-match');
+        if (existing && existing.parentNode) {
+            existing.style.display = 'none'; // hide the static placeholder
+            const wrapper = document.getElementById('matchCardsWrapper');
+            if (wrapper) {
+                wrapper.innerHTML = cards;
+            } else {
+                const div = document.createElement('div');
+                div.id = 'matchCardsWrapper';
+                div.innerHTML = cards;
+                existing.parentNode.insertBefore(div, existing.nextSibling);
+            }
+        }
+
+        if (noMatchMsg) noMatchMsg.style.display = 'none';
+
+    } else {
+        if (noMatchMsg) noMatchMsg.style.display = '';
+        const wrapper = document.getElementById('matchCardsWrapper');
+        if (wrapper) wrapper.innerHTML = '';
+    }
 }
 
 // Patch loadReport to also call extended population
