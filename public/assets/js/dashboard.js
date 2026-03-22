@@ -632,9 +632,9 @@
 (function() {
     'use strict';
 
-    const BACKEND_URL = (typeof API_CONFIG !== 'undefined' && API_CONFIG.BASE_URL)
-        ? API_CONFIG.BASE_URL
-        : 'https://seekreap-backend-tif2gmgi4q-uc.a.run.app';
+    const BACKEND_URL = (typeof API_CONFIG !== 'undefined' && API_CONFIG.TIER4_URL)
+        ? API_CONFIG.TIER4_URL
+        : 'https://seekreap-tier-4-orchestrator-1.onrender.com';
 
     function riskClass(level) {
         if (!level) return 'low';
@@ -748,15 +748,22 @@
     async function loadDashboardData(uid) {
         const headers = { 'X-Creator-ID': uid };
         try {
-            const [pRes, sRes] = await Promise.all([
-                fetch(`${BACKEND_URL}/api/creator/profile`, { headers }),
-                fetch(`${BACKEND_URL}/api/submissions`,     { headers }),
-            ]);
-            if (pRes.ok)  updateCreatorUI(await pRes.json());
+            const sRes = await fetch(`${BACKEND_URL}/api/submissions`, { headers });
             if (sRes.ok) {
                 const data = await sRes.json();
-                renderDetectionList(data.submissions || []);
-                updateKPIs(data.submissions || []);
+                const subs = data.submissions || [];
+                renderDetectionList(subs);
+                updateKPIs(subs);
+                // Update display name from Firebase user
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    const displayName = user.displayName || user.email.split('@')[0] || 'Creator';
+                    document.querySelectorAll('.creator-name').forEach(el => el.textContent = displayName);
+                    const initials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2) || 'CR';
+                    document.querySelectorAll('#user-avatar, .side-menu-avatar').forEach(el => el.textContent = initials);
+                }
+            } else {
+                console.warn('Submissions fetch failed:', sRes.status);
             }
         } catch (err) {
             console.warn('Dashboard live data failed:', err);

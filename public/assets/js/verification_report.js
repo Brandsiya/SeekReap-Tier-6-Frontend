@@ -342,10 +342,18 @@ function populateReportExtended(data) {
             const title = m.matched_title || 'Unknown title';
             const url   = m.matched_url   || '#';
             const detectedDate = m.detected_at ? new Date(m.detected_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '—';
+            // Modality-aware icon and label
+            const isVisual = m.match_type === 'visual';
+            const modalityIcon  = isVisual ? 'fas fa-image' : 'fas fa-music';
+            const modalityLabel = isVisual ? 'Visual Match' : 'Audio Match';
+            const modalityColor = isVisual ? '#8b5cf6' : '#3b82f6';
+            const cardTitle = isVisual
+                ? 'Thumbnail / Visual Duplicate Detected'
+                : 'Audio Duplicate Detected';
             return `<div class="similarity-match" style="display:block; margin-bottom:12px; padding:14px; background:var(--card-bg); border:1px solid rgba(239,68,68,0.3); border-radius:10px;">
                 <h4 style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-                    <i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i>
-                    Duplicate Content Detected
+                    <i class="${modalityIcon}" style="color:${modalityColor};"></i>
+                    ${cardTitle}
                 </h4>
                 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
                     <div>
@@ -358,7 +366,10 @@ function populateReportExtended(data) {
                     </div>
                 </div>
                 <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                    <span style="font-size:0.82rem;color:#64748b;"><i class="fas fa-fingerprint"></i> ${m.match_type} · ${m.fingerprint_version}</span>
+                    <span style="font-size:0.82rem;padding:2px 8px;border-radius:4px;background:${modalityColor}22;color:${modalityColor};font-weight:600;">
+                        <i class="${modalityIcon}"></i> ${modalityLabel}
+                    </span>
+                    <span style="font-size:0.82rem;color:#64748b;">${m.fingerprint_version}</span>
                     <a href="${url}" target="_blank" rel="noopener"
                        style="margin-left:auto;padding:5px 12px;border:1px solid var(--gold);border-radius:6px;color:var(--gold);font-size:0.82rem;text-decoration:none;">
                         <i class="fab fa-youtube"></i> View Original
