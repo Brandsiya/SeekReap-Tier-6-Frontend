@@ -1,44 +1,53 @@
-(function() {
-    'use strict';
-
-    // Update loading status messages
-    const status = document.getElementById('status');
-    const messages = [
-        'Initializing AI Analysis...',
-        'Loading secure environment...',
-        'Checking authentication...',
-        'Almost ready...'
-    ];
-    let i = 0;
-    const msgInterval = setInterval(() => {
-        i++;
-        if (i < messages.length && status) {
-            status.textContent = messages[i];
-        }
-    }, 600);
-
-    // Wait for Firebase then check auth state
-    let attempts = 0;
-    const iv = setInterval(() => {
-        attempts++;
-        if (typeof firebase !== 'undefined' && firebase.auth) {
-            clearInterval(iv);
-            clearInterval(msgInterval);
-
-            firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
-                    // Signed in — go to dashboard
-                    window.location.href = 'dashboard.html';
-                } else {
-                    // Not signed in — go to home
-                    window.location.href = 'home.html';
+// Dynamic status updates - matching home page sophistication
+        const statusMessages = [
+            { text: "Initializing Protection Engine...", progress: 0 },
+            { text: "Loading Fingerprint Database...", progress: 15 },
+            { text: "Establishing Secure Connection...", progress: 30 },
+            { text: "Loading AI Detection Models...", progress: 50 },
+            { text: "Scanning For Content Matches...", progress: 70 },
+            { text: "Preparing Infrastructre...", progress: 85 },
+            { text: "Almost Ready...", progress: 95 },
+            { text: "Redirecting To Home...", progress: 100 }
+        ];
+        
+        let currentIndex = 0;
+        const statusElement = document.getElementById('status');
+        const progressBar = document.querySelector('.progress');
+        
+        function updateStatus() {
+            if (currentIndex < statusMessages.length) {
+                const msg = statusMessages[currentIndex];
+                statusElement.textContent = msg.text;
+                
+                // Update progress bar width with smooth transition
+                if (progressBar) {
+                    progressBar.style.width = msg.progress + '%';
                 }
-            });
-        } else if (attempts > 50) {
-            // Firebase failed to load — fall back to home
-            clearInterval(iv);
-            clearInterval(msgInterval);
-            window.location.href = 'home.html';
+                
+                currentIndex++;
+                
+                // Vary timing for more natural feel
+                let delay = 800;
+                if (msg.progress >= 85) delay = 600;
+                if (msg.progress >= 95) delay = 400;
+                if (msg.progress === 100) delay = 200;
+                
+                setTimeout(updateStatus, delay);
+            } else {
+                // Redirect to dashboard after loader completes
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 300);
+            }
         }
-    }, 100);
-})();
+        
+        // Start the loader sequence
+        setTimeout(updateStatus, 500);
+        
+        // Optional: Add a fallback in case the loader gets stuck
+        setTimeout(() => {
+            if (currentIndex < statusMessages.length) {
+                console.warn('Loader taking too long, forcing redirect');
+                window.location.href = 'home.html';
+            }
+        }, 10000);
