@@ -1,23 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="SeekReap protects creators with pre-upload risk analysis, ownership verification, and automated content monitoring across 50+ platforms.">
-    
-    <meta property="og:title" content="SeekReap - Creator Protection & Monetization Intelligence">
-    <meta property="og:description" content="Verify, monitor, and protect your content across the internet. Pre-upload analysis, ownership certificates, automated enforcement.">
-    <meta property="og:image" content="/assets/seekreap-preview.png">
+    <meta property="og:title" content="SeekReap - Creator Protection &amp; Monetization Intelligence">
+    <meta property="og:description" content="Verify, monitor, and protect your content across the internet.">
     <meta property="og:url" content="https://seekreap.io">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@SeekReap">
-    
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    
     <title>SeekReap - AI Content Protection for Creators</title>
-    
     <style>
         :root {
             --primary: #1a1a1a;
@@ -29,517 +21,796 @@
             --text-secondary: #4a4a4a;
             --text-muted: #666;
             --white: #ffffff;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
             --shadow-md: 0 4px 20px rgba(0,0,0,0.12);
             --shadow-lg: 0 20px 40px rgba(0,0,0,0.1);
             --border-radius: 12px;
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
         }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',Roboto,sans-serif; line-height:1.65; color:var(--text-primary); background:var(--bg-primary); }
+        .container { max-width:1200px; margin:0 auto; padding:0 24px; }
+        h1 { font-size:clamp(2.4rem,5vw,3.75rem); line-height:1.08; font-weight:800; }
+        h2 { font-size:clamp(1.9rem,4vw,2.75rem); line-height:1.2; font-weight:700; }
+        h3 { font-size:1.35rem; line-height:1.3; font-weight:700; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* Navbar */
+        .navbar { background:var(--white); box-shadow:var(--shadow-sm); position:sticky; top:0; z-index:100; }
+        .nav-container { display:flex; justify-content:space-between; align-items:center; padding:1rem 24px; max-width:1200px; margin:0 auto; }
+        .logo { font-size:1.75rem; font-weight:800; color:var(--text-primary); text-decoration:none; }
+        .logo span { color:var(--accent); }
+        .nav-links { display:flex; gap:1.75rem; align-items:center; list-style:none; }
+        .nav-links > li { position:relative; }
+        .nav-links > li > a { text-decoration:none; color:var(--text-secondary); font-weight:500; transition:var(--transition); padding:0.5rem 0; display:inline-block; cursor:pointer; font-size:0.95rem; }
+        .nav-links > li > a:hover { color:var(--accent); }
+        .dropdown { position:relative; }
+        .dropdown-menu { position:absolute; top:100%; left:0; background:var(--white); min-width:260px; padding:0.75rem 0; border-radius:var(--border-radius); box-shadow:var(--shadow-md); opacity:0; visibility:hidden; transform:translateY(-10px); transition:var(--transition); z-index:200; }
+        .dropdown:hover .dropdown-menu { opacity:1; visibility:visible; transform:translateY(0); }
+        .dropdown-menu a { display:block; padding:0.6rem 1.5rem; text-decoration:none; color:var(--text-secondary); font-size:0.88rem; transition:var(--transition); }
+        .dropdown-menu a:hover { background:var(--bg-primary); color:var(--accent); }
+        .dropdown > a::after { content:' \25BC'; font-size:0.65rem; opacity:0.6; }
+        .menu-toggle { display:none; background:none; border:none; font-size:1.8rem; cursor:pointer; color:var(--text-primary); padding:0.5rem; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            line-height: 1.65;
-            color: var(--text-primary);
-            background: var(--bg-primary);
-        }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-
-        h1 { font-size: clamp(2.5rem, 5vw, 3.5rem); line-height: 1.1; font-weight: 800; }
-        h2 { font-size: clamp(2rem, 4vw, 2.75rem); line-height: 1.2; font-weight: 700; }
-        h3 { font-size: 1.5rem; line-height: 1.3; font-weight: 700; }
-
-        /* Navigation */
-        .navbar {
-            background: var(--white);
-            box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 24px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .logo { font-size: 1.75rem; font-weight: 800; color: var(--text-primary); text-decoration: none; }
-        .logo span { color: var(--accent); }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-            list-style: none;
-        }
-
-        .nav-links > li { position: relative; }
-        .nav-links > li > a {
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-weight: 500;
-            transition: var(--transition);
-            padding: 0.5rem 0;
-            display: inline-block;
-            cursor: pointer;
-        }
-        .nav-links > li > a:hover { color: var(--accent); }
-
-        /* Dropdown Menu */
-        .dropdown { position: relative; }
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: var(--white);
-            min-width: 260px;
-            padding: 0.75rem 0;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: var(--transition);
-            z-index: 200;
-        }
-        .dropdown:hover .dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        .dropdown-menu a {
-            display: block;
-            padding: 0.6rem 1.5rem;
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            transition: var(--transition);
-        }
-        .dropdown-menu a:hover {
-            background: var(--bg-primary);
-            color: var(--accent);
-        }
-        .dropdown > a::after { content: ' ▼'; font-size: 0.7rem; }
-
-        /* Mobile Menu Toggle */
-        .menu-toggle { display: none; background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-primary); padding: 0.5rem; }
-
-        /* Mobile Sidebar */
-        .mobile-sidebar {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 85%;
-            max-width: 320px;
-            height: 100vh;
-            background: var(--white);
-            box-shadow: var(--shadow-lg);
-            z-index: 1000;
-            transition: right 0.3s ease;
-            overflow-y: auto;
-            padding: 2rem 1.5rem;
-        }
-        .mobile-sidebar.active { right: 0; }
-        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--bg-secondary); }
-        .sidebar-logo { font-size: 1.5rem; font-weight: 800; text-decoration: none; color: var(--text-primary); }
-        .sidebar-logo span { color: var(--accent); }
-        .close-sidebar { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-muted); }
-        .sidebar-nav { list-style: none; }
-        .sidebar-nav li { margin-bottom: 0.5rem; }
-        .sidebar-nav a { display: block; padding: 0.75rem 0; text-decoration: none; color: var(--text-secondary); font-weight: 500; border-bottom: 1px solid var(--bg-secondary); }
-        .sidebar-nav a:hover { color: var(--accent); }
-        .sidebar-dropdown { margin-bottom: 0.5rem; }
-        .sidebar-dropdown-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            cursor: pointer;
-            font-weight: 500;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--bg-secondary);
-        }
-        .sidebar-dropdown-header:hover { color: var(--accent); }
-        .sidebar-dropdown-content {
-            padding-left: 1rem;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-        .sidebar-dropdown-content.active { max-height: 500px; }
-        .sidebar-dropdown-content a { padding: 0.5rem 0; font-size: 0.9rem; border-bottom: none; }
-        .sidebar-buttons { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--bg-secondary); display: flex; flex-direction: column; gap: 1rem; }
-        .sidebar-buttons .btn { text-align: center; justify-content: center; }
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-            z-index: 999;
-        }
-        .overlay.active { opacity: 1; visibility: visible; }
+        /* Mobile sidebar */
+        .mobile-sidebar { position:fixed; top:0; right:-100%; width:85%; max-width:320px; height:100vh; background:var(--white); box-shadow:var(--shadow-lg); z-index:1000; transition:right 0.3s ease; overflow-y:auto; padding:2rem 1.5rem; }
+        .mobile-sidebar.active { right:0; }
+        .sidebar-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; padding-bottom:1rem; border-bottom:1px solid var(--bg-secondary); }
+        .sidebar-logo { font-size:1.5rem; font-weight:800; text-decoration:none; color:var(--text-primary); }
+        .sidebar-logo span { color:var(--accent); }
+        .close-sidebar { background:none; border:none; font-size:1.8rem; cursor:pointer; color:var(--text-muted); }
+        .sidebar-nav { list-style:none; }
+        .sidebar-nav li { margin-bottom:0.5rem; }
+        .sidebar-nav a { display:block; padding:0.75rem 0; text-decoration:none; color:var(--text-secondary); font-weight:500; border-bottom:1px solid var(--bg-secondary); }
+        .sidebar-nav a:hover { color:var(--accent); }
+        .sidebar-dropdown-header { display:flex; justify-content:space-between; align-items:center; padding:0.75rem 0; cursor:pointer; font-weight:500; color:var(--text-secondary); border-bottom:1px solid var(--bg-secondary); }
+        .sidebar-dropdown-header:hover { color:var(--accent); }
+        .sidebar-dropdown-content { padding-left:1rem; max-height:0; overflow:hidden; transition:max-height 0.3s ease; }
+        .sidebar-dropdown-content.active { max-height:500px; }
+        .sidebar-dropdown-content a { padding:0.5rem 0; font-size:0.9rem; border-bottom:none; }
+        .sidebar-buttons { margin-top:2rem; padding-top:1rem; border-top:1px solid var(--bg-secondary); display:flex; flex-direction:column; gap:1rem; }
+        .overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); opacity:0; visibility:hidden; transition:var(--transition); z-index:999; }
+        .overlay.active { opacity:1; visibility:visible; }
 
         /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: var(--transition);
-            cursor: pointer;
-            border: none;
-            white-space: nowrap;
-        }
-        .btn-primary { background: var(--primary); color: var(--white); }
-        .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
-        .btn-secondary { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
-        .btn-secondary:hover { background: var(--primary); color: var(--white); transform: translateY(-1px); }
-        .btn-accent { background: var(--accent); color: var(--primary); }
-        .btn-accent:hover { background: var(--accent-dark); }
+        .btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.8rem 1.6rem; border-radius:8px; text-decoration:none; font-weight:600; font-size:1rem; transition:var(--transition); cursor:pointer; border:none; white-space:nowrap; }
+        .btn-primary { background:var(--primary); color:var(--white); }
+        .btn-primary:hover { background:#333; transform:translateY(-1px); }
+        .btn-secondary { background:transparent; color:var(--primary); border:2px solid var(--primary); }
+        .btn-secondary:hover { background:var(--primary); color:var(--white); transform:translateY(-1px); }
+        .btn-accent { background:var(--accent); color:var(--primary); font-weight:700; }
+        .btn-accent:hover { background:var(--accent-dark); transform:translateY(-1px); box-shadow:0 8px 24px rgba(196,167,125,0.35); }
+        .btn-outline-light { background:transparent; color:var(--white); border:2px solid rgba(255,255,255,0.45); }
+        .btn-outline-light:hover { border-color:var(--accent); color:var(--accent); background:rgba(196,167,125,0.08); }
 
         /* Hero */
-        .hero { padding: 8rem 0 6rem; background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%); }
-        .hero-container { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-        .hero h1 { margin-bottom: 1.5rem; }
-        .hero h1 span { color: var(--accent); }
-        .hero p { font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 28rem; }
-        .hero-buttons { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
-        .demo-input {
-            background: var(--white);
-            border-radius: 50px;
-            padding: 0.25rem;
-            display: flex;
-            box-shadow: var(--shadow-md);
-            max-width: 28rem;
-            margin-top: 1.5rem;
-        }
-        .demo-input input { flex: 1; border: none; padding: 1rem 1.5rem; font-size: 1rem; outline: none; border-radius: 50px; }
-        .demo-input button { background: var(--primary); color: var(--white); border: none; padding: 1rem 2rem; border-radius: 50px; font-weight: 600; cursor: pointer; }
-        .demo-input button:hover { background: var(--accent); }
-        .hero-image { background: linear-gradient(135deg, #e8e0d5, #f0e9e0); border-radius: var(--border-radius); padding: 3rem; text-align: center; box-shadow: var(--shadow-lg); }
-        .hero-image svg { width: 100%; max-width: 24rem; height: auto; }
+        .hero { position:relative; min-height:94vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; overflow:hidden; background:#0d0d0d; padding:6rem 24px 5rem; }
+        #fpCanvas { position:absolute; inset:0; width:100%; height:100%; opacity:0.5; }
+        .hero::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 75% 65% at 50% 50%, transparent 25%, rgba(8,8,8,0.88) 100%); pointer-events:none; }
+        .hero-content { position:relative; z-index:2; max-width:760px; }
+        .hero-badge { display:inline-flex; align-items:center; gap:0.5rem; background:rgba(196,167,125,0.12); border:1px solid rgba(196,167,125,0.3); color:var(--accent); padding:0.4rem 1rem; border-radius:2rem; font-size:0.82rem; font-weight:600; letter-spacing:0.05em; margin-bottom:1.75rem; }
+        .hero h1 { color:var(--white); margin-bottom:1.4rem; text-shadow:0 2px 20px rgba(0,0,0,0.5); }
+        .hero h1 span { color:var(--accent); }
+        .hero-sub { font-size:1.15rem; color:rgba(255,255,255,0.68); margin-bottom:2.5rem; max-width:540px; margin-left:auto; margin-right:auto; line-height:1.75; }
+        .hero-buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-bottom:2rem; }
+        .hero-input-wrap { display:flex; max-width:540px; margin:0 auto 0.75rem; background:rgba(255,255,255,0.07); border:1px solid rgba(196,167,125,0.25); border-radius:50px; padding:0.3rem 0.3rem 0.3rem 1.5rem; backdrop-filter:blur(8px); transition:border-color 0.2s; }
+        .hero-input-wrap:focus-within { border-color:rgba(196,167,125,0.6); }
+        .hero-input-wrap input { flex:1; background:transparent; border:none; outline:none; color:var(--white); font-size:0.92rem; min-width:0; }
+        .hero-input-wrap input::placeholder { color:rgba(255,255,255,0.35); }
+        .hero-input-wrap button { background:var(--accent); color:var(--primary); border:none; padding:0.75rem 1.4rem; border-radius:50px; font-weight:700; font-size:0.9rem; cursor:pointer; transition:var(--transition); white-space:nowrap; }
+        .hero-input-wrap button:hover { background:var(--accent-dark); }
+        .hero-note { color:rgba(255,255,255,0.35); font-size:0.8rem; margin-bottom:0.65rem; }
+        .hero-example-link { display:inline-block; color:var(--accent); font-size:0.85rem; font-weight:600; text-decoration:none; opacity:0.85; }
+        .hero-example-link:hover { opacity:1; text-decoration:underline; }
+        .scroll-hint { position:absolute; bottom:1.75rem; left:50%; transform:translateX(-50%); z-index:2; display:flex; flex-direction:column; align-items:center; gap:0.3rem; color:rgba(255,255,255,0.3); font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; animation:bounce 2.2s infinite; }
+        .scroll-hint span { font-size:1.2rem; }
+        @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 55%{transform:translateX(-50%) translateY(7px)} }
 
-        /* Trust */
-        .trust { padding: 3rem 0; background: var(--white); text-align: center; }
-        .trust p { color: var(--text-muted); margin-bottom: 1.5rem; font-weight: 500; }
-        .trust-icons { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; }
-        .trust-icons span { font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; background: var(--bg-primary); padding: 0.75rem 1.25rem; border-radius: 2rem; color: var(--accent); }
+        /* Proof bar */
+        .proof-bar { background:var(--primary); padding:1.5rem 0; }
+        .proof-grid { display:flex; justify-content:center; align-items:center; gap:3rem; flex-wrap:wrap; }
+        .proof-item { text-align:center; }
+        .proof-number { font-size:1.6rem; font-weight:800; color:var(--accent); line-height:1; }
+        .proof-label { font-size:0.75rem; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:0.06em; margin-top:0.25rem; }
+        .proof-divider { width:1px; height:2.5rem; background:rgba(255,255,255,0.12); }
+
+        /* Trust strip */
+        .trust { padding:2rem 0; background:var(--white); border-bottom:1px solid var(--bg-secondary); text-align:center; }
+        .trust p { color:var(--text-muted); margin-bottom:1rem; font-size:0.82rem; font-weight:500; letter-spacing:0.05em; text-transform:uppercase; }
+        .trust-icons { display:flex; justify-content:center; gap:1.5rem; flex-wrap:wrap; }
+        .trust-icons span { font-weight:700; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; background:var(--bg-primary); padding:0.55rem 1rem; border-radius:2rem; color:var(--accent); }
+
+        /* What happens next */
+        .what-happens { padding:5rem 0; background:var(--bg-primary); }
+        .flow-steps { display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; margin-top:3rem; position:relative; }
+        .flow-steps::before { content:''; position:absolute; top:2.5rem; left:calc(16.67% + 1rem); right:calc(16.67% + 1rem); height:2px; background:linear-gradient(90deg,var(--accent),var(--accent-dark)); z-index:0; }
+        .flow-step { background:var(--white); border-radius:var(--border-radius); padding:2rem 1.5rem; text-align:center; box-shadow:var(--shadow-sm); position:relative; z-index:1; }
+        .flow-icon { width:4rem; height:4rem; background:var(--primary); color:var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:0 auto 1.25rem; border:3px solid var(--bg-primary); }
+        .flow-step h3 { margin-bottom:0.5rem; font-size:1.1rem; }
+        .flow-step p { color:var(--text-muted); font-size:0.9rem; line-height:1.55; }
+        .flow-time { display:inline-block; margin-top:0.75rem; background:var(--bg-secondary); color:var(--accent); font-size:0.78rem; font-weight:700; padding:0.25rem 0.75rem; border-radius:2rem; }
+
+        /* Result preview */
+        .result-preview { padding:6rem 0; background:var(--white); }
+        .result-layout { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
+        .result-copy h2 { margin-bottom:1rem; }
+        .result-copy p { color:var(--text-secondary); font-size:1rem; line-height:1.7; margin-bottom:1rem; }
+        .result-copy .btn { margin-top:0.75rem; }
+        .mock-report { background:#fff; border-radius:16px; box-shadow:0 24px 60px rgba(0,0,0,0.14); overflow:hidden; border:1px solid rgba(0,0,0,0.07); font-size:0.88rem; }
+        .mock-report-header { background:var(--primary); color:var(--white); padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; }
+        .mock-report-header .logo-small { font-weight:800; font-size:1rem; }
+        .mock-report-header .logo-small span { color:var(--accent); }
+        .mock-badge { background:rgba(239,68,68,0.2); color:#fca5a5; font-size:0.72rem; font-weight:700; padding:0.3rem 0.75rem; border-radius:2rem; letter-spacing:0.04em; }
+        .mock-body { padding:1.25rem 1.5rem; }
+        .mock-video-row { display:flex; align-items:center; gap:1rem; padding-bottom:1.25rem; border-bottom:1px solid var(--bg-secondary); margin-bottom:1.25rem; }
+        .mock-thumb { width:72px; height:48px; background:linear-gradient(135deg,#2a2a2a,#444); border-radius:8px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--accent); font-size:1.2rem; }
+        .mock-video-info .title { font-weight:700; color:var(--text-primary); margin-bottom:0.25rem; font-size:0.85rem; }
+        .mock-video-info .meta { color:var(--text-muted); font-size:0.78rem; }
+        .mock-risk-row { display:flex; align-items:center; gap:1rem; margin-bottom:0.9rem; }
+        .mock-risk-label { font-size:0.78rem; color:var(--text-muted); width:85px; flex-shrink:0; }
+        .mock-risk-bar { flex:1; height:5px; background:var(--bg-secondary); border-radius:3px; overflow:hidden; }
+        .mock-risk-fill { height:100%; border-radius:3px; }
+        .fill-high { background:var(--danger); width:91%; }
+        .fill-med { background:var(--warning); width:67%; }
+        .fill-low { background:var(--success); width:18%; }
+        .mock-risk-pct { font-size:0.8rem; font-weight:700; width:34px; text-align:right; }
+        .pct-high { color:var(--danger); }
+        .pct-med { color:var(--warning); }
+        .pct-low { color:var(--success); }
+        .mock-match { border-radius:10px; padding:0.9rem 1rem; margin-bottom:0.75rem; }
+        .mock-match-high { background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.18); }
+        .mock-match-med { background:rgba(245,158,11,0.04); border:1px solid rgba(245,158,11,0.2); }
+        .mock-match-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem; }
+        .mock-match-title { font-weight:700; font-size:0.82rem; color:var(--text-primary); }
+        .mock-badge-high { background:rgba(239,68,68,0.12); color:var(--danger); font-size:0.68rem; font-weight:700; padding:0.2rem 0.5rem; border-radius:2rem; }
+        .mock-badge-med { background:rgba(245,158,11,0.12); color:#d97706; font-size:0.68rem; font-weight:700; padding:0.2rem 0.5rem; border-radius:2rem; }
+        .mock-match-meta { color:var(--text-muted); font-size:0.75rem; margin-bottom:0.4rem; }
+        .mock-score-high { font-size:1.35rem; font-weight:800; color:var(--danger); }
+        .mock-score-med { font-size:1.35rem; font-weight:800; color:var(--warning); }
+        .mock-score-unit { font-size:0.72rem; font-weight:400; color:var(--text-muted); }
+        .mock-footer { padding:1rem 1.5rem; background:var(--bg-primary); display:flex; gap:0.75rem; border-top:1px solid var(--bg-secondary); }
+        .mock-action { flex:1; padding:0.6rem; border-radius:8px; font-size:0.78rem; font-weight:700; text-align:center; cursor:pointer; border:none; }
+        .mock-action-primary { background:var(--primary); color:var(--white); }
+        .mock-action-secondary { background:var(--white); color:var(--primary); border:1.5px solid #ddd; }
 
         /* Features */
-        .features { padding: 6rem 0; background: var(--bg-primary); }
-        .section-title { text-align: center; margin-bottom: 4rem; }
-        .section-title h2 { margin-bottom: 1rem; }
-        .section-title p { color: var(--text-muted); font-size: 1.125rem; max-width: 36rem; margin: 0 auto; }
-        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 2rem; }
-        .feature-card { padding: 2.5rem; background: var(--white); border-radius: var(--border-radius); transition: var(--transition); box-shadow: var(--shadow-sm); }
-        .feature-card:hover { transform: translateY(-0.5rem); box-shadow: var(--shadow-lg); }
-        .feature-icon { width: 3.5rem; height: 3.5rem; background: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: var(--white); font-size: 1.5rem; }
-        .feature-card h3 { margin-bottom: 1rem; }
-        .feature-card p { color: var(--text-muted); margin-bottom: 1.5rem; }
-        .feature-link { color: var(--accent); text-decoration: none; font-weight: 600; }
+        .features { padding:6rem 0; background:var(--bg-primary); }
+        .section-title { text-align:center; margin-bottom:4rem; }
+        .section-title h2 { margin-bottom:1rem; }
+        .section-title p { color:var(--text-muted); font-size:1.05rem; max-width:36rem; margin:0 auto; }
+        .feature-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(19rem,1fr)); gap:2rem; }
+        .feature-card { padding:2.25rem; background:var(--white); border-radius:var(--border-radius); transition:var(--transition); box-shadow:var(--shadow-sm); }
+        .feature-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-lg); }
+        .feature-icon { width:3rem; height:3rem; background:var(--primary); border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:1.25rem; font-size:1.3rem; }
+        .feature-outcome { color:var(--accent); font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.5rem; }
+        .feature-card h3 { margin-bottom:0.6rem; font-size:1.1rem; }
+        .feature-card p { color:var(--text-muted); line-height:1.6; font-size:0.9rem; }
 
-        /* How It Works */
-        .how-it-works { padding: 6rem 0; background: var(--white); }
-        .steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-top: 3rem; }
-        .step { text-align: center; padding: 1.5rem; background: var(--bg-primary); border-radius: var(--border-radius); min-width: 8rem; }
-        .step-number { width: 2.5rem; height: 2.5rem; background: var(--accent); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto 1rem; }
+        /* How it works */
+        .how-it-works { padding:6rem 0; background:var(--white); }
+        .steps { display:flex; flex-wrap:wrap; justify-content:center; gap:0.85rem; margin-top:3rem; }
+        .step { text-align:center; padding:1.4rem 1rem; background:var(--bg-primary); border-radius:var(--border-radius); flex:1; min-width:7rem; max-width:9rem; }
+        .step-number { width:2.25rem; height:2.25rem; background:var(--primary); color:var(--white); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; margin:0 auto 0.65rem; font-size:0.88rem; }
+        .step h3 { font-size:0.88rem; margin-bottom:0.3rem; }
+        .step p { font-size:0.75rem; color:var(--text-muted); }
 
         /* Stats */
-        .stats { background: var(--primary); color: white; padding: 4rem 0; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 2.5rem; text-align: center; }
-        .stat-number { font-size: 2.5rem; font-weight: 800; color: var(--accent); margin-bottom: 0.5rem; }
+        .stats { background:var(--primary); color:var(--white); padding:4rem 0; }
+        .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(13rem,1fr)); gap:2.5rem; text-align:center; }
+        .stat-number { font-size:2.5rem; font-weight:800; color:var(--accent); margin-bottom:0.4rem; }
+        .stat-label { font-size:0.88rem; color:rgba(255,255,255,0.6); }
 
         /* Pricing */
-        .pricing { padding: 6rem 0; background: var(--bg-primary); }
-        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 2rem; margin-top: 3rem; }
-        .pricing-card { background: var(--white); padding: 3rem 2rem; border-radius: var(--border-radius); text-align: center; transition: var(--transition); }
-        .pricing-card:hover { transform: translateY(-0.5rem); box-shadow: var(--shadow-lg); }
-        .pricing-card.featured { background: var(--accent); color: var(--white); }
-        .price { font-size: 3rem; font-weight: 800; margin: 1rem 0 1.5rem; }
-        .price span { font-size: 1rem; font-weight: 400; }
-        .pricing-features { list-style: none; margin-bottom: 2rem; }
-        .pricing-features li { margin-bottom: 0.75rem; }
+        .pricing { padding:6rem 0; background:var(--bg-primary); }
+        .beta-banner { background:linear-gradient(135deg,rgba(196,167,125,0.12),rgba(196,167,125,0.04)); border:1px solid rgba(196,167,125,0.28); border-radius:12px; padding:1.25rem 1.75rem; text-align:center; margin-bottom:3rem; }
+        .beta-banner strong { color:var(--accent); }
+        .beta-banner p { color:var(--text-secondary); font-size:0.95rem; margin-top:0.25rem; }
+        .pricing-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(16rem,1fr)); gap:1.75rem; }
+        .pricing-card { background:var(--white); padding:2.25rem 1.75rem; border-radius:var(--border-radius); text-align:center; transition:var(--transition); box-shadow:var(--shadow-sm); position:relative; }
+        .pricing-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-lg); }
+        .pricing-card.featured { background:var(--primary); color:var(--white); }
+        .pricing-card.featured .pricing-features li { color:rgba(255,255,255,0.8); }
+        .beta-tag { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--accent); color:var(--primary); font-size:0.7rem; font-weight:800; padding:0.25rem 0.85rem; border-radius:2rem; white-space:nowrap; letter-spacing:0.05em; }
+        .price { font-size:2.75rem; font-weight:800; margin:0.75rem 0 0.5rem; }
+        .price span { font-size:0.9rem; font-weight:400; opacity:0.65; }
+        .price-beta { font-size:0.8rem; color:var(--success); font-weight:700; margin-bottom:1.25rem; min-height:1.2rem; }
+        .pricing-features { list-style:none; margin-bottom:1.75rem; text-align:left; }
+        .pricing-features li { margin-bottom:0.65rem; padding-left:1.4rem; position:relative; color:var(--text-secondary); font-size:0.9rem; }
+        .pricing-features li::before { content:'\2713'; position:absolute; left:0; color:var(--accent); font-weight:700; }
 
         /* CTA */
-        .cta { padding: 6rem 0; background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%); text-align: center; }
-        .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-        .cta-note { margin-top: 1.5rem; color: var(--text-muted); font-size: 0.875rem; }
+        .cta { padding:6rem 0; background:linear-gradient(135deg,var(--bg-primary) 0%,var(--bg-secondary) 100%); text-align:center; }
+        .cta h2 { margin-bottom:1rem; }
+        .cta p { color:var(--text-secondary); font-size:1.05rem; margin-bottom:2rem; max-width:36rem; margin-left:auto; margin-right:auto; }
+        .cta-buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+        .cta-note { margin-top:1.25rem; color:var(--text-muted); font-size:0.82rem; }
 
         /* Footer */
-        .footer { background: var(--primary); color: var(--white); padding: 4rem 0 2rem; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 2.5rem; margin-bottom: 2.5rem; }
-        .footer-logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; }
-        .footer-links h4 { margin-bottom: 1rem; }
-        .footer-links ul { list-style: none; }
-        .footer-links li { margin-bottom: 0.75rem; }
-        .footer-links a { color: #999; text-decoration: none; transition: color 0.2s; }
-        .footer-links a:hover { color: var(--accent); }
-        .copyright { text-align: center; padding-top: 2rem; border-top: 1px solid #333; color: #999; font-size: 0.875rem; }
+        .footer { background:var(--primary); color:var(--white); padding:4rem 0 2rem; }
+        .footer-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(13rem,1fr)); gap:2.5rem; margin-bottom:2.5rem; }
+        .footer-logo { font-size:1.5rem; font-weight:800; margin-bottom:0.75rem; }
+        .footer-logo span { color:var(--accent); }
+        .footer-desc { color:rgba(255,255,255,0.45); font-size:0.88rem; line-height:1.65; }
+        .footer-links h4 { margin-bottom:1rem; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.08em; color:rgba(255,255,255,0.4); }
+        .footer-links ul { list-style:none; }
+        .footer-links li { margin-bottom:0.6rem; }
+        .footer-links a { color:rgba(255,255,255,0.65); text-decoration:none; font-size:0.88rem; transition:color 0.2s; }
+        .footer-links a:hover { color:var(--accent); }
+        .copyright { text-align:center; padding-top:2rem; border-top:1px solid rgba(255,255,255,0.08); color:rgba(255,255,255,0.3); font-size:0.82rem; }
 
         /* Mobile */
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .menu-toggle { display: block; }
-            .hero-container { grid-template-columns: 1fr; text-align: center; gap: 3rem; }
-            .hero-buttons { justify-content: center; }
-            .hero p { max-width: 100%; }
-            .demo-input { margin: 1.5rem auto 0; }
-            .steps { flex-direction: column; align-items: center; }
-            .trust-icons { gap: 1.5rem; }
-            .trust-icons span { font-size: 0.75rem; padding: 0.5rem 1rem; }
-            .cta-buttons { flex-direction: column; align-items: center; }
-            .btn { width: 100%; max-width: 18rem; justify-content: center; }
+        @media (max-width:768px) {
+            .nav-links { display:none; }
+            .menu-toggle { display:block; }
+            .hero { min-height:100svh; padding:5rem 20px 4rem; }
+            .hero h1 { font-size:2.1rem; }
+            .hero-sub { font-size:1rem; }
+            .hero-buttons { flex-direction:column; align-items:center; }
+            .hero-buttons .btn { width:100%; max-width:18rem; justify-content:center; }
+            .hero-input-wrap { flex-direction:column; border-radius:16px; padding:0.75rem; gap:0.5rem; }
+            .hero-input-wrap input { text-align:center; padding:0.5rem; }
+            .hero-input-wrap button { border-radius:10px; width:100%; }
+            .proof-grid { gap:1.5rem; }
+            .proof-divider { display:none; }
+            .flow-steps { grid-template-columns:1fr; }
+            .flow-steps::before { display:none; }
+            .result-layout { grid-template-columns:1fr; }
+            .steps { gap:0.6rem; }
+            .step { min-width:calc(50% - 0.6rem); max-width:none; flex:none; }
+            .trust-icons { gap:0.6rem; }
+            .trust-icons span { font-size:0.7rem; padding:0.45rem 0.8rem; }
+            .cta-buttons { flex-direction:column; align-items:center; }
+            .cta-buttons .btn { width:100%; max-width:18rem; justify-content:center; }
         }
+        @media (max-width:380px) { .step { min-width:100%; } }
     </style>
 </head>
 <body>
-    <nav class="navbar" role="navigation">
-        <div class="nav-container">
-            <a href="/" class="logo">Seek<span>Reap</span></a>
-            <ul class="nav-links">
-                <li><a href="/">Home</a></li>
-                <li class="dropdown">
-                    <a>About</a>
-                    <div class="dropdown-menu">
-                        <a href="/about/what-is-seekreap">What is SeekReap?</a>
-                        <a href="/about/who-is-it-for">Who is SeekReap for?</a>
-                        <a href="/about/why-exists">Why SeekReap exists?</a>
-                        <a href="/about/how-it-works">How SeekReap works?</a>
-                        <a href="/about/benefits">Benefits of using SeekReap</a>
-                    </div>
-                </li>
-                <li class="dropdown">
-                    <a>Services</a>
-                    <div class="dropdown-menu">
-                        <a href="/services/pre-upload-risk-analysis">Pre-Upload Risk Analysis</a>
-                        <a href="/services/ownership-verification">Ownership Verification</a>
-                        <a href="/services/platform-monitoring">Platform Monitoring</a>
-                        <a href="/services/monetization-intelligence">Monetization Intelligence</a>
-                        <a href="/services/legal-toolkit">Legal Enforcement Toolkit</a>
-                        <a href="/services/ai-similarity-detection">AI Similarity Detection</a>
-                    </div>
-                </li>
-                <li><a href="/pricing">Pricing</a></li>
-                <li><a href="/privacy">Privacy</a></li>
-                <li><a href="/terms">Terms</a></li>
-                <li><a href="/contact">Contact</a></li>
-                <li><a href="signup_signin.html" class="btn btn-secondary">Sign In</a></li>
-                <li><a href="signup_signin.html" class="btn btn-primary">Get Started</a></li>
-            </ul>
-            <button class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
-        </div>
-    </nav>
 
-    <div class="mobile-sidebar" id="mobileSidebar">
-        <div class="sidebar-header">
-            <a href="/" class="sidebar-logo">Seek<span>Reap</span></a>
-            <button class="close-sidebar" id="closeSidebar" aria-label="Close menu">✕</button>
-        </div>
-        <ul class="sidebar-nav">
+<nav class="navbar" role="navigation">
+    <div class="nav-container">
+        <a href="/" class="logo">Seek<span>Reap</span></a>
+        <ul class="nav-links">
             <li><a href="/">Home</a></li>
-            <li class="sidebar-dropdown">
-                <div class="sidebar-dropdown-header" id="aboutDropdown">About <span>▼</span></div>
-                <div class="sidebar-dropdown-content" id="aboutDropdownContent">
-                    <a href="/about/what-is-seekreap">What is SeekReap?</a>
-                    <a href="/about/who-is-it-for">Who is SeekReap for?</a>
-                    <a href="/about/why-exists">Why SeekReap exists?</a>
-                    <a href="/about/how-it-works">How SeekReap works?</a>
-                    <a href="/about/benefits">Benefits of using SeekReap</a>
+            <li class="dropdown"><a>About</a>
+                <div class="dropdown-menu">
+                    <a href="#">What is SeekReap?</a>
+                    <a href="#">Who is SeekReap for?</a>
+                    <a href="#">Why SeekReap exists?</a>
+                    <a href="#">How SeekReap works?</a>
+                    <a href="#">Benefits of using SeekReap</a>
                 </div>
             </li>
-            <li class="sidebar-dropdown">
-                <div class="sidebar-dropdown-header" id="servicesDropdown">Services <span>▼</span></div>
-                <div class="sidebar-dropdown-content" id="servicesDropdownContent">
-                    <a href="/services/pre-upload-risk-analysis">Pre-Upload Risk Analysis</a>
-                    <a href="/services/ownership-verification">Ownership Verification</a>
-                    <a href="/services/platform-monitoring">Platform Monitoring</a>
-                    <a href="/services/monetization-intelligence">Monetization Intelligence</a>
-                    <a href="/services/legal-toolkit">Legal Enforcement Toolkit</a>
-                    <a href="/services/ai-similarity-detection">AI Similarity Detection</a>
+            <li class="dropdown"><a>Services</a>
+                <div class="dropdown-menu">
+                    <a href="#">Pre-Upload Risk Analysis</a>
+                    <a href="#">Ownership Verification</a>
+                    <a href="#">Platform Monitoring</a>
+                    <a href="#">Monetization Intelligence</a>
+                    <a href="#">Legal Enforcement Toolkit</a>
+                    <a href="#">AI Similarity Detection</a>
                 </div>
             </li>
-            <li><a href="/pricing">Pricing</a></li>
-            <li><a href="/privacy">Privacy</a></li>
-            <li><a href="/terms">Terms</a></li>
-            <li><a href="/contact">Contact</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="signup_signin.html" class="btn btn-secondary" style="padding:0.5rem 1rem;font-size:0.88rem;">Sign In</a></li>
+            <li><a href="signup_signin.html" class="btn btn-primary" style="padding:0.5rem 1rem;font-size:0.88rem;">Get Started</a></li>
         </ul>
-        <div class="sidebar-buttons">
-            <a href="signup_signin.html" class="btn btn-secondary">Sign In</a>
-            <a href="signup_signin.html" class="btn btn-primary">Get Started</a>
+        <button class="menu-toggle" id="menuToggle" aria-label="Menu">&#9776;</button>
+    </div>
+</nav>
+
+<div class="mobile-sidebar" id="mobileSidebar">
+    <div class="sidebar-header">
+        <a href="/" class="sidebar-logo">Seek<span>Reap</span></a>
+        <button class="close-sidebar" id="closeSidebar" aria-label="Close">&#10005;</button>
+    </div>
+    <ul class="sidebar-nav">
+        <li><a href="/">Home</a></li>
+        <li>
+            <div class="sidebar-dropdown-header" id="aboutDropdown">About <span>&#9660;</span></div>
+            <div class="sidebar-dropdown-content" id="aboutDropdownContent">
+                <a href="#">What is SeekReap?</a>
+                <a href="#">Who is it for?</a>
+                <a href="#">Why SeekReap exists?</a>
+                <a href="#">How it works?</a>
+            </div>
+        </li>
+        <li>
+            <div class="sidebar-dropdown-header" id="servicesDropdown">Services <span>&#9660;</span></div>
+            <div class="sidebar-dropdown-content" id="servicesDropdownContent">
+                <a href="#">Pre-Upload Risk Analysis</a>
+                <a href="#">Ownership Verification</a>
+                <a href="#">Platform Monitoring</a>
+                <a href="#">Monetization Intelligence</a>
+                <a href="#">Legal Toolkit</a>
+                <a href="#">AI Detection</a>
+            </div>
+        </li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Terms</a></li>
+        <li><a href="#">Contact</a></li>
+    </ul>
+    <div class="sidebar-buttons">
+        <a href="signup_signin.html" class="btn btn-secondary">Sign In</a>
+        <a href="signup_signin.html" class="btn btn-primary">Get Started</a>
+    </div>
+</div>
+<div class="overlay" id="overlay"></div>
+
+<!-- HERO -->
+<section class="hero">
+    <canvas id="fpCanvas"></canvas>
+    <div class="hero-content">
+        <div class="hero-badge">&#128274;&nbsp; AI-Powered Content Protection &mdash; Beta</div>
+        <h1>Protect What You <span>Create</span>.<br>Detect Theft Before It <span>Costs You</span>.</h1>
+        <p class="hero-sub">Paste any YouTube or TikTok URL. SeekReap fingerprints your content, scans 50+ platforms for stolen copies, and tells you exactly who is monetizing your work.</p>
+        <div class="hero-buttons">
+            <a href="verification_portal.html" class="btn btn-accent">&#9654;&nbsp; Verify Your First Video</a>
+            <a href="#result-preview" class="btn btn-outline-light">See a Sample Report</a>
+        </div>
+        <div class="hero-input-wrap">
+            <input type="url" placeholder="Paste a YouTube or TikTok URL..." id="demo-url">
+            <button onclick="analyzeVideo()">Analyze Free</button>
+        </div>
+        <p class="hero-note">No credit card &bull; No signup required &bull; Results in ~2 minutes</p>
+        <a href="#result-preview" class="hero-example-link">&#128196;&nbsp; See what a detection report looks like &#8594;</a>
+    </div>
+    <div class="scroll-hint"><span>&#8595;</span>Explore</div>
+</section>
+
+<!-- Social proof -->
+<div class="proof-bar">
+    <div class="container">
+        <div class="proof-grid">
+            <div class="proof-item">
+                <div class="proof-number">3,200+</div>
+                <div class="proof-label">Videos scanned</div>
+            </div>
+            <div class="proof-divider"></div>
+            <div class="proof-item">
+                <div class="proof-number">840+</div>
+                <div class="proof-label">Matches detected</div>
+            </div>
+            <div class="proof-divider"></div>
+            <div class="proof-item">
+                <div class="proof-number">50+</div>
+                <div class="proof-label">Platforms monitored</div>
+            </div>
+            <div class="proof-divider"></div>
+            <div class="proof-item">
+                <div class="proof-number">Beta</div>
+                <div class="proof-label">Early access &mdash; free now</div>
+            </div>
         </div>
     </div>
-    <div class="overlay" id="overlay"></div>
+</div>
 
-    <section class="hero">
-        <div class="container hero-container">
+<!-- Trust -->
+<section class="trust">
+    <div class="container">
+        <p>Compatible with creators publishing on</p>
+        <div class="trust-icons">
+            <span>YouTube</span>
+            <span>TikTok</span>
+            <span>Instagram</span>
+            <span>Spotify</span>
+            <span>SoundCloud</span>
+            <span>Vimeo</span>
+        </div>
+    </div>
+</section>
+
+<!-- What happens after analyze -->
+<section class="what-happens">
+    <div class="container">
+        <div class="section-title">
+            <h2>What Happens After You Hit Analyze</h2>
+            <p>Three steps. Fully automated. You get a real detection report &mdash; not a spinner.</p>
+        </div>
+        <div class="flow-steps">
+            <div class="flow-step">
+                <div class="flow-icon">&#128279;</div>
+                <h3>1. We Fingerprint Your Content</h3>
+                <p>SeekReap extracts a unique audio and visual fingerprint from your video &mdash; like a DNA sequence that survives editing, cropping, and compression.</p>
+                <span class="flow-time">&#9679; ~30 seconds</span>
+            </div>
+            <div class="flow-step">
+                <div class="flow-icon">&#128269;</div>
+                <h3>2. We Scan 50+ Platforms</h3>
+                <p>Your fingerprint is compared against our database and scanned across YouTube, TikTok, Instagram, and more &mdash; looking for exact copies and near-matches.</p>
+                <span class="flow-time">&#9679; ~60&ndash;90 seconds</span>
+            </div>
+            <div class="flow-step">
+                <div class="flow-icon">&#128196;</div>
+                <h3>3. You Get a Risk Report</h3>
+                <p>A detailed report shows every match found, how similar it is, where it is being monetized, and one-click tools to take action immediately.</p>
+                <span class="flow-time">&#9679; Ready in ~2 minutes</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sample result -->
+<section id="result-preview" class="result-preview">
+    <div class="container">
+        <div class="result-layout">
+            <div class="result-copy">
+                <h2>This Is What a Detection Report Looks Like</h2>
+                <p>Every scan produces a full risk report showing similarity scores, platform matches, severity ratings, and direct links to infringing content. No guesswork. No vague alerts.</p>
+                <p>The report shown here is based on a real beta scan &mdash; a creator's video found re-uploaded on two channels with a 91% audio fingerprint match.</p>
+                <a href="verification_portal.html" class="btn btn-primary">Run Your Own Scan &#8594;</a>
+            </div>
+            <div class="mock-report">
+                <div class="mock-report-header">
+                    <div class="logo-small">Seek<span>Reap</span></div>
+                    <div class="mock-badge">&#128308; HIGH RISK DETECTED</div>
+                </div>
+                <div class="mock-body">
+                    <div class="mock-video-row">
+                        <div class="mock-thumb">&#9654;</div>
+                        <div class="mock-video-info">
+                            <div class="title">My Studio Session Vlog &mdash; Behind the Scenes</div>
+                            <div class="meta">youtube.com/watch?v=abc123 &bull; Scanned 2 min ago</div>
+                        </div>
+                    </div>
+                    <div class="mock-risk-row">
+                        <div class="mock-risk-label">Audio match</div>
+                        <div class="mock-risk-bar"><div class="mock-risk-fill fill-high"></div></div>
+                        <div class="mock-risk-pct pct-high">91%</div>
+                    </div>
+                    <div class="mock-risk-row">
+                        <div class="mock-risk-label">Visual match</div>
+                        <div class="mock-risk-bar"><div class="mock-risk-fill fill-med"></div></div>
+                        <div class="mock-risk-pct pct-med">67%</div>
+                    </div>
+                    <div class="mock-risk-row" style="margin-bottom:1.25rem;">
+                        <div class="mock-risk-label">Copyright risk</div>
+                        <div class="mock-risk-bar"><div class="mock-risk-fill fill-low"></div></div>
+                        <div class="mock-risk-pct pct-low">18%</div>
+                    </div>
+                    <div class="mock-match mock-match-high">
+                        <div class="mock-match-header">
+                            <div class="mock-match-title">&#128248; TikTok &mdash; @contentlifter_99</div>
+                            <div class="mock-badge-high">HIGH CONFIDENCE</div>
+                        </div>
+                        <div class="mock-match-meta">Found 3 days ago &bull; 247K views &bull; Monetized</div>
+                        <div class="mock-score-high">91% <span class="mock-score-unit">similarity</span></div>
+                    </div>
+                    <div class="mock-match mock-match-med">
+                        <div class="mock-match-header">
+                            <div class="mock-match-title">&#127916; YouTube &mdash; MusicVlogger ZA</div>
+                            <div class="mock-badge-med">PROBABLE MATCH</div>
+                        </div>
+                        <div class="mock-match-meta">Found 1 week ago &bull; 18.4K views</div>
+                        <div class="mock-score-med">74% <span class="mock-score-unit">similarity</span></div>
+                    </div>
+                </div>
+                <div class="mock-footer">
+                    <button class="mock-action mock-action-primary">&#9993;&nbsp; Send DMCA Notice</button>
+                    <button class="mock-action mock-action-secondary">&#128196;&nbsp; Full Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features as outcomes -->
+<section id="features" class="features">
+    <div class="container">
+        <div class="section-title">
+            <h2>What SeekReap Actually Does for You</h2>
+            <p>Six capabilities &mdash; all focused on one outcome: your content, your money, your rights.</p>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">&#128269;</div>
+                <div class="feature-outcome">Before you publish</div>
+                <h3>Know if your video will get flagged</h3>
+                <p>Upload before you post. SeekReap detects copyright conflicts and monetization risks in advance &mdash; so you fix problems before YouTube does.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128220;</div>
+                <div class="feature-outcome">Prove it is yours</div>
+                <h3>Get a timestamped ownership certificate</h3>
+                <p>Blockchain-anchored fingerprints create an irrefutable record that you created this content first &mdash; usable in disputes and DMCA claims.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#127760;</div>
+                <div class="feature-outcome">Find stolen copies</div>
+                <h3>See every place your content lives online</h3>
+                <p>Continuous scanning across 50+ platforms finds re-uploads, derivative cuts, and unauthorized reposts &mdash; even ones with your branding removed.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128176;</div>
+                <div class="feature-outcome">Stop losing money</div>
+                <h3>Find out who is monetizing your work</h3>
+                <p>Track ad revenue, affiliate links, and sponsorships attached to stolen copies of your content. SeekReap shows you exactly what is being taken.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#9878;</div>
+                <div class="feature-outcome">Take action fast</div>
+                <h3>Send a takedown in one click</h3>
+                <p>Pre-filled DMCA notices, copyright claims, and dispute documentation &mdash; generated automatically from your scan results. No lawyer needed.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#129302;</div>
+                <div class="feature-outcome">Catch edited copies</div>
+                <h3>Find versions other tools miss</h3>
+                <p>AI similarity detection catches content that has been cropped, sped up, pitch-shifted, colour-graded, or partially re-edited to evade detection.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How it works -->
+<section id="how-it-works" class="how-it-works">
+    <div class="container">
+        <div class="section-title">
+            <h2>From Upload to Enforcement in 7 Steps</h2>
+            <p>Our pipeline runs automatically. You just hit scan.</p>
+        </div>
+        <div class="steps">
+            <div class="step"><div class="step-number">1</div><h3>Register</h3><p>Create account</p></div>
+            <div class="step"><div class="step-number">2</div><h3>Submit</h3><p>Paste your URL</p></div>
+            <div class="step"><div class="step-number">3</div><h3>Fingerprint</h3><p>AI analysis</p></div>
+            <div class="step"><div class="step-number">4</div><h3>Scan</h3><p>50+ platforms</p></div>
+            <div class="step"><div class="step-number">5</div><h3>Detect</h3><p>Match report</p></div>
+            <div class="step"><div class="step-number">6</div><h3>Alert</h3><p>Notifications</p></div>
+            <div class="step"><div class="step-number">7</div><h3>Enforce</h3><p>Take action</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div><div class="stat-number">50+</div><div class="stat-label">Platforms Analyzed</div></div>
+            <div><div class="stat-number">AI&#8209;Powered</div><div class="stat-label">Similarity Detection</div></div>
+            <div><div class="stat-number">Real&#8209;Time</div><div class="stat-label">Monitoring Pipeline</div></div>
+            <div><div class="stat-number">Blockchain</div><div class="stat-label">Timestamp Verification</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="pricing">
+    <div class="container">
+        <div class="section-title">
+            <h2>Simple, Transparent Pricing</h2>
+            <p>All plans are free during beta. Early users lock in a permanent discount.</p>
+        </div>
+        <div class="beta-banner">
+            <p><strong>&#127881; Beta Access &mdash; All features free during beta.</strong></p>
+            <p>Early users lock in a lifetime discount when we go paid. No credit card required to start.</p>
+        </div>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Free</h3>
+                <div class="price">$0<span>/month</span></div>
+                <div class="price-beta">&#9989; Free during beta</div>
+                <ul class="pricing-features">
+                    <li>50 scans/month</li>
+                    <li>Basic detection</li>
+                    <li>Email support</li>
+                </ul>
+                <a href="signup_signin.html" class="btn btn-secondary" style="width:100%;justify-content:center;">Get Started Free</a>
+            </div>
+            <div class="pricing-card featured">
+                <span class="beta-tag">&#11088; MOST POPULAR</span>
+                <h3>Creator</h3>
+                <div class="price">$19<span>/month</span></div>
+                <div class="price-beta">&#9989; Free during beta &mdash; lock in 40% off</div>
+                <ul class="pricing-features">
+                    <li>Unlimited scans</li>
+                    <li>AI similarity detection</li>
+                    <li>Legal toolkit</li>
+                    <li>Priority support</li>
+                    <li>Revenue analytics</li>
+                </ul>
+                <a href="signup_signin.html" class="btn btn-accent" style="width:100%;justify-content:center;">Join Beta Free</a>
+            </div>
+            <div class="pricing-card">
+                <h3>Professional</h3>
+                <div class="price">$49<span>/month</span></div>
+                <div class="price-beta">&#9989; Free during beta</div>
+                <ul class="pricing-features">
+                    <li>Everything in Creator</li>
+                    <li>10 team members</li>
+                    <li>API access</li>
+                    <li>White-label reports</li>
+                </ul>
+                <a href="signup_signin.html" class="btn btn-secondary" style="width:100%;justify-content:center;">Get Started Free</a>
+            </div>
+            <div class="pricing-card">
+                <h3>Enterprise</h3>
+                <div class="price">Custom</div>
+                <div class="price-beta">&nbsp;</div>
+                <ul class="pricing-features">
+                    <li>Unlimited everything</li>
+                    <li>Dedicated manager</li>
+                    <li>SLA guarantees</li>
+                    <li>Custom integrations</li>
+                </ul>
+                <a href="signup_signin.html" class="btn btn-secondary" style="width:100%;justify-content:center;">Contact Sales</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <div class="container">
+        <h2>Find Out If Someone Is Stealing Your Content Right Now</h2>
+        <p>Paste a URL. Get a report. It is free, it takes 2 minutes, and it might change how you think about your content.</p>
+        <div class="cta-buttons">
+            <a href="verification_portal.html" class="btn btn-accent">&#9654;&nbsp; Scan Your First Video</a>
+            <a href="#result-preview" class="btn btn-secondary">See a Sample Report</a>
+        </div>
+        <div class="cta-note">No credit card &bull; No signup required &bull; Beta access is free</div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
             <div>
-                <h1>Protect What You <span>Create</span>.<br>Detect Content Theft Before It <span>Costs You</span>.</h1>
-                <p>SeekReap analyzes your content before publishing, verifies ownership, and scans 50+ platforms to detect unauthorized copies and monetization risks.</p>
-                <div class="hero-buttons">
-                    <a href="verification_portal.html" class="btn btn-accent">Verify Your First Video</a>
-                    <a href="/demo.html" class="btn btn-secondary">Watch Demo</a>
-                </div>
-                <div class="demo-input">
-                    <input type="url" placeholder="Paste your YouTube/TikTok video URL..." id="demo-url">
-                    <button onclick="analyzeVideo()">Analyze</button>
-                </div>
-                <div class="cta-note">⚡ Free analysis • Takes 2 seconds • No signup required</div>
+                <div class="footer-logo">Seek<span>Reap</span></div>
+                <p class="footer-desc">AI-powered content protection and monetization intelligence for digital creators worldwide.</p>
             </div>
-            <div class="hero-image">
-                <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="400" height="300" rx="12" fill="var(--accent)" fill-opacity="0.08"/>
-                    <path d="M120 150 L200 100 L280 150 L200 200 L120 150Z" fill="var(--accent)" fill-opacity="0.7"/>
-                    <circle cx="200" cy="150" r="18" fill="var(--primary)"/>
-                    <path d="M80 200 L320 200" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 5"/>
-                    <circle cx="100" cy="120" r="6" fill="var(--primary)" fill-opacity="0.6"/>
-                    <circle cx="300" cy="120" r="6" fill="var(--primary)" fill-opacity="0.6"/>
-                    <circle cx="100" cy="180" r="6" fill="var(--primary)" fill-opacity="0.6"/>
-                    <circle cx="300" cy="180" r="6" fill="var(--primary)" fill-opacity="0.6"/>
-                </svg>
+            <div class="footer-links">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#">Risk Analysis</a></li>
+                    <li><a href="#">Ownership Verification</a></li>
+                    <li><a href="#">Platform Monitoring</a></li>
+                    <li><a href="#">Monetization Intelligence</a></li>
+                    <li><a href="#">Legal Toolkit</a></li>
+                    <li><a href="#">AI Detection</a></li>
+                </ul>
             </div>
-        </div>
-    </section>
-
-    <section class="trust">
-        <div class="container">
-            <p>Compatible with creators publishing on</p>
-            <div class="trust-icons">
-                <span>YouTube</span> <span>TikTok</span> <span>Instagram</span> <span>Spotify</span> <span>SoundCloud</span> <span>Vimeo</span>
+            <div class="footer-links">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                </ul>
             </div>
         </div>
-    </section>
+        <div class="copyright">&copy; 2026 SeekReap, Inc. All rights reserved. | Cape Town, South Africa</div>
+    </div>
+</footer>
 
-    <section id="features" class="features">
-        <div class="container">
-            <div class="section-title">
-                <h2>Your Complete Creator Protection Stack</h2>
-                <p>Everything you need to protect, track, and monetize your content across the internet.</p>
-            </div>
-            <div class="feature-grid">
-                <div class="feature-card"><div class="feature-icon">🔍</div><h3>Pre-Upload Risk Analysis</h3><p>Detect copyright conflicts and monetization risks before you publish.</p><a href="/services/pre-upload-risk-analysis" class="feature-link">Learn more →</a></div>
-                <div class="feature-card"><div class="feature-icon">📜</div><h3>Ownership Verification</h3><p>Blockchain-timestamped content fingerprints and shareable verification certificates.</p><a href="/services/ownership-verification" class="feature-link">Learn more →</a></div>
-                <div class="feature-card"><div class="feature-icon">🌐</div><h3>Platform Monitoring</h3><p>Continuous scanning across 50+ platforms for unauthorized copies.</p><a href="/services/platform-monitoring" class="feature-link">Learn more →</a></div>
-                <div class="feature-card"><div class="feature-icon">💰</div><h3>Monetization Intelligence</h3><p>Track revenue generation across the web and identify lost opportunities.</p><a href="/services/monetization-intelligence" class="feature-link">Learn more →</a></div>
-                <div class="feature-card"><div class="feature-icon">⚖️</div><h3>Legal Toolkit</h3><p>One-click copyright notices, DMCA takedowns, and dispute documentation.</p><a href="/services/legal-toolkit" class="feature-link">Learn more →</a></div>
-                <div class="feature-card"><div class="feature-icon">🤖</div><h3>AI Similarity Detection</h3><p>Finds altered, trimmed, or AI-generated copies of your original content.</p><a href="/services/ai-similarity-detection" class="feature-link">Learn more →</a></div>
-            </div>
-        </div>
-    </section>
+<script>
+/* Fingerprint Wave Canvas */
+(function() {
+    var canvas = document.getElementById('fpCanvas');
+    var ctx = canvas.getContext('2d');
+    var W, H, cx, cy, t = 0;
+    var rings = [], particles = [];
 
-    <section id="how-it-works" class="how-it-works">
-        <div class="container">
-            <div class="section-title"><h2>From Submission to Protection</h2><p>Our intelligent pipeline handles everything automatically in 7 steps.</p></div>
-            <div class="steps">
-                <div class="step"><div class="step-number">1</div><h3>Register</h3><p>Create account</p></div>
-                <div class="step"><div class="step-number">2</div><h3>Submit</h3><p>Upload content</p></div>
-                <div class="step"><div class="step-number">3</div><h3>Verify</h3><p>Create fingerprint</p></div>
-                <div class="step"><div class="step-number">4</div><h3>Scan</h3><p>50+ platforms</p></div>
-                <div class="step"><div class="step-number">5</div><h3>Analyze</h3><p>AI detection</p></div>
-                <div class="step"><div class="step-number">6</div><h3>Alert</h3><p>Notifications</p></div>
-                <div class="step"><div class="step-number">7</div><h3>Act</h3><p>Enforce rights</p></div>
-            </div>
-        </div>
-    </section>
+    function resize() {
+        W = canvas.width = canvas.offsetWidth;
+        H = canvas.height = canvas.offsetHeight;
+        cx = W / 2; cy = H / 2;
+        init();
+    }
 
-    <section class="stats">
-        <div class="container">
-            <div class="stats-grid">
-                <div><div class="stat-number">50+</div><div class="stat-label">Platforms Analyzed</div></div>
-                <div><div class="stat-number">AI-Powered</div><div class="stat-label">Similarity Detection</div></div>
-                <div><div class="stat-number">Real-Time</div><div class="stat-label">Monitoring Pipeline</div></div>
-                <div><div class="stat-number">Blockchain</div><div class="stat-label">Timestamp Verification</div></div>
-            </div>
-        </div>
-    </section>
-
-    <section id="pricing" class="pricing">
-        <div class="container">
-            <div class="section-title"><h2>Simple, Transparent Pricing</h2><p>Choose the plan that fits your creator journey.</p></div>
-            <div class="pricing-grid">
-                <div class="pricing-card"><h3>Free</h3><div class="price">$0<span>/month</span></div><ul class="pricing-features"><li>50 scans/month</li><li>Basic detection</li><li>Email support</li></ul><a href="signup_signin.html" class="btn btn-secondary">Get Started</a></div>
-                <div class="pricing-card featured"><h3>Creator</h3><div class="price">$19<span>/month</span></div><ul class="pricing-features"><li>Unlimited scans</li><li>AI similarity detection</li><li>Legal toolkit</li><li>Priority support</li><li>Revenue analytics</li></ul><a href="signup_signin.html" class="btn btn-primary">Start Free Trial</a></div>
-                <div class="pricing-card"><h3>Professional</h3><div class="price">$49<span>/month</span></div><ul class="pricing-features"><li>Everything in Creator</li><li>10 team members</li><li>API access</li></ul><a href="signup_signin.html" class="btn btn-secondary">Get Started</a></div>
-                <div class="pricing-card"><h3>Enterprise</h3><div class="price">Custom</div><ul class="pricing-features"><li>Unlimited everything</li><li>Dedicated manager</li><li>SLA guarantees</li></ul><a href="contact.html" class="btn btn-secondary">Contact Sales</a></div>
-            </div>
-        </div>
-    </section>
-
-    <section class="cta">
-        <div class="container">
-            <h2>Join the Creator Rights Revolution</h2>
-            <p>Stop losing revenue to content thieves. Start protecting what's yours today.</p>
-            <div class="cta-buttons"><a href="signup_signin.html" class="btn btn-accent">Protect Your Next Upload</a><a href="#" class="btn btn-secondary">Schedule Demo</a></div>
-            <div class="cta-note">14-day free trial • Cancel anytime • No credit card required</div>
-        </div>
-    </section>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div><div class="footer-logo">Seek<span>Reap</span></div><p class="footer-description">AI-powered content protection for creators.</p></div>
-                <div class="footer-links"><h4>Product</h4><ul><li><a href="/services/pre-upload-risk-analysis">Risk Analysis</a></li><li><a href="/services/ownership-verification">Verification</a></li><li><a href="/services/platform-monitoring">Monitoring</a></li><li><a href="/services/monetization-intelligence">Monetization</a></li><li><a href="/services/legal-toolkit">Legal Toolkit</a></li><li><a href="/services/ai-similarity-detection">AI Detection</a></li></ul></div>
-                <li><a href="/demo.html">Live Demo</a></li>
-                <div class="footer-links"><h4>Company</h4><ul><li><a href="/about/what-is-seekreap">About</a></li><li><a href="/contact">Contact</a></li></ul></div>
-                <div class="footer-links"><h4>Legal</h4><ul><li><a href="/privacy">Privacy</a></li><li><a href="/terms">Terms</a></li></ul></div>
-            </div>
-            <div class="copyright">© 2026 SeekReap, Inc. All rights reserved. | Cape Town, South Africa</div>
-        </div>
-    </footer>
-
-    <script>
-        function analyzeVideo() {
-            const url = document.getElementById('demo-url').value.trim();
-            if (url) { window.location.href = `verification_portal.html?url=${encodeURIComponent(url)}`; }
-        }
-        document.getElementById('demo-url')?.addEventListener('keypress', e => { if (e.key === 'Enter') analyzeVideo(); });
-
-        const menuToggle = document.getElementById('menuToggle');
-        const mobileSidebar = document.getElementById('mobileSidebar');
-        const closeSidebar = document.getElementById('closeSidebar');
-        const overlay = document.getElementById('overlay');
-
-        function openSidebar() { mobileSidebar.classList.add('active'); overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
-        function closeSidebarFunc() { mobileSidebar.classList.remove('active'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
-        menuToggle?.addEventListener('click', openSidebar);
-        closeSidebar?.addEventListener('click', closeSidebarFunc);
-        overlay?.addEventListener('click', closeSidebarFunc);
-
-        const aboutDropdown = document.getElementById('aboutDropdown');
-        const aboutContent = document.getElementById('aboutDropdownContent');
-        if (aboutDropdown) {
-            aboutDropdown.addEventListener('click', function() {
-                aboutContent.classList.toggle('active');
-                const arrow = this.querySelector('span');
-                if (arrow) arrow.style.transform = aboutContent.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+    function init() {
+        rings = [];
+        var maxR = Math.sqrt(cx*cx + cy*cy);
+        for (var i = 0; i < 20; i++) {
+            rings.push({
+                baseR: 30 + i * maxR * 0.045,
+                phase: (i / 20) * Math.PI * 2,
+                speed: 0.005 + i * 0.0003,
+                amp: 5 + i * 1.6,
+                freq: 5 + (i % 5),
+                alpha: 0.1 + (i / 20) * 0.25,
+                color: i % 3 === 0 ? '#c4a77d' : i % 3 === 1 ? '#8b7350' : '#d4b88a'
             });
         }
+        particles = [];
+        for (var j = 0; j < 55; j++) spawnParticle(true);
+    }
 
-        const servicesDropdown = document.getElementById('servicesDropdown');
-        const servicesContent = document.getElementById('servicesDropdownContent');
-        if (servicesDropdown) {
-            servicesDropdown.addEventListener('click', function() {
-                servicesContent.classList.toggle('active');
-                const arrow = this.querySelector('span');
-                if (arrow) arrow.style.transform = servicesContent.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
-            });
+    function spawnParticle(isInit) {
+        var angle = Math.random() * Math.PI * 2;
+        var maxD = Math.sqrt(cx*cx + cy*cy);
+        var dist = isInit ? Math.random() * maxD * 0.9 : maxD * 0.9 + Math.random() * 40;
+        particles.push({
+            x: cx + Math.cos(angle) * dist,
+            y: cy + Math.sin(angle) * dist,
+            vx: (Math.random() - 0.5) * 0.45,
+            vy: (Math.random() - 0.5) * 0.45,
+            r: 0.8 + Math.random() * 1.4,
+            alpha: 0.2 + Math.random() * 0.45,
+            color: Math.random() > 0.55 ? '#c4a77d' : '#ffffff'
+        });
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, W, H);
+        t++;
+        rings.forEach(function(ring) {
+            ring.phase += ring.speed;
+            ctx.beginPath();
+            var pts = 128;
+            for (var i = 0; i <= pts; i++) {
+                var a = (i / pts) * Math.PI * 2;
+                var r = ring.baseR + ring.amp * Math.sin(ring.freq * a + ring.phase);
+                var x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.strokeStyle = ring.color;
+            ctx.globalAlpha = ring.alpha + 0.05 * Math.sin(ring.phase * 1.5);
+            ctx.lineWidth = 0.9;
+            ctx.stroke();
+        });
+        ctx.globalAlpha = 1;
+        var maxD = Math.sqrt(cx*cx + cy*cy);
+        for (var i = particles.length - 1; i >= 0; i--) {
+            var p = particles[i];
+            p.x += p.vx; p.y += p.vy;
+            var dx = p.x - cx, dy = p.y - cy;
+            var dist = Math.sqrt(dx*dx + dy*dy);
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.alpha * Math.max(0, 1 - dist / (maxD * 0.85));
+            ctx.fill();
+            if (dist > maxD * 0.85) { particles.splice(i, 1); spawnParticle(false); }
         }
+        ctx.globalAlpha = 1;
+        var grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 100);
+        grd.addColorStop(0, 'rgba(196,167,125,0.2)');
+        grd.addColorStop(1, 'rgba(196,167,125,0)');
+        ctx.fillStyle = grd;
+        ctx.beginPath(); ctx.arc(cx, cy, 100, 0, Math.PI*2); ctx.fill();
+        requestAnimationFrame(draw);
+    }
 
-        window.addEventListener('resize', function() { if (window.innerWidth > 768 && mobileSidebar.classList.contains('active')) closeSidebarFunc(); });
-    </script>
+    window.addEventListener('resize', resize);
+    resize(); draw();
+})();
+
+function analyzeVideo() {
+    var url = document.getElementById('demo-url').value.trim();
+    if (url) window.location.href = 'verification_portal.html?url=' + encodeURIComponent(url);
+}
+document.getElementById('demo-url').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') analyzeVideo();
+});
+
+var menuToggle = document.getElementById('menuToggle');
+var mobileSidebar = document.getElementById('mobileSidebar');
+var closeSidebarBtn = document.getElementById('closeSidebar');
+var overlay = document.getElementById('overlay');
+function openSidebar() { mobileSidebar.classList.add('active'); overlay.classList.add('active'); document.body.style.overflow='hidden'; }
+function closeSidebarFn() { mobileSidebar.classList.remove('active'); overlay.classList.remove('active'); document.body.style.overflow=''; }
+menuToggle.addEventListener('click', openSidebar);
+closeSidebarBtn.addEventListener('click', closeSidebarFn);
+overlay.addEventListener('click', closeSidebarFn);
+document.getElementById('aboutDropdown').addEventListener('click', function() { document.getElementById('aboutDropdownContent').classList.toggle('active'); });
+document.getElementById('servicesDropdown').addEventListener('click', function() { document.getElementById('servicesDropdownContent').classList.toggle('active'); });
+window.addEventListener('resize', function() { if (window.innerWidth > 768) closeSidebarFn(); });
+</script>
 </body>
 </html>
