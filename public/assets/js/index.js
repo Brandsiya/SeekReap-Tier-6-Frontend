@@ -7,7 +7,7 @@
             { text: "Scanning For Content Matches...", progress: 70 },
             { text: "Preparing Infrastructre...", progress: 85 },
             { text: "Almost Ready...", progress: 95 },
-            { text: "Redirecting To Home...", progress: 100 }
+            { text: "Redirecting...", progress: 100 }
         ];
         
         let currentIndex = 0;
