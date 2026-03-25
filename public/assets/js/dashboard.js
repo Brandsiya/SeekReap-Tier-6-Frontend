@@ -792,3 +792,120 @@
 
     document.addEventListener('DOMContentLoaded', initLiveData);
 })();
+
+// ==============================================
+//   FILE UPLOAD FUNCTIONALITY
+// ==============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    
+    if (!uploadArea) return;
+    
+    // Click to upload
+    uploadArea.addEventListener('click', () => fileInput.click());
+    
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = 'var(--accent-dark)';
+        uploadArea.style.background = 'rgba(196, 167, 125, 0.1)';
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.borderColor = 'var(--accent)';
+        uploadArea.style.background = 'transparent';
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = 'var(--accent)';
+        uploadArea.style.background = 'transparent';
+        const file = e.dataTransfer.files[0];
+        if (file) handleUpload(file);
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) handleUpload(e.target.files[0]);
+    });
+    
+    uploadBtn.addEventListener('click', () => {
+        if (fileInput.files[0]) {
+            handleUpload(fileInput.files[0]);
+        } else {
+            const url = document.getElementById('scan-url').value;
+            if (url) {
+                // Handle URL submission (existing)
+                window.location.href = `verification_portal.html?url=${encodeURIComponent(url)}`;
+            } else {
+                alert('Please select a file or enter a URL');
+            }
+        }
+    });
+    
+    async function handleUpload(file) {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            window.location.href = 'signup_signin.html';
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('firebase_uid', user.uid);
+        formData.append('email', user.email);
+        formData.append('content_type', file.type);
+        
+        uploadProgress.style.display = 'block';
+        progressBar.style.width = '0%';
+        progressText.textContent = 'Uploading...';
+        
+        try {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `${BACKEND_URL}/api/upload`);
+            
+            xhr.upload.onprogress = (e) => {
+                if (e.lengthComputable) {
+                    const percent = (e.loaded / e.total) * 100;
+                    progressBar.style.width = `${percent}%`;
+                    progressText.textContent = `Uploading: ${Math.round(percent)}%`;
+                }
+            };
+            
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    progressText.textContent = 'Processing...';
+                    progressBar.style.width = '100%';
+                    
+                    setTimeout(() => {
+                        window.location.href = `verification_report.html?id=${response.submission_id}`;
+                    }, 1000);
+                } else {
+                    throw new Error('Upload failed');
+                }
+            };
+            
+            xhr.onerror = () => {
+                progressText.textContent = 'Upload failed. Please try again.';
+                setTimeout(() => {
+                    uploadProgress.style.display = 'none';
+                }, 3000);
+            };
+            
+            xhr.send(formData);
+            
+        } catch (error) {
+            console.error('Upload error:', error);
+            progressText.textContent = 'Upload failed. Please try again.';
+            setTimeout(() => {
+                uploadProgress.style.display = 'none';
+            }, 3000);
+        }
+    }
+});
