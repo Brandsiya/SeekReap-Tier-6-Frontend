@@ -3,39 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="SeekReap is loading your content protection dashboard">
-    <title>SeekReap - Loading</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/index.css">
+    <title>SeekReap - Content Verification Platform</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .hero {
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+        }
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        .hero p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            transition: transform 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        .card h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        .card p {
+            color: #666;
+            line-height: 1.5;
+        }
+        .features {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            margin-top: 40px;
+        }
+        .features h2 {
+            text-align: center;
+            margin-bottom: 32px;
+            color: #333;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+        .feature {
+            text-align: center;
+        }
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+        .feature h4 {
+            margin-bottom: 8px;
+            color: #667eea;
+        }
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 60px;
+            opacity: 0.8;
+        }
+    </style>
 </head>
 <body>
-    <!-- Floating particles (optional, matches home page aesthetic) -->
-    <div class="particle" style="width: 2px; height: 2px; left: 10%; animation-duration: 15s;"></div>
-    <div class="particle" style="width: 3px; height: 3px; left: 20%; animation-duration: 25s; animation-delay: -5s;"></div>
-    <div class="particle" style="width: 1px; height: 1px; left: 30%; animation-duration: 18s;"></div>
-    <div class="particle" style="width: 2px; height: 2px; left: 45%; animation-duration: 22s; animation-delay: -2s;"></div>
-    <div class="particle" style="width: 2px; height: 2px; left: 60%; animation-duration: 20s;"></div>
-    <div class="particle" style="width: 1px; height: 1px; left: 75%; animation-duration: 28s; animation-delay: -7s;"></div>
-    <div class="particle" style="width: 3px; height: 3px; left: 85%; animation-duration: 24s;"></div>
-    <div class="particle" style="width: 2px; height: 2px; left: 95%; animation-duration: 30s; animation-delay: -3s;"></div>
+    <div class="container">
+        <div class="hero">
+            <h1>🔍 SeekReap</h1>
+            <p>Content Verification & Digital Rights Management Platform</p>
+        </div>
 
-    <div class="loader-container">
-        <div class="logo">Seek<span style="color: var(--accent);">Reap</span></div>
-        
-        <div class="scanner">
-            <div class="ring"></div>
-            <div class="ring2"></div>
-            <div class="core"></div>
+        <div class="cards">
+            <a href="verify.html" class="card">
+                <div class="card-icon">📱</div>
+                <h3>Verify Content</h3>
+                <p>Scan QR codes or verify content using cryptographic hashes</p>
+            </a>
+            <a href="dashboard.html" class="card">
+                <div class="card-icon">📊</div>
+                <h3>Creator Dashboard</h3>
+                <p>Manage your submissions and view verification status</p>
+            </a>
+            <a href="submit.html" class="card">
+                <div class="card-icon">📤</div>
+                <h3>Submit Content</h3>
+                <p>Register new content for verification and protection</p>
+            </a>
         </div>
-        
-        <div id="status">Initializing protection engine...</div>
-        
-        <div class="progress-bar">
-            <div class="progress"></div>
+
+        <div class="features">
+            <h2>Platform Features</h2>
+            <div class="feature-grid">
+                <div class="feature">
+                    <div class="feature-icon">🔐</div>
+                    <h4>Blockchain Proof</h4>
+                    <p>Immutable verification records on blockchain</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📱</div>
+                    <h4>QR Code Verification</h4>
+                    <p>Instant verification with any smartphone</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎵</div>
+                    <h4>Audio Fingerprinting</h4>
+                    <p>Advanced audio content matching</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎬</div>
+                    <h4>Video Analysis</h4>
+                    <p>Visual content fingerprinting</p>
+                </div>
+            </div>
         </div>
-        
-        <div class="note">Fingerprinting your content • AI analysis ready</div>
+
+        <div class="footer">
+            <p>© 2026 SeekReap - Protecting Digital Content Rights</p>
+        </div>
     </div>
-      <script src="/assets/js/index.js"></script>
-    </body>
+</body>
 </html>

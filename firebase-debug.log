@@ -1,0 +1,92 @@
+[debug] [2026-03-17T16:05:39.313Z] ----------------------------------------------------------------------
+[debug] [2026-03-17T16:05:39.368Z] Command:       /home/userland/.nvm/versions/node/v20.20.0/bin/node /home/userland/.nvm/versions/node/v20.20.0/bin/firebase deploy --only hosting
+[debug] [2026-03-17T16:05:39.370Z] CLI Version:   15.8.0
+[debug] [2026-03-17T16:05:39.372Z] Platform:      linux
+[debug] [2026-03-17T16:05:39.373Z] Node Version:  v20.20.0
+[debug] [2026-03-17T16:05:39.373Z] Time:          Tue Mar 17 2026 16:05:39 GMT+0000 (Coordinated Universal Time)
+[debug] [2026-03-17T16:05:39.374Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-03-17T16:06:12.704Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-17T16:06:12.706Z] > authorizing via signed-in user (brandsiyadabrand@gmail.com)
+[debug] [2026-03-17T16:06:12.706Z] [iam] checking project seekreap-production for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-03-17T16:06:12.710Z] Checked if tokens are valid: true, expires at: 1773764915582
+[debug] [2026-03-17T16:06:12.711Z] Checked if tokens are valid: true, expires at: 1773764915582
+[debug] [2026-03-17T16:06:12.715Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/seekreap-production:testIamPermissions [none]
+[debug] [2026-03-17T16:06:12.715Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/seekreap-production:testIamPermissions  x-goog-user-project=seekreap-production
+[debug] [2026-03-17T16:06:12.716Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/seekreap-production:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-03-17T16:06:19.939Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/seekreap-production:testIamPermissions 200
+[debug] [2026-03-17T16:06:19.940Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/seekreap-production:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-03-17T16:06:19.943Z] Checked if tokens are valid: true, expires at: 1773764915582
+[debug] [2026-03-17T16:06:19.944Z] Checked if tokens are valid: true, expires at: 1773764915582
+[debug] [2026-03-17T16:06:19.945Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/seekreap-production [none]
+[debug] [2026-03-17T16:06:26.075Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/seekreap-production 200
+[debug] [2026-03-17T16:06:26.077Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/seekreap-production {"projectId":"seekreap-production","projectNumber":"308655322607","displayName":"SeekReap-Production","name":"projects/seekreap-production","resources":{"hostingSite":"seekreap-production"},"state":"ACTIVE","etag":"1_2cb6cc48-8492-4341-b906-836a7424faf7"}
+[info] 
+[info] === Deploying to 'seekreap-production'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2026-03-17T16:06:26.110Z] Checked if tokens are valid: true, expires at: 1773764915582
+[debug] [2026-03-17T16:06:26.111Z] Checked if tokens are valid: true, expires at: 1773764915582
+[debug] [2026-03-17T16:06:26.111Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/seekreap-production/versions [none]
+[debug] [2026-03-17T16:06:26.112Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/seekreap-production/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2026-03-17T16:06:29.650Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/seekreap-production/versions 200
+[debug] [2026-03-17T16:06:29.651Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/seekreap-production/versions {"name":"projects/308655322607/sites/seekreap-production/versions/08aebfffc61857b1","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[seekreap-production]: beginning deploy... 
+[info] i  hosting[seekreap-production]: found 31 files in public 
+[debug] [2026-03-17T16:06:29.756Z] [hosting] uploading with 200 concurrency
+[debug] [2026-03-17T16:06:29.812Z] Checked if tokens are valid: true, expires at: 1773764915582
+[debug] [2026-03-17T16:06:29.813Z] Checked if tokens are valid: true, expires at: 1773764915582
+[debug] [2026-03-17T16:06:29.817Z] [hosting] hash cache [cHVibGlj] stored for 31 files
+[debug] [2026-03-17T16:06:29.818Z] [hosting][hash queue][FINAL] {"max":32,"min":2,"avg":2.967741935483871,"active":0,"complete":31,"success":31,"errored":0,"retried":0,"total":31,"elapsed":48}
+[debug] [2026-03-17T16:06:29.819Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/308655322607/sites/seekreap-production/versions/08aebfffc61857b1:populateFiles [none]
+[debug] [2026-03-17T16:06:29.819Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/308655322607/sites/seekreap-production/versions/08aebfffc61857b1:populateFiles {"files":{"/verification_report.html":"7d6dfb237bcae3f4570c74a636bb4b39af3fdeb117c6503b5c185cbd671ae183","/verification_portal.html.backup":"822d9fdd02cb022c3f31cec1b1d05426af68f897bbd70c5cdca3be2a16ffc4ac","/verification_portal.html":"3785575e703b7b0ca699942cad60e751053228e0b60e6c4285f340d3728aa1ca","/signup_signin.html":"1b47dbc994cc973184291afb3361e676f53eb06cf16adb59c063e4d5b4a8381f","/index.html":"1d31ee8bd03d03d42ad05bf9ac82dcb92c16b89a7bcbe18eba4882541d714b57","/home.html":"e5adbfd25720976eeb7a76a0ba9ddf2259ce5188e6fee212328fd9d5a5b582e8","/dashboard.html":"b9baa78d3332c83b93dbaaf00e6d4a291ef5d97739aae3cc9eed4f45de0f587a","/config.js":"4cc231b4fcfb152d6ed86e61a5031eb18887958904fabc7b60efaebdaa2c1c85","/partials/js/sidebar.js":"f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec","/partials/js/header.js":"f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec","/partials/js/footer.js":"f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec","/partials/html/sidebar.html":"f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec","/partials/html/header.html":"f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec","/partials/html/footer.html":"f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec","/partials/css/sidebar.css":"f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec","/partials/css/header.css":"f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec","/partials/css/footer.css":"f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec","/assets/js/verification_portal.js.backup.1773677674":"69fc3569a0f183f1019f9f792dd33f0d31579c02cffca7aa29eef93726662bd9","/assets/js/verification_portal.js.backup.1773677618":"69fc3569a0f183f1019f9f792dd33f0d31579c02cffca7aa29eef93726662bd9","/assets/js/verification_portal.js":"69fc3569a0f183f1019f9f792dd33f0d31579c02cffca7aa29eef93726662bd9","/assets/js/signup_signin.js":"a85b256ea061342fdec61f5fad11c765872efa9be969aa7cb2f91a5505db4746","/assets/js/home.js":"fcb55345f8d041e543e6a62acd5cdab1b1aaa576719b93d9a3d334f79a43889f","/assets/js/dashboard.js":"addfaa24b47235edf7f787118cac8b3199ba36a1b54cd486958138b05573b736","/assets/js/app.js":"3b8a7d2eb56e8b0ddc9aab5f570e6a72ba93b0e12aa27eecebdfce424aaec624","/assets/css/verification_report.css":"04a76cbc7723d0d441c4a7b04a210d2919257b054dd2107987ce76021034dad7","/assets/css/verification_portal.css":"e9c27b09f58f8617f7c0b868b3f960655c5d45c6e146a3181a05d1684fe50cf3","/assets/css/signup_signin.css":"865da54d93157ec73bd58f8e560ccde0062977e39c6107f9561c703076afc061","/assets/css/index.css":"82c1f91b09e891f85496bd7a320c8480990ade56b9b2d901a14c175ebc72e317","/assets/css/home.css":"1f5b14c1a53a3510f7a114f552aff039ceec5e41e21824e340fc38862351ceab","/assets/css/dashboard.css":"6d2bddb539adead853b139dd1586b14277f2b0382b6e495709ec8b61f4956c72","/assets/js/verification_report.js":"0d63cd2f96d32d908e20de48f57e5397eeb6853081b5c6d4fa37760db9bddbcc"}}
+[debug] [2026-03-17T16:06:31.443Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/308655322607/sites/seekreap-production/versions/08aebfffc61857b1:populateFiles 200
+[debug] [2026-03-17T16:06:31.444Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/308655322607/sites/seekreap-production/versions/08aebfffc61857b1:populateFiles {"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/seekreap-production/versions/08aebfffc61857b1/files"}
+[debug] [2026-03-17T16:06:31.445Z] [hosting][populate queue][FINAL] {"max":1633,"min":1633,"avg":1633,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":1634}
+[debug] [2026-03-17T16:06:31.445Z] [hosting] uploads queued: 0
+[debug] [2026-03-17T16:06:31.446Z] [hosting][upload queue][FINAL] {"max":0,"min":9999999999,"avg":0,"active":0,"complete":0,"success":0,"errored":0,"retried":0,"total":0,"elapsed":1773763591446}
+[info] ✔  hosting[seekreap-production]: file upload complete 
+[debug] [2026-03-17T16:06:31.450Z] [hosting] deploy completed after 1779ms
+[debug] [2026-03-17T16:06:31.452Z] [
+  {
+    "config": {
+      "public": "public",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "site": "seekreap-production"
+    },
+    "version": "projects/308655322607/sites/seekreap-production/versions/08aebfffc61857b1"
+  }
+]
+[info] i  hosting[seekreap-production]: finalizing version... 
+[debug] [2026-03-17T16:06:31.458Z] Checked if tokens are valid: true, expires at: 1773764915582
+[debug] [2026-03-17T16:06:31.458Z] Checked if tokens are valid: true, expires at: 1773764915582
+[debug] [2026-03-17T16:06:31.461Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/seekreap-production/versions/08aebfffc61857b1 updateMask=status%2Cconfig
+[debug] [2026-03-17T16:06:31.461Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/seekreap-production/versions/08aebfffc61857b1 {"status":"FINALIZED","config":{}}
+[debug] [2026-03-17T16:06:33.210Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/seekreap-production/versions/08aebfffc61857b1 200
+[debug] [2026-03-17T16:06:33.212Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/seekreap-production/versions/08aebfffc61857b1 {"name":"projects/308655322607/sites/seekreap-production/versions/08aebfffc61857b1","status":"FINALIZED","config":{},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2026-03-17T16:06:28.204397Z","createUser":{"email":"brandsiyadabrand@gmail.com"},"finalizeTime":"2026-03-17T16:06:32.931118Z","finalizeUser":{"email":"brandsiyadabrand@gmail.com"}}
+[debug] [2026-03-17T16:06:33.213Z] [hosting] finalized version for seekreap-production:[object Object]
+[info] ✔  hosting[seekreap-production]: version finalized 
+[info] i  hosting[seekreap-production]: releasing new version... 
+[debug] [2026-03-17T16:06:33.220Z] Checked if tokens are valid: true, expires at: 1773764915582
+[debug] [2026-03-17T16:06:33.222Z] Checked if tokens are valid: true, expires at: 1773764915582
+[debug] [2026-03-17T16:06:33.225Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/seekreap-production/channels/live/releases versionName=projects%2F308655322607%2Fsites%2Fseekreap-production%2Fversions%2F08aebfffc61857b1
+[debug] [2026-03-17T16:06:33.226Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/seekreap-production/channels/live/releases {}
+[debug] [2026-03-17T16:06:34.730Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/seekreap-production/channels/live/releases 200
+[debug] [2026-03-17T16:06:34.731Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/seekreap-production/channels/live/releases {"name":"projects/308655322607/sites/seekreap-production/channels/live/releases/1773763593537000","version":{"name":"projects/308655322607/sites/seekreap-production/versions/08aebfffc61857b1","status":"FINALIZED","config":{},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2026-03-17T16:06:28.204397Z","createUser":{"email":"brandsiyadabrand@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLqNiTTqje5asB2VH-E-gWDODp6AGEtLSnZbbMMNA3P3E8aLQ=mo"},"finalizeTime":"2026-03-17T16:06:32.931118Z","finalizeUser":{"email":"brandsiyadabrand@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLqNiTTqje5asB2VH-E-gWDODp6AGEtLSnZbbMMNA3P3E8aLQ=mo"}},"type":"DEPLOY","releaseTime":"2026-03-17T16:06:33.537Z","releaseUser":{"email":"brandsiyadabrand@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLqNiTTqje5asB2VH-E-gWDODp6AGEtLSnZbbMMNA3P3E8aLQ=mo"}}
+[debug] [2026-03-17T16:06:34.731Z] [hosting] release: {"name":"projects/308655322607/sites/seekreap-production/channels/live/releases/1773763593537000","version":{"name":"projects/308655322607/sites/seekreap-production/versions/08aebfffc61857b1","status":"FINALIZED","config":{},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2026-03-17T16:06:28.204397Z","createUser":{"email":"brandsiyadabrand@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLqNiTTqje5asB2VH-E-gWDODp6AGEtLSnZbbMMNA3P3E8aLQ=mo"},"finalizeTime":"2026-03-17T16:06:32.931118Z","finalizeUser":{"email":"brandsiyadabrand@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLqNiTTqje5asB2VH-E-gWDODp6AGEtLSnZbbMMNA3P3E8aLQ=mo"}},"type":"DEPLOY","releaseTime":"2026-03-17T16:06:33.537Z","releaseUser":{"email":"brandsiyadabrand@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLqNiTTqje5asB2VH-E-gWDODp6AGEtLSnZbbMMNA3P3E8aLQ=mo"}}
+[info] ✔  hosting[seekreap-production]: release complete 
+[info] 
+[info] ✔  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/seekreap-production/overview
+[info] Hosting URL: https://seekreap-production.web.app
+[debug] [2026-03-17T16:06:39.984Z] Error: Timed out.
+    at Timeout._onTimeout (/home/userland/.nvm/versions/node/v20.20.0/lib/node_modules/firebase-tools/lib/utils.js:308:49)
+    at listOnTimeout (node:internal/timers:581:17)
+    at process.processTimers (node:internal/timers:519:7)
+[error] 
+[error] Error: An unexpected error has occurred.
