@@ -3,732 +3,258 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>SeekReap · Certify Your Creative Work</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <title>Loading SeekReap...</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --gold: #C9993A; --gold-light: #E8C06A; --gold-dark: #9B7520;
-      --gold-glow: rgba(201,153,58,0.15); --gold-glow-strong: rgba(201,153,58,0.3);
-      --black: #08080A; --black-2: #111115; --black-3: #18181E;
-      --black-4: #222228; --black-5: #2E2E36;
-      --white: #FAFAF8; --white-dim: rgba(250,250,248,0.65); --white-faint: rgba(250,250,248,0.1);
-      --border: rgba(201,153,58,0.15); --border-strong: rgba(201,153,58,0.35);
-      --success: #3DB87A; --success-bg: rgba(61,184,122,0.1);
-      --warning: #E8A040; --warning-bg: rgba(232,160,64,0.1);
-      --danger: #E05555;
+      --gold: #C9993A;
+      --gold-light: #E8C06A;
+      --gold-dark: #9B7520;
+      --black: #08080A;
+      --black-2: #111115;
+      --white: #FAFAF8;
+      --glow: rgba(201,153,58,0.4);
+      --border: rgba(201,153,58,0.2);
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'DM Sans', sans-serif;
-      background: radial-gradient(ellipse 100% 60% at 50% 0%, rgba(201,153,58,0.08) 0%, transparent 60%), var(--black);
-      color: var(--white); min-height: 100vh; padding: 40px 20px 60px; line-height: 1.6;
-    }
-    body::before {
-      content: ''; position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-      opacity: 0.025; pointer-events: none; z-index: 0;
-    }
-    .demo-container { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
-    .page-header { display: flex; align-items: center; gap: 14px; margin-bottom: 36px; }
-    .page-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .page-logo-text {
-      font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 700;
-      background: linear-gradient(135deg, var(--white), var(--gold-light));
-      background-clip: text; -webkit-background-clip: text; color: transparent;
-    }
-    .page-title-sep { color: var(--border-strong); font-size: 1.2rem; margin: 0 4px; }
-    .page-subtitle { font-size: 0.85rem; color: var(--white-dim); letter-spacing: 0.03em; }
-    .workflow-steps {
-      display: flex; justify-content: space-between; margin-bottom: 28px;
-      background: var(--black-2); border: 1px solid var(--border);
-      padding: 16px 28px; border-radius: 4px; flex-wrap: wrap; gap: 12px;
-      position: relative; overflow: hidden;
-    }
-    .workflow-steps::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    }
-    .step { display: flex; align-items: center; gap: 10px; color: #444; flex: 1; min-width: 120px; font-size: 0.85rem; font-weight: 400; transition: color 0.3s; }
-    .step.active { color: var(--white); }
-    .step.completed { color: var(--success); }
-    .step-number {
-      width: 32px; height: 32px; border-radius: 3px; background: var(--black-4); border: 1px solid #333;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 0.85rem; transition: all 0.3s; flex-shrink: 0;
+      background: var(--black);
+      color: var(--white);
       font-family: 'Cormorant Garamond', serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      padding: 0 20px;
     }
-    .step.active .step-number { background: var(--gold); color: var(--black); border-color: var(--gold); }
-    .step.completed .step-number { background: var(--success-bg); color: var(--success); border-color: var(--success); }
-    .step-icon { font-size: 1rem; }
-    .workflow-card {
-      background: var(--black-2); border: 1px solid var(--border); border-radius: 4px;
-      overflow: hidden; margin-bottom: 20px; position: relative;
+
+    /* Subtle background glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 50% 50%, rgba(201,153,58,0.06) 0%, transparent 50%);
+      z-index: 1;
     }
-    .workflow-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.6;
+
+    /* Main container - perfectly centered */
+    .loader-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 48px;
+      z-index: 10;
+      position: relative;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
     }
-    .card-header { padding: 22px 28px; background: linear-gradient(135deg, var(--black-3) 0%, rgba(201,153,58,0.05) 100%); border-bottom: 1px solid var(--border); }
-    .card-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; display: flex; align-items: center; gap: 10px; color: var(--white); margin-bottom: 4px; }
-    .card-header p { font-size: 0.85rem; color: var(--white-dim); }
-    .card-header.success-header { background: linear-gradient(135deg, rgba(61,184,122,0.1) 0%, rgba(61,184,122,0.05) 100%); border-bottom-color: rgba(61,184,122,0.2); }
-    .card-body { padding: 28px; }
-    .form-group { margin-bottom: 22px; }
-    label { display: block; font-weight: 500; font-size: 0.85rem; margin-bottom: 8px; color: var(--white-dim); letter-spacing: 0.03em; text-transform: uppercase; }
-    label .required { color: var(--gold); margin-left: 3px; }
-    input[type="text"], input[type="email"], textarea, select {
-      width: 100%; padding: 11px 16px; background: var(--black-3); border: 1px solid var(--border);
-      border-radius: 3px; font-family: 'DM Sans', sans-serif; font-size: 0.93rem; color: var(--white); transition: all 0.2s; outline: none;
+
+    /* Logo - Static, centered, no movement */
+    .logo {
+      width: clamp(100px, 22vw, 140px);
+      height: clamp(100px, 22vw, 140px);
+      filter: drop-shadow(0 0 20px var(--glow));
     }
-    input:focus, textarea:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-glow); background: var(--black-4); }
-    .work-type-selector { position: relative; }
-    .work-type-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; pointer-events: none; z-index: 1; }
-    .work-type-selector select { padding-left: 44px; }
-    .toggle-group { display: flex; gap: 14px; margin-top: 8px; }
-    .toggle-btn { flex: 1; padding: 20px 16px; border: 1px solid var(--border); background: var(--black-3); border-radius: 4px; cursor: pointer; transition: all 0.25s; text-align: center; color: var(--white-dim); }
-    .toggle-btn:hover { border-color: var(--border-strong); background: var(--black-4); color: var(--white); }
-    .toggle-btn.active { border-color: var(--gold); background: var(--gold-glow); color: var(--white); box-shadow: 0 0 20px var(--gold-glow); }
-    .toggle-icon { font-size: 1.8rem; margin-bottom: 8px; }
-    .toggle-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
-    .toggle-desc { font-size: 0.75rem; color: var(--white-dim); }
-    .creator-files { background: var(--black-3); border: 1px solid var(--border); border-radius: 4px; padding: 20px; margin-bottom: 16px; }
-    .creator-files h4 { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; font-weight: 600; }
-    .upload-area { border: 1px dashed var(--border-strong); border-radius: 3px; padding: 28px 20px; text-align: center; cursor: pointer; transition: all 0.25s; background: var(--black-4); color: var(--white-dim); font-size: 0.9rem; }
-    .upload-area:hover { border-color: var(--gold); background: var(--gold-glow); color: var(--white); }
-    .upload-area.uploaded { border-color: var(--success); border-style: solid; }
-    .upload-progress { margin-top: 14px; display: none; }
-    .progress-bar-container { background: var(--black-5); border-radius: 2px; height: 4px; overflow: hidden; }
-    .progress-bar { background: linear-gradient(90deg, var(--gold-dark), var(--gold-light)); width: 0%; height: 100%; transition: width 0.3s ease; }
-    .progress-text { font-size: 0.72rem; color: var(--white-dim); margin-top: 6px; text-align: center; }
-    .file-list { margin-top: 14px; }
-    .file-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--black-5); border-radius: 3px; margin-bottom: 8px; border: 1px solid var(--border); font-size: 0.85rem; }
-    .file-item span:last-child { margin-left: auto; color: var(--white-dim); font-size: 0.72rem; }
-    .file-preview { margin-top: 14px; background: var(--black-4); border: 1px solid var(--border); border-radius: 3px; overflow: hidden; }
-    .preview-header { background: var(--black-5); padding: 10px 16px; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; color: var(--white-dim); }
-    .preview-content { padding: 20px; min-height: 160px; display: flex; align-items: center; justify-content: center; }
-    .audio-preview audio { width: 100%; }
-    .video-preview video { max-width: 100%; border-radius: 3px; }
-    .image-preview img { max-width: 100%; max-height: 280px; border-radius: 3px; object-fit: contain; }
-    .epub-preview, .pdf-page-content { background: var(--black-5); padding: 18px; border-radius: 3px; max-height: 260px; overflow-y: auto; font-size: 0.87rem; color: var(--white-dim); line-height: 1.7; width: 100%; }
-    .pdf-page-nav { display: flex; gap: 10px; align-items: center; justify-content: center; margin-top: 12px; }
-    .pdf-page-nav button { padding: 6px 14px; background: var(--black-5); color: var(--white-dim); border: 1px solid var(--border); border-radius: 3px; cursor: pointer; font-size: 0.75rem; }
-    .pdf-page-nav button:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
-    .pdf-page-nav button:disabled { opacity: 0.3; cursor: not-allowed; }
-    .collaborator-section { background: var(--black-3); border: 1px solid var(--border); border-radius: 4px; padding: 22px; margin: 20px 0; }
-    .collaborator-section h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 600; color: var(--white); margin-bottom: 16px; }
-    .collaborator-item { background: var(--black-4); border: 1px solid var(--border); border-radius: 3px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-    .collaborator-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--black-5), var(--black-3)); border: 1px solid var(--border-strong); border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
-    .collaborator-info { flex: 2; min-width: 140px; }
-    .collaborator-name { font-weight: 600; font-size: 0.9rem; color: var(--white); }
-    .collaborator-email { font-size: 0.75rem; color: var(--white-dim); }
-    .split-control { flex: 1; min-width: 150px; }
-    .split-slider { display: flex; align-items: center; gap: 10px; }
-    .split-slider input[type="range"] { flex: 1; padding: 0; height: 4px; border: none; accent-color: var(--gold); background: var(--black-5); border-radius: 2px; cursor: pointer; }
-    .split-percentage { font-weight: 600; color: var(--gold); min-width: 40px; font-size: 0.9rem; }
-    .collab-status { padding: 3px 10px; border-radius: 2px; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
-    .collab-status.owner { background: var(--success-bg); color: var(--success); border: 1px solid rgba(61,184,122,0.2); }
-    .collab-status.pending { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(232,160,64,0.2); }
-    .coowner-actions { display: flex; gap: 8px; align-items: center; }
-    .action-btn { background: var(--black-5); border: 1px solid var(--border); color: var(--white-dim); padding: 5px 12px; border-radius: 3px; cursor: pointer; font-size: 0.7rem; font-weight: 500; transition: all 0.2s; }
-    .action-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
-    .remove-coowner { background: var(--black-5); border: 1px solid rgba(224,85,85,0.3); color: #E05555; }
-    .remove-coowner:hover { border-color: var(--danger); color: var(--danger); background: rgba(224,85,85,0.1); }
-    .add-collaborator-btn { width: 100%; padding: 12px; background: transparent; border: 1px dashed var(--border-strong); color: var(--white-dim); font-weight: 500; cursor: pointer; border-radius: 3px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; transition: all 0.2s; }
-    .add-collaborator-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
-    .split-summary { background: var(--black-4); border: 1px solid var(--border); border-radius: 3px; padding: 18px 20px; margin: 18px 0; text-align: center; }
-    .split-summary > strong { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); }
-    .split-visual { display: flex; justify-content: center; gap: 28px; margin: 16px 0; flex-wrap: wrap; }
-    .split-piece { text-align: center; }
-    .split-circle { width: 56px; height: 56px; border-radius: 3px; margin: 0 auto 8px; }
-    .split-label { font-size: 0.78rem; color: var(--white-dim); }
-    .warning-msg { color: var(--warning); font-size: 0.8rem; margin-top: 6px; }
-    .ownership-box { background: var(--black-3); border: 1px solid var(--border); border-left: 2px solid var(--gold); border-radius: 3px; padding: 18px 20px; margin: 18px 0; }
-    .ownership-box strong { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 10px; }
-    .ownership-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
-    .ownership-row .pct { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 700; color: var(--gold); }
-    .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%); background-size: 200% 200%; color: var(--black); font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.88rem; padding: 12px 26px; border-radius: 3px; border: none; cursor: pointer; transition: all 0.3s; letter-spacing: 0.04em; text-transform: uppercase; box-shadow: 0 0 16px var(--gold-glow); }
-    .btn-primary:hover { background-position: right center; transform: translateY(-1px); box-shadow: 0 4px 24px var(--gold-glow-strong); }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .btn-secondary { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--border-strong); color: var(--white-dim); font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.88rem; padding: 11px 22px; border-radius: 3px; cursor: pointer; transition: all 0.2s; }
-    .btn-secondary:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
-    .button-group { display: flex; gap: 12px; margin-top: 24px; align-items: center; flex-wrap: wrap; }
-    .certificate-box { background: var(--black-3); border: 1px solid var(--border-strong); border-radius: 4px; padding: 28px; position: relative; overflow: hidden; }
-    .certificate-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
-    .cert-title-area { text-align: center; margin-bottom: 24px; }
-    .cert-title-area h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase; }
-    .cert-divider { height: 1px; background: var(--border); margin: 18px 0; }
-    #certificateDetails { font-size: 0.9rem; color: var(--white-dim); }
-    .cert-ownership-block { background: var(--black-4); border: 1px solid var(--border); border-left: 2px solid var(--gold); border-radius: 3px; padding: 14px 18px; margin: 14px 0; }
-    .cert-ownership-block strong { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
-    .cert-ownership-row { display: flex; justify-content: space-between; font-size: 0.87rem; padding: 4px 0; }
-    .cert-qr { text-align: center; margin-top: 20px; }
-    .cert-qr img { border: 1px solid var(--border); border-radius: 3px; max-width: 160px; }
-    .cert-qr p { font-size: 0.72rem; color: var(--white-dim); margin-top: 8px; }
-    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; }
-    .modal.active { display: flex; }
-    .modal-content { background: var(--black-2); border: 1px solid var(--border); border-radius: 4px; max-width: 480px; width: 90%; padding: 28px; }
-    .invite-link { background: var(--black-3); border: 1px solid var(--border); padding: 10px 12px; border-radius: 3px; display: flex; gap: 8px; margin: 14px 0; }
-    .invite-link input { border: none; background: transparent; color: var(--white); font-size: 0.83rem; flex: 1; }
-    .copy-btn { background: var(--gold); color: var(--black); border: none; padding: 6px 14px; border-radius: 2px; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
-    .status-msg { padding: 10px 14px; border-radius: 3px; font-size: 0.85rem; margin-top: 12px; }
-    .status-msg.error { background: rgba(224,85,85,0.1); border: 1px solid rgba(224,85,85,0.3); color: #E05555; }
-    .status-msg.info { background: var(--gold-glow); border: 1px solid var(--border-strong); color: var(--white-dim); }
-    .hidden { display: none !important; }
-    @media (max-width: 700px) {
-      .workflow-steps { flex-direction: column; }
-      .toggle-group { flex-direction: column; }
-      .collaborator-item { flex-direction: column; align-items: stretch; }
-      .button-group { flex-direction: column; }
-      .button-group .btn-primary, .button-group .btn-secondary { width: 100%; justify-content: center; }
+
+    /* Custom SeekReap Loader - Centered */
+    .sr-loader {
+      position: relative;
+      width: clamp(64px, 16vw, 96px);
+      height: clamp(64px, 16vw, 96px);
+      margin: 0 auto;
+    }
+
+    /* Outer ring */
+    .loader-ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 3px solid transparent;
+      border-top: 3px solid var(--gold-light);
+      border-right: 3px solid var(--gold);
+      border-radius: 50%;
+      animation: srSpin 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    /* Inner pulsing ring */
+    .loader-inner {
+      position: absolute;
+      top: 20%;
+      left: 20%;
+      width: 60%;
+      height: 60%;
+      border: 2px solid transparent;
+      border-top: 2px solid var(--gold);
+      border-radius: 50%;
+      animation: srPulse 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    /* SR letters */
+    .sr-letters {
+      position: absolute;
+      top: 28%;
+      left: 28%;
+      width: 44%;
+      height: 44%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1rem, 3vw, 1.4rem);
+      font-weight: 700;
+      color: var(--gold-light);
+      text-shadow: 0 0 12px var(--glow);
+      animation: srGlow 1.4s ease-in-out infinite alternate;
+    }
+
+    @keyframes srSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes srPulse {
+      0%, 100% { transform: scale(0.85) rotate(0deg); opacity: 0.7; }
+      50% { transform: scale(1.15) rotate(180deg); opacity: 1; }
+    }
+
+    @keyframes srGlow {
+      from { text-shadow: 0 0 12px var(--glow); }
+      to { text-shadow: 0 0 20px var(--gold), 0 0 30px var(--gold); }
+    }
+
+    /* Progress bar - Always at bottom of container */
+    .progress-section {
+      width: 100%;
+      max-width: 280px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 3px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light));
+      width: 0%;
+      border-radius: 1px;
+      animation: progressFill 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      position: relative;
+      box-shadow: 0 0 12px var(--glow);
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 20px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6));
+      animation: progressShine 1.8s infinite;
+    }
+
+    @keyframes progressFill {
+      0% { width: 0%; }
+      50% { width: 65%; }
+      100% { width: 100%; }
+    }
+
+    @keyframes progressShine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* Perfect centering for all screen sizes */
+    @media (max-width: 480px) {
+      body { padding: 0 16px; }
+      .loader-container { gap: 36px; }
+    }
+
+    @media (max-height: 600px) {
+      .loader-container { gap: 32px; }
+      .logo { margin-bottom: 0; }
+    }
+
+    /* Fade out before redirect */
+    .fade-out {
+      animation: fadeOut 0.4s ease-out forwards;
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; transform: scale(1); }
+      to { opacity: 0; transform: scale(0.98); }
     }
   </style>
 </head>
 <body>
-<div class="demo-container">
+  <div class="loader-container">
+    <!-- Logo - Static position -->
+    <svg class="logo" viewBox="0 0 200 200" fill="none">
+      <defs>
+        <linearGradient id="logoGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#FAFAF8"/>
+          <stop offset="70%" stop-color="#E8C06A"/>
+          <stop offset="100%" stop-color="#C9993A"/>
+        </linearGradient>
+        <linearGradient id="logoGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#C9993A"/>
+          <stop offset="100%" stop-color="#9B7520"/>
+        </linearGradient>
+      </defs>
+      <g stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M100 50 L100 60 M97 55 L103 65 M93 60 L107 72 M88 75 L112 85 M85 90 L115 92" stroke="url(#logoGrad2)" opacity="0.9"/>
+        <path d="M85 105 L115 105 M88 115 L112 115 M93 125 L107 125 M97 135 L103 135 M100 140 L100 150" stroke="url(#logoGrad2)"/>
+        <circle cx="100" cy="100" r="3" fill="url(#logoGrad1)" opacity="0.8"/>
+      </g>
+      <text x="65" y="175" font-size="80" font-weight="700" fill="url(#logoGrad1)" opacity="0.95">S</text>
+      <text x="115" y="175" font-size="80" font-weight="700" fill="url(#logoGrad2)">R</text>
+    </svg>
 
-  <div class="page-header">
-    <a href="/" class="page-logo">
-      <svg width="30" height="30" viewBox="0 0 100 100" fill="none">
-        <defs>
-          <linearGradient id="phS" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FAFAF8"/><stop offset="100%" stop-color="#E8C06A"/></linearGradient>
-          <linearGradient id="phR" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C9993A"/><stop offset="100%" stop-color="#9B7520"/></linearGradient>
-        </defs>
-        <text x="6" y="72" font-family="Cormorant Garamond, serif" font-size="60" font-weight="700" fill="url(#phS)">S</text>
-        <text x="52" y="72" font-family="Cormorant Garamond, serif" font-size="60" font-weight="700" fill="url(#phR)">R</text>
-      </svg>
-      <span class="page-logo-text">SeekReap</span>
-    </a>
-    <span class="page-title-sep">|</span>
-    <span class="page-subtitle">Certify Your Creative Work</span>
-  </div>
-
-  <div class="workflow-steps">
-    <div class="step active" id="step1"><div class="step-number">1</div><span class="step-icon">◆</span><span>Work Details</span></div>
-    <div class="step" id="step2"><div class="step-number">2</div><span class="step-icon" id="step2Icon">◈</span><span id="step2Text">Ownership Type</span></div>
-    <div class="step" id="step3"><div class="step-number">3</div><span class="step-icon">◇</span><span id="step3Title">Upload Work</span></div>
-    <div class="step" id="step4"><div class="step-number">4</div><span class="step-icon">✦</span><span>Certificate</span></div>
-  </div>
-
-  <!-- Step 1: Work Details -->
-  <div class="workflow-card" id="step1Card">
-    <div class="card-header"><h2>◆ Add New Work</h2><p>Provide basic information about your creative work to begin certification</p></div>
-    <div class="card-body">
-      <div class="form-group"><label>Work Title <span class="required">*</span></label><input type="text" placeholder="e.g., Summer Vibes" id="workTitle"></div>
-      <div class="form-group"><label>Description</label><textarea rows="3" id="workDescription" placeholder="Describe your creative work..."></textarea></div>
-      <div class="form-group"><label>Work Type</label>
-        <div class="work-type-selector">
-          <span class="work-type-icon" id="workTypeIcon">🎵</span>
-          <select id="workType">
-            <option value="audio">🎵 Audio / Music Track</option>
-            <option value="video">🎬 Video / Film</option>
-            <option value="image">🖼️ Image / Artwork</option>
-            <option value="epub">📖 eBook / EPUB</option>
-            <option value="pdf">📄 Script / PDF</option>
-          </select>
-        </div>
-      </div>
-      <div class="button-group"><button class="btn-primary" id="nextToTypeBtn">Continue →</button></div>
+    <!-- SeekReap Loader -->
+    <div class="sr-loader">
+      <div class="loader-ring"></div>
+      <div class="loader-inner"></div>
+      <div class="sr-letters">SR</div>
     </div>
-  </div>
 
-  <!-- Step 2: Ownership Type -->
-  <div class="workflow-card hidden" id="step2Card">
-    <div class="card-header"><h2>◈ Select Ownership Type</h2><p>Choose how you want to certify your work</p></div>
-    <div class="card-body">
-      <div class="toggle-group">
-        <div class="toggle-btn" id="soloModeBtn"><div class="toggle-icon">👤</div><div class="toggle-title">Sole Ownership</div><div class="toggle-desc">Create and certify alone</div></div>
-        <div class="toggle-btn" id="collabModeBtn"><div class="toggle-icon">👥</div><div class="toggle-title">Co-ownership</div><div class="toggle-desc">Work with other creators</div></div>
-      </div>
-      <div class="button-group">
-        <button class="btn-secondary" id="backToDetailsBtn">← Back</button>
-        <button class="btn-primary" id="nextToWorkBtn">Continue →</button>
+    <!-- Progress Bar -->
+    <div class="progress-section">
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
       </div>
     </div>
   </div>
 
-  <!-- Step 3: Upload -->
-  <div class="workflow-card hidden" id="step3Card">
-    <div class="card-header"><h2>◇ <span id="step3HeaderText">Upload Work</span></h2><p id="step3SubText">Upload your work for blockchain certification</p></div>
-    <div class="card-body">
-      <div id="soloContent" class="hidden">
-        <div class="creator-files">
-          <h4>Your Work File</h4>
-          <div class="upload-area" id="soloUploadArea">◆ Click to select your work file</div>
-          <input type="file" id="soloFileInput" style="display:none">
-          <div class="upload-progress" id="soloProgress">
-            <div class="progress-bar-container"><div class="progress-bar" id="soloProgressBar"></div></div>
-            <div class="progress-text" id="soloProgressText">Uploading...</div>
-          </div>
-          <div class="file-list" id="soloFileList"></div>
-          <div id="soloPreview" class="file-preview hidden"></div>
-        </div>
-        <div class="ownership-box"><strong>Ownership</strong><div class="ownership-row"><span>You (Primary Creator)</span><span class="pct">100%</span></div></div>
-        <div id="soloError" class="status-msg error hidden"></div>
-      </div>
-
-      <div id="collabContent" class="hidden">
-        <div class="creator-files">
-          <h4>Your Contribution</h4>
-          <div class="upload-area" id="primaryUploadArea">◆ Click to upload your contribution</div>
-          <input type="file" id="primaryFileInput" style="display:none">
-          <div class="upload-progress" id="primaryProgress">
-            <div class="progress-bar-container"><div class="progress-bar" id="primaryProgressBar"></div></div>
-            <div class="progress-text" id="primaryProgressText">Uploading...</div>
-          </div>
-          <div class="file-list" id="primaryFileList"></div>
-          <div id="primaryPreview" class="file-preview hidden"></div>
-        </div>
-        <div class="collaborator-section">
-          <h3>Co-owners & Ownership Split</h3>
-          <div class="collaborator-list" id="collaboratorList">
-            <div class="collaborator-item">
-              <div class="collaborator-avatar">👤</div>
-              <div class="collaborator-info"><div class="collaborator-name">You (Primary Creator)</div><div class="collaborator-email" id="primaryEmail">you@seekreap.com</div></div>
-              <div class="split-control"><div class="split-slider"><input type="range" min="0" max="100" value="100" id="primarySplit" disabled><span class="split-percentage" id="primaryPercent">100%</span></div></div>
-              <div class="collab-status owner">Owner</div>
-            </div>
-          </div>
-          <button class="add-collaborator-btn" id="addCollaboratorBtn">+ Add Co-owner</button>
-          <div class="split-summary" id="splitSummary">
-            <strong>Ownership Distribution</strong>
-            <div class="split-visual" id="splitVisual"></div>
-            <div id="splitWarning" class="warning-msg"></div>
-          </div>
-        </div>
-        <div id="collabError" class="status-msg error hidden"></div>
-      </div>
-
-      <div class="button-group">
-        <button class="btn-secondary" id="backToWorkTypeBtn">← Back</button>
-        <button class="btn-primary" id="finalizeBtn">✦ Get Certificate</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Step 4: Certificate -->
-  <div class="workflow-card hidden" id="step4Card">
-    <div class="card-header success-header"><h2>✦ Certificate Ready</h2><p>Your work has been certified and blockchain-timestamped</p></div>
-    <div class="card-body">
-      <div class="certificate-box">
-        <div class="cert-title-area">
-          <svg width="40" height="40" viewBox="0 0 100 100" fill="none" style="margin-bottom:10px;display:block;margin-left:auto;margin-right:auto;">
-            <defs>
-              <linearGradient id="certS" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FAFAF8"/><stop offset="100%" stop-color="#E8C06A"/></linearGradient>
-              <linearGradient id="certR" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C9993A"/><stop offset="100%" stop-color="#9B7520"/></linearGradient>
-            </defs>
-            <text x="6" y="72" font-family="Cormorant Garamond, serif" font-size="60" font-weight="700" fill="url(#certS)">S</text>
-            <text x="52" y="72" font-family="Cormorant Garamond, serif" font-size="60" font-weight="700" fill="url(#certR)">R</text>
-          </svg>
-          <h2>SeekReap Certificate</h2>
-          <p id="certSubtitle">Loading...</p>
-        </div>
-        <div class="cert-divider"></div>
-        <div id="certificateDetails"></div>
-        <div class="cert-qr" id="certQrSection" style="display:none">
-          <img id="certQrImg" src="" alt="Verification QR Code">
-          <p>Scan to verify ownership on-chain</p>
-        </div>
-        <div class="button-group" style="margin-top:20px;">
-          <button class="btn-primary" id="downloadCertBtn">↓ Download Certificate PDF</button>
-          <button class="btn-secondary" id="verifyCertBtn">↗ View Verification</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Co-owner Invite Modal -->
-  <div class="modal" id="inviteModal">
-    <div class="modal-content">
-      <h3>Invitations Sent</h3>
-      <div id="inviteList"></div>
-      <div class="invite-link">
-        <input type="text" id="shareLink" readonly>
-        <button class="copy-btn" onclick="copyLink()">Copy</button>
-      </div>
-      <div class="button-group">
-        <button class="btn-primary" id="closeModalBtn">Get Certificate →</button>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<script>
-  // ── Config ──────────────────────────────────────────────────
-  const TIER4_URL = 'https://seekreap-tier-4-dev.fly.dev';
-  const FIREBASE_UID = (() => {
-    // Try to get from localStorage (set by auth flow) or generate a session ID
-    let uid = localStorage.getItem('seekreap_uid');
-    if (!uid) { uid = 'user_' + Math.random().toString(36).slice(2, 11); localStorage.setItem('seekreap_uid', uid); }
-    return uid;
-  })();
-
-  // ── State ────────────────────────────────────────────────────
-  let currentStep = 1, mode = null, collaborators = [];
-  let uploadedFile = null, submissionId = null;
-  const typeIcons = { audio: '🎵', video: '🎬', image: '🖼️', epub: '📖', pdf: '📄' };
-
-  // ── Helpers ──────────────────────────────────────────────────
-  document.getElementById('workType').addEventListener('change', () => {
-    document.getElementById('workTypeIcon').textContent = typeIcons[document.getElementById('workType').value] || '🎵';
-  });
-
-  function showStep(step) {
-    [1,2,3,4].forEach(i => document.getElementById(`step${i}Card`).classList.add('hidden'));
-    document.getElementById(`step${step}Card`).classList.remove('hidden');
-    [1,2,3,4].forEach(i => {
-      const el = document.getElementById(`step${i}`);
-      el.classList.remove('active','completed');
-      if (i < step) el.classList.add('completed');
-      else if (i === step) el.classList.add('active');
-    });
-    currentStep = step;
-  }
-
-  function updateStepUI() {
-    const step2Icon = document.getElementById('step2Icon');
-    const step3Title = document.getElementById('step3Title');
-    const step3HeaderText = document.getElementById('step3HeaderText');
-    const step3SubText = document.getElementById('step3SubText');
-    if (mode === 'solo') {
-      step2Icon.textContent = '👤';
-      step3Title.textContent = 'Upload Work';
-      if (step3HeaderText) step3HeaderText.textContent = 'Upload Work';
-      step3SubText.textContent = 'Upload your work for blockchain certification';
-    } else {
-      step2Icon.textContent = '👥';
-      step3Title.textContent = 'Upload & Invite';
-      if (step3HeaderText) step3HeaderText.textContent = 'Upload & Invite';
-      step3SubText.textContent = 'Upload your work & invite co-owners';
-    }
-  }
-
-  function showError(id, msg) {
-    const el = document.getElementById(id);
-    if (el) { el.textContent = msg; el.classList.remove('hidden'); }
-  }
-  function hideError(id) {
-    const el = document.getElementById(id);
-    if (el) el.classList.add('hidden');
-  }
-
-  function formatBytes(bytes) {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / 1048576).toFixed(1) + ' MB';
-  }
-
-  // ── Real File Preview (using actual file object) ─────────────
-  function generatePreview(file, containerId) {
-    const container = document.getElementById(containerId);
-    if (!container || !file) return;
-    container.classList.remove('hidden');
-    const url = URL.createObjectURL(file);
-    const type = document.getElementById('workType').value;
-
-    container.innerHTML = `<div class="preview-header"><span>◆ Preview — ${file.name}</span><span>${formatBytes(file.size)}</span></div><div class="preview-content" id="${containerId}_inner"></div>`;
-    const inner = document.getElementById(`${containerId}_inner`);
-
-    if (type === 'audio') {
-      inner.innerHTML = `<div class="audio-preview" style="width:100%"><audio controls style="width:100%"><source src="${url}">Audio not supported.</audio></div>`;
-    } else if (type === 'video') {
-      inner.innerHTML = `<div class="video-preview" style="width:100%"><video controls style="max-width:100%;border-radius:3px"><source src="${url}">Video not supported.</video></div>`;
-    } else if (type === 'image') {
-      inner.innerHTML = `<div class="image-preview"><img src="${url}" alt="Preview" style="border-radius:3px;max-width:100%;max-height:280px;object-fit:contain"></div>`;
-    } else {
-      inner.innerHTML = `<div class="epub-preview" style="width:100%"><p>📄 ${file.name}</p><p style="margin-top:8px;font-size:0.8rem;color:var(--white-dim)">Preview not available for this file type. File is ready for upload.</p></div>`;
-    }
-  }
-
-  // ── Real File Upload to Tier-4 ───────────────────────────────
-  async function uploadFile(file, progressId, barId, textId, listId, previewId) {
-    const progressEl = document.getElementById(progressId);
-    const barEl = document.getElementById(barId);
-    const textEl = document.getElementById(textId);
-    const listEl = document.getElementById(listId);
-
-    progressEl.style.display = 'block';
-    barEl.style.width = '10%';
-    textEl.textContent = 'Preparing upload...';
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('firebase_uid', FIREBASE_UID);
-    formData.append('content_type', document.getElementById('workType').value);
-
-    // Simulate progress during upload (XHR gives real progress, fetch doesn't)
-    let fakeProgress = 10;
-    const progressInterval = setInterval(() => {
-      fakeProgress = Math.min(fakeProgress + 8, 85);
-      barEl.style.width = fakeProgress + '%';
-      textEl.textContent = fakeProgress + '%';
-    }, 200);
-
-    try {
-      const resp = await fetch(`${TIER4_URL}/api/upload`, { method: 'POST', body: formData });
-      clearInterval(progressInterval);
-      const data = await resp.json();
-
-      if (!resp.ok || data.error) throw new Error(data.error || 'Upload failed');
-
-      barEl.style.width = '100%';
-      textEl.textContent = '✓ Uploaded';
-      submissionId = data.submission_id;
-
-      const icon = typeIcons[document.getElementById('workType').value] || '📄';
-      listEl.innerHTML = `<div class="file-item"><span>${icon}</span><span>${file.name}</span><span>${formatBytes(file.size)}</span></div>`;
-
-      generatePreview(file, previewId);
-      return true;
-    } catch (err) {
-      clearInterval(progressInterval);
-      barEl.style.width = '0%';
-      textEl.textContent = 'Upload failed';
-      throw err;
-    }
-  }
-
-  // ── File Upload Area Setup ───────────────────────────────────
-  function setupFileUpload(areaId, inputId, listId, previewId, progressId, barId, textId, errorId) {
-    const area = document.getElementById(areaId);
-    const input = document.getElementById(inputId);
-    if (!area || !input) return;
-
-    area.addEventListener('click', () => input.click());
-
-    area.addEventListener('dragover', e => { e.preventDefault(); area.style.borderColor = 'var(--gold)'; });
-    area.addEventListener('dragleave', () => { area.style.borderColor = ''; });
-    area.addEventListener('drop', e => {
-      e.preventDefault();
-      area.style.borderColor = '';
-      if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
-    });
-
-    input.addEventListener('change', () => { if (input.files[0]) handleFile(input.files[0]); });
-
-    async function handleFile(file) {
-      if (errorId) hideError(errorId);
-      uploadedFile = file;
-      area.classList.add('uploaded');
-      area.textContent = `✓ ${file.name} selected`;
-      try {
-        await uploadFile(file, progressId, barId, textId, listId, previewId);
-      } catch (err) {
-        area.classList.remove('uploaded');
-        area.textContent = '◆ Click to select your work file';
-        uploadedFile = null;
-        submissionId = null;
-        if (errorId) showError(errorId, '⚠ Upload failed: ' + err.message);
-      }
-    }
-  }
-
-  // ── Collaborators ────────────────────────────────────────────
-  function addCoowner(email, split) {
-    collaborators.push({ id: Date.now(), email, split });
-    renderCollaborators();
-    updateSplitSummary();
-  }
-
-  function renderCollaborators() {
-    const container = document.getElementById('collaboratorList');
-    if (!container) return;
-    container.querySelectorAll('.collaborator-item:not(:first-child)').forEach(el => el.remove());
-    collaborators.forEach(c => {
-      const div = document.createElement('div');
-      div.className = 'collaborator-item';
-      div.innerHTML = `
-        <div class="collaborator-avatar">👥</div>
-        <div class="collaborator-info"><div class="collaborator-name">${c.email}</div><div class="collaborator-email">Co-owner · Pending</div></div>
-        <div class="split-control"><div class="split-slider"><input type="range" min="0" max="100" value="${c.split}" data-id="${c.id}" class="split-slider-input"><span class="split-percentage" data-id="${c.id}">${c.split}%</span></div></div>
-        <div class="coowner-actions">
-          <button class="action-btn remove-coowner" data-id="${c.id}">✕ Remove</button>
-        </div>`;
-      container.appendChild(div);
-    });
-    document.querySelectorAll('.split-slider-input').forEach(s => s.addEventListener('input', e => {
-      const id = parseInt(e.target.dataset.id);
-      const c = collaborators.find(c => c.id === id);
-      if (c) { c.split = parseInt(e.target.value); document.querySelector(`.split-percentage[data-id="${id}"]`).textContent = c.split + '%'; updateSplitSummary(); }
-    }));
-    document.querySelectorAll('.remove-coowner').forEach(b => b.addEventListener('click', e => {
-      collaborators = collaborators.filter(c => c.id !== parseInt(e.target.dataset.id));
-      renderCollaborators(); updateSplitSummary();
-    }));
-  }
-
-  function updateSplitSummary() {
-    const totalCollab = collaborators.reduce((s, c) => s + c.split, 0);
-    const primarySplit = 100 - totalCollab;
-    const inp = document.getElementById('primarySplit');
-    const pct = document.getElementById('primaryPercent');
-    if (inp) inp.value = primarySplit;
-    if (pct) pct.textContent = primarySplit + '%';
-    const warning = document.getElementById('splitWarning');
-    if (warning) warning.textContent = primarySplit < 0 ? '⚠ Total exceeds 100%' : '';
-    let html = `<div class="split-piece"><div class="split-circle" style="background:var(--gold);border-radius:3px"></div><div class="split-label">You: ${primarySplit}%</div></div>`;
-    collaborators.forEach(c => { html += `<div class="split-piece"><div class="split-circle" style="background:var(--black-5);border:1px solid var(--border-strong);border-radius:3px"></div><div class="split-label">${c.email}: ${c.split}%</div></div>`; });
-    const sv = document.getElementById('splitVisual');
-    if (sv) sv.innerHTML = html;
-  }
-
-  // ── Certificate Display ──────────────────────────────────────
-  async function showCertificate() {
-    if (!submissionId) return;
-
-    // Poll for completion (max 60s)
-    const btn = document.getElementById('finalizeBtn');
-    btn.disabled = true;
-    btn.textContent = '⏳ Processing...';
-
-    let attempts = 0;
-    const maxAttempts = 20;
-    let statusData = null;
-
-    while (attempts < maxAttempts) {
-      try {
-        const resp = await fetch(`${TIER4_URL}/api/status/${submissionId}`);
-        statusData = await resp.json();
-        if (statusData.status === 'completed' || statusData.status === 'analyzed') break;
-        if (statusData.status === 'pending' || statusData.status === 'processing') {
-          await new Promise(r => setTimeout(r, 3000));
-          attempts++;
-        } else break;
-      } catch { attempts++; await new Promise(r => setTimeout(r, 3000)); }
-    }
-
-    btn.disabled = false;
-    btn.textContent = '✦ Get Certificate';
-
-    const title = document.getElementById('workTitle').value;
-    const workTypeEl = document.getElementById('workType');
-    const workTypeText = workTypeEl.options[workTypeEl.selectedIndex].text.trim();
-    const now = new Date();
-    const dateStr = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-    const shortId = submissionId.split('-')[0].toUpperCase();
-
-    document.getElementById('certSubtitle').textContent = `#SR-${shortId} · Timestamped: ${dateStr}`;
-
-    let ownershipHtml = '';
-    if (mode === 'solo') {
-      ownershipHtml = `<div class="cert-ownership-block"><strong>Ownership</strong><div class="cert-ownership-row"><span>You (Primary Creator)</span><span>100%</span></div></div>`;
-    } else {
-      const primarySplit = 100 - collaborators.reduce((s, c) => s + c.split, 0);
-      const rows = `<div class="cert-ownership-row"><span>You</span><span>${primarySplit}%</span></div>` +
-        collaborators.map(c => `<div class="cert-ownership-row"><span>${c.email}</span><span>${c.split}%</span></div>`).join('');
-      ownershipHtml = `<div class="cert-ownership-block"><strong>Ownership Split</strong>${rows}</div>`;
-    }
-
-    let riskHtml = '';
-    if (statusData && statusData.risk_level) {
-      riskHtml = `<p><strong>Risk Level:</strong> ${statusData.risk_level} (Score: ${parseFloat(statusData.overall_risk_score || 0).toFixed(2)})</p>`;
-    }
-
-    document.getElementById('certificateDetails').innerHTML = `
-      <p><strong>Work:</strong> ${title}</p>
-      <p><strong>Type:</strong> ${workTypeText}</p>
-      <p><strong>File:</strong> ${uploadedFile ? uploadedFile.name : 'N/A'}</p>
-      <p><strong>Submission ID:</strong> <code style="font-size:0.75rem;color:var(--gold)">${submissionId}</code></p>
-      ${riskHtml}
-      ${ownershipHtml}`;
-
-    // Load real QR code
-    const qrSection = document.getElementById('certQrSection');
-    const qrImg = document.getElementById('certQrImg');
-    qrImg.src = `${TIER4_URL}/api/qrcode/${submissionId}`;
-    qrImg.onload = () => { qrSection.style.display = 'block'; };
-
-    showStep(4);
-  }
-
-  // ── Event Listeners ──────────────────────────────────────────
-  document.getElementById('nextToTypeBtn').addEventListener('click', () => {
-    if (!document.getElementById('workTitle').value.trim()) { alert('Please enter a work title.'); return; }
-    showStep(2);
-  });
-
-  document.getElementById('backToDetailsBtn').addEventListener('click', () => showStep(1));
-  document.getElementById('backToWorkTypeBtn').addEventListener('click', () => showStep(2));
-
-  document.getElementById('soloModeBtn').addEventListener('click', () => {
-    mode = 'solo';
-    document.getElementById('soloModeBtn').classList.add('active');
-    document.getElementById('collabModeBtn').classList.remove('active');
-    updateStepUI();
-  });
-
-  document.getElementById('collabModeBtn').addEventListener('click', () => {
-    mode = 'collab';
-    document.getElementById('collabModeBtn').classList.add('active');
-    document.getElementById('soloModeBtn').classList.remove('active');
-    updateStepUI();
-  });
-
-  document.getElementById('nextToWorkBtn').addEventListener('click', () => {
-    if (!mode) { alert('Please select Sole Ownership or Co-ownership.'); return; }
-    showStep(3);
-    document.getElementById('soloContent').classList.toggle('hidden', mode !== 'solo');
-    document.getElementById('collabContent').classList.toggle('hidden', mode !== 'collab');
-  });
-
-  document.getElementById('addCollaboratorBtn').addEventListener('click', () => {
-    const email = prompt('Enter co-owner email address:');
-    if (email) {
-      const maxSplit = 100 - collaborators.reduce((s, c) => s + c.split, 0);
-      const split = parseInt(prompt(`Ownership split % (0–${maxSplit}):`, Math.floor(maxSplit / 2)));
-      if (!isNaN(split) && split >= 0 && split <= maxSplit) addCoowner(email, split);
-      else alert('Invalid split percentage.');
-    }
-  });
-
-  document.getElementById('finalizeBtn').addEventListener('click', async () => {
-    if (!uploadedFile || !submissionId) {
-      const errorId = mode === 'solo' ? 'soloError' : 'collabError';
-      showError(errorId, '⚠ Please upload your work file first.');
-      return;
-    }
-    if (mode === 'collab' && collaborators.length === 0) {
-      showError('collabError', '⚠ Please add at least one co-owner.');
-      return;
-    }
-    if (mode === 'collab') {
-      const inviteList = document.getElementById('inviteList');
-      if (inviteList) inviteList.innerHTML = collaborators.map(c => `<div>→ ${c.email} · ${c.split}% Co-owner</div>`).join('');
-      const shareLink = document.getElementById('shareLink');
-      if (shareLink) shareLink.value = `${TIER4_URL}/verify/${submissionId}`;
-      document.getElementById('inviteModal').classList.add('active');
-    } else {
-      await showCertificate();
-    }
-  });
-
-  document.getElementById('closeModalBtn').addEventListener('click', async () => {
-    document.getElementById('inviteModal').classList.remove('active');
-    await showCertificate();
-  });
-
-  // Real PDF download
-  document.getElementById('downloadCertBtn').addEventListener('click', () => {
-    if (!submissionId) return;
-    window.open(`${TIER4_URL}/certificate-pdf/${submissionId}`, '_blank');
-  });
-
-  // Real verification page
-  document.getElementById('verifyCertBtn').addEventListener('click', () => {
-    if (!submissionId) return;
-    window.open(`${TIER4_URL}/verify/${submissionId}`, '_blank');
-  });
-
-  function copyLink() {
-    const link = document.getElementById('shareLink');
-    if (link) { link.select(); document.execCommand('copy'); alert('Verification link copied!'); }
-  }
-
-  // ── Init ─────────────────────────────────────────────────────
-  setupFileUpload('soloUploadArea', 'soloFileInput', 'soloFileList', 'soloPreview', 'soloProgress', 'soloProgressBar', 'soloProgressText', 'soloError');
-  setupFileUpload('primaryUploadArea', 'primaryFileInput', 'primaryFileList', 'primaryPreview', 'primaryProgress', 'primaryProgressBar', 'primaryProgressText', 'collabError');
-  updateSplitSummary();
-</script>
+  <script>
+    // Auto-redirect after exactly 3 seconds
+    setTimeout(() => {
+      document.body.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = 'home.html';
+      }, 600);
+    }, 5000);
+  </script>
 </body>
 </html>
