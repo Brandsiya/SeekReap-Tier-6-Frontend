@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/assets/css/signup_signin.css">
 </head>
 <body>
-    <!-- Floating particles (matching home page aesthetic) -->
+    <!-- Floating particles -->
     <div class="particle" style="width: 2px; height: 2px; left: 10%; animation-duration: 15s;"></div>
     <div class="particle" style="width: 3px; height: 3px; left: 20%; animation-duration: 25s; animation-delay: -5s;"></div>
     <div class="particle" style="width: 1px; height: 1px; left: 30%; animation-duration: 18s;"></div>
@@ -35,7 +35,7 @@
             <!-- Sign In Form -->
             <div id="signin-form" class="auth-form">
                 <h2 class="form-title">Log Into Your Account</h2>
-                
+
                 <div class="input-group">
                     <label>Email Address</label>
                     <div class="input-wrapper">
@@ -60,9 +60,9 @@
                     </label>
                     <a href="#" class="forgot-link" onclick="handleForgotPassword(); return false;">Forgot password?</a>
                 </div>
-                
-                <button class="auth-btn" onclick="window.location.href='certification_portal.html'">
-                <i class="fas fa-arrow-right"></i> Sign In
+
+                <button class="auth-btn" onclick="handleSignIn()">
+                    <i class="fas fa-arrow-right"></i> Sign In
                 </button>
 
                 <div class="social-login">
@@ -127,8 +127,8 @@
                     </label>
                 </div>
 
-                <button class="auth-btn" onclick="window.location.href='certification_portal.html'">
-                <i class="fas fa-user-plus"></i> Create Account
+                <button class="auth-btn" onclick="handleSignUp()">
+                    <i class="fas fa-user-plus"></i> Create Account
                 </button>
 
                 <div class="social-login">
@@ -152,7 +152,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="config.js"></script>
-    <script src="assets/js/signup_signin.js"></script>
+    <script src="/config.js"></script>
+    <script src="/assets/js/signup_signin.js"></script>
 </body>
 </html>

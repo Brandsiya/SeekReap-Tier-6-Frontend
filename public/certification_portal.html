@@ -1,3 +1,17 @@
+<script>
+// Check if user is authenticated
+const isAuthenticated = sessionStorage.getItem("seekreap_auth") === "true" || localStorage.getItem("seekreap_user_uid");
+if (!isAuthenticated && !window.location.pathname.includes("signup_signin.html")) {
+  window.location.href = "signup_signin.html";
+}
+
+// Set user email in the form if available
+const userEmail = sessionStorage.getItem("seekreap_user_email") || localStorage.getItem("seekreap_user_email");
+if (userEmail && document.getElementById("primaryEmail")) {
+  document.getElementById("primaryEmail").textContent = userEmail;
+}
+</script>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
