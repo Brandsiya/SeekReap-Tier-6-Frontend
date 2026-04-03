@@ -1,6 +1,4 @@
-// DEBUG: Confirm the script actually loaded
-console.log("🚀 SeekReap Auth Script Loaded");
-
+// --- UI Helpers ---
 function switchTab(tab) {
     const isSignin = tab === 'signin';
     document.getElementById('signin-tab').classList.toggle('active', isSignin);
@@ -9,57 +7,65 @@ function switchTab(tab) {
     document.getElementById('signup-form').classList.toggle('hidden', isSignin);
 }
 
+function togglePassword(inputId, icon) {
+    const input = document.getElementById(inputId);
+    input.type = input.type === 'password' ? 'text' : 'password';
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+}
+
+// --- Social Logins ---
+function handleSocialLogin(provider) {
+    alert(`${provider} integration coming soon to SeekReap.`);
+}
+
+function handleForgotPassword() {
+    alert("Password reset functionality coming soon.");
+}
+
+// --- Core Auth Logic ---
 async function handleSignIn() {
-    console.log("Attempting Sign In...");
-    
-    // Check if Supabase is actually alive
-    if (typeof supabase === 'undefined' || !window.supabase) {
-        alert("CRITICAL ERROR: Supabase SDK is not initialized. Check your console (F12).");
-        return;
-    }
-
-    const email = document.getElementById('signin-email').value.trim();
-    const password = document.getElementById('signin-password').value;
-
+    console.log("Submit: Sign In Triggered");
     try {
-        const { data, error } = await window.supabase.auth.signInWithPassword({
-            email,
-            password
+        const emailEl = document.getElementById('signin-email');
+        const passEl = document.getElementById('signin-password');
+        
+        if (!emailEl || !passEl) throw new Error("HTML Input IDs 'signin-email' or 'signin-password' are missing!");
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: emailEl.value.trim(),
+            password: passEl.value
         });
 
         if (error) throw error;
-
-        console.log("Success!", data);
         window.location.href = 'certification_portal.html';
     } catch (err) {
-        console.error("Auth Error:", err);
-        alert("Sign In Failed: " + err.message);
+        console.error(err);
+        alert("Sign In Error: " + err.message);
     }
 }
 
 async function handleSignUp() {
-    console.log("Attempting Sign Up...");
-    
-    if (typeof supabase === 'undefined' || !window.supabase) {
-        alert("CRITICAL ERROR: Supabase SDK is not initialized.");
-        return;
-    }
-
-    const email = document.getElementById('signup-email').value.trim();
-    const password = document.getElementById('signup-password').value;
-    const name = document.getElementById('signup-name').value.trim();
-
+    console.log("Submit: Sign Up Triggered");
     try {
-        const { data, error } = await window.supabase.auth.signUp({
-            email,
-            password,
-            options: { data: { full_name: name } }
+        const nameEl = document.getElementById('signup-name');
+        const emailEl = document.getElementById('signup-email');
+        const passEl = document.getElementById('signup-password');
+        const confirmEl = document.getElementById('signup-confirm-password');
+
+        if (!emailEl || !passEl) throw new Error("HTML Input IDs missing for signup!");
+        if (passEl.value !== confirmEl.value) throw new Error("Passwords do not match!");
+
+        const { data, error } = await supabase.auth.signUp({
+            email: emailEl.value.trim(),
+            password: passEl.value,
+            options: { data: { full_name: nameEl.value } }
         });
 
         if (error) throw error;
-        alert("Registration successful! Check your email for a confirmation link.");
+        alert("Account created! Check your email for confirmation.");
     } catch (err) {
-        console.error("Signup Error:", err);
-        alert("Sign Up Failed: " + err.message);
+        console.error(err);
+        alert("Sign Up Error: " + err.message);
     }
 }
