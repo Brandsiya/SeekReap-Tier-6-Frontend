@@ -1,25 +1,6 @@
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="/supabase-config.js"></script>
-<script src="/auth-guard.js"></script>
-
-<script>
-// Check if user is authenticated
-const isAuthenticated = sessionStorage.getItem("seekreap_auth") === "true" || localStorage.getItem("seekreap_user_uid");
-if (!isAuthenticated && !window.location.pathname.includes("signup_signin.html")) {
-  window.location.href = "signup_signin.html";
-}
-
-// Set user email in the form if available
-const userEmail = sessionStorage.getItem("seekreap_user_email") || localStorage.getItem("seekreap_user_email");
-if (userEmail && document.getElementById("primaryEmail")) {
-  document.getElementById("primaryEmail").textContent = userEmail;
-}
-</script>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script><script src="/config.js"></script><script src="/auth_guard.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>SeekReap · Certify Your Creative Work | Blockchain Timestamp for Creators</title>
@@ -486,7 +467,7 @@ if (userEmail && document.getElementById("primaryEmail")) {
     <div class="step active" id="step1"><div class="step-number">1</div><span class="step-icon">◆</span><span>Work Details</span></div>
     <div class="step" id="step2"><div class="step-number">2</div><span class="step-icon" id="step2Icon">◈</span><span id="step2Text">Ownership Type</span></div>
     <div class="step" id="step3"><div class="step-number">3</div><span class="step-icon">◇</span><span id="step3Title">Upload Work</span></div>
-    <div class="step" id="step4"><div class="step-number">4</div><span class="step-icon">✦</span><span>Certify</span></div>
+    <div class="step" id="step4"><div class="step-number">4</div><span class="step-icon">✦</span><span>Certificate</span></div>
   </div>
 
   <!-- Step 1: Work Details -->
@@ -522,7 +503,7 @@ if (userEmail && document.getElementById("primaryEmail")) {
       </div>
 
       <div id="collabContent" class="hidden">
-        <div class="creator-files"><h4>YOUR WORK FILE</h4><div class="upload-area" id="primaryUploadArea">◆ Click to upload your contribution</div><div class="upload-progress" id="primaryProgress"><div class="progress-bar-container"><div class="progress-bar" id="primaryProgressBar"></div></div><div class="progress-text" id="primaryProgressText">Uploading...</div></div><div class="file-list" id="primaryFileList"></div><div id="primaryPreview" class="file-preview hidden"></div></div>
+        <div class="creator-files"><h4>Your Contribution</h4><div class="upload-area" id="primaryUploadArea">◆ Click to upload your contribution</div><div class="upload-progress" id="primaryProgress"><div class="progress-bar-container"><div class="progress-bar" id="primaryProgressBar"></div></div><div class="progress-text" id="primaryProgressText">Uploading...</div></div><div class="file-list" id="primaryFileList"></div><div id="primaryPreview" class="file-preview hidden"></div></div>
 
         <div class="collaborator-section">
           <h3>Co-owners & Ownership Split</h3>
@@ -539,7 +520,7 @@ if (userEmail && document.getElementById("primaryEmail")) {
         </div>
       </div>
 
-      <div class="button-group"><button class="btn-secondary" id="backToWorkTypeBtn">← Back</button><button class="btn-primary" id="finalizeBtn">✦ Get Certify</button></div>
+      <div class="button-group"><button class="btn-secondary" id="backToWorkTypeBtn">← Back</button><button class="btn-primary" id="finalizeBtn">✦ Get Certificate</button></div>
     </div>
   </div>
 

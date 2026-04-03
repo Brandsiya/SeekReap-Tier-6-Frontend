@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Supabase Credentials</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #0a0a0a;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .card {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            border: 1px solid #333;
+        }
+        .success { color: #3DB87A; }
+        .error { color: #E05555; }
+        .info { color: #C9993A; }
+        pre {
+            background: #0a0a0a;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        button {
+            background: #C9993A;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>🔧 Supabase Credentials Test</h2>
+        
+        <div id="status">Enter your credentials below</div>
+        
+        <div style="margin-top: 20px;">
+            <label>Project URL:</label>
+            <input type="text" id="urlInput" placeholder="https://your-project.supabase.co" value="https://hpbxczsxngxgpgogctge.supabase.co">
+            <label>Anon Key (publishable):</label>
+            <input type="text" id="keyInput" placeholder="sb_publishable_...">
+            <button onclick="testCredentials()">Test Connection</button>
+        </div>
+        
+        <div id="result" style="margin-top: 20px;"></div>
+        
+        <div id="instructions" style="margin-top: 20px; font-size: 12px; color: #888;">
+            <strong>Instructions:</strong><br>
+            1. Get your Publishable Key from: Supabase Dashboard → Settings → API Keys<br>
+            2. Paste it in the Anon Key field above<br>
+            3. Click Test Connection<br>
+            4. Once successful, visit <a href="/supabase-auth.html" style="color:#C9993A;">supabase-auth.html</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        async function testCredentials() {
+            const url = document.getElementById('urlInput').value;
+            const key = document.getElementById('keyInput').value;
+            const resultDiv = document.getElementById('result');
+            const statusDiv = document.getElementById('status');
+            
+            if (!url || !key) {
+                resultDiv.innerHTML = '<div class="error">❌ Please enter both URL and API key</div>';
+                return;
+            }
+            
+            statusDiv.innerHTML = '🔄 Testing connection...';
+            resultDiv.innerHTML = '';
+            
+            try {
+                const supabase = window.supabase.createClient(url, key);
+                const { data, error } = await supabase.auth.getSession();
+                
+                if (error) throw error;
+                
+                statusDiv.innerHTML = '<span class="success">✅ Connection successful!</span>';
+                resultDiv.innerHTML = `
+                    <div class="success">✅ Your credentials are correct!</div>
+                    <div style="margin-top: 15px;">
+                        <strong>Next steps:</strong><br>
+                        1. Your config is ready to use<br>
+                        2. Visit: <a href="/supabase-auth.html" style="color: #C9993A;">supabase-auth.html</a>
+                    </div>
+                `;
+                
+                // Save the working key to sessionStorage
+                sessionStorage.setItem('working_key', key);
+                
+            } catch (err) {
+                statusDiv.innerHTML = '<span class="error">❌ Connection failed</span>';
+                resultDiv.innerHTML = `<div class="error">Error: ${err.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeekReap - Sign In & Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/signup_signin.css">
+</head>
+<body>
+    <!-- Floating particles -->
+    <div class="particle" style="width: 2px; height: 2px; left: 10%; animation-duration: 15s;"></div>
+    <div class="particle" style="width: 3px; height: 3px; left: 20%; animation-duration: 25s; animation-delay: -5s;"></div>
+    <div class="particle" style="width: 1px; height: 1px; left: 30%; animation-duration: 18s;"></div>
+    <div class="particle" style="width: 2px; height: 2px; left: 45%; animation-duration: 22s; animation-delay: -2s;"></div>
+    <div class="particle" style="width: 2px; height: 2px; left: 60%; animation-duration: 20s;"></div>
+    <div class="particle" style="width: 1px; height: 1px; left: 75%; animation-duration: 28s; animation-delay: -7s;"></div>
+    <div class="particle" style="width: 3px; height: 3px; left: 85%; animation-duration: 24s;"></div>
+
+    <div class="auth-container">
+        <div class="brand-logo">
+            <i class="fas fa-shield-alt"></i>
+            <span>Seek<span style="color: var(--accent);">Reap</span></span>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" id="signin-tab" onclick="switchTab('signin')">Sign In</div>
+            <div class="tab" id="signup-tab" onclick="switchTab('signup')">Sign Up</div>
+        </div>
+
+        <div class="forms-container">
+            <div id="message-container"></div>
+
+            <!-- Sign In Form -->
+            <div id="signin-form" class="auth-form">
+                <h2 class="form-title">Log Into Your Account</h2>
+
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="signin-email" placeholder="creator@seekreap.io" autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signin-password" placeholder="••••••••" autocomplete="current-password">
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword('signin-password', this)"></i>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="remember-me">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-link" onclick="handleForgotPassword(); return false;">Forgot password?</a>
+                </div>
+
+                <button class="auth-btn" onclick="handleSignIn()">
+                    <i class="fas fa-arrow-right"></i> Sign In
+                </button>
+
+                <div class="social-login">
+                    <p>Or continue with</p>
+                    <div class="social-buttons">
+                        <button class="social-btn google" onclick="handleSocialLogin('google')">
+                            <i class="fab fa-google"></i> Google
+                        </button>
+                        <button class="social-btn microsoft" onclick="handleSocialLogin('microsoft')">
+                            <i class="fab fa-microsoft"></i> Microsoft
+                        </button>
+                    </div>
+                </div>
+
+                <div class="terms">
+                    Don't have an account? <a href="#" onclick="switchTab('signup'); return false;">Sign up</a>
+                </div>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div id="signup-form" class="auth-form hidden">
+                <h2 class="form-title">Create Your Account</h2>
+
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="signup-name" placeholder="Alex Creator" autocomplete="name">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="signup-email" placeholder="creator@seekreap.io" autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signup-password" placeholder="••••••••" autocomplete="new-password">
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword('signup-password', this)"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Confirm Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signup-confirm-password" placeholder="••••••••" autocomplete="new-password">
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword('signup-confirm-password', this)"></i>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="accept-terms">
+                        <span>I agree to the <a href="#" style="color: var(--accent);">Terms of Service</a> & <a href="#" style="color: var(--accent);">Privacy Policy</a></span>
+                    </label>
+                </div>
+
+                <button class="auth-btn" onclick="handleSignUp()">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+
+                <div class="social-login">
+                    <p>Or sign up with</p>
+                    <div class="social-buttons">
+                        <button class="social-btn google" onclick="handleSocialLogin('google')">
+                            <i class="fab fa-google"></i> Google
+                        </button>
+                        <button class="social-btn microsoft" onclick="handleSocialLogin('microsoft')">
+                            <i class="fab fa-microsoft"></i> Microsoft
+                        </button>
+                    </div>
+                </div>
+
+                <div class="terms">
+                    Already have an account? <a href="#" onclick="switchTab('signin'); return false;">Sign in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/config.js"></script>
+    <script src="/assets/js/signup_signin.js"></script>
+</body>
+</html>

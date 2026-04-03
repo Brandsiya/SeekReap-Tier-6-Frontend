@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeekReap - Sign In with Supabase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(201, 153, 58, 0.2);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo h1 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #C9993A, #E8C06A);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo p {
+            color: #888;
+            margin-top: 8px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            border-bottom: 1px solid #333;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            color: #888;
+            font-weight: 600;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            color: #C9993A;
+            border-bottom-color: #C9993A;
+        }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #C9993A;
+            box-shadow: 0 0 0 2px rgba(201, 153, 58, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #C9993A, #E8C06A);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-google {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-google:hover {
+            background: #333;
+            border-color: #C9993A;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #333;
+        }
+
+        .divider span {
+            background: #141414;
+            padding: 0 10px;
+            position: relative;
+            color: #888;
+            font-size: 12px;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .message.success {
+            background: rgba(61, 184, 122, 0.1);
+            border: 1px solid #3DB87A;
+            color: #3DB87A;
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(224, 85, 85, 0.1);
+            border: 1px solid #E05555;
+            color: #E05555;
+            display: block;
+        }
+
+        .message.info {
+            background: rgba(201, 153, 58, 0.1);
+            border: 1px solid #C9993A;
+            color: #C9993A;
+            display: block;
+        }
+
+        .terms {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .terms a {
+            color: #C9993A;
+            text-decoration: none;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: 8px;
+        }
+
+        .forgot-password a {
+            color: #888;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .forgot-password a:hover {
+            color: #C9993A;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <div class="logo">
+            <h1>SeekReap</h1>
+            <p>Protect your creative work</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('signin')">Sign In</div>
+            <div class="tab" onclick="switchTab('signup')">Sign Up</div>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <!-- Sign In Form -->
+        <div id="signin-form" class="form active">
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="signin-email" placeholder="creator@seekreap.io">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="signin-password" placeholder="Enter your password">
+            </div>
+            <div class="forgot-password">
+                <a href="#" onclick="handleForgotPassword(); return false;">Forgot password?</a>
+            </div>
+            <button class="btn-primary" onclick="handleSignIn()">
+                <i class="fas fa-arrow-right"></i> Sign In
+            </button>
+            <button class="btn-google" onclick="handleGoogleSignIn()">
+                <i class="fab fa-google"></i> Continue with Google
+            </button>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div id="signup-form" class="form">
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="signup-name" placeholder="Alex Creator">
+            </div>
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="signup-email" placeholder="creator@seekreap.io">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="signup-password" placeholder="Minimum 6 characters">
+            </div>
+            <button class="btn-primary" onclick="handleSignUp()">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+            <div class="divider">
+                <span>or</span>
+            </div>
+            <button class="btn-google" onclick="handleGoogleSignIn()">
+                <i class="fab fa-google"></i> Sign up with Google
+            </button>
+        </div>
+
+        <div class="terms">
+            By continuing, you agree to SeekReap's 
+            <a href="#">Terms of Service</a> and 
+            <a href="#">Privacy Policy</a>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/supabase-config.js"></script>
+    <script>
+        function showMessage(msg, type) {
+            const el = document.getElementById('message');
+            el.textContent = msg;
+            el.className = `message ${type}`;
+            setTimeout(() => {
+                el.style.display = 'none';
+                el.className = 'message';
+            }, 5000);
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`${tab}-tab`).classList.add('active');
+            document.getElementById('signin-form').classList.toggle('active', tab === 'signin');
+            document.getElementById('signup-form').classList.toggle('active', tab === 'signup');
+            document.getElementById('message').style.display = 'none';
+        }
+
+        async function handleSignIn() {
+            const email = document.getElementById('signin-email').value;
+            const password = document.getElementById('signin-password').value;
+
+            if (!email || !password) {
+                showMessage('Please enter both email and password', 'error');
+                return;
+            }
+
+            showMessage('Signing in...', 'info');
+            
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            if (error) {
+                showMessage(error.message, 'error');
+            } else {
+                showMessage('✅ Signed in successfully! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'certification_portal.html';
+                }, 1500);
+            }
+        }
+
+        async function handleSignUp() {
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+
+            if (!name || !email || !password) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            showMessage('Creating account...', 'info');
+
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        full_name: name
+                    }
+                }
+            });
+
+            if (error) {
+                showMessage(error.message, 'error');
+            } else {
+                showMessage('✅ Account created! Please check your email to confirm.', 'success');
+                setTimeout(() => {
+                    switchTab('signin');
+                    document.getElementById('signin-email').value = email;
+                }, 2000);
+            }
+        }
+
+        async function handleGoogleSignIn() {
+            showMessage('Redirecting to Google...', 'info');
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin + '/certification_portal.html'
+                }
+            });
+
+            if (error) {
+                showMessage(error.message, 'error');
+            }
+        }
+
+        async function handleForgotPassword() {
+            const email = document.getElementById('signin-email').value;
+            if (!email) {
+                showMessage('Please enter your email address', 'error');
+                return;
+            }
+
+            showMessage('Sending reset email...', 'info');
+
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin + '/reset-password.html'
+            });
+
+            if (error) {
+                showMessage(error.message, 'error');
+            } else {
+                showMessage('✅ Password reset email sent! Check your inbox.', 'success');
+            }
+        }
+
+        // Check if user is already logged in
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session && window.location.pathname.includes('supabase-auth.html')) {
+                window.location.href = 'certification_portal.html';
+            }
+        }
+
+        checkAuth();
+    </script>
+</body>
+</html>

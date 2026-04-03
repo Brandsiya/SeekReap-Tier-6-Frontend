@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeekReap - Content Verification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        h2 {
+            font-size: 20px;
+            color: #555;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 24px;
+        }
+        
+        .verification-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        @media (max-width: 768px) {
+            .verification-methods {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .method-card {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        
+        .method-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .method-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #667eea;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-family: monospace;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        button:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+        
+        button.secondary {
+            background: #48bb78;
+        }
+        
+        button.secondary:hover {
+            background: #38a169;
+        }
+        
+        .result {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            border-left: 4px solid #667eea;
+            font-family: monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            word-break: break-all;
+        }
+        
+        .result.success {
+            border-left-color: #48bb78;
+            background: #f0fdf4;
+        }
+        
+        .result.error {
+            border-left-color: #f56565;
+            background: #fff5f5;
+        }
+        
+        .result.warning {
+            border-left-color: #ed8936;
+            background: #fffaf0;
+        }
+        
+        .qr-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .qr-container img {
+            max-width: 200px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 12px;
+            background: white;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-processing { background: #dbeafe; color: #2563eb; }
+        .status-completed { background: #d1fae5; color: #059669; }
+        .status-failed { background: #fee2e2; color: #dc2626; }
+        
+        .risk-critical { background: #fee2e2; color: #dc2626; }
+        .risk-high { background: #ffedd5; color: #ea580c; }
+        .risk-medium { background: #fef9c3; color: #ca8a04; }
+        .risk-low { background: #d1fae5; color: #059669; }
+        
+        .hash-display {
+            background: #2d3748;
+            color: #68d391;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .verification-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .verification-summary h3 {
+            margin-bottom: 12px;
+        }
+        
+        .verification-summary .verified {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .copy-btn {
+            background: #2d3748;
+            font-size: 12px;
+            padding: 4px 8px;
+        }
+        
+        .copy-btn:hover {
+            background: #1a202c;
+        }
+    </style>
+    <link rel="stylesheet" href="/emblems/logo-styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🔍 SeekReap Content Verification</h1>
+            <p class="subtitle">Verify content authenticity using QR codes or cryptographic hashes</p>
+        </div>
+
+        <div class="verification-methods">
+            <!-- QR Code Verification Method -->
+            <div class="method-card">
+                <div class="method-title">📱 QR Code Verification</div>
+                <p style="color: #666; margin-bottom: 16px;">Scan the QR code or upload an image to verify content authenticity</p>
+                
+                <input type="text" id="qrSubmissionId" placeholder="Enter Submission ID from QR code" 
+                       value="">
+                <button onclick="verifyByQR()">Verify by ID</button>
+                <button class="secondary" onclick="scanQRCode()">📷 Scan QR Code</button>
+                
+                <div id="qrResult" class="result"></div>
+                <div id="qrPreview" class="qr-container"></div>
+            </div>
+
+            <!-- Hash Verification Method -->
+            <div class="method-card">
+                <div class="method-title">🔐 Hash Verification</div>
+                <p style="color: #666; margin-bottom: 16px;">Verify content using SHA-256 hash or submission ID</p>
+                
+                <textarea id="hashInput" rows="3" placeholder="Enter SHA-256 hash, submission ID, or content URL..."></textarea>
+                <button onclick="verifyByHash()">Verify by Hash</button>
+                <button class="secondary" onclick="verifyByUrl()">Verify by URL</button>
+                
+                <div id="hashResult" class="result"></div>
+            </div>
+        </div>
+
+        <!-- Verification Details Section -->
+        <div class="card" id="detailsSection" style="display: none;">
+            <h2>📄 Verification Details</h2>
+            <div id="verificationDetails"></div>
+        </div>
+
+        <!-- Blockchain Proof Section -->
+        <div class="card" id="proofSection" style="display: none;">
+            <h2>⛓️ Blockchain Proof</h2>
+            <div id="proofDetails"></div>
+        </div>
+
+        <!-- Recent Verifications -->
+        <div class="card" id="recentSection">
+            <h2>🕒 Recent Verifications</h2>
+            <div id="recentList"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
+    <script>
+        // API Configuration
+        const TIER4_URL = window.API_CONFIG?.TIER4_URL || "https://seekreap-tier-4-dev.fly.dev";
+        const BACKEND_URL = window.API_CONFIG?.BASE_URL || "https://seekreap-backend-dev.fly.dev";
+        
+        // Store recent verifications in localStorage
+        let recentVerifications = JSON.parse(localStorage.getItem('recentVerifications') || '[]');
+        
+        // Initialize recent verifications display
+        function updateRecentVerifications() {
+            const container = document.getElementById('recentList');
+            if (!container) return;
+            
+            if (recentVerifications.length === 0) {
+                container.innerHTML = '<p style="color: #666;">No recent verifications yet. Verify some content to see it here.</p>';
+                return;
+            }
+            
+            container.innerHTML = recentVerifications.slice(0, 5).map(v => `
+                <div style="padding: 12px; border-bottom: 1px solid #e0e0e0;">
+                    <strong>${v.type}</strong> - 
+                    <span class="status-badge ${v.status === 'verified' ? 'status-completed' : 'status-failed'}">
+                        ${v.status === 'verified' ? '✓ Verified' : '✗ Failed'}
+                    </span>
+                    <span style="color: #666; font-size: 12px;">${new Date(v.timestamp).toLocaleString()}</span>
+                    <div style="font-size: 12px; color: #666; margin-top: 4px;">${v.identifier}</div>
+                </div>
+            `).join('');
+        }
+        
+        function addToRecent(type, identifier, status, details) {
+            recentVerifications.unshift({
+                type,
+                identifier,
+                status,
+                details,
+                timestamp: new Date().toISOString()
+            });
+            // Keep only last 20
+            recentVerifications = recentVerifications.slice(0, 20);
+            localStorage.setItem('recentVerifications', JSON.stringify(recentVerifications));
+            updateRecentVerifications();
+        }
+        
+        async function fetchSubmission(submissionId) {
+            const response = await fetch(`${TIER4_URL}/api/status/${submissionId}`);
+            if (!response.ok) {
+                if (response.status === 404) {
+                    throw new Error('Submission not found');
+                }
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return await response.json();
+        }
+        
+        function displayVerificationDetails(data, submissionId) {
+            const detailsSection = document.getElementById('detailsSection');
+            const detailsDiv = document.getElementById('verificationDetails');
+            const proofSection = document.getElementById('proofSection');
+            const proofDiv = document.getElementById('proofDetails');
+            
+            const riskClass = `risk-${data.risk_level || 'low'}`;
+            
+            detailsDiv.innerHTML = `
+                <div style="display: grid; gap: 16px;">
+                    <div><strong>Submission ID:</strong> <code>${data.id}</code></div>
+                    <div><strong>Content URL:</strong> <a href="${data.content_url}" target="_blank">${data.content_url || 'N/A'}</a></div>
+                    <div><strong>Status:</strong> <span class="status-badge status-${data.status}">${data.status}</span></div>
+                    <div><strong>Risk Score:</strong> ${data.overall_risk_score || 'N/A'}</div>
+                    <div><strong>Risk Level:</strong> <span class="status-badge ${riskClass}">${data.risk_level || 'pending'}</span></div>
+                    <div><strong>Submitted:</strong> ${new Date(data.submitted_at).toLocaleString()}</div>
+                    <div><strong>Completed:</strong> ${data.completed_at ? new Date(data.completed_at).toLocaleString() : 'Pending'}</div>
+                    ${data.matches && data.matches.length > 0 ? `
+                        <div><strong>🎯 Matches Found (${data.matches.length}):</strong></div>
+                        ${data.matches.map(m => `
+                            <div style="margin-left: 20px; padding: 8px; background: #f7fafc; border-radius: 8px;">
+                                • Similarity: ${(m.similarity_score * 100).toFixed(1)}%<br>
+                                • Type: ${m.match_type}<br>
+                                • Severity: <span class="status-badge risk-${m.severity}">${m.severity}</span><br>
+                                • Matched ID: <code>${m.matched_submission_id}</code>
+                            </div>
+                        `).join('')}
+                    ` : '<div>✅ No matches found - Content appears to be unique</div>'}
+                </div>
+            `;
+            
+            detailsSection.style.display = 'block';
+            
+            // Check for blockchain proof
+            if (data.blockchain_proof) {
+                proofDiv.innerHTML = `
+                    <div style="background: #2d3748; color: #68d391; padding: 16px; border-radius: 8px;">
+                        <div><strong>Proof Hash:</strong> <code>${data.blockchain_proof.proof_hash || 'N/A'}</code></div>
+                        <div><strong>Timestamp:</strong> ${data.blockchain_proof.timestamp || 'N/A'}</div>
+                        <div><strong>Method:</strong> ${data.blockchain_proof.method || 'seekreap-sha256-v1'}</div>
+                        <button class="copy-btn" onclick="navigator.clipboard.writeText('${data.blockchain_proof.proof_hash || ''}')">Copy Proof Hash</button>
+                    </div>
+                `;
+                proofSection.style.display = 'block';
+            } else {
+                proofSection.style.display = 'none';
+            }
+            
+            // Generate QR code preview
+            const qrPreview = document.getElementById('qrPreview');
+            qrPreview.innerHTML = `
+                <h3 style="margin-top: 16px;">🔲 Verification QR Code</h3>
+                <img src="${TIER4_URL}/api/qrcode/${submissionId}" alt="QR Code" 
+                     onerror="this.parentElement.innerHTML='<p>QR code not available</p>'">
+                <div style="margin-top: 12px;">
+                    <button onclick="window.open('${TIER4_URL}/api/qrcode/${submissionId}')">View Full Size</button>
+                    <button onclick="downloadQRCode('${submissionId}')">Download PNG</button>
+                    <button onclick="downloadCertificatePDF('${submissionId}')">Download Certificate PDF</button>
+                </div>
+            `;
+        }
+        
+        async function verifyByQR() {
+            const submissionId = document.getElementById('qrSubmissionId').value.trim();
+            if (!submissionId) {
+                alert('Please enter a Submission ID');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('qrResult');
+            resultDiv.innerHTML = '<div class="loading"></div> Verifying...';
+            resultDiv.className = 'result';
+            
+            try {
+                const data = await fetchSubmission(submissionId);
+                
+                resultDiv.innerHTML = `
+                    <div class="verification-summary">
+                        <h3>✓ Verification Successful</h3>
+                        <div class="verified">Content Authenticity Verified</div>
+                        <p>This content has been verified and registered on the SeekReap platform.</p>
+                    </div>
+                `;
+                resultDiv.classList.add('success');
+                
+                displayVerificationDetails(data, submissionId);
+                addToRecent('QR Code', submissionId, 'verified', data);
+                
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div style="color: #dc2626;">
+                        <strong>❌ Verification Failed</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+                resultDiv.classList.add('error');
+                addToRecent('QR Code', submissionId, 'failed', error.message);
+            }
+        }
+        
+        async function verifyByHash() {
+            const hashInput = document.getElementById('hashInput').value.trim();
+            if (!hashInput) {
+                alert('Please enter a hash, submission ID, or URL');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('hashResult');
+            resultDiv.innerHTML = '<div class="loading"></div> Verifying...';
+            resultDiv.className = 'result';
+            
+            try {
+                // Try as submission ID first
+                let submissionId = hashInput;
+                let data = null;
+                
+                try {
+                    data = await fetchSubmission(hashInput);
+                } catch (e) {
+                    // Not a valid submission ID, try searching by hash or URL
+                    // For now, just show that we need to search
+                    throw new Error('No submission found matching this identifier');
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="verification-summary">
+                        <h3>✓ Hash Verified</h3>
+                        <div class="verified">Content Integrity Confirmed</div>
+                        <p>The content hash matches the registered record in the SeekReap database.</p>
+                    </div>
+                `;
+                resultDiv.classList.add('success');
+                
+                displayVerificationDetails(data, submissionId);
+                addToRecent('Hash', hashInput.substring(0, 32) + '...', 'verified', data);
+                
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div style="color: #dc2626;">
+                        <strong>❌ Verification Failed</strong><br>
+                        ${error.message}<br><br>
+                        <small>Make sure you entered a valid Submission ID or content hash.</small>
+                    </div>
+                `;
+                resultDiv.classList.add('error');
+                addToRecent('Hash', hashInput.substring(0, 32) + '...', 'failed', error.message);
+            }
+        }
+        
+        async function verifyByUrl() {
+            const url = document.getElementById('hashInput').value.trim();
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('hashResult');
+            resultDiv.innerHTML = '<div class="loading"></div> Searching...';
+            resultDiv.className = 'result';
+            
+            try {
+                // Search for content by URL
+                const response = await fetch(`${BACKEND_URL}/api/submissions/search?url=${encodeURIComponent(url)}`);
+                if (!response.ok) {
+                    throw new Error('No content found for this URL');
+                }
+                
+                const submissions = await response.json();
+                if (!submissions.length) {
+                    throw new Error('No matching content found');
+                }
+                
+                const data = submissions[0];
+                
+                resultDiv.innerHTML = `
+                    <div class="verification-summary">
+                        <h3>✓ Content Found</h3>
+                        <div class="verified">Content Verified</div>
+                        <p>This URL has been submitted and verified on the SeekReap platform.</p>
+                    </div>
+                `;
+                resultDiv.classList.add('success');
+                
+                displayVerificationDetails(data, data.id);
+                addToRecent('URL', url, 'verified', data);
+                
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div style="color: #dc2626;">
+                        <strong>❌ Not Found</strong><br>
+                        ${error.message}<br><br>
+                        <small>This URL has not been registered or verified yet.</small>
+                    </div>
+                `;
+                resultDiv.classList.add('error');
+                addToRecent('URL', url, 'failed', error.message);
+            }
+        }
+        
+        function downloadQRCode(submissionId) {
+            const link = document.createElement('a');
+            link.href = `${TIER4_URL}/api/qrcode/${submissionId}`;
+            link.download = `qrcode_${submissionId}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function downloadCertificatePDF(submissionId) {
+            const link = document.createElement('a');
+            link.href = `${TIER4_URL}/certificate-pdf/${submissionId}`;
+            link.download = `certificate_${submissionId}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function scanQRCode() {
+            const html5QrCode = new Html5Qrcode("qrPreview");
+            const qrConfig = { fps: 10, qrbox: { width: 250, height: 250 } };
+            
+            html5QrCode.start({ facingMode: "environment" }, qrConfig, (decodedText) => {
+                html5QrCode.stop();
+                // Extract submission ID from URL or use directly
+                let submissionId = decodedText;
+                const match = decodedText.match(/\/verify\/([a-f0-9-]+)/i);
+                if (match) {
+                    submissionId = match[1];
+                }
+                document.getElementById('qrSubmissionId').value = submissionId;
+                verifyByQR();
+            }, (error) => {
+                console.error(error);
+            }).catch(err => {
+                alert('Camera access failed: ' + err);
+            });
+        }
+        
+        // Check URL parameters for direct verification
+        window.addEventListener('load', () => {
+            updateRecentVerifications();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            const hash = urlParams.get('hash');
+            
+            if (id) {
+                document.getElementById('qrSubmissionId').value = id;
+                verifyByQR();
+            } else if (hash) {
+                document.getElementById('hashInput').value = hash;
+                verifyByHash();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeekReap - Creator Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f7fafc;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 32px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .profile-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .stat {
+            background: #f7fafc;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th {
+            background: #f7fafc;
+            font-weight: 600;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-completed { background: #d1fae5; color: #059669; }
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .risk-critical { background: #fee2e2; color: #dc2626; }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover { background: #5a67d8; }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+    <link rel="stylesheet" href="/emblems/logo-styles.css">
+</head>
+<body>
+    <div class="header">
+        <div class="container" style="padding: 0;">
+            <h1>📊 Creator Dashboard</h1>
+            <p>Manage your content submissions and verification status</p>
+        </div>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2>👤 Profile</h2>
+            <div id="profile" class="loading">Loading profile...</div>
+        </div>
+        
+        <div class="card">
+            <h2>📊 Statistics</h2>
+            <div id="stats" class="loading">Loading stats...</div>
+        </div>
+        
+        <div class="card">
+            <h2>📝 Recent Submissions</h2>
+            <div id="submissions" class="loading">Loading submissions...</div>
+        </div>
+    </div>
+    
+    <script>
+        const TIER4_URL = window.API_CONFIG?.TIER4_URL || "https://seekreap-tier-4-dev.fly.dev";
+        const TIER6_URL = window.API_CONFIG?.TIER6_URL || "https://seekreap-backend-dev.fly.dev";
+        
+        // Get creator ID from localStorage or use default
+        let creatorId = localStorage.getItem('creatorId') || window.API_CONFIG?.DEV_CREATOR_ID || "";
+        
+        async function loadProfile() {
+            try {
+                const response = await fetch(`${TIER6_URL}/api/creator/profile`, {
+                    headers: { 'X-Creator-ID': creatorId }
+                });
+                if (!response.ok) throw new Error('Profile not found');
+                const profile = await response.json();
+                document.getElementById('profile').innerHTML = `
+                    <div class="profile-info">
+                        <div><strong>ID:</strong> ${profile.id}</div>
+                        <div><strong>Email:</strong> ${profile.email}</div>
+                        <div><strong>Subscription:</strong> ${profile.subscription_tier}</div>
+                        <div><strong>Credits:</strong> ${profile.credits_remaining}</div>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('profile').innerHTML = `<p style="color: red;">Error loading profile: ${error.message}</p>`;
+            }
+        }
+        
+        async function loadSubmissions() {
+            try {
+                const response = await fetch(`${TIER6_URL}/api/submissions`, {
+                    headers: { 'X-Creator-ID': creatorId }
+                });
+                if (!response.ok) throw new Error('Failed to load submissions');
+                const data = await response.json();
+                
+                const submissions = data.submissions || [];
+                const completed = submissions.filter(s => s.status === 'completed').length;
+                const pending = submissions.filter(s => s.status === 'pending').length;
+                const critical = submissions.filter(s => s.risk_level === 'critical').length;
+                
+                document.getElementById('stats').innerHTML = `
+                    <div class="profile-info">
+                        <div class="stat">
+                            <div class="stat-number">${submissions.length}</div>
+                            <div>Total Submissions</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">${completed}</div>
+                            <div>Completed</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">${pending}</div>
+                            <div>Pending</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">${critical}</div>
+                            <div>Critical Risk</div>
+                        </div>
+                    </div>
+                `;
+                
+                if (submissions.length === 0) {
+                    document.getElementById('submissions').innerHTML = '<p>No submissions yet. Submit some content to get started!</p>';
+                    return;
+                }
+                
+                document.getElementById('submissions').innerHTML = `
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>Status</th><th>Risk</th><th>Submitted</th><th>Action</th></tr>
+                        </thead>
+                        <tbody>
+                            ${submissions.slice(0, 10).map(s => `
+                                <tr>
+                                    <td><code>${s.id.substring(0, 8)}...</code></td>
+                                    <td><span class="status-badge status-${s.status}">${s.status}</span></td>
+                                    <td><span class="status-badge risk-${s.risk_level}">${s.risk_level || 'N/A'}</span></td>
+                                    <td>${new Date(s.submitted_at).toLocaleDateString()}</td>
+                                    <td><button onclick="viewSubmission('${s.id}')">View</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    ${submissions.length > 10 ? `<p style="margin-top: 16px;">Showing 10 of ${submissions.length} submissions</p>` : ''}
+                `;
+            } catch (error) {
+                document.getElementById('submissions').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        function viewSubmission(id) {
+            window.location.href = `verify.html?id=${id}`;
+        }
+        
+        loadProfile();
+        loadSubmissions();
+    </script>
+</body>
+</html>
