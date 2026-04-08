@@ -1,11 +1,9 @@
-// Supabase Configuration - SeekReap Tier 6
 const SUPABASE_URL = 'https://hpbxczsxngxgpgogctge.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_s9We9vq9yOYpao7t0Tzm8g_7nYTzZnf';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhwYnhnY3N6aW5neHBnb2djdGdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTEwMzAsImV4cCI6MjA5MDI4NzAzMH0.wzrn2Yvpfcuzrq8JZLBLv927QHM2BpSQVfmaGHrLI6E';
 
-// Initialize and ensure it's global
 if (typeof window.supabase === 'undefined') {
-    console.error("❌ Supabase SDK not loaded! Check script tags.");
+    console.error("❌ Supabase SDK not loaded!");
 } else {
     window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log("✅ Supabase Client Globalized for Render");
+    console.log("✅ Supabase ready:", window.supabaseClient);
 }
