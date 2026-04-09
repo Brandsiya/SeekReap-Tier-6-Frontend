@@ -20,7 +20,27 @@
 
     <div class="auth-container">
         <div class="brand-logo">
-            <i class="fas fa-shield-alt"></i>
+            <!-- Replaced shield with SeekReap SR logo -->
+            <svg class="logo" viewBox="0 0 200 200" fill="none">
+                <defs>
+                    <linearGradient id="logoGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FAFAF8"/>
+                        <stop offset="70%" stop-color="#E8C06A"/>
+                        <stop offset="100%" stop-color="#C9993A"/>
+                    </linearGradient>
+                    <linearGradient id="logoGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#C9993A"/>
+                        <stop offset="100%" stop-color="#9B7520"/>
+                    </linearGradient>
+                </defs>
+                <g stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M100 50 L100 60 M97 55 L103 65 M93 60 L107 72 M88 75 L112 85 M85 90 L115 92" stroke="url(#logoGrad2)" opacity="0.9"/>
+                    <path d="M85 105 L115 105 M88 115 L112 115 M93 125 L107 125 M97 135 L103 135 M100 140 L100 150" stroke="url(#logoGrad2)"/>
+                    <circle cx="100" cy="100" r="3" fill="url(#logoGrad1)" opacity="0.8"/>
+                </g>
+                <text x="65" y="175" font-size="80" font-weight="700" fill="url(#logoGrad1)" opacity="0.95">S</text>
+                <text x="115" y="175" font-size="80" font-weight="700" fill="url(#logoGrad2)">R</text>
+            </svg>
             <span>Seek<span style="color: var(--accent);">Reap</span></span>
         </div>
 
@@ -58,24 +78,12 @@
                         <input type="checkbox" id="remember-me">
                         <span>Remember me</span>
                     </label>
-                    <a href="#" class="forgot-link" onclick="handleForgotPassword(); return false;">Forgot password?</a>
+                    <a href="reset_password.html" class="forgot-link">Forgot password?</a>
                 </div>
 
-                <button class="auth-btn" onclick="handleSignIn()">
+                <button class="auth-btn" onclick="window.location.href='dashboard.html';">
                     <i class="fas fa-arrow-right"></i> Sign In
                 </button>
-
-                <div class="social-login">
-                    <p>Or continue with</p>
-                    <div class="social-buttons">
-                        <button class="social-btn google" onclick="handleSocialLogin('google')">
-                            <i class="fab fa-google"></i> Google
-                        </button>
-                        <button class="social-btn microsoft" onclick="handleSocialLogin('microsoft')">
-                            <i class="fab fa-microsoft"></i> Microsoft
-                        </button>
-                    </div>
-                </div>
 
                 <div class="terms">
                     Don't have an account? <a href="#" onclick="switchTab('signup'); return false;">Sign up</a>
@@ -123,25 +131,13 @@
                 <div class="checkbox-group">
                     <label class="checkbox-label">
                         <input type="checkbox" id="accept-terms">
-                        <span>I agree to the <a href="#" style="color: var(--accent);">Terms of Service</a> & <a href="#" style="color: var(--accent);">Privacy Policy</a></span>
+                        <span>I agree to the <a href="Terms.html" style="color: var(--accent);">Terms of Service</a> & <a href="Privacy_Policy.html" style="color: var(--accent);">Privacy Policy</a></span>
                     </label>
                 </div>
 
-                <button class="auth-btn" onclick="handleSignUp()">
+                <button class="auth-btn" onclick="window.location.href='certification_portal.html';">
                     <i class="fas fa-user-plus"></i> Create Account
                 </button>
-
-                <div class="social-login">
-                    <p>Or sign up with</p>
-                    <div class="social-buttons">
-                        <button class="social-btn google" onclick="handleSocialLogin('google')">
-                            <i class="fab fa-google"></i> Google
-                        </button>
-                        <button class="social-btn microsoft" onclick="handleSocialLogin('microsoft')">
-                            <i class="fab fa-microsoft"></i> Microsoft
-                        </button>
-                    </div>
-                </div>
 
                 <div class="terms">
                     Already have an account? <a href="#" onclick="switchTab('signin'); return false;">Sign in</a>
