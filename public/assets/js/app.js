@@ -1,5 +1,5 @@
 // --- CONFIGURATION ---
-const API_BASE_URL = "https://seekreap-backend-tif2gmgi4q-uc.a.run.app";
+const API_BASE_URL = "https://seekreap-backend-dev.fly.dev";
 
 // --- AUTHENTICATION & REDIRECTS ---
 function checkAuth() {
