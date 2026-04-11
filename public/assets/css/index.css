@@ -165,6 +165,9 @@
       border-radius: 2px;
       overflow: hidden;
       border: 1px solid var(--border);
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      isolation: isolate;
     }
 
     .progress-fill {
@@ -172,9 +175,11 @@
       background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light));
       width: 0%;
       border-radius: 1px;
-      animation: progressFill 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
       position: relative;
       box-shadow: 0 0 12px var(--glow);
+      will-change: width;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
     }
 
     .progress-fill::after {
