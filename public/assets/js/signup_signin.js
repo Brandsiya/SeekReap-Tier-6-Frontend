@@ -1,4 +1,4 @@
-code = r"""// ── helpers ──────────────────────────────────────────────────────────────────
+// ── helpers ──────────────────────────────────────────────────────────────────
 function getClient(ms = 6000) {
   if (window.supabaseClient) return Promise.resolve(window.supabaseClient);
   return new Promise((resolve, reject) => {
