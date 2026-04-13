@@ -1,87 +1,116 @@
 (async function authGuard() {
-
-  function waitForClient(ms = 6000) {
+  function waitForClient(ms = 8000) {
     if (window.supabaseClient) return Promise.resolve(window.supabaseClient);
 
     return new Promise((resolve, reject) => {
-      const t = setTimeout(() => reject(new Error('Supabase load timeout')), ms);
-      document.addEventListener('supabaseReady', () => {
-        clearTimeout(t);
-        resolve(window.supabaseClient);
-      }, { once: true });
+      const t = setTimeout(() => reject(new Error("Supabase timeout")), ms);
+
+      document.addEventListener(
+        "supabaseReady",
+        () => {
+          clearTimeout(t);
+          resolve(window.supabaseClient);
+        },
+        { once: true }
+      );
     });
   }
 
-  try {
-    const sb = await waitForClient();
+  const ROUTES = window.ROUTES || {
+    login: "/signup_signin.html",
+    verify: "/email_verify_pending.html",
+    home: "/certification_portal.html",
+  };
 
-    const isVerifyPage = window.location.pathname.includes('email_verify_pending.html');
-    const hasToken = window.location.hash.includes('access_token');
+  const isVerifyPage = location.pathname.includes("email_verify_pending.html");
+  const isLoginPage = location.pathname.includes("signup_signin.html");
 
-    // STEP 1: Wait loop for email confirmation flow
-    let session = null;
-    let error = null;
+  let sb = await waitForClient();
 
-    if (hasToken) {
-      for (let i = 0; i < 6; i++) {
-        await new Promise(r => setTimeout(r, 500));
-        const res = await sb.auth.getSession();
-        session = res.data.session;
-        error = res.error;
-        if (session) break;
-      }
-    } else {
-      const res = await sb.auth.getSession();
-      session = res.data.session;
-      error = res.error;
-    }
+  // ─────────────────────────────────────────────
+  // STEP 1: WAIT FOR SUPABASE TO FINISH HYDRATION
+  // ─────────────────────────────────────────────
+  let session = null;
 
-    const pendingEmail = sessionStorage.getItem('pendingVerifyEmail');
+  // first attempt
+  let res = await sb.auth.getSession();
+  session = res.data.session;
 
-    // STEP 2: No session
-    if (error || !session) {
-      if (isVerifyPage && pendingEmail) return;
-      if (hasToken) return; // IMPORTANT: don't redirect during email flow
-      window.location.replace(ROUTES.login);
-      return;
-    }
+  // email callback case (critical fix)
+  const isEmailFlow = location.hash.includes("access_token");
 
-    // STEP 3: Not confirmed yet
-    if (!session.user.email_confirmed_at) {
-      sessionStorage.setItem('pendingVerifyEmail', session.user.email);
-
-      if (!isVerifyPage) {
-        window.location.replace(ROUTES.verify);
-      }
-      return;
-    }
-
-    // STEP 4: Auth success
-    sessionStorage.removeItem('pendingVerifyEmail');
-
-    window.currentUser = session.user;
-
-    const meta = session.user.user_metadata || {};
-
-    const emailEl = document.getElementById('userEmail');
-    if (emailEl) emailEl.textContent = session.user.email;
-
-    const nameEl = document.getElementById('userName');
-    if (nameEl) nameEl.textContent = meta.full_name || session.user.email.split('@')[0];
-
-    document.dispatchEvent(
-      new CustomEvent('authReady', { detail: { user: session.user } })
-    );
-
-  } catch (err) {
-    console.error('Auth guard error:', err.message);
-
-    const isVerifyPage = window.location.pathname.includes('email_verify_pending.html');
-    const pendingEmail = sessionStorage.getItem('pendingVerifyEmail');
-
-    if (!(isVerifyPage && pendingEmail)) {
-      window.location.replace(ROUTES.login);
-    }
+  if (!session && isEmailFlow) {
+    await new Promise((r) => setTimeout(r, 1200));
+    res = await sb.auth.getSession();
+    session = res.data.session;
   }
 
+  // ─────────────────────────────────────────────
+  // STEP 2: AUTH STATE LISTENER (SOURCE OF TRUTH)
+  // ─────────────────────────────────────────────
+  sb.auth.onAuthStateChange((_event, newSession) => {
+    if (newSession?.user) {
+      window.currentUser = newSession.user;
+      sessionStorage.removeItem("pendingVerifyEmail");
+
+      const emailEl = document.getElementById("userEmail");
+      if (emailEl) emailEl.textContent = newSession.user.email;
+
+      const nameEl = document.getElementById("userName");
+      if (nameEl) {
+        const meta = newSession.user.user_metadata || {};
+        nameEl.textContent =
+          meta.full_name || newSession.user.email.split("@")[0];
+      }
+
+      document.dispatchEvent(
+        new CustomEvent("authReady", { detail: { user: newSession.user } })
+      );
+    }
+  });
+
+  // ─────────────────────────────────────────────
+  // STEP 3: ROUTING LOGIC (ONLY AFTER STABLE CHECK)
+  // ─────────────────────────────────────────────
+
+  if (!session) {
+    if (isEmailFlow) {
+      // DO NOT REDIRECT — wait for auth event to resolve
+      return;
+    }
+
+    if (!isLoginPage) {
+      location.replace(ROUTES.login);
+    }
+    return;
+  }
+
+  if (!session.user.email_confirmed_at) {
+    sessionStorage.setItem("pendingVerifyEmail", session.user.email);
+
+    if (!isVerifyPage) {
+      location.replace(ROUTES.verify);
+    }
+    return;
+  }
+
+  // ─────────────────────────────────────────────
+  // STEP 4: SUCCESS STATE
+  // ─────────────────────────────────────────────
+  window.currentUser = session.user;
+  sessionStorage.removeItem("pendingVerifyEmail");
+
+  const emailEl = document.getElementById("userEmail");
+  if (emailEl) emailEl.textContent = session.user.email;
+
+  const nameEl = document.getElementById("userName");
+  if (nameEl) {
+    const meta = session.user.user_metadata || {};
+    nameEl.textContent =
+      meta.full_name || session.user.email.split("@")[0];
+  }
+
+  document.dispatchEvent(
+    new CustomEvent("authReady", { detail: { user: session.user } })
+  );
 })();
