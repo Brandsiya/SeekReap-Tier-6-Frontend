@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="/config.js"></script>
-<script src="/auth_guard.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>SeekReap · Certify Your Creative Work</title>
@@ -309,5 +305,9 @@
 
 <!-- External JS -->
 <script src="assets/js/certification_portal.js"></script>
+  <!-- Supabase + Auth Guard -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="/supabase-config.js"></script>
+  <script src="/assets/js/auth-guard.js"></script>
 </body>
 </html>

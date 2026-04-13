@@ -1,6 +1,3 @@
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js"></script>
-<script>
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let currentStep = 1, mode = null, collaborators = [], uploadedFile = null, uploadedFileType = null, uploadedFileName = '';
 let selectedPlan = 'free';
