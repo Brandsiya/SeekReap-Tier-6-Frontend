@@ -1,113 +1,49 @@
-// Pricing Page JavaScript
+// Pricing Page JavaScript - Conversion Optimized
 (function() {
   'use strict';
 
   let currentBilling = 'monthly'; // 'monthly' or 'yearly'
-  
+
   // Initialize page
   function init() {
-    initBillingToggle();
+    initPlanSelection();
     initPlanButtons();
     initFAQ();
     initNavScroll();
     animateCardsOnScroll();
+    handleUpgradeParam();
+    updateAuthNav();
   }
-  
-  // Billing toggle functionality
-  function initBillingToggle() {
-    const toggleSwitch = document.getElementById('billingSwitch');
-    const monthlyOption = document.querySelector('[data-billing="monthly"]');
-    const yearlyOption = document.querySelector('[data-billing="yearly"]');
-    const priceAmounts = document.querySelectorAll('.price-amount');
+
+  // Plan selection tracking (CRITICAL for conversion funnel)
+  function initPlanSelection() {
+    // Get plan from URL param
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedPlan = urlParams.get('plan');
     
-    if (!toggleSwitch) return;
-    
-    // Set initial state from localStorage if exists
-    const savedBilling = localStorage.getItem('seekreap_billing');
-    if (savedBilling === 'yearly') {
-      currentBilling = 'yearly';
-      toggleSwitch.classList.add('active');
-      monthlyOption.classList.remove('active');
-      yearlyOption.classList.add('active');
-      updatePrices(priceAmounts, 'yearly');
-    } else {
-      currentBilling = 'monthly';
-      monthlyOption.classList.add('active');
-      yearlyOption.classList.remove('active');
-      updatePrices(priceAmounts, 'monthly');
+    if (selectedPlan) {
+      // Store selected plan for post-signup routing
+      localStorage.setItem('selectedPlan', selectedPlan);
+      console.log(`🎯 Plan selected from URL: ${selectedPlan}`);
+      
+      // Highlight the corresponding card
+      const planCard = document.querySelector(`.pricing-card[data-plan="${selectedPlan}"]`);
+      if (planCard) {
+        planCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        planCard.style.animation = 'pulse 1s ease-in-out 3';
+        setTimeout(() => {
+          planCard.style.animation = '';
+        }, 3000);
+      }
     }
     
-    // Toggle click handler
-    toggleSwitch.addEventListener('click', () => {
-      currentBilling = currentBilling === 'monthly' ? 'yearly' : 'monthly';
-      
-      // Update UI
-      toggleSwitch.classList.toggle('active');
-      monthlyOption.classList.toggle('active');
-      yearlyOption.classList.toggle('active');
-      
-      // Update prices
-      updatePrices(priceAmounts, currentBilling);
-      
-      // Save preference
-      localStorage.setItem('seekreap_billing', currentBilling);
-    });
-    
-    // Option clicks
-    monthlyOption.addEventListener('click', () => {
-      if (currentBilling === 'monthly') return;
-      currentBilling = 'monthly';
-      toggleSwitch.classList.remove('active');
-      monthlyOption.classList.add('active');
-      yearlyOption.classList.remove('active');
-      updatePrices(priceAmounts, 'monthly');
-      localStorage.setItem('seekreap_billing', 'monthly');
-    });
-    
-    yearlyOption.addEventListener('click', () => {
-      if (currentBilling === 'yearly') return;
-      currentBilling = 'yearly';
-      toggleSwitch.classList.add('active');
-      monthlyOption.classList.remove('active');
-      yearlyOption.classList.add('active');
-      updatePrices(priceAmounts, 'yearly');
-      localStorage.setItem('seekreap_billing', 'yearly');
-    });
+    // Check if user is already authenticated
+    if (window.currentUser) {
+      updateNavForAuth();
+    }
   }
-  
-  // Update prices based on billing period
-  function updatePrices(priceElements, billing) {
-    priceElements.forEach(el => {
-      const monthlyPrice = el.getAttribute('data-monthly');
-      const yearlyPrice = el.getAttribute('data-yearly');
-      
-      if (billing === 'monthly' && monthlyPrice) {
-        el.textContent = monthlyPrice;
-        // Update period text
-        const periodEl = el.nextElementSibling;
-        if (periodEl && periodEl.classList.contains('period')) {
-          periodEl.textContent = '/month';
-        }
-      } else if (billing === 'yearly' && yearlyPrice) {
-        el.textContent = yearlyPrice;
-        const periodEl = el.nextElementSibling;
-        if (periodEl && periodEl.classList.contains('period')) {
-          periodEl.textContent = '/month';
-          // Add yearly note
-          const yearlyNote = el.closest('.plan-price')?.querySelector('.yearly-note');
-          if (!yearlyNote && yearlyPrice !== '0') {
-            const note = document.createElement('span');
-            note.className = 'yearly-note';
-            note.style.cssText = 'display: block; font-size: 0.7rem; color: var(--gold); margin-top: 4px;';
-            note.textContent = 'Billed annually';
-            el.closest('.plan-price')?.appendChild(note);
-          }
-        }
-      }
-    });
-  }
-  
-  // Plan button handlers
+
+  // Plan button handlers with proper routing
   function initPlanButtons() {
     const buttons = document.querySelectorAll('.plan-btn');
     
@@ -115,61 +51,72 @@
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         const plan = btn.getAttribute('data-plan');
-        const planName = getPlanName(plan);
-        const price = getPlanPrice(plan, currentBilling);
         
-        // Store selected plan info
-        localStorage.setItem('selected_plan', JSON.stringify({
-          plan: plan,
-          name: planName,
-          price: price,
-          billing: currentBilling
-        }));
+        // Store selected plan in localStorage for post-signup routing
+        localStorage.setItem('selectedPlan', plan);
         
-        // Redirect to certification portal or checkout
-        if (price === 0) {
-          // Free plan - go directly to certification
-          if (confirm(`You've selected the ${planName} plan. Continue to certification?`)) {
-            window.location.href = ROUTES?.home || '/certification_portal.html';
+        // Track for analytics
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'select_plan', {
+            event_category: 'engagement',
+            event_label: plan,
+            value: getPlanPrice(plan, currentBilling)
+          });
+        }
+        
+        console.log(`📊 Plan selected: ${plan}`);
+        
+        // Check if user is already logged in
+        if (window.currentUser) {
+          // User is logged in, route to checkout or dashboard
+          if (plan === 'free') {
+            window.location.href = '/certification_portal.html';
+          } else {
+            window.location.href = `/checkout.html?plan=${plan}&billing=${currentBilling}`;
           }
         } else {
-          // Paid plan - go to checkout
-          if (confirm(`You've selected the ${planName} plan at $${price}/${currentBilling === 'monthly' ? 'month' : 'month (billed annually)'}. Proceed to checkout?`)) {
-            // Store for checkout page
-            sessionStorage.setItem('checkout_plan', JSON.stringify({
-              plan: plan,
-              name: planName,
-              price: price,
-              billing: currentBilling,
-              amount: currentBilling === 'yearly' ? price * 12 : price
-            }));
-            window.location.href = '/checkout.html';
-          }
+          // User not logged in, go to signup with plan param
+          window.location.href = `/signup_signin.html?plan=${plan}`;
         }
       });
     });
   }
-  
-  // Helper: Get plan display name
-  function getPlanName(plan) {
-    const names = {
-      'free': 'Free',
-      'creator': 'Creator',
-      'studio': 'Studio'
-    };
-    return names[plan] || plan;
-  }
-  
+
   // Helper: Get plan price
   function getPlanPrice(plan, billing) {
     const prices = {
       'free': { monthly: 0, yearly: 0 },
-      'creator': { monthly: 9.99, yearly: 7.99 },
-      'studio': { monthly: 29.99, yearly: 23.99 }
+      'pro': { monthly: 149, yearly: 119 },
+      'elite': { monthly: 499, yearly: 399 }
     };
     return prices[plan]?.[billing] || 0;
   }
-  
+
+  // Update navigation based on auth state
+  function updateAuthNav() {
+    const authNavBtn = document.getElementById('authNavBtn');
+    if (window.currentUser && authNavBtn) {
+      authNavBtn.textContent = 'Dashboard';
+      authNavBtn.href = '/certification_portal.html';
+    }
+  }
+
+  // Handle hero buttons
+  function handleHeroButtons() {
+    const heroStartFree = document.getElementById('heroStartFree');
+    if (heroStartFree) {
+      heroStartFree.addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.setItem('selectedPlan', 'free');
+        if (window.currentUser) {
+          window.location.href = '/certification_portal.html';
+        } else {
+          window.location.href = '/signup_signin.html?plan=free';
+        }
+      });
+    }
+  }
+
   // FAQ accordion functionality
   function initFAQ() {
     const faqItems = document.querySelectorAll('.faq-item');
@@ -198,25 +145,21 @@
   
   // Smooth scroll for navigation
   function initNavScroll() {
-    const navLinks = document.querySelectorAll('.nav-link');
-    
-    navLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        const href = link.getAttribute('href');
-        if (href && href.startsWith('#')) {
-          e.preventDefault();
-          const target = document.querySelector(href);
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+    const viewPlansBtn = document.querySelector('.hero-btn-secondary');
+    if (viewPlansBtn) {
+      viewPlansBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const pricingGrid = document.getElementById('pricing-grid');
+        if (pricingGrid) {
+          pricingGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
-    });
+    }
   }
   
   // Animate cards on scroll
   function animateCardsOnScroll() {
-    const cards = document.querySelectorAll('.pricing-card');
+    const cards = document.querySelectorAll('.pricing-card, .value-card');
     
     const observerOptions = {
       threshold: 0.1,
@@ -241,6 +184,24 @@
     });
   }
   
+  // Handle upgrade from URL params
+  function handleUpgradeParam() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const upgrade = urlParams.get('upgrade');
+    const plan = urlParams.get('plan');
+    
+    if (upgrade === 'true' && plan) {
+      const planCard = document.querySelector(`.pricing-card[data-plan="${plan}"]`);
+      if (planCard) {
+        planCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        planCard.style.animation = 'pulse 1s ease-in-out 3';
+        setTimeout(() => {
+          planCard.style.animation = '';
+        }, 3000);
+      }
+    }
+  }
+  
   // Track page view for analytics
   function trackPageView() {
     if (typeof gtag !== 'undefined') {
@@ -253,28 +214,11 @@
     console.log('📊 Pricing page viewed');
   }
   
-  // Handle upgrade from URL params
-  function handleUpgradeParam() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const upgrade = urlParams.get('upgrade');
-    const plan = urlParams.get('plan');
-    
-    if (upgrade === 'true' && plan) {
-      // Scroll to pricing section and highlight the plan
-      const pricingGrid = document.querySelector('.pricing-grid');
-      if (pricingGrid) {
-        pricingGrid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        const planCard = document.querySelector(`.pricing-card[data-plan="${plan}"]`);
-        if (planCard) {
-          planCard.style.animation = 'pulse 1s ease-in-out 3';
-          setTimeout(() => {
-            planCard.style.animation = '';
-          }, 3000);
-        }
-      }
-    }
-  }
+  // Listen for auth ready event
+  document.addEventListener('authReady', (event) => {
+    window.currentUser = event.detail.user;
+    updateAuthNav();
+  });
   
   // Add pulse animation
   const style = document.createElement('style');
@@ -294,12 +238,12 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       init();
+      handleHeroButtons();
       trackPageView();
-      handleUpgradeParam();
     });
   } else {
     init();
+    handleHeroButtons();
     trackPageView();
-    handleUpgradeParam();
   }
 })();
