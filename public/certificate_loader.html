@@ -435,6 +435,58 @@
         flex-direction: column;
       }
     }
+  
+    /* ── RESPONSIVE IMPROVEMENTS ── */
+    @media (max-width: 360px) {
+      body { padding: 12px 10px; }
+      .loader-container { padding: 0; }
+      .main-title { font-size: 1.6rem; }
+      .progress-container { padding: 14px 12px; }
+      .loader-steps { flex-direction: column; gap: 4px; }
+      .loader-step { min-width: auto; padding: 8px 4px; font-size: 0.68rem; }
+      .loader-step::before { display: none; }
+      .spinner { width: 40px; height: 40px; }
+      .status-message { flex-direction: column; gap: 6px; align-items: flex-start; padding: 10px 12px; }
+      .qr-code { width: 120px; height: 120px; }
+      .btn-primary { padding: 13px 20px; font-size: 0.85rem; }
+    }
+
+    @media (max-width: 480px) {
+      .loader-steps { flex-wrap: wrap; justify-content: center; gap: 4px; }
+      .loader-step { min-width: 80px; flex: none; }
+      .qr-container { gap: 12px; }
+      .status-message { font-size: 0.8rem; }
+      .logo-text { font-size: 1.4rem; }
+    }
+
+    @media (min-width: 481px) and (max-width: 767px) {
+      .loader-steps { justify-content: space-around; }
+      .loader-container { max-width: 480px; }
+    }
+
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .loader-container { max-width: 560px; }
+      .loader-steps { justify-content: space-between; }
+      .status-messages { flex-direction: column; }
+    }
+
+    @media (min-width: 1024px) {
+      .loader-container { max-width: 620px; }
+      .progress-container { padding: 36px; }
+      .status-messages { gap: 14px; }
+    }
+
+    /* Fix loader-step dots on small screens */
+    @media (max-width: 600px) {
+      .loader-step { text-align: center; justify-content: center; }
+    }
+
+    /* QR section full-width on mobile */
+    @media (max-width: 480px) {
+      .qr-section { padding: 16px; }
+      .btn-primary { width: 100%; justify-content: center; }
+    }
+    
   </style>
 </head>
 <body>
