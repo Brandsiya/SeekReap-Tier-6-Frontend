@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SeekReap · Pricing & Plans</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/pricing.css">
+</head>
+<body>
+  <!-- Ambient Background -->
+  <div class="pricing-bg">
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="pricing-nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <svg class="logo-icon" viewBox="0 0 100 100" fill="none">
+          <defs>
+            <linearGradient id="navS" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FAFAF8"/>
+              <stop offset="100%" stop-color="#E8C06A"/>
+            </linearGradient>
+            <linearGradient id="navR" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#C9993A"/>
+              <stop offset="100%" stop-color="#9B7520"/>
+            </linearGradient>
+          </defs>
+          <path d="M50 20 L50 24 M48 22 L52 26 M46 24 L54 30 M44 28 L56 34 M42 34 L58 38 M42 42 L58 42 M44 48 L56 48 M46 54 L54 54 M48 58 L52 58 M50 62 L50 66" stroke="url(#navR)" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.9"/>
+          <text x="38" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#navS)">S</text>
+          <text x="62" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#navR)">R</text>
+        </svg>
+        <span class="logo-text"><span class="logo-seek">Seek</span><span class="logo-reap">Reap</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="/certification_portal.html" class="nav-link">Certify</a>
+        <a href="/pricing.html" class="nav-link active">Pricing</a>
+        <a href="/signup_signin.html" class="nav-link nav-btn">Sign In</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="pricing-hero">
+    <div class="hero-content">
+      <span class="hero-badge">Simple, Transparent Pricing</span>
+      <h1 class="hero-title">Choose the <span class="gold-gradient">Perfect Plan</span> for Your Creative Journey</h1>
+      <p class="hero-subtitle">Start for free, scale as you grow. No hidden fees, cancel anytime.</p>
+    </div>
+  </header>
+
+  <!-- Billing Toggle -->
+  <div class="billing-toggle-container">
+    <div class="billing-toggle">
+      <span class="billing-option" data-billing="monthly">Monthly</span>
+      <div class="toggle-switch" id="billingSwitch">
+        <div class="toggle-slider"></div>
+      </div>
+      <span class="billing-option" data-billing="yearly">Yearly <span class="save-badge">Save 20%</span></span>
+    </div>
+  </div>
+
+  <!-- Pricing Cards -->
+  <div class="pricing-grid" id="pricingGrid">
+    <!-- Free Plan -->
+    <div class="pricing-card" data-plan="free">
+      <div class="card-header">
+        <div class="plan-icon"><i class="fas fa-seedling"></i></div>
+        <h3 class="plan-name">Free</h3>
+        <div class="plan-price">
+          <span class="currency">$</span>
+          <span class="price-amount" data-monthly="0" data-yearly="0">0</span>
+          <span class="period">/month</span>
+        </div>
+        <p class="plan-description">Perfect for creators just getting started</p>
+      </div>
+      <div class="card-features">
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>1 certification / month</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>QR code included</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>Watermarked certificate</span>
+        </div>
+        <div class="feature-item disabled">
+          <i class="fas fa-times-circle feature-icon"></i>
+          <span>PDF certificate</span>
+        </div>
+        <div class="feature-item disabled">
+          <i class="fas fa-times-circle feature-icon"></i>
+          <span>Co-ownership support</span>
+        </div>
+        <div class="feature-item disabled">
+          <i class="fas fa-times-circle feature-icon"></i>
+          <span>Priority processing</span>
+        </div>
+      </div>
+      <button class="plan-btn btn-secondary" data-plan="free">Get Started</button>
+    </div>
+
+    <!-- Creator Plan (Popular) -->
+    <div class="pricing-card featured" data-plan="creator">
+      <div class="popular-badge">Most Popular</div>
+      <div class="card-header">
+        <div class="plan-icon"><i class="fas fa-rocket"></i></div>
+        <h3 class="plan-name">Creator</h3>
+        <div class="plan-price">
+          <span class="currency">$</span>
+          <span class="price-amount" data-monthly="9.99" data-yearly="7.99">9.99</span>
+          <span class="period">/month</span>
+        </div>
+        <p class="plan-description">For serious creators building their portfolio</p>
+      </div>
+      <div class="card-features">
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>10 certifications / month</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>QR code included</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>PDF certificate</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>No watermark</span>
+        </div>
+        <div class="feature-item disabled">
+          <i class="fas fa-times-circle feature-icon"></i>
+          <span>Co-ownership support</span>
+        </div>
+        <div class="feature-item disabled">
+          <i class="fas fa-times-circle feature-icon"></i>
+          <span>Priority processing</span>
+        </div>
+      </div>
+      <button class="plan-btn btn-primary" data-plan="creator">Choose Creator</button>
+    </div>
+
+    <!-- Studio Plan -->
+    <div class="pricing-card" data-plan="studio">
+      <div class="card-header">
+        <div class="plan-icon"><i class="fas fa-building"></i></div>
+        <h3 class="plan-name">Studio</h3>
+        <div class="plan-price">
+          <span class="currency">$</span>
+          <span class="price-amount" data-monthly="29.99" data-yearly="23.99">29.99</span>
+          <span class="period">/month</span>
+        </div>
+        <p class="plan-description">For studios and professional teams</p>
+      </div>
+      <div class="card-features">
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>Unlimited certifications</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>QR code included</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>PDF certificate</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>No watermark</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>Co-ownership support</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>Priority processing</span>
+        </div>
+      </div>
+      <button class="plan-btn btn-primary" data-plan="studio">Choose Studio</button>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <div class="faq-container">
+      <h2 class="faq-title">Frequently Asked <span class="gold-gradient">Questions</span></h2>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Can I change plans later?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate the difference.
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>What happens if I exceed my certification limit?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            You'll receive a notification and can either upgrade your plan or purchase additional certifications individually.
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Is there a contract or commitment?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            No long-term contracts. All monthly plans can be canceled anytime. Yearly plans are prepaid but fully refundable within 14 days.
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Do you offer discounts for non-profits?</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="faq-answer">
+            Yes, we offer special pricing for educational institutions and non-profit organizations. Contact our sales team for details.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2 class="cta-title">Ready to Protect Your <span class="gold-gradient">Creative Work?</span></h2>
+      <p class="cta-subtitle">Join thousands of creators who trust SeekReap for their certification needs</p>
+      <div class="cta-buttons">
+        <a href="/signup_signin.html" class="cta-btn-primary">Get Started Free</a>
+        <a href="/certification_portal.html" class="cta-btn-secondary">Try Demo</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="pricing-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <svg class="footer-icon" viewBox="0 0 100 100" fill="none" width="32" height="32">
+          <path d="M50 20 L50 24 M48 22 L52 26 M46 24 L54 30 M44 28 L56 34 M42 34 L58 38 M42 42 L58 42 M44 48 L56 48 M46 54 L54 54 M48 58 L52 58 M50 62 L50 66" stroke="url(#navR)" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.9"/>
+          <text x="38" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#navS)">S</text>
+          <text x="62" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#navR)">R</text>
+        </svg>
+        <span class="footer-brand-name">SeekReap</span>
+        <p class="footer-tagline">Protecting creativity with blockchain certification</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>Product</h4>
+          <a href="/certification_portal.html">Certify</a>
+          <a href="/pricing.html">Pricing</a>
+          <a href="#">Features</a>
+        </div>
+        <div class="footer-column">
+          <h4>Support</h4>
+          <a href="#">Help Center</a>
+          <a href="#">Contact</a>
+          <a href="#">Status</a>
+        </div>
+        <div class="footer-column">
+          <h4>Legal</h4>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 SeekReap. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/assets/js/routes.js"></script>
+  <script src="/assets/js/pricing.js"></script>
+</body>
+</html>
