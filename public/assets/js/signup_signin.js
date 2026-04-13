@@ -45,10 +45,10 @@ async function handleSignIn() {
 
     if (!data.user.email_confirmed_at) {
       sessionStorage.setItem('pendingVerifyEmail', email);
-      window.location.href = 'email_verify_pending.html';
+      window.location.href = ROUTES.verify;
       return;
     }
-    window.location.href = '/certification_portal.html';
+    window.location.href = ROUTES.home;
   } catch (err) {
     const msg = /invalid login|invalid credentials/i.test(err.message)
       ? 'Incorrect email or password. Please try again.'
@@ -87,7 +87,7 @@ async function handleSignUp() {
 
     // signUp with email confirmation enabled returns no session yet
     sessionStorage.setItem('pendingVerifyEmail', email);
-    window.location.href = 'email_verify_pending.html';
+    window.location.href = ROUTES.verify;
   } catch (err) {
     const msg = /already registered/i.test(err.message)
       ? 'An account with this email already exists. Try signing in.'

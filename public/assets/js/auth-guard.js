@@ -28,7 +28,7 @@
       if (isVerifyPage && pendingEmail) return;
       
       // Otherwise, boot to login
-      window.location.replace('/signup_signin.html');
+      window.location.replace(ROUTES.login);
       return;
     }
 
@@ -39,7 +39,7 @@
       
       // Only redirect if not already on verify page
       if (!isVerifyPage) {
-        window.location.replace('/email_verify_pending.html');
+        window.location.replace(ROUTES.verify);
       }
       return;
     }
@@ -69,7 +69,7 @@
     const pendingEmail = sessionStorage.getItem('pendingVerifyEmail');
     
     if (!(isVerifyPage && pendingEmail)) {
-      window.location.replace('/signup_signin.html');
+      window.location.replace(ROUTES.login);
     }
   }
 })();
