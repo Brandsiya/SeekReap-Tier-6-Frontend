@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Certificate Loader · SeekReap</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: radial-gradient(ellipse 100% 60% at 50% 0%, rgba(201,153,58,0.08) 0%, transparent 60%),
+                  linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+      color: #FAFAF8;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .loader-container {
+      max-width: 560px;
+      width: 100%;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .loader-card {
+      background: rgba(17, 17, 21, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(201, 153, 58, 0.25);
+      border-radius: 24px;
+      padding: 48px 40px;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+    }
+
+    .brand-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FAFAF8 0%, #E8C06A 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .icon-container {
+      margin-bottom: 32px;
+    }
+
+    .cert-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(201, 153, 58, 0.15), rgba(201, 153, 58, 0.05));
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .cert-icon i {
+      font-size: 48px;
+      color: #C9993A;
+    }
+
+    h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #FAFAF8, #C9993A);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      color: rgba(250, 250, 248, 0.65);
+      font-size: 0.9rem;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .input-group {
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #C9993A;
+      margin-bottom: 8px;
+    }
+
+    .cert-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .cert-input-wrapper i {
+      position: absolute;
+      left: 16px;
+      color: #C9993A;
+      font-size: 1rem;
+    }
+
+    .cert-input {
+      width: 100%;
+      padding: 14px 16px 14px 48px;
+      background: rgba(24, 24, 30, 0.9);
+      border: 1px solid rgba(201, 153, 58, 0.25);
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: #FAFAF8;
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    .cert-input:focus {
+      border-color: #C9993A;
+      box-shadow: 0 0 0 3px rgba(201, 153, 58, 0.1);
+      background: rgba(34, 34, 40, 0.9);
+    }
+
+    .cert-input::placeholder {
+      color: rgba(250, 250, 248, 0.35);
+    }
+
+    .upload-area {
+      border: 2px dashed rgba(201, 153, 58, 0.3);
+      border-radius: 16px;
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      background: rgba(24, 24, 30, 0.5);
+      margin-bottom: 24px;
+    }
+
+    .upload-area:hover {
+      border-color: #C9993A;
+      background: rgba(201, 153, 58, 0.05);
+    }
+
+    .upload-area i {
+      font-size: 48px;
+      color: #C9993A;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .upload-area p {
+      color: rgba(250, 250, 248, 0.65);
+      font-size: 0.85rem;
+    }
+
+    .upload-area .small {
+      font-size: 0.7rem;
+      margin-top: 8px;
+      color: rgba(250, 250, 248, 0.4);
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .file-info {
+      background: rgba(201, 153, 58, 0.1);
+      border: 1px solid rgba(201, 153, 58, 0.2);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .file-name {
+      font-size: 0.85rem;
+      color: #FAFAF8;
+      word-break: break-all;
+    }
+
+    .file-name i {
+      color: #C9993A;
+      margin-right: 8px;
+    }
+
+    .remove-file {
+      background: rgba(224, 85, 85, 0.2);
+      border: 1px solid rgba(224, 85, 85, 0.3);
+      color: #E05555;
+      padding: 4px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      transition: all 0.2s;
+    }
+
+    .remove-file:hover {
+      background: rgba(224, 85, 85, 0.3);
+      border-color: #E05555;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #C9993A 0%, #E8C06A 50%, #C9993A 100%);
+      background-size: 200% 200%;
+      color: #08080A;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 14px 24px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-position: right center;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(201, 153, 58, 0.3);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: transparent;
+      border: 1px solid rgba(201, 153, 58, 0.4);
+      color: #FAFAF8;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 0.9rem;
+      padding: 13px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: #C9993A;
+      background: rgba(201, 153, 58, 0.1);
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(8, 8, 10, 0.95);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 3px solid rgba(201, 153, 58, 0.2);
+      border-top: 3px solid #C9993A;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    .loading-text {
+      color: #FAFAF8;
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .loading-text span {
+      color: #C9993A;
+    }
+
+    .error-message {
+      background: rgba(224, 85, 85, 0.15);
+      border: 1px solid rgba(224, 85, 85, 0.3);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      color: #E05555;
+      font-size: 0.85rem;
+    }
+
+    .error-message.show {
+      display: flex;
+    }
+
+    .error-message i {
+      font-size: 1rem;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 24px 0;
+      color: rgba(250, 250, 248, 0.3);
+      font-size: 0.75rem;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid rgba(201, 153, 58, 0.15);
+    }
+
+    .divider span {
+      margin: 0 10px;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.05);
+        opacity: 0.9;
+      }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .loader-card {
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @media (max-width: 480px) {
+      .loader-card {
+        padding: 32px 24px;
+      }
+      
+      .brand-name {
+        font-size: 1.5rem;
+      }
+      
+      h2 {
+        font-size: 1.4rem;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader-container">
+    <div class="loader-card">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 100 100" fill="none">
+          <defs>
+            <linearGradient id="loaderS" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FAFAF8"/>
+              <stop offset="100%" stop-color="#E8C06A"/>
+            </linearGradient>
+            <linearGradient id="loaderR" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#C9993A"/>
+              <stop offset="100%" stop-color="#9B7520"/>
+            </linearGradient>
+          </defs>
+          <text x="6" y="72" font-family="Cormorant Garamond, serif" font-size="60" font-weight="700" fill="url(#loaderS)">S</text>
+          <text x="52" y="72" font-family="Cormorant Garamond, serif" font-size="60" font-weight="700" fill="url(#loaderR)">R</text>
+        </svg>
+        <span class="brand-name">SeekReap</span>
+      </div>
+
+      <div class="icon-container">
+        <div class="cert-icon">
+          <i class="fas fa-certificate"></i>
+        </div>
+      </div>
+
+      <h2>Load Certificate</h2>
+      <p class="subtitle">Enter your certificate ID or upload a certificate file to verify and view your blockchain-timestamped proof of ownership</p>
+
+      <div class="error-message" id="errorMessage">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span id="errorText">Invalid certificate ID</span>
+      </div>
+
+      <div class="input-group">
+        <label><i class="fas fa-hashtag"></i> Certificate ID</label>
+        <div class="cert-input-wrapper">
+          <i class="fas fa-id-card"></i>
+          <input type="text" class="cert-input" id="certIdInput" placeholder="e.g., SR-20260413-8X3K9L2M">
+        </div>
+      </div>
+
+      <div class="divider">
+        <span>or</span>
+      </div>
+
+      <div class="upload-area" id="uploadArea">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <p>Click to upload certificate file</p>
+        <p class="small">Supports .cert, .json, .txt files (max 5MB)</p>
+      </div>
+      <input type="file" id="fileInput" accept=".cert,.json,.txt">
+
+      <div id="fileInfo" class="file-info" style="display: none;">
+        <span class="file-name"><i class="fas fa-file-certificate"></i> <span id="fileName"></span></span>
+        <button class="remove-file" id="removeFileBtn">Remove</button>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-secondary" id="cancelBtn">Cancel</button>
+        <button class="btn-primary" id="loadBtn">Load Certificate →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Verifying <span>certificate</span>...</div>
+  </div>
+
+  <script>
+    const certIdInput = document.getElementById('certIdInput');
+    const loadBtn = document.getElementById('loadBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileNameSpan = document.getElementById('fileName');
+    const removeFileBtn = document.getElementById('removeFileBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    const errorText = document.getElementById('errorText');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+
+    let selectedFile = null;
+
+    function hideError() {
+      errorMessage.classList.remove('show');
+    }
+
+    function showError(message) {
+      errorText.textContent = message;
+      errorMessage.classList.add('show');
+      setTimeout(() => {
+        errorMessage.classList.remove('show');
+      }, 4000);
+    }
+
+    function showLoading() {
+      loadingOverlay.classList.add('active');
+    }
+
+    function hideLoading() {
+      loadingOverlay.classList.remove('active');
+    }
+
+    function generateCertificateData(id, fileName = null) {
+      const timestamp = new Date();
+      const certificateId = id || `SR-${timestamp.getFullYear()}${String(timestamp.getMonth() + 1).padStart(2, '0')}${String(timestamp.getDate()).padStart(2, '0')}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
+      
+      return {
+        id: certificateId,
+        title: "Summer Vibes",
+        type: "Audio / Music Track",
+        description: "An uplifting summer anthem about good times and friendship",
+        owner: fileName ? `Owner from file: ${fileName}` : "You (Sole Owner)",
+        ownership: "100%",
+        timestamp: timestamp.toLocaleString(),
+        blockchainId: `0x${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 10)}`,
+        hash: `${Math.random().toString(36).substring(2, 30)}`
+      };
+    }
+
+    function loadCertificate(certificateId, fileData = null) {
+      showLoading();
+      
+      setTimeout(() => {
+        hideLoading();
+        
+        if (!certificateId || certificateId.trim() === '') {
+          showError('Please enter a valid certificate ID');
+          return;
+        }
+        
+        if (certificateId.length < 10) {
+          showError('Invalid certificate ID format');
+          return;
+        }
+        
+        const certData = generateCertificateData(certificateId, fileData ? fileData.name : null);
+        sessionStorage.setItem('loadedCertificate', JSON.stringify(certData));
+        window.location.href = 'certificate_viewer.html';
+        
+      }, 1500);
+    }
+
+    loadBtn.addEventListener('click', () => {
+      hideError();
+      
+      const certId = certIdInput.value.trim();
+      
+      if (!certId && !selectedFile) {
+        showError('Please enter a certificate ID or upload a certificate file');
+        return;
+      }
+      
+      if (selectedFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            const fileContent = e.target.result;
+            let certIdFromFile = null;
+            
+            try {
+              const jsonData = JSON.parse(fileContent);
+              certIdFromFile = jsonData.id || jsonData.certificateId;
+            } catch(e) {
+              certIdFromFile = selectedFile.name.replace(/\.(cert|json|txt)$/i, '');
+            }
+            
+            if (certIdFromFile) {
+              loadCertificate(certIdFromFile, selectedFile);
+            } else {
+              showError('Invalid certificate file format');
+              hideLoading();
+            }
+          } catch(err) {
+            showError('Failed to read certificate file');
+            hideLoading();
+          }
+        };
+        reader.onerror = function() {
+          showError('Error reading file');
+          hideLoading();
+        };
+        reader.readAsText(selectedFile);
+      } else {
+        loadCertificate(certId);
+      }
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      window.location.href = 'dashboard.html';
+    });
+
+    uploadArea.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+          showError('File size must be less than 5MB');
+          return;
+        }
+        
+        const validExtensions = ['.cert', '.json', '.txt'];
+        const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+        if (!validExtensions.includes(fileExt)) {
+          showError('Please upload a .cert, .json, or .txt file');
+          return;
+        }
+        
+        selectedFile = file;
+        fileNameSpan.textContent = file.name;
+        fileInfo.style.display = 'flex';
+        uploadArea.style.display = 'none';
+        hideError();
+      }
+    });
+
+    removeFileBtn.addEventListener('click', () => {
+      selectedFile = null;
+      fileInput.value = '';
+      fileInfo.style.display = 'none';
+      uploadArea.style.display = 'block';
+    });
+
+    certIdInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        loadBtn.click();
+      }
+    });
+
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#E8C06A';
+      uploadArea.style.background = 'rgba(201, 153, 58, 0.1)';
+    });
+
+    uploadArea.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = 'rgba(201, 153, 58, 0.3)';
+      uploadArea.style.background = 'rgba(24, 24, 30, 0.5)';
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = 'rgba(201, 153, 58, 0.3)';
+      uploadArea.style.background = 'rgba(24, 24, 30, 0.5)';
+      
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+          showError('File size must be less than 5MB');
+          return;
+        }
+        
+        const validExtensions = ['.cert', '.json', '.txt'];
+        const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+        if (!validExtensions.includes(fileExt)) {
+          showError('Please upload a .cert, .json, or .txt file');
+          return;
+        }
+        
+        selectedFile = file;
+        fileNameSpan.textContent = file.name;
+        fileInfo.style.display = 'flex';
+        uploadArea.style.display = 'none';
+        hideError();
+      }
+    });
+  </script>
+</body>
+</html>
