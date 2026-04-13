@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>SeekReap · Pricing & Plans</title>
+  <title>SeekReap · Protect Your Creative Work | Pricing & Plans</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/assets/css/pricing.css">
@@ -40,7 +40,7 @@
       <div class="nav-links">
         <a href="/certification_portal.html" class="nav-link">Certify</a>
         <a href="/pricing.html" class="nav-link active">Pricing</a>
-        <a href="/signup_signin.html" class="nav-link nav-btn">Sign In</a>
+        <a href="/signup_signin.html" class="nav-link nav-btn" id="authNavBtn">Sign In</a>
       </div>
     </div>
   </nav>
@@ -48,148 +48,217 @@
   <!-- Hero Section -->
   <header class="pricing-hero">
     <div class="hero-content">
-      <span class="hero-badge">Simple, Transparent Pricing</span>
-      <h1 class="hero-title">Choose the <span class="gold-gradient">Perfect Plan</span> for Your Creative Journey</h1>
-      <p class="hero-subtitle">Start for free, scale as you grow. No hidden fees, cancel anytime.</p>
+      <span class="hero-badge">Prove You Created It First</span>
+      <h1 class="hero-title">Protect Your <span class="gold-gradient">Creative Work</span><br>Before Anyone Steals It</h1>
+      <p class="hero-subtitle">Get verifiable proof that your content existed first — with legally meaningful timestamps.</p>
+      <!-- Immediate Trust Trigger -->
+      <div class="trust-triggers">
+        ✔ No login required to verify certificates • ✔ Tamper-proof proof
+      </div>
+      <div class="hero-buttons">
+        <a href="/signup_signin.html?plan=free" class="hero-btn-primary" id="heroStartFree">Start Free — 30 seconds →</a>
+        <a href="#pricing-grid" class="hero-btn-secondary">View Plans</a>
+      </div>
+      <div class="micro-proof">
+        <span>✓ No credit card required</span>
+        <span>✓ 3 free certifications included</span>
+      </div>
+      <div class="urgent-offer">
+        🔥 Launch Offer: First 1000 users get locked-in pricing • ⏳ Prices increase after beta
+      </div>
     </div>
   </header>
 
-  <!-- Billing Toggle -->
-  <div class="billing-toggle-container">
-    <div class="billing-toggle">
-      <span class="billing-option" data-billing="monthly">Monthly</span>
-      <div class="toggle-switch" id="billingSwitch">
-        <div class="toggle-slider"></div>
-      </div>
-      <span class="billing-option" data-billing="yearly">Yearly <span class="save-badge">Save 20%</span></span>
+  <!-- Scroll Trigger Reinforcement -->
+  <div class="scroll-trigger">
+    <p>Join creators protecting their work before publishing online ↓</p>
+  </div>
+
+  <!-- Value Anchors Section -->
+  <div class="value-anchors">
+    <div class="value-card">
+      <div class="value-icon">🔒</div>
+      <h3>Proof of Ownership</h3>
+      <p>Cryptographic evidence that establishes your creative rights</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">⚡</div>
+      <h3>Instant Certification</h3>
+      <p>Get verified proof in seconds, not days</p>
+    </div>
+    <div class="value-card">
+      <div class="value-icon">🌍</div>
+      <h3>Globally Verifiable</h3>
+      <p>Anyone can verify your work anywhere in the world</p>
     </div>
   </div>
 
-  <!-- Pricing Cards -->
-  <div class="pricing-grid" id="pricingGrid">
-    <!-- Free Plan -->
+  <!-- Pricing Grid -->
+  <div class="pricing-grid" id="pricing-grid">
+    <!-- Free Plan (Explorer) -->
     <div class="pricing-card" data-plan="free">
       <div class="card-header">
         <div class="plan-icon"><i class="fas fa-seedling"></i></div>
-        <h3 class="plan-name">Free</h3>
+        <h3 class="plan-name">Explorer</h3>
         <div class="plan-price">
-          <span class="currency">$</span>
+          <span class="currency">R</span>
           <span class="price-amount" data-monthly="0" data-yearly="0">0</span>
           <span class="period">/month</span>
         </div>
-        <p class="plan-description">Perfect for creators just getting started</p>
+        <p class="plan-description">Perfect for trying out certification</p>
       </div>
       <div class="card-features">
         <div class="feature-item">
           <i class="fas fa-check-circle feature-icon"></i>
-          <span>1 certification / month</span>
+          <span>3 Certifications</span>
         </div>
         <div class="feature-item">
           <i class="fas fa-check-circle feature-icon"></i>
-          <span>QR code included</span>
+          <span>Public Verification Only</span>
         </div>
         <div class="feature-item">
           <i class="fas fa-check-circle feature-icon"></i>
-          <span>Watermarked certificate</span>
+          <span>Basic Proof Only</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>SeekReap Watermark</span>
         </div>
         <div class="feature-item disabled">
           <i class="fas fa-times-circle feature-icon"></i>
-          <span>PDF certificate</span>
-        </div>
-        <div class="feature-item disabled">
-          <i class="fas fa-times-circle feature-icon"></i>
-          <span>Co-ownership support</span>
-        </div>
-        <div class="feature-item disabled">
-          <i class="fas fa-times-circle feature-icon"></i>
-          <span>Priority processing</span>
+          <span>No Private Certificates</span>
         </div>
       </div>
-      <button class="plan-btn btn-secondary" data-plan="free">Get Started</button>
+      <a href="/signup_signin.html?plan=free" class="plan-btn btn-secondary" data-plan="free">Start Free →</a>
     </div>
 
-    <!-- Creator Plan (Popular) -->
-    <div class="pricing-card featured" data-plan="creator">
-      <div class="popular-badge">Most Popular</div>
+    <!-- Pro Plan (Creator) - Highlighted -->
+    <div class="pricing-card featured" data-plan="pro">
+      <div class="popular-badge">🔥 Most Popular</div>
       <div class="card-header">
         <div class="plan-icon"><i class="fas fa-rocket"></i></div>
         <h3 class="plan-name">Creator</h3>
         <div class="plan-price">
-          <span class="currency">$</span>
-          <span class="price-amount" data-monthly="9.99" data-yearly="7.99">9.99</span>
+          <span class="currency">R</span>
+          <span class="price-amount" data-monthly="149" data-yearly="119">149</span>
           <span class="period">/month</span>
         </div>
-        <p class="plan-description">For serious creators building their portfolio</p>
+        <div class="daily-price">≈ R5/day — less than a coffee</div>
+        <p class="plan-description">For serious creators protecting their work</p>
       </div>
       <div class="card-features">
         <div class="feature-item">
           <i class="fas fa-check-circle feature-icon"></i>
-          <span>10 certifications / month</span>
+          <span>500 certifications/month</span>
+        </div>
+        <div class="feature-item highlight">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span><strong>≈ R0.30 per certification</strong></span>
         </div>
         <div class="feature-item">
           <i class="fas fa-check-circle feature-icon"></i>
-          <span>QR code included</span>
+          <span>Private + Public Certificates</span>
         </div>
         <div class="feature-item">
           <i class="fas fa-check-circle feature-icon"></i>
-          <span>PDF certificate</span>
+          <span>Priority Processing</span>
         </div>
         <div class="feature-item">
           <i class="fas fa-check-circle feature-icon"></i>
-          <span>No watermark</span>
+          <span>Downloadable Proof</span>
         </div>
-        <div class="feature-item disabled">
-          <i class="fas fa-times-circle feature-icon"></i>
-          <span>Co-ownership support</span>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>Creator Identity Badge</span>
         </div>
-        <div class="feature-item disabled">
-          <i class="fas fa-times-circle feature-icon"></i>
-          <span>Priority processing</span>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>No SeekReap Branding</span>
         </div>
       </div>
-      <button class="plan-btn btn-primary" data-plan="creator">Choose Creator</button>
+      <a href="/signup_signin.html?plan=pro" class="plan-btn btn-primary" data-plan="pro">Upgrade Now →</a>
+      <div class="risk-reversal">
+        ✅ 7-day money-back guarantee • Cancel anytime • No contracts
+      </div>
     </div>
 
-    <!-- Studio Plan -->
-    <div class="pricing-card" data-plan="studio">
+    <!-- Elite Plan (Authority) -->
+    <div class="pricing-card" data-plan="elite">
       <div class="card-header">
         <div class="plan-icon"><i class="fas fa-building"></i></div>
-        <h3 class="plan-name">Studio</h3>
+        <h3 class="plan-name">Authority</h3>
+        <div class="elite-framing">For creators who rely on proof to protect income</div>
         <div class="plan-price">
-          <span class="currency">$</span>
-          <span class="price-amount" data-monthly="29.99" data-yearly="23.99">29.99</span>
+          <span class="currency">R</span>
+          <span class="price-amount" data-monthly="499" data-yearly="399">499</span>
           <span class="period">/month</span>
         </div>
-        <p class="plan-description">For studios and professional teams</p>
+        <p class="plan-description">For studios and high-volume creators</p>
       </div>
       <div class="card-features">
-        <div class="feature-item">
+        <div class="feature-item highlight">
           <i class="fas fa-check-circle feature-icon"></i>
-          <span>Unlimited certifications</span>
+          <span><strong>Best for agencies & serious creators</strong></span>
         </div>
         <div class="feature-item">
           <i class="fas fa-check-circle feature-icon"></i>
-          <span>QR code included</span>
+          <span>Unlimited Certifications (Fair Use)</span>
         </div>
         <div class="feature-item">
           <i class="fas fa-check-circle feature-icon"></i>
-          <span>PDF certificate</span>
+          <span>Protect high-value content at scale</span>
         </div>
         <div class="feature-item">
           <i class="fas fa-check-circle feature-icon"></i>
-          <span>No watermark</span>
+          <span>Avoid disputes with verifiable proof</span>
         </div>
         <div class="feature-item">
           <i class="fas fa-check-circle feature-icon"></i>
-          <span>Co-ownership support</span>
+          <span>API Access</span>
         </div>
         <div class="feature-item">
           <i class="fas fa-check-circle feature-icon"></i>
-          <span>Priority processing</span>
+          <span>Bulk Uploads</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>Verification Badge</span>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-check-circle feature-icon"></i>
+          <span>Priority Support</span>
         </div>
       </div>
-      <button class="plan-btn btn-primary" data-plan="studio">Choose Studio</button>
+      <a href="/signup_signin.html?plan=elite" class="plan-btn btn-primary" data-plan="elite">Go Elite →</a>
     </div>
+  </div>
+
+  <!-- Pay-Per-Use Section (Positioned as Fallback) -->
+  <div class="payg-section">
+    <h3>Not ready for a subscription?</h3>
+    <div class="payg-price">R10 <span class="payg-period">per certification</span></div>
+    <p>Best for one-time use.</p>
+    <div class="pay-framing">✨ Regular creators save up to 95% with plans</div>
+    <a href="/signup_signin.html?plan=payg" class="payg-btn">Pay as You Go →</a>
+  </div>
+
+  <!-- Trust Section (Concrete & Specific) -->
+  <div class="trust-section">
+    <h3>🔐 How SeekReap Protects You</h3>
+    <div class="trust-list">
+      <li>Each certificate includes a tamper-proof timestamp</li>
+      <li>Independently verifiable — no login required</li>
+      <li>Proof persists even if you cancel</li>
+    </div>
+    <div class="social-proof">
+      🌟 Creators are already using SeekReap to protect their work before publishing online
+    </div>
+  </div>
+
+  <!-- Decision Reassurance Layer -->
+  <div class="decision-bridge">
+    <p><strong>Still unsure?</strong></p>
+    <p>Start free. Upgrade only when you need more certificates.</p>
   </div>
 
   <!-- FAQ Section -->
@@ -199,53 +268,49 @@
       <div class="faq-grid">
         <div class="faq-item">
           <div class="faq-question">
-            <span>Can I change plans later?</span>
+            <span>Do I own my content?</span>
             <i class="fas fa-chevron-down"></i>
           </div>
           <div class="faq-answer">
-            Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate the difference.
+            YES. You retain 100% ownership. SeekReap only provides proof of your existing rights.
           </div>
         </div>
         <div class="faq-item">
           <div class="faq-question">
-            <span>What happens if I exceed my certification limit?</span>
+            <span>What happens if I cancel?</span>
             <i class="fas fa-chevron-down"></i>
           </div>
           <div class="faq-answer">
-            You'll receive a notification and can either upgrade your plan or purchase additional certifications individually.
+            Your existing certificates remain valid and verifiable forever. Only new certifications require an active plan.
           </div>
         </div>
         <div class="faq-item">
           <div class="faq-question">
-            <span>Is there a contract or commitment?</span>
+            <span>Is this legally valid?</span>
             <i class="fas fa-chevron-down"></i>
           </div>
           <div class="faq-answer">
-            No long-term contracts. All monthly plans can be canceled anytime. Yearly plans are prepaid but fully refundable within 14 days.
+            Our timestamping and verification methods are compliant with international standards. Consult a lawyer for specific legal advice.
           </div>
         </div>
         <div class="faq-item">
           <div class="faq-question">
-            <span>Do you offer discounts for non-profits?</span>
+            <span>Can I upgrade later?</span>
             <i class="fas fa-chevron-down"></i>
           </div>
           <div class="faq-answer">
-            Yes, we offer special pricing for educational institutions and non-profit organizations. Contact our sales team for details.
+            Absolutely! Upgrade, downgrade, or switch to pay-as-you-go anytime.
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA Section -->
-  <section class="cta-section">
-    <div class="cta-content">
-      <h2 class="cta-title">Ready to Protect Your <span class="gold-gradient">Creative Work?</span></h2>
-      <p class="cta-subtitle">Join thousands of creators who trust SeekReap for their certification needs</p>
-      <div class="cta-buttons">
-        <a href="/signup_signin.html" class="cta-btn-primary">Get Started Free</a>
-        <a href="/certification_portal.html" class="cta-btn-secondary">Try Demo</a>
-      </div>
+  <!-- Final CTA Section -->
+  <section class="final-cta-section">
+    <div class="final-cta-content">
+      <h2 class="final-cta-title">Stop worrying about theft.<br>Start proving ownership.</h2>
+      <a href="/signup_signin.html?plan=free" class="final-cta-btn">Start Free — 30 seconds →</a>
     </div>
   </section>
 
@@ -290,5 +355,6 @@
   <!-- Scripts -->
   <script src="/assets/js/routes.js"></script>
   <script src="/assets/js/pricing.js"></script>
+  <script src="/assets/js/auth-guard.js"></script>
 </body>
 </html>
