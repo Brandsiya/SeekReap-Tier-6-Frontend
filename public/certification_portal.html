@@ -1,25 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="/config.js"></script>
+<script src="/auth_guard.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>SeekReap · Certify Your Creative Work</title>
-
-<!-- External CSS -->
-<link rel="stylesheet" href="assets/css/certification_portal.css">
-
-<!-- Fonts & Icons -->
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<!-- External Libraries -->
+<!-- External CSS -->
+<link rel="stylesheet" href="assets/css/certification_portal.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js"></script>
-
-<!-- Firebase (if needed later) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 <div class="demo-container">
@@ -60,7 +56,7 @@
   </div>
   <div class="card-body">
     <div class="plan-grid">
-      <div class="plan-card selected" id="planFree" data-plan="free">
+      <div class="plan-card selected" id="planFree" data-plan="free" onclick="selectPlan(this)">
         <div class="plan-name">Free</div>
         <div class="plan-price">$0<span>/mo</span></div>
         <div class="plan-period">Always free</div>
@@ -73,7 +69,7 @@
           <li class="off"><i class="fas fa-times"></i> Priority processing</li>
         </ul>
       </div>
-      <div class="plan-card featured" id="planCreator" data-plan="creator">
+      <div class="plan-card featured" id="planCreator" data-plan="creator" onclick="selectPlan(this)">
         <div class="plan-name">Creator</div>
         <div class="plan-price">$9.99<span>/mo</span></div>
         <div class="plan-period">Billed monthly</div>
@@ -86,7 +82,7 @@
           <li class="off"><i class="fas fa-times"></i> Priority processing</li>
         </ul>
       </div>
-      <div class="plan-card" id="planStudio" data-plan="studio">
+      <div class="plan-card" id="planStudio" data-plan="studio" onclick="selectPlan(this)">
         <div class="plan-name">Studio</div>
         <div class="plan-price">$29.99<span>/mo</span></div>
         <div class="plan-period">Billed monthly</div>
@@ -140,7 +136,7 @@
       </div>
     </div>
     <div class="button-group">
-      <button class="btn-secondary" id="backToStep1Btn"><i class="fas fa-arrow-left"></i> Back</button>
+      <button class="btn-secondary" onclick="showStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
       <button class="btn-primary" id="nextToOwnershipBtn"><i class="fas fa-arrow-right"></i> Continue</button>
     </div>
   </div>
@@ -166,7 +162,7 @@
       </div>
     </div>
     <div class="button-group">
-      <button class="btn-secondary" id="backToStep2Btn"><i class="fas fa-arrow-left"></i> Back</button>
+      <button class="btn-secondary" onclick="showStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
       <button class="btn-primary" id="nextToUploadBtn"><i class="fas fa-arrow-right"></i> Continue</button>
     </div>
   </div>
@@ -179,6 +175,7 @@
     <p id="step4SubText">Upload your work for blockchain certification</p>
   </div>
   <div class="card-body">
+
     <!-- SOLO CONTENT -->
     <div id="soloContent" class="hidden">
       <div class="creator-files">
@@ -256,7 +253,7 @@
     </div>
 
     <div class="button-group">
-      <button class="btn-secondary" id="backToStep3Btn"><i class="fas fa-arrow-left"></i> Back</button>
+      <button class="btn-secondary" onclick="showStep(3)"><i class="fas fa-arrow-left"></i> Back</button>
       <button class="btn-primary" id="finalizeBtn"><i class="fas fa-certificate"></i> Get Certified</button>
     </div>
   </div>
@@ -296,11 +293,11 @@
 <!-- INVITE MODAL -->
 <div class="modal" id="inviteModal">
   <div class="modal-content">
-    <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--white);margin-bottom:16px;"><i class="fas fa-envelope" style="color:var(--gold);margin-right:8px;"></i> Invitations Sent</h3>
+    <h3 style="font-family:\'Cormorant Garamond\',serif;font-size:1.3rem;color:var(--white);margin-bottom:16px;"><i class="fas fa-envelope" style="color:var(--gold);margin-right:8px;"></i> Invitations Sent</h3>
     <div id="inviteList"></div>
     <div class="invite-link">
       <input type="text" id="shareLink" readonly>
-      <button class="copy-btn" id="copyLinkBtn"><i class="fas fa-copy"></i> Copy</button>
+      <button class="copy-btn" onclick="copyLink()"><i class="fas fa-copy"></i> Copy</button>
     </div>
     <div class="button-group">
       <button class="btn-primary" id="closeModalBtn"><i class="fas fa-certificate"></i> Get Certificate</button>
