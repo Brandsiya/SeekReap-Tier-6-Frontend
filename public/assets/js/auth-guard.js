@@ -38,6 +38,6 @@
 
   } catch (err) {
     console.error('Auth guard error:', err.message);
-    window.location.replace('/signup_signin.html');
+    window.location.replace('/certification_portal.html');
   }
 })();
