@@ -127,7 +127,7 @@
         const { data: { session } } = await sb.auth.getSession();
         if (session?.user?.email_confirmed_at) {
           document.getElementById('poll-label').textContent = '✅ Verified! Redirecting…';
-          setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+          setTimeout(() => { window.location.href = '/certification_portal.html'; }, 1200);
           return;
         }
       } catch (_) {}

@@ -48,7 +48,7 @@ async function handleSignIn() {
       window.location.href = 'email_verify_pending.html';
       return;
     }
-    window.location.href = 'dashboard.html';
+    window.location.href = '/certification_portal.html';
   } catch (err) {
     const msg = /invalid login|invalid credentials/i.test(err.message)
       ? 'Incorrect email or password. Please try again.'
@@ -81,7 +81,7 @@ async function handleSignUp() {
     const { data, error } = await sb.auth.signUp({
       email,
       password,
-      options: { data: { full_name: name } }
+      options: { data: { full_name: name }, emailRedirectTo: 'https://seekreap-frontend.onrender.com/certification_portal.html' }
     });
     if (error) throw error;
 
