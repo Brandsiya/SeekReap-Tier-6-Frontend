@@ -81,7 +81,7 @@ async function handleSignUp() {
     const { data, error } = await sb.auth.signUp({
       email,
       password,
-      options: { data: { full_name: name }, emailRedirectTo: 'https://seekreap-backend-dev.fly.dev/certification_portal.html' }
+      options: { data: { full_name: name }, emailRedirectTo: 'https://seekreap-frontend.onrender.com/certification_portal.html' }
     });
     if (error) throw error;
 
