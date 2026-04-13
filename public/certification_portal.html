@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/config.js"></script>
+    <script src="/auth_guard.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SeekReap · Certify Your Creative Work</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/certification_portal.css">
+</head>
+<body>
+    <div class="demo-container">
+        <div class="page-header">
+            <a href="#" class="page-logo">
+                <span class="page-logo-text">SeekReap</span>
+            </a>
+            <span class="page-title-sep">|</span>
+            <span class="page-subtitle">Certify Your Creative Work</span>
+        </div>
+
+        <div class="workflow-steps">
+            <div class="step active" id="step1"><div class="step-number">1</div><span>Plan</span></div>
+            <div class="step" id="step2"><div class="step-number">2</div><span>Details</span></div>
+            <div class="step" id="step3"><div class="step-number">3</div><span>Ownership</span></div>
+            <div class="step" id="step4"><div class="step-number">4</div><span>Upload</span></div>
+            <div class="step" id="step5"><div class="step-number">5</div><span>Certify</span></div>
+        </div>
+
+        <div class="workflow-card" id="step1Card">
+            <div class="card-header">
+                <h2><i class="fas fa-tags"></i> Select Plan</h2>
+            </div>
+            <div class="card-body">
+                <div class="plan-grid">
+                    <div class="plan-card selected" data-plan="free" onclick="selectPlan(this)">
+                        <div class="plan-name">Free</div>
+                        <div class="plan-price">$0</div>
+                    </div>
+                    <div class="plan-card featured" data-plan="creator" onclick="selectPlan(this)">
+                        <div class="plan-name">Creator</div>
+                        <div class="plan-price">$9.99</div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="showStep(2)">Continue</button>
+                </div>
+            </div>
+        </div>
+
+        </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="/assets/js/certification_portal.js"></script>
+</body>
+</html>
