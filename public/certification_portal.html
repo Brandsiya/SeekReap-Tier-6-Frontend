@@ -52,9 +52,11 @@
   </div>
   <div class="card-body">
     <div class="plan-grid">
-      <div class="plan-card selected" id="planFree" data-plan="free" onclick="selectPlan(this)">
-        <div class="plan-name">Free</div>
-        <div class="plan-price">$0<span>/mo</span></div>
+
+      <!-- FREE -->
+      <div class="plan-card selected" id="planFree" data-plan="free" data-price="0" onclick="selectPlan(this)">
+        <div class="plan-badge free-badge">Free</div>
+        <div class="plan-price">$0<span class="plan-per">/mo</span></div>
         <div class="plan-period">Always free</div>
         <ul class="plan-features">
           <li><i class="fas fa-check"></i> 1 certification / month</li>
@@ -65,9 +67,26 @@
           <li class="off"><i class="fas fa-times"></i> Priority processing</li>
         </ul>
       </div>
-      <div class="plan-card featured" id="planCreator" data-plan="creator" onclick="selectPlan(this)">
-        <div class="plan-name">Creator</div>
-        <div class="plan-price">$9.99<span>/mo</span></div>
+
+      <!-- PAY AS YOU GO -->
+      <div class="plan-card" id="planPayg" data-plan="payg" data-price="1.99" onclick="selectPlan(this)">
+        <div class="plan-badge payg-badge">Pay As You Go</div>
+        <div class="plan-price">$1.99<span class="plan-per">/cert</span></div>
+        <div class="plan-period">No subscription</div>
+        <ul class="plan-features">
+          <li><i class="fas fa-check"></i> Per-certification pricing</li>
+          <li><i class="fas fa-check"></i> QR code included</li>
+          <li><i class="fas fa-check"></i> PDF certificate</li>
+          <li><i class="fas fa-check"></i> No watermark</li>
+          <li class="off"><i class="fas fa-times"></i> Co-ownership</li>
+          <li class="off"><i class="fas fa-times"></i> Priority processing</li>
+        </ul>
+      </div>
+
+      <!-- CREATOR -->
+      <div class="plan-card featured" id="planCreator" data-plan="creator" data-price="9.99" onclick="selectPlan(this)">
+        <div class="plan-badge creator-badge">Creator</div>
+        <div class="plan-price">$9.99<span class="plan-per">/mo</span></div>
         <div class="plan-period">Billed monthly</div>
         <ul class="plan-features">
           <li><i class="fas fa-check"></i> 10 certifications / month</li>
@@ -78,9 +97,11 @@
           <li class="off"><i class="fas fa-times"></i> Priority processing</li>
         </ul>
       </div>
-      <div class="plan-card" id="planStudio" data-plan="studio" onclick="selectPlan(this)">
-        <div class="plan-name">Studio</div>
-        <div class="plan-price">$29.99<span>/mo</span></div>
+
+      <!-- STUDIO -->
+      <div class="plan-card" id="planStudio" data-plan="studio" data-price="29.99" onclick="selectPlan(this)">
+        <div class="plan-badge studio-badge">Studio</div>
+        <div class="plan-price">$29.99<span class="plan-per">/mo</span></div>
         <div class="plan-period">Billed monthly</div>
         <ul class="plan-features">
           <li><i class="fas fa-check"></i> Unlimited certifications</li>
@@ -91,6 +112,7 @@
           <li><i class="fas fa-check"></i> Priority processing</li>
         </ul>
       </div>
+
     </div>
     <div class="button-group">
       <button class="btn-primary" id="nextToDetailsBtn"><i class="fas fa-arrow-right"></i> Continue</button>
