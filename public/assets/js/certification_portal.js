@@ -301,6 +301,38 @@ function buildCertDetails(title, workTypeText, ownerRows, certId) {
   </div>`;
 }
 
+// ── API SUBMISSION ────────────────────────────────────────────────────────────
+const TIER4_URL = 'https://seekreap-tier-4-dev.fly.dev';
+
+async function submitCertification(payload) {
+  const finalizeBtn = document.getElementById('finalizeBtn');
+  try {
+    const res = await fetch(TIER4_URL + '/api/certify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Certification failed');
+
+    // Store cert data for loader page
+    sessionStorage.setItem('activeCert', JSON.stringify({
+      submission_id: data.submission_id,
+      cert_id: data.cert_id,
+      plan: data.plan,
+      title: payload.title,
+      work_type_text: payload.work_type_text || payload.work_type
+    }));
+
+    // Redirect to loader
+    window.location.href = `certificate_loader.html?id=${data.submission_id}&cert=${data.cert_id}`;
+  } catch (err) {
+    console.error('Certification error:', err);
+    alert('Error: ' + err.message);
+    if (finalizeBtn) { finalizeBtn.disabled = false; finalizeBtn.innerHTML = '<i class="fas fa-certificate"></i> Get Certified'; }
+  }
+}
+
 // ── EVENT LISTENERS ───────────────────────────────────────────────────────────
 document.getElementById('workType').addEventListener('change', () => {
   const wt = document.getElementById('workType').value;
@@ -349,30 +381,79 @@ document.getElementById('addCollaboratorBtn').addEventListener('click', () => {
   addCoowner(email, split);
 });
 
-document.getElementById('finalizeBtn').addEventListener('click', () => {
+document.getElementById('finalizeBtn').addEventListener('click', async () => {
   const title = document.getElementById('workTitle').value.trim() || 'Untitled Work';
   const workTypeEl = document.getElementById('workType');
   const workTypeText = workTypeEl.options[workTypeEl.selectedIndex].text.trim();
-  const certId = generateCertId();
+  const workType = workTypeEl.value;
+  const artisticName = (document.getElementById('artisticName') || {}).value || '';
+
+  // Hash the uploaded file if available (Web Crypto)
+  let contentHash = '';
+  if (uploadedFile) {
+    try {
+      const buf = await uploadedFile.arrayBuffer();
+      const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+      contentHash = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    } catch(e) { console.warn('Hash failed:', e); }
+  }
+
+  // Get Supabase user
+  const user = window.currentUser;
+  const creatorId = user ? (user.id || user.sub) : null;
+
+  if (!creatorId) {
+    alert('Session expired. Please sign in again.');
+    window.location.href = 'signup_signin.html';
+    return;
+  }
+
+  const finalizeBtn = document.getElementById('finalizeBtn');
+  finalizeBtn.disabled = true;
+  finalizeBtn.textContent = '⏳ Submitting...';
 
   if (mode === 'solo') {
-    const ownerRows = `<div class="cert-ownership-row"><span>You (Primary Creator)</span><span style="color:var(--gold);font-weight:600;">100%</span></div>`;
-    document.getElementById('certificateDetails').innerHTML = buildCertDetails(title, workTypeText, ownerRows, certId);
-    document.getElementById('certIdLine').textContent = certId + ' · ' + new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-    showStep(5);
-    // Plan-based redirect
-    if (selectedPlan === 'free') {
-      setTimeout(() => { window.location.href = 'certificate_loader.html'; }, 400);
-    } else {
-      setTimeout(() => { window.location.href = 'pay.html'; }, 400);
+    // For paid plans, redirect to pay.html first
+    if (selectedPlan !== 'free') {
+      sessionStorage.setItem('pendingCert', JSON.stringify({
+        creator_id: creatorId, email: user.email, title, work_type: workType,
+        work_type_text: workTypeText, artistic_name: artisticName,
+        content_hash: contentHash, plan: selectedPlan,
+        collaborators: [], ownership_split: {}
+      }));
+      window.location.href = `pay.html?plan=${selectedPlan}&title=${encodeURIComponent(title)}`;
+      return;
     }
+    // Free plan — call API directly
+    await submitCertification({
+      creator_id: creatorId, email: user.email, title,
+      work_type: workType, artistic_name: artisticName,
+      content_hash: contentHash, plan: 'free',
+      collaborators: [], ownership_split: {}
+    });
   } else {
     if (collaborators.length === 0) { alert('Please add at least one co-owner.'); return; }
-    const inviteList = document.getElementById('inviteList');
-    if (inviteList) inviteList.innerHTML = collaborators.map(c => `<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:0.85rem;color:var(--white-dim);"><i class="fas fa-envelope" style="margin-right:8px;color:var(--gold);"></i>${c.email} — ${c.split}% share</div>`).join('');
-    const shareLink = document.getElementById('shareLink');
-    if (shareLink) shareLink.value = `${location.origin}/verify?cert=${certId}`;
-    document.getElementById('inviteModal').classList.add('active');
+    const ownershipSplit = {};
+    collaborators.forEach(c => { ownershipSplit[c.email] = c.split; });
+    const primarySplit = 100 - collaborators.reduce((s,c)=>s+c.split,0);
+    ownershipSplit['__primary__'] = primarySplit;
+
+    if (selectedPlan !== 'free') {
+      sessionStorage.setItem('pendingCert', JSON.stringify({
+        creator_id: creatorId, email: user.email, title, work_type: workType,
+        work_type_text: workTypeText, artistic_name: artisticName,
+        content_hash: contentHash, plan: selectedPlan,
+        collaborators, ownership_split: ownershipSplit
+      }));
+      window.location.href = `pay.html?plan=${selectedPlan}&title=${encodeURIComponent(title)}`;
+      return;
+    }
+    await submitCertification({
+      creator_id: creatorId, email: user.email, title,
+      work_type: workType, work_type_text: workTypeText,
+      artistic_name: artisticName, content_hash: contentHash,
+      plan: 'free', collaborators, ownership_split: ownershipSplit
+    });
   }
 });
 

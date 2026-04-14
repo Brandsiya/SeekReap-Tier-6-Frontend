@@ -561,207 +561,191 @@
   </div>
 
   <script>
-    const certIdInput = document.getElementById('certIdInput');
-    const loadBtn = document.getElementById('loadBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const uploadArea = document.getElementById('uploadArea');
-    const fileInput = document.getElementById('fileInput');
-    const fileInfo = document.getElementById('fileInfo');
-    const fileNameSpan = document.getElementById('fileName');
-    const removeFileBtn = document.getElementById('removeFileBtn');
-    const errorMessage = document.getElementById('errorMessage');
-    const errorText = document.getElementById('errorText');
+    const TIER4_URL = 'https://seekreap-tier-4-dev.fly.dev';
+
+    // Read submission_id from URL (?id=xxx) or sessionStorage
+    const urlParams  = new URLSearchParams(location.search);
+    const submissionId = urlParams.get('id') || '';
+    const certIdParam  = urlParams.get('cert') || '';
+
+    // If we have a submission_id, go straight to polling mode
+    if (submissionId) {
+      startPollingMode(submissionId, certIdParam);
+    }
+
+    // ── DOM refs (loader card mode) ───────────────────────────────────────────
+    const certIdInput    = document.getElementById('certIdInput');
+    const loadBtn        = document.getElementById('loadBtn');
+    const cancelBtn      = document.getElementById('cancelBtn');
+    const uploadArea     = document.getElementById('uploadArea');
+    const fileInput      = document.getElementById('fileInput');
+    const fileInfo       = document.getElementById('fileInfo');
+    const fileNameSpan   = document.getElementById('fileName');
+    const removeFileBtn  = document.getElementById('removeFileBtn');
+    const errorMessage   = document.getElementById('errorMessage');
+    const errorText      = document.getElementById('errorText');
     const loadingOverlay = document.getElementById('loadingOverlay');
 
     let selectedFile = null;
 
-    function hideError() {
-      errorMessage.classList.remove('show');
+    function hideError()         { errorMessage.classList.remove('show'); }
+    function showError(msg)      { errorText.textContent = msg; errorMessage.classList.add('show'); setTimeout(()=>errorMessage.classList.remove('show'),4000); }
+    function showLoading()       { loadingOverlay.classList.add('active'); }
+    function hideLoading()       { loadingOverlay.classList.remove('active'); }
+
+    // ── POLLING MODE (arrived from certification_portal / pay) ────────────────
+    function startPollingMode(sid, certId) {
+      // Hide the manual-load UI, show a live progress card
+      const card = document.querySelector('.loader-card');
+      if (!card) return;
+
+      const activeCert = JSON.parse(sessionStorage.getItem('activeCert') || '{}');
+      const title = activeCert.title || 'Your work';
+
+      card.innerHTML = `
+        <div class="brand" style="justify-content:center;margin-bottom:24px;">
+          <svg class="brand-icon" viewBox="0 0 100 100" fill="none">
+            <defs>
+              <linearGradient id="lS2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FAFAF8"/><stop offset="100%" stop-color="#E8C06A"/></linearGradient>
+              <linearGradient id="lR2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C9993A"/><stop offset="100%" stop-color="#9B7520"/></linearGradient>
+            </defs>
+            <path d="M50 20 L50 24 M48 22 L52 26 M46 24 L54 30 M44 28 L56 34 M42 34 L58 38 M42 42 L58 42 M44 48 L56 48 M46 54 L54 54 M48 58 L52 58 M50 62 L50 66" stroke="url(#lR2)" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.8"/>
+            <text x="38" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#lS2)">S</text>
+            <text x="62" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#lR2)">R</text>
+          </svg>
+          <span class="brand-name">SeekReap</span>
+        </div>
+        <div class="icon-container" id="statusIcon">
+          <div class="cert-icon"><i class="fas fa-cog fa-spin" style="font-size:48px;color:#C9993A;"></i></div>
+        </div>
+        <h2 id="statusTitle">Certifying Your Work</h2>
+        <p class="subtitle" id="statusMsg">Analysing and timestamping "<strong>${title}</strong>"…</p>
+        <div style="margin:20px 0;">
+          <div style="background:rgba(255,255,255,0.08);border-radius:3px;height:6px;overflow:hidden;border:1px solid rgba(201,153,58,0.2);">
+            <div id="pollBar" style="height:100%;background:linear-gradient(90deg,#9B7520,#C9993A,#E8C06A);width:15%;border-radius:2px;transition:width 0.8s ease;"></div>
+          </div>
+          <div style="font-size:0.75rem;color:rgba(250,250,248,0.5);text-align:center;margin-top:6px;" id="pollLabel">Processing…</div>
+        </div>
+        <div style="font-size:0.72rem;color:rgba(250,250,248,0.4);text-align:center;">
+          Certificate ID: <span style="color:#E8C06A;font-family:monospace;">${certId || '—'}</span>
+        </div>
+      `;
+
+      pollStatus(sid, certId, 0);
     }
 
-    function showError(message) {
-      errorText.textContent = message;
-      errorMessage.classList.add('show');
-      setTimeout(() => {
-        errorMessage.classList.remove('show');
-      }, 4000);
-    }
+    const statusSteps = ['queued','processing','completed','failed'];
+    const barWidths   = { queued:15, processing:55, completed:100, failed:100 };
+    const statusLabels = {
+      queued:     'Job queued — waiting for worker…',
+      processing: 'Worker processing — analysing fingerprints…',
+      completed:  '✅ Certification complete!',
+      failed:     '❌ Certification failed'
+    };
 
-    function showLoading() {
-      loadingOverlay.classList.add('active');
-    }
+    async function pollStatus(sid, certId, attempts) {
+      if (attempts > 60) {  // 5 min max
+        document.getElementById('statusTitle').textContent = 'Taking longer than expected';
+        document.getElementById('statusMsg').textContent   = 'Your certificate is still processing. Check your dashboard.';
+        return;
+      }
+      try {
+        const res  = await fetch(TIER4_URL + '/api/certify/' + sid);
+        const data = await res.json();
+        const st   = data.status || 'queued';
 
-    function hideLoading() {
-      loadingOverlay.classList.remove('active');
-    }
+        const bar   = document.getElementById('pollBar');
+        const label = document.getElementById('pollLabel');
+        if (bar)   bar.style.width   = (barWidths[st] || 30) + '%';
+        if (label) label.textContent = statusLabels[st] || st;
 
-    function generateCertificateData(id, fileName = null) {
-      const timestamp = new Date();
-      const certificateId = id || `SR-${timestamp.getFullYear()}${String(timestamp.getMonth() + 1).padStart(2, '0')}${String(timestamp.getDate()).padStart(2, '0')}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
-      
-      return {
-        id: certificateId,
-        title: "Summer Vibes",
-        type: "Audio / Music Track",
-        description: "An uplifting summer anthem about good times and friendship",
-        owner: fileName ? `Owner from file: ${fileName}` : "You (Sole Owner)",
-        ownership: "100%",
-        timestamp: timestamp.toLocaleString(),
-        blockchainId: `0x${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 10)}`,
-        hash: `${Math.random().toString(36).substring(2, 30)}`
-      };
-    }
-
-    function loadCertificate(certificateId, fileData = null) {
-      showLoading();
-      
-      setTimeout(() => {
-        hideLoading();
-        
-        if (!certificateId || certificateId.trim() === '') {
-          showError('Please enter a valid certificate ID');
+        if (st === 'completed') {
+          showSuccess(data);
           return;
         }
-        
-        if (certificateId.length < 10) {
-          showError('Invalid certificate ID format');
+        if (st === 'failed') {
+          showFailed(data);
           return;
         }
-        
-        const certData = generateCertificateData(certificateId, fileData ? fileData.name : null);
-        sessionStorage.setItem('loadedCertificate', JSON.stringify(certData));
-        window.location.href = 'certificate_viewer.html';
-        
-      }, 1500);
+      } catch(e) {
+        console.warn('Poll error:', e.message);
+      }
+      setTimeout(() => pollStatus(sid, certId, attempts + 1), 5000);
     }
 
-    loadBtn.addEventListener('click', () => {
-      hideError();
-      
-      const certId = certIdInput.value.trim();
-      
+    function showSuccess(data) {
+      const activeCert = JSON.parse(sessionStorage.getItem('activeCert') || '{}');
+      const card = document.querySelector('.loader-card');
+      const plan = data.plan || activeCert.plan || 'free';
+      const certId = data.cert_id || activeCert.cert_id || '—';
+      const now = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+
+      card.innerHTML = `
+        <div style="text-align:center;margin-bottom:20px;">
+          <div style="width:72px;height:72px;background:rgba(61,184,122,0.15);border:2px solid rgba(61,184,122,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:2rem;">✅</div>
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:#3DB87A;margin-bottom:8px;">Certification Complete!</h2>
+          <p style="color:rgba(250,250,248,0.65);font-size:0.9rem;">"${data.title || activeCert.title || 'Your work'}" is now blockchain-timestamped</p>
+        </div>
+        <div style="background:#18181E;border:1px solid rgba(201,153,58,0.25);border-left:3px solid #C9993A;border-radius:4px;padding:18px;margin-bottom:20px;font-size:0.85rem;display:grid;gap:8px;">
+          <div><span style="color:rgba(250,250,248,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;">Certificate ID</span><br><span style="font-family:monospace;color:#E8C06A;">${certId}</span></div>
+          <div><span style="color:rgba(250,250,248,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;">Certified On</span><br>${now}</div>
+          <div><span style="color:rgba(250,250,248,0.5);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;">Plan</span><br><span style="text-transform:capitalize;color:#C9993A;">${plan}</span></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button onclick="window.location.href='dashboard.html'" style="flex:1;padding:12px;background:linear-gradient(135deg,#C9993A,#E8C06A);color:#08080A;border:none;border-radius:4px;font-weight:700;font-size:0.88rem;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em;">
+            <i class="fas fa-th-large" style="margin-right:6px;"></i> Dashboard
+          </button>
+          <button onclick="window.location.href='certification_portal.html'" style="flex:1;padding:12px;background:transparent;border:1px solid rgba(201,153,58,0.4);color:rgba(250,250,248,0.7);border-radius:4px;font-weight:500;font-size:0.88rem;cursor:pointer;">
+            + Certify Another
+          </button>
+        </div>
+      `;
+      sessionStorage.removeItem('activeCert');
+    }
+
+    function showFailed(data) {
+      document.getElementById('statusTitle').textContent = '❌ Certification Failed';
+      document.getElementById('statusMsg').innerHTML   = (data.failure_reason || 'An error occurred during processing.') + '<br><br><a href="certification_portal.html" style="color:#C9993A;">Try again →</a>';
+    }
+
+    // ── Manual load mode (arrived directly to this page) ─────────────────────
+    loadBtn && loadBtn.addEventListener('click', () => {
+      const certId = certIdInput && certIdInput.value.trim();
       if (!certId && !selectedFile) {
         showError('Please enter a certificate ID or upload a certificate file');
         return;
       }
-      
-      if (selectedFile) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          try {
-            const fileContent = e.target.result;
-            let certIdFromFile = null;
-            
-            try {
-              const jsonData = JSON.parse(fileContent);
-              certIdFromFile = jsonData.id || jsonData.certificateId;
-            } catch(e) {
-              certIdFromFile = selectedFile.name.replace(/\.(cert|json|txt)$/i, '');
-            }
-            
-            if (certIdFromFile) {
-              loadCertificate(certIdFromFile, selectedFile);
-            } else {
-              showError('Invalid certificate file format');
-              hideLoading();
-            }
-          } catch(err) {
-            showError('Failed to read certificate file');
-            hideLoading();
-          }
-        };
-        reader.onerror = function() {
-          showError('Error reading file');
-          hideLoading();
-        };
-        reader.readAsText(selectedFile);
-      } else {
-        loadCertificate(certId);
+      if (certId && certId.length >= 10) {
+        // Redirect with the cert id as param so polling mode activates
+        window.location.href = `certificate_loader.html?cert=${encodeURIComponent(certId)}&id=${encodeURIComponent(certId)}`;
+        return;
       }
+      showError('Invalid certificate ID format (minimum 10 characters)');
     });
 
-    cancelBtn.addEventListener('click', () => {
-      window.location.href = 'dashboard.html';
-    });
+    cancelBtn && cancelBtn.addEventListener('click', () => { window.location.href = 'dashboard.html'; });
 
-    uploadArea.addEventListener('click', () => {
-      fileInput.click();
-    });
+    uploadArea && uploadArea.addEventListener('click', () => { fileInput && fileInput.click(); });
 
-    fileInput.addEventListener('change', (e) => {
+    fileInput && fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
-      if (file) {
-        if (file.size > 5 * 1024 * 1024) {
-          showError('File size must be less than 5MB');
-          return;
-        }
-        
-        const validExtensions = ['.cert', '.json', '.txt'];
-        const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-        if (!validExtensions.includes(fileExt)) {
-          showError('Please upload a .cert, .json, or .txt file');
-          return;
-        }
-        
-        selectedFile = file;
-        fileNameSpan.textContent = file.name;
-        fileInfo.style.display = 'flex';
-        uploadArea.style.display = 'none';
-        hideError();
-      }
+      if (!file) return;
+      if (file.size > 5*1024*1024) { showError('File size must be less than 5MB'); return; }
+      selectedFile = file;
+      if (fileNameSpan) fileNameSpan.textContent = file.name;
+      if (fileInfo)    fileInfo.style.display = 'flex';
+      if (uploadArea)  uploadArea.style.display = 'none';
     });
 
-    removeFileBtn.addEventListener('click', () => {
+    removeFileBtn && removeFileBtn.addEventListener('click', () => {
       selectedFile = null;
-      fileInput.value = '';
-      fileInfo.style.display = 'none';
-      uploadArea.style.display = 'block';
+      if (fileInput)   fileInput.value = '';
+      if (fileInfo)    fileInfo.style.display = 'none';
+      if (uploadArea)  uploadArea.style.display = 'block';
     });
 
-    certIdInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        loadBtn.click();
-      }
+    certIdInput && certIdInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && loadBtn) loadBtn.click();
     });
-
-    uploadArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadArea.style.borderColor = '#E8C06A';
-      uploadArea.style.background = 'rgba(201, 153, 58, 0.1)';
-    });
-
-    uploadArea.addEventListener('dragleave', (e) => {
-      e.preventDefault();
-      uploadArea.style.borderColor = 'rgba(201, 153, 58, 0.3)';
-      uploadArea.style.background = 'rgba(24, 24, 30, 0.5)';
-    });
-
-    uploadArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadArea.style.borderColor = 'rgba(201, 153, 58, 0.3)';
-      uploadArea.style.background = 'rgba(24, 24, 30, 0.5)';
-      
-      const file = e.dataTransfer.files[0];
-      if (file) {
-        if (file.size > 5 * 1024 * 1024) {
-          showError('File size must be less than 5MB');
-          return;
-        }
-        
-        const validExtensions = ['.cert', '.json', '.txt'];
-        const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-        if (!validExtensions.includes(fileExt)) {
-          showError('Please upload a .cert, .json, or .txt file');
-          return;
-        }
-        
-        selectedFile = file;
-        fileNameSpan.textContent = file.name;
-        fileInfo.style.display = 'flex';
-        uploadArea.style.display = 'none';
-        hideError();
-      }
-    });
-  </script>
+</script>
 </body>
-</html>
