@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>SeekReap - Certify Your Work (Standalone)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo { font-size: 48px; color: #C9993A; font-weight: bold; }
+        h1 { color: #C9993A; margin-bottom: 10px; font-size: 32px; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #C9993A; font-weight: 500; }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+        }
+        button {
+            background: linear-gradient(135deg, #C9993A, #9B7520);
+            color: #000;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.5);
+            display: none;
+        }
+        .status.show { display: block; }
+        .plan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
+        .plan-card {
+            padding: 20px;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .plan-card.selected { border-color: #C9993A; background: rgba(201,153,58,0.1); }
+        .plan-price { font-size: 24px; font-weight: bold; color: #C9993A; margin: 10px 0; }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .info { color: #2196F3; }
+        pre { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">SeekReap</div>
+            <h1>Certify Your Creative Work</h1>
+            <p>Get blockchain-backed proof of ownership</p>
+        </div>
+
+        <div class="card">
+            <div class="form-group">
+                <label>Work Title *</label>
+                <input type="text" id="workTitle" placeholder="e.g., My Amazing Song">
+            </div>
+            
+            <div class="form-group">
+                <label>Work Type</label>
+                <select id="workType">
+                    <option value="audio">🎵 Audio / Music</option>
+                    <option value="video">🎬 Video / Film</option>
+                    <option value="image">🖼️ Image / Artwork</option>
+                    <option value="pdf">📄 Document / PDF</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Upload File (optional - creates unique fingerprint)</label>
+                <input type="file" id="fileInput">
+            </div>
+            
+            <label>Select Plan</label>
+            <div class="plan-grid">
+                <div class="plan-card selected" data-plan="free">
+                    <div>🎁 Free</div>
+                    <div class="plan-price">$0</div>
+                    <small>1 certification/month</small>
+                </div>
+                <div class="plan-card" data-plan="creator">
+                    <div>🚀 Creator</div>
+                    <div class="plan-price">$9.99</div>
+                    <small>10 certifications/month</small>
+                </div>
+                <div class="plan-card" data-plan="studio">
+                    <div>🏢 Studio</div>
+                    <div class="plan-price">$29.99</div>
+                    <small>Unlimited</small>
+                </div>
+            </div>
+            
+            <button id="submitBtn">🚀 Submit Certification</button>
+            
+            <div id="status" class="status"></div>
+            <div id="result" class="status"></div>
+        </div>
+    </div>
+
+    <script>
+        const TIER4_URL = 'https://seekreap-tier-4-dev.fly.dev';
+        let selectedPlan = 'free';
+        
+        // Plan selection
+        document.querySelectorAll('.plan-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedPlan = card.dataset.plan;
+            });
+        });
+        
+        // File hashing
+        async function hashFile(file) {
+            if (!file) return '';
+            const buffer = await file.arrayBuffer();
+            const hash = await crypto.subtle.digest('SHA-256', buffer);
+            return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        
+        // Submit certification
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            const title = document.getElementById('workTitle').value.trim();
+            if (!title) {
+                alert('Please enter a work title');
+                return;
+            }
+            
+            const workType = document.getElementById('workType').value;
+            const file = document.getElementById('fileInput').files[0];
+            
+            const statusDiv = document.getElementById('status');
+            const resultDiv = document.getElementById('result');
+            
+            statusDiv.className = 'status show';
+            statusDiv.innerHTML = '⏳ Hashing file...';
+            
+            let contentHash = '';
+            if (file) {
+                contentHash = await hashFile(file);
+                statusDiv.innerHTML = `⏳ File hashed: ${contentHash.substring(0, 16)}...`;
+            }
+            
+            statusDiv.innerHTML = '⏳ Submitting certification...';
+            
+            try {
+                const response = await fetch(`${TIER4_URL}/api/certify`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        creator_id: 'standalone-user-' + Date.now(),
+                        email: 'standalone@seekreap.com',
+                        title: title,
+                        work_type: workType,
+                        content_hash: contentHash,
+                        plan: selectedPlan
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error);
+                
+                statusDiv.innerHTML = `✅ Submitted! ID: ${data.submission_id.substring(0, 8)}...<br>Certificate ID: ${data.cert_id}`;
+                resultDiv.className = 'status show';
+                resultDiv.innerHTML = `<strong>📊 Processing:</strong><br>Status: queued<br>Certificate ID: ${data.cert_id}<br><br><div id="pollingStatus">Polling for completion...</div>`;
+                
+                // Poll for completion
+                let attempts = 0;
+                const pollInterval = setInterval(async () => {
+                    attempts++;
+                    try {
+                        const pollRes = await fetch(`${TIER4_URL}/api/certify/${data.submission_id}`);
+                        const pollData = await pollRes.json();
+                        
+                        const pollingDiv = document.getElementById('pollingStatus');
+                        pollingDiv.innerHTML = `
+                            <strong>Status Update (${attempts}s):</strong><br>
+                            Status: ${pollData.status}<br>
+                            Risk Score: ${pollData.overall_risk_score || 'N/A'}<br>
+                            Risk Level: ${pollData.risk_level || 'N/A'}<br>
+                            ${pollData.cert_id ? `Certificate ID: ${pollData.cert_id}<br>` : ''}
+                        `;
+                        
+                        if (pollData.status === 'completed') {
+                            clearInterval(pollInterval);
+                            resultDiv.innerHTML = `
+                                <div class="success">✅ CERTIFICATION COMPLETE!</div>
+                                <pre>${JSON.stringify(pollData, null, 2)}</pre>
+                                <div style="margin-top: 15px;">
+                                    <strong>🔗 Verification Link:</strong><br>
+                                    <code>https://seekreap-tier-4-dev.fly.dev/api/certify/${data.submission_id}</code>
+                                </div>
+                            `;
+                            statusDiv.innerHTML = '✅ Certification complete!';
+                        }
+                        
+                        if (attempts >= 30) {
+                            clearInterval(pollInterval);
+                            pollingDiv.innerHTML += '<br>⏱️ Polling stopped after 30 attempts';
+                        }
+                    } catch (err) {
+                        console.error('Poll error:', err);
+                    }
+                }, 2000);
+                
+            } catch (error) {
+                statusDiv.className = 'status show';
+                statusDiv.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        });
+    </script>
+</body>
+</html>
