@@ -66,6 +66,7 @@ function validateSignupFields() {
 
 // ── sign in ──────────────────────────────────────────────────────────────────
 async function handleSignIn() {
+  console.log("🔐 handleSignIn called");
   clearMsg();
   const email    = trim('signin-email');
   const password = raw('signin-password');
@@ -77,20 +78,24 @@ async function handleSignIn() {
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
     if (error) throw error;
 
+    console.log("✅ Sign in successful, email confirmed:", data.user.email_confirmed_at);
+
     if (!data.user.email_confirmed_at) {
       sessionStorage.setItem('pendingVerifyEmail', email);
-      window.location.href = ROUTES.verify;
+      window.location.href = '/email_verify_pending.html';
       return;
     }
-    // Set flag to prevent auth-guard redirect loop
+    
+    // Set flag to prevent redirect loop
     sessionStorage.setItem('justSignedIn', 'true');
-    const intent = localStorage.getItem('selectedPlan'); 
-    if (['pro', 'elite', 'payg'].includes(intent)) { 
-      window.location.href = '/checkout.html?plan=' + intent; 
-    } else { 
-      window.location.href = ROUTES.home; 
-    }
+    console.log("📌 Set justSignedIn flag");
+    
+    // Direct to certification portal without any checks
+    console.log("🚀 Redirecting to /certification_portal.html");
+    window.location.href = '/certification_portal.html';
+    
   } catch (err) {
+    console.error("Sign in error:", err);
     const msg = /invalid login|invalid credentials/i.test(err.message)
       ? 'Incorrect email or password. Please try again.'
       : err.message;
@@ -102,6 +107,7 @@ async function handleSignIn() {
 
 // ── sign up with profile metadata ────────────────────────────────────────────
 async function handleSignUp() {
+  console.log("📝 handleSignUp called");
   clearMsg();
   const validation = validateSignupFields();
   if (!validation.valid) return showMsg(validation.msg);
@@ -130,14 +136,20 @@ async function handleSignUp() {
     });
     if (error) throw error;
 
+    console.log("✅ Sign up successful");
+
     // Store profile data for later use
     sessionStorage.setItem('pendingVerifyEmail', email);
+    sessionStorage.setItem('justSignedUp', 'true');
+    console.log("📌 Set justSignedUp flag");
+    
     sessionStorage.setItem('pendingUserProfile', JSON.stringify({
       fullName, title, gender, artisticName, ownershipTitle, ownershipPct, country
     }));
     
-    window.location.href = ROUTES.verify;
+    window.location.href = '/email_verify_pending.html';
   } catch (err) {
+    console.error("Sign up error:", err);
     const msg = /already registered/i.test(err.message)
       ? 'An account with this email already exists. Try signing in.'
       : err.message;
@@ -167,6 +179,7 @@ function togglePassword(inputId, icon) {
 
 // ── wire events ───────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  console.log("📄 signup_signin.js DOM loaded");
   document.getElementById('signin-btn')?.addEventListener('click', handleSignIn);
   document.getElementById('signup-btn')?.addEventListener('click', handleSignUp);
 
@@ -177,137 +190,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
-
-// ── INVITE TOKEN HANDLING ─────────────────────────────────────────────────────
-const TIER4_URL = 'https://seekreap-tier-4-dev.fly.dev';
-let currentInvite = null;
-
-async function fetchInviteByToken(token) {
-  try {
-    const response = await fetch(`${TIER4_URL}/api/invite?token=${encodeURIComponent(token)}`);
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Invalid invite');
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Failed to fetch invite:', error);
-    return null;
-  }
-}
-
-async function prefillSignupWithInvite(invite) {
-  if (!invite || !invite.valid) return;
-  
-  // Prefill all fields
-  const fullNameInput = document.getElementById('signup-fullname');
-  const titleSelect = document.getElementById('signup-title');
-  const genderSelect = document.getElementById('signup-gender');
-  const artisticNameInput = document.getElementById('signup-artisticname');
-  const ownershipTitleInput = document.getElementById('signup-ownershiptitle');
-  const ownershipPctInput = document.getElementById('signup-ownershippct');
-  const countrySelect = document.getElementById('signup-country');
-  const emailInput = document.getElementById('signup-email');
-  
-  if (fullNameInput && invite.full_name) fullNameInput.value = invite.full_name;
-  if (titleSelect && invite.title) titleSelect.value = invite.title;
-  if (genderSelect && invite.gender) genderSelect.value = invite.gender;
-  if (artisticNameInput && invite.artistic_name) artisticNameInput.value = invite.artistic_name;
-  if (ownershipTitleInput && invite.ownership_title) ownershipTitleInput.value = invite.ownership_title;
-  if (ownershipPctInput && invite.split) ownershipPctInput.value = invite.split;
-  if (countrySelect && invite.country) countrySelect.value = invite.country;
-  if (emailInput && invite.email) {
-    emailInput.value = invite.email;
-    emailInput.disabled = true;
-    emailInput.style.opacity = '0.6';
-    emailInput.title = 'Email is locked from invitation';
-  }
-  
-  // Store invite token for signup completion
-  const urlParams = new URLSearchParams(window.location.search);
-  const inviteToken = urlParams.get('invite_token');
-  if (inviteToken) {
-    sessionStorage.setItem('pendingInviteToken', inviteToken);
-    sessionStorage.setItem('pendingInviteData', JSON.stringify(invite));
-  }
-}
-
-// Check for invite token on page load
-document.addEventListener('DOMContentLoaded', async () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const inviteToken = urlParams.get('invite_token');
-  
-  if (inviteToken) {
-    console.log('🔑 Invite token detected:', inviteToken.substring(0, 16) + '...');
-    const invite = await fetchInviteByToken(inviteToken);
-    
-    if (invite && invite.valid) {
-      currentInvite = invite;
-      await prefillSignupWithInvite(invite);
-      // Switch to signup tab
-      if (typeof switchTab === 'function') {
-        switchTab('signup');
-      }
-      showMsg('🎉 You\'ve been invited to collaborate! Please complete your registration.', 'info');
-    } else {
-      showMsg('Invalid or expired invitation link. Please contact the person who invited you.', 'error');
-    }
-  }
-});
-
-// After signup, accept the invite
-async function acceptInviteAfterSignup(userId, userEmail, token) {
-  try {
-    const response = await fetch(`${TIER4_URL}/api/invite/accept`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        token: token,
-        user_id: userId,
-        email: userEmail
-      })
-    });
-    
-    const data = await response.json();
-    
-    if (!response.ok) throw new Error(data.error);
-    
-    console.log('✅ Invite accepted:', data);
-    sessionStorage.removeItem('pendingInviteToken');
-    sessionStorage.removeItem('pendingInviteData');
-    
-    return data;
-  } catch (error) {
-    console.error('Failed to accept invite:', error);
-    throw error;
-  }
-}
-
-// Hook into signup completion
-const originalHandleSignUp = window.handleSignUp || function() {};
-window.handleSignUp = async function() {
-  const result = await originalHandleSignUp();
-  
-  // Check if we have a pending invite
-  const pendingToken = sessionStorage.getItem('pendingInviteToken');
-  const pendingData = sessionStorage.getItem('pendingInviteData');
-  
-  if (pendingToken && pendingData && window.currentUser) {
-    const inviteData = JSON.parse(pendingData);
-    setTimeout(async () => {
-      try {
-        await acceptInviteAfterSignup(
-          window.currentUser.id,
-          window.currentUser.email,
-          pendingToken
-        );
-        showMsg('✅ Invitation accepted! You are now a collaborator.', 'success');
-      } catch (error) {
-        console.error('Failed to auto-accept invite:', error);
-      }
-    }, 2000);
-  }
-  
-  return result;
-};
