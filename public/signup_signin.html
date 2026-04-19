@@ -3,10 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>SeekReap · Sign In</title>
+  <title>SeekReap · Sign Up / Sign In</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/assets/css/signup_signin.css">
+  <style>
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .required-field::after {
+      content: " *";
+      color: var(--gold);
+      font-weight: bold;
+    }
+    select {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--black-3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    select:focus {
+      outline: none;
+      border-color: var(--gold);
+      background: var(--black-4);
+    }
+    select option {
+      background: var(--black-3);
+      color: var(--white);
+    }
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="auth-card">
@@ -40,6 +78,7 @@
 
     <div id="message-container"></div>
 
+    <!-- SIGN IN FORM -->
     <div id="signin-form" class="auth-form">
       <h2 class="form-title">Welcome <span>Back</span></h2>
       <div class="input-group">
@@ -72,44 +111,141 @@
       </div>
     </div>
 
+    <!-- SIGN UP FORM - Updated with all required fields -->
     <div id="signup-form" class="auth-form hidden">
       <h2 class="form-title">Join <span>SeekReap</span></h2>
-      <div class="input-group">
-        <label>Full Name</label>
-        <div class="input-wrapper">
-          <i class="fas fa-user field-icon"></i>
-          <input type="text" id="signup-name" placeholder="Alex Creator" autocomplete="name">
+      
+      <!-- Row 1: Full Name + Title -->
+      <div class="form-row">
+        <div class="input-group">
+          <label class="required-field">Full Name (as on ID)</label>
+          <div class="input-wrapper">
+            <i class="fas fa-id-card field-icon"></i>
+            <input type="text" id="signup-fullname" placeholder="John David Smith" autocomplete="name">
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="required-field">Title</label>
+          <div class="input-wrapper">
+            <i class="fas fa-user-tag field-icon"></i>
+            <select id="signup-title">
+              <option value="">Select Title</option>
+              <option value="Mr">Mr.</option>
+              <option value="Mrs">Mrs.</option>
+              <option value="Ms">Ms.</option>
+              <option value="Mx">Mx.</option>
+              <option value="Dr">Dr.</option>
+              <option value="Prof">Prof.</option>
+            </select>
+          </div>
         </div>
       </div>
-      <div class="input-group">
-        <label>Email Address</label>
-        <div class="input-wrapper">
-          <i class="fas fa-envelope field-icon"></i>
-          <input type="email" id="signup-email" placeholder="creator@seekreap.io" autocomplete="email">
+
+      <!-- Row 2: Gender + Artistic Name -->
+      <div class="form-row">
+        <div class="input-group">
+          <label class="required-field">Gender</label>
+          <div class="input-wrapper">
+            <i class="fas fa-venus-mars field-icon"></i>
+            <select id="signup-gender">
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="non-binary">Non-binary</option>
+              <option value="prefer-not-to-say">Prefer not to say</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="required-field">Artistic Name</label>
+          <div class="input-wrapper">
+            <i class="fas fa-star field-icon"></i>
+            <input type="text" id="signup-artisticname" placeholder="e.g., NovaKai, DJ Spark" autocomplete="nickname">
+          </div>
         </div>
       </div>
-      <div class="input-group">
-        <label>Password</label>
-        <div class="input-wrapper">
-          <i class="fas fa-lock field-icon"></i>
-          <input type="password" id="signup-password" placeholder="••••••••" autocomplete="new-password">
-          <i class="fas fa-eye toggle-password" onclick="togglePassword('signup-password', this)"></i>
+
+      <!-- Row 3: Ownership Title + Ownership Percentage -->
+      <div class="form-row">
+        <div class="input-group">
+          <label class="required-field">Ownership Title</label>
+          <div class="input-wrapper">
+            <i class="fas fa-crown field-icon"></i>
+            <input type="text" id="signup-ownershiptitle" placeholder="e.g., Co-author, Sole Creator, Producer">
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="required-field">Ownership Percentage</label>
+          <div class="input-wrapper">
+            <i class="fas fa-chart-pie field-icon"></i>
+            <input type="number" id="signup-ownershippct" placeholder="0-100" min="0" max="100" step="1">
+          </div>
         </div>
       </div>
-      <div class="input-group">
-        <label>Confirm Password</label>
-        <div class="input-wrapper">
-          <i class="fas fa-lock field-icon"></i>
-          <input type="password" id="signup-confirm" placeholder="••••••••" autocomplete="new-password">
-          <i class="fas fa-eye toggle-password" onclick="togglePassword('signup-confirm', this)"></i>
+
+      <!-- Row 4: Country + Email -->
+      <div class="form-row">
+        <div class="input-group">
+          <label class="required-field">Country</label>
+          <div class="input-wrapper">
+            <i class="fas fa-globe field-icon"></i>
+            <select id="signup-country">
+              <option value="">Select Country</option>
+              <option value="US">United States</option>
+              <option value="UK">United Kingdom</option>
+              <option value="CA">Canada</option>
+              <option value="AU">Australia</option>
+              <option value="DE">Germany</option>
+              <option value="FR">France</option>
+              <option value="JP">Japan</option>
+              <option value="BR">Brazil</option>
+              <option value="IN">India</option>
+              <option value="ZA">South Africa</option>
+              <option value="NG">Nigeria</option>
+              <option value="KE">Kenya</option>
+              <option value="EG">Egypt</option>
+              <option value="AE">UAE</option>
+              <option value="SG">Singapore</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="required-field">Email Address</label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope field-icon"></i>
+            <input type="email" id="signup-email" placeholder="creator@seekreap.io" autocomplete="email">
+          </div>
         </div>
       </div>
+
+      <!-- Row 5: Password + Confirm Password -->
+      <div class="form-row">
+        <div class="input-group">
+          <label class="required-field">Password</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock field-icon"></i>
+            <input type="password" id="signup-password" placeholder="••••••••" autocomplete="new-password">
+            <i class="fas fa-eye toggle-password" onclick="togglePassword('signup-password', this)"></i>
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="required-field">Confirm Password</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock field-icon"></i>
+            <input type="password" id="signup-confirm" placeholder="••••••••" autocomplete="new-password">
+            <i class="fas fa-eye toggle-password" onclick="togglePassword('signup-confirm', this)"></i>
+          </div>
+        </div>
+      </div>
+
       <div class="checkbox-row" style="margin-bottom:28px;">
         <label class="checkbox-label">
           <input type="checkbox" id="accept-terms">
           <span>I agree to the <a href="Terms.html">Terms of Service</a> &amp; <a href="Privacy_Policy.html">Privacy Policy</a></span>
         </label>
       </div>
+      
       <button class="auth-btn" id="signup-btn">
         <i class="fas fa-user-plus"></i> Create Account
       </button>
@@ -122,6 +258,6 @@
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="/supabase-config.js"></script>
   <script src="/assets/js/routes.js"></script>
-<script src="/assets/js/signup_signin.js"></script>
+  <script src="/assets/js/signup_signin.js"></script>
 </body>
 </html>

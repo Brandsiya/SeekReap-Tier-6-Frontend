@@ -8,6 +8,20 @@ const typeAccept = { audio: 'audio/*', video: 'video/*', image: 'image/*', epub:
 
 if (typeof pdfjsLib !== 'undefined') pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
+// Helper: Escape HTML
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Helper: Get primary creator identity from session
+function getPrimaryIdentity() {
+  const user = window.currentUser;
+  if (user?.user_metadata?.artistic_name) return user.user_metadata.artistic_name;
+  if (user?.email) return user.email;
+  return 'Primary Creator';
+}
+
 // ── PLAN ──────────────────────────────────────────────────────────────────────
 function selectPlan(card) {
   document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
@@ -68,7 +82,6 @@ function setupFileUpload(areaId, inputId, listId, previewId, previewLabelId, pre
   const area = document.getElementById(areaId);
   const input = document.getElementById(inputId);
 
-  // Update accept based on work type
   function refreshAccept() {
     const wt = document.getElementById('workType').value;
     input.accept = typeAccept[wt] || '*/*';
@@ -102,6 +115,12 @@ function processFile(file, area, listId, previewId, previewLabelId, previewTypeI
     area.classList.add('uploaded');
     area.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);margin-right:8px;"></i> ${file.name}`;
     renderPreview(uploadedFileType, file, previewId, previewLabelId, previewTypeId, previewBodyId);
+    
+    // Update primary owner name display using session identity
+    const ownerNameEl = document.getElementById('soloOwnerName');
+    if (ownerNameEl && window.currentUser?.email) {
+      ownerNameEl.textContent = getPrimaryIdentity();
+    }
   });
 }
 
@@ -237,25 +256,49 @@ function renderCodePreview(body, file) {
 }
 
 // ── COLLABORATORS ─────────────────────────────────────────────────────────────
-function addCoowner(email, split) {
-  collaborators.push({id:Date.now(),email,split});
-  renderCollaborators(); updateSplitSummary();
+function addCoowner(email, split, fullName, artisticName, ownershipTitle, title, gender, country) {
+  collaborators.push({
+    id: Date.now(),
+    email,
+    split,
+    fullName: fullName || '',
+    artisticName: artisticName || '',
+    ownershipTitle: ownershipTitle || '',
+    title: title || '',
+    gender: gender || '',
+    country: country || ''
+  });
+  renderCollaborators();
+  updateSplitSummary();
 }
 
 function renderCollaborators() {
   const container = document.getElementById('collaboratorList');
   container.querySelectorAll('.collaborator-item:not(:first-child)').forEach(el => el.remove());
+  
   collaborators.forEach(c => {
     const div = document.createElement('div');
     div.className = 'collaborator-item';
-    div.innerHTML = `<div class="collaborator-avatar"><i class="fas fa-user"></i></div>
-      <div class="collaborator-info"><div class="collaborator-name">${c.email}</div><div class="collaborator-email">Co-owner</div></div>
-      <div class="split-control"><div class="split-slider"><input type="range" min="0" max="100" value="${c.split}" class="split-slider-input" data-id="${c.id}"><span class="split-percentage split-pct-${c.id}">${c.split}%</span></div></div>
+    div.innerHTML = `
+      <div class="collaborator-avatar"><i class="fas fa-user"></i></div>
+      <div class="collaborator-info">
+        <div class="collaborator-name">${escHtml(c.fullName || c.email)}</div>
+        <div class="collaborator-email">${escHtml(c.email)}</div>
+        ${c.artisticName ? `<div class="collaborator-artistic">🎨 ${escHtml(c.artisticName)}</div>` : ''}
+        <div class="collaborator-role">${escHtml(c.ownershipTitle || 'Co-owner')}</div>
+      </div>
+      <div class="split-control">
+        <div class="split-slider">
+          <input type="range" min="0" max="100" value="${c.split}" class="split-slider-input" data-id="${c.id}">
+          <span class="split-percentage split-pct-${c.id}">${c.split}%</span>
+        </div>
+      </div>
       <div class="collab-status pending">Pending</div>
       <div class="coowner-actions">
         <button class="action-btn invite-coowner" data-email="${c.email}"><i class="fas fa-envelope"></i> Invite</button>
         <button class="action-btn remove-coowner" data-id="${c.id}"><i class="fas fa-times"></i></button>
-      </div>`;
+      </div>
+    `;
     container.appendChild(div);
   });
 
@@ -264,7 +307,10 @@ function renderCollaborators() {
     const c = collaborators.find(x => x.id === id);
     if (c) { c.split = parseInt(e.target.value); const sp = document.querySelector('.split-pct-'+id); if(sp) sp.textContent = c.split+'%'; updateSplitSummary(); }
   }));
-  document.querySelectorAll('.invite-coowner').forEach(b => b.addEventListener('click', e => alert('Invitation sent to '+e.target.closest('[data-email]').dataset.email)));
+  document.querySelectorAll('.invite-coowner').forEach(b => b.addEventListener('click', e => {
+    const email = b.dataset.email;
+    alert(`Invitation sent to ${email}\nThey will receive an email with a signup link pre-filled with their details.`);
+  }));
   document.querySelectorAll('.remove-coowner').forEach(b => b.addEventListener('click', e => {
     collaborators = collaborators.filter(c => c.id !== parseInt(b.dataset.id));
     renderCollaborators(); updateSplitSummary();
@@ -272,16 +318,23 @@ function renderCollaborators() {
 }
 
 function updateSplitSummary() {
-  const totalCollab = collaborators.reduce((s,c) => s+c.split, 0);
+  const totalCollab = collaborators.reduce((s,c) => s + (c.split || 0), 0);
   const primary = 100 - totalCollab;
-  const inp = document.getElementById('primarySplit'); const pct = document.getElementById('primaryPercent');
-  if(inp) inp.value = primary; if(pct) pct.textContent = primary+'%';
+  const inp = document.getElementById('primarySplit'); 
+  const pct = document.getElementById('primaryPercent');
+  if(inp) inp.value = primary; 
+  if(pct) pct.textContent = primary+'%';
   const warn = document.getElementById('splitWarning');
   if(warn) warn.textContent = primary < 0 ? '⚠ Total split exceeds 100%' : '';
   const colors = ['#C9993A','#E8C06A','#9B7520','#3DB87A','#E8A040'];
-  let html = `<div class="split-piece"><div class="split-circle" style="background:${colors[0]};"></div><div class="split-label">You · ${primary}%</div></div>`;
-  collaborators.forEach((c,i) => { html += `<div class="split-piece"><div class="split-circle" style="background:${colors[(i+1)%colors.length]};"></div><div class="split-label">${c.email.split('@')[0]} · ${c.split}%</div></div>`; });
-  const sv = document.getElementById('splitVisual'); if(sv) sv.innerHTML = html;
+  const primaryIdentity = getPrimaryIdentity();
+  let html = `<div class="split-piece"><div class="split-circle" style="background:${colors[0]};"></div><div class="split-label">${escHtml(primaryIdentity)} · ${primary}%</div></div>`;
+  collaborators.forEach((c,i) => { 
+    const label = c.artisticName || c.fullName || c.email.split('@')[0];
+    html += `<div class="split-piece"><div class="split-circle" style="background:${colors[(i+1)%colors.length]};"></div><div class="split-label">${escHtml(label)} · ${c.split}%</div></div>`; 
+  });
+  const sv = document.getElementById('splitVisual'); 
+  if(sv) sv.innerHTML = html;
 }
 
 // ── CERTIFICATE GENERATION ────────────────────────────────────────────────────
@@ -315,7 +368,6 @@ async function submitCertification(payload) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Certification failed');
 
-    // Store cert data for loader page
     sessionStorage.setItem('activeCert', JSON.stringify({
       submission_id: data.submission_id,
       cert_id: data.cert_id,
@@ -324,7 +376,6 @@ async function submitCertification(payload) {
       work_type_text: payload.work_type_text || payload.work_type
     }));
 
-    // Redirect to loader
     window.location.href = `certificate_loader.html?id=${data.submission_id}&cert=${data.cert_id}`;
   } catch (err) {
     console.error('Certification error:', err);
@@ -337,7 +388,6 @@ async function submitCertification(payload) {
 document.getElementById('workType').addEventListener('change', () => {
   const wt = document.getElementById('workType').value;
   document.getElementById('workTypeIcon').textContent = typeIcons[wt] || '📄';
-  // update upload area hint
   const hint = {audio:'audio files (MP3, WAV, FLAC…)',video:'video files (MP4, MOV, AVI…)',image:'image files (JPG, PNG, GIF…)',epub:'EPUB ebook file',pdf:'PDF document',code:'code files (JS, PY, TS…)'};
   ['soloUploadArea','primaryUploadArea'].forEach(id => {
     const el = document.getElementById(id);
@@ -372,13 +422,23 @@ document.getElementById('nextToUploadBtn').addEventListener('click', () => {
 });
 
 document.getElementById('addCollaboratorBtn').addEventListener('click', () => {
+  // Show modal with all collaborator fields
+  const fullName = prompt('Enter co-owner full name:');
+  if (!fullName) return;
   const email = prompt('Enter co-owner email address:');
   if (!email || !email.includes('@')) { if(email !== null) alert('Please enter a valid email.'); return; }
-  const maxSplit = 100 - collaborators.reduce((s,c) => s+c.split, 0);
+  const artisticName = prompt('Enter co-owner artistic name (optional):') || '';
+  const ownershipTitle = prompt('Enter ownership title (e.g., Co-author, Producer):') || 'Co-owner';
+  const title = prompt('Title (Mr/Ms/Dr etc.):') || '';
+  const gender = prompt('Gender:') || '';
+  const country = prompt('Country:') || '';
+  
+  const maxSplit = 100 - collaborators.reduce((s,c) => s + (c.split || 0), 0);
   const splitStr = prompt(`Enter ownership % for ${email} (max ${maxSplit}):`, Math.floor(maxSplit/2));
   const split = parseInt(splitStr);
   if (isNaN(split) || split < 1 || split > maxSplit) { alert('Invalid split percentage.'); return; }
-  addCoowner(email, split);
+  
+  addCoowner(email, split, fullName, artisticName, ownershipTitle, title, gender, country);
 });
 
 document.getElementById('finalizeBtn').addEventListener('click', async () => {
@@ -386,9 +446,8 @@ document.getElementById('finalizeBtn').addEventListener('click', async () => {
   const workTypeEl = document.getElementById('workType');
   const workTypeText = workTypeEl.options[workTypeEl.selectedIndex].text.trim();
   const workType = workTypeEl.value;
-  const artisticName = (document.getElementById('artisticName') || {}).value || '';
 
-  // Hash the uploaded file if available (Web Crypto)
+  // Hash the uploaded file if available
   let contentHash = '';
   if (uploadedFile) {
     try {
@@ -398,7 +457,7 @@ document.getElementById('finalizeBtn').addEventListener('click', async () => {
     } catch(e) { console.warn('Hash failed:', e); }
   }
 
-  // Get Supabase user
+  // Get Supabase user - identity comes from session only
   const user = window.currentUser;
   const creatorId = user ? (user.id || user.sub) : null;
 
@@ -417,32 +476,30 @@ document.getElementById('finalizeBtn').addEventListener('click', async () => {
     if (selectedPlan !== 'free') {
       sessionStorage.setItem('pendingCert', JSON.stringify({
         creator_id: creatorId, email: user.email, title, work_type: workType,
-        work_type_text: workTypeText, artistic_name: artisticName,
+        work_type_text: workTypeText,
         content_hash: contentHash, plan: selectedPlan,
         collaborators: [], ownership_split: {}
       }));
       window.location.href = `pay.html?plan=${selectedPlan}&title=${encodeURIComponent(title)}`;
       return;
     }
-    // Free plan — call API directly
+    // Free plan — call API directly (NO artistic_name)
     await submitCertification({
       creator_id: creatorId, email: user.email, title,
-      work_type: workType, artistic_name: artisticName,
-      content_hash: contentHash, plan: 'free',
+      work_type: workType, content_hash: contentHash, plan: 'free',
       collaborators: [], ownership_split: {}
     });
   } else {
     if (collaborators.length === 0) { alert('Please add at least one co-owner.'); return; }
     const ownershipSplit = {};
-    collaborators.forEach(c => { ownershipSplit[c.email] = c.split; });
-    const primarySplit = 100 - collaborators.reduce((s,c)=>s+c.split,0);
-    ownershipSplit['__primary__'] = primarySplit;
+    collaborators.forEach(c => { ownershipSplit[c.email] = { split: c.split, fullName: c.fullName, artisticName: c.artisticName, ownershipTitle: c.ownershipTitle }; });
+    const primarySplit = 100 - collaborators.reduce((s,c)=>s + (c.split || 0), 0);
+    ownershipSplit['__primary__'] = { split: primarySplit, fullName: getPrimaryIdentity(), artisticName: user?.user_metadata?.artistic_name || '', ownershipTitle: 'Primary Creator' };
 
     if (selectedPlan !== 'free') {
       sessionStorage.setItem('pendingCert', JSON.stringify({
         creator_id: creatorId, email: user.email, title, work_type: workType,
-        work_type_text: workTypeText, artistic_name: artisticName,
-        content_hash: contentHash, plan: selectedPlan,
+        work_type_text: workTypeText, content_hash: contentHash, plan: selectedPlan,
         collaborators, ownership_split: ownershipSplit
       }));
       window.location.href = `pay.html?plan=${selectedPlan}&title=${encodeURIComponent(title)}`;
@@ -450,8 +507,7 @@ document.getElementById('finalizeBtn').addEventListener('click', async () => {
     }
     await submitCertification({
       creator_id: creatorId, email: user.email, title,
-      work_type: workType, work_type_text: workTypeText,
-      artistic_name: artisticName, content_hash: contentHash,
+      work_type: workType, work_type_text: workTypeText, content_hash: contentHash,
       plan: 'free', collaborators, ownership_split: ownershipSplit
     });
   }
@@ -462,10 +518,11 @@ document.getElementById('closeModalBtn').addEventListener('click', () => {
   const title = document.getElementById('workTitle').value.trim() || 'Untitled Work';
   const workTypeEl = document.getElementById('workType');
   const workTypeText = workTypeEl.options[workTypeEl.selectedIndex].text.trim();
-  const primary = 100 - collaborators.reduce((s,c) => s+c.split, 0);
+  const primary = 100 - collaborators.reduce((s,c) => s + (c.split || 0), 0);
   const certId = generateCertId();
-  const ownerRows = `<div class="cert-ownership-row"><span>You (Primary Creator)</span><span style="color:var(--gold);font-weight:600;">${primary}%</span></div>` +
-    collaborators.map(c => `<div class="cert-ownership-row"><span>${c.email}</span><span style="color:var(--gold);font-weight:600;">${c.split}%</span></div>`).join('');
+  const primaryIdentity = getPrimaryIdentity();
+  const ownerRows = `<div class="cert-ownership-row"><span>${escHtml(primaryIdentity)} (Primary Creator)</span><span style="color:var(--gold);font-weight:600;">${primary}%</span></div>` +
+    collaborators.map(c => `<div class="cert-ownership-row"><span>${escHtml(c.artisticName || c.fullName || c.email)} (${escHtml(c.ownershipTitle || 'Co-owner')})</span><span style="color:var(--gold);font-weight:600;">${c.split}%</span></div>`).join('');
   document.getElementById('certificateDetails').innerHTML = buildCertDetails(title, workTypeText, ownerRows, certId);
   document.getElementById('certIdLine').textContent = certId + ' · ' + new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   showStep(5);
@@ -483,4 +540,3 @@ function copyLink() {
 // ── INIT FILE UPLOADS ─────────────────────────────────────────────────────────
 setupFileUpload('soloUploadArea','soloFileInput','soloFileList','soloPreview','soloPreviewLabel','soloPreviewType','soloPreviewBody','soloProgress','soloProgressBar','soloProgressText');
 setupFileUpload('primaryUploadArea','primaryFileInput','primaryFileList','primaryPreview','primaryPreviewLabel','primaryPreviewType','primaryPreviewBody','primaryProgress','primaryProgressBar','primaryProgressText');
-updateStepUI();
