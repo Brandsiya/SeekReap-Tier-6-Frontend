@@ -241,7 +241,6 @@ async function doSubmit() {
   const creatorId = user ? (user.id || user.sub) : null;
   if (!creatorId) {
     alert('Session expired. Please sign in again.');
-    window.location.href = 'signup_signin.html';
     return;
   }
 
@@ -349,8 +348,6 @@ function generateInviteToken(coownerEmail, workTitle) {
 // ── SUPABASE AUTH INTEGRATION ─────────────────────────────────────────────────
 // auth-guard.js sets window.currentUser before this file runs.
 // This block is a safety net: if auth-guard didn't fire, redirect.
-function ensureAuth() {
-  if (!window.currentUser) {
     const params = new URLSearchParams(window.location.search);
     const redirect = encodeURIComponent(window.location.href);
     window.location.href = `signup_signin.html?redirect=${redirect}`;
@@ -361,7 +358,6 @@ function ensureAuth() {
 document.addEventListener('DOMContentLoaded', async () => {
 
   // 1. Auth guard
-  ensureAuth();
 
   // 2. Page-refresh recovery: check sessionStorage
   const activeCert = sessionStorage.getItem('activeCertification');
