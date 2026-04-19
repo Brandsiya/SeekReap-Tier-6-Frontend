@@ -414,3 +414,155 @@ function escHtml(s) {
   d.textContent = s;
   return d.innerHTML;
 }
+
+// ── ADD QR CODE DISPLAY TO CERTIFICATE ────────────────────────────────────────
+function displayQRCode(certId, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  
+  const qrUrl = `${TIER4_URL}/api/qrcode/${encodeURIComponent(certId)}`;
+  
+  // Create QR code section if not exists
+  let qrSection = document.getElementById('qrCodeSection');
+  if (!qrSection) {
+    qrSection = document.createElement('div');
+    qrSection.id = 'qrCodeSection';
+    qrSection.style.cssText = 'text-align:center;margin:20px 0;padding:16px;background:var(--black-3);border-radius:8px;border:1px solid var(--border);';
+    qrSection.innerHTML = `
+      <div style="margin-bottom:8px;">
+        <i class="fas fa-qrcode" style="color:var(--gold);font-size:1.2rem;"></i>
+        <strong style="margin-left:8px;">Verification QR Code</strong>
+      </div>
+      <img id="qrCodeImage" src="${qrUrl}" alt="Verification QR Code" 
+           style="width:150px;height:150px;margin:0 auto;display:block;border-radius:4px;"
+           onerror="this.style.display='none';document.getElementById('qrErrorMsg').style.display='block';">
+      <div id="qrErrorMsg" style="display:none;color:var(--white-dim);font-size:0.75rem;margin-top:8px;">
+        ⚠️ QR code generation pending — will be available shortly
+      </div>
+      <div style="margin-top:10px;">
+        <button onclick="navigator.clipboard.writeText('${window.location.origin}/verification_portal.html?cert=${encodeURIComponent(certId)}')" 
+                style="background:transparent;border:1px solid var(--border);color:var(--white-dim);padding:5px 10px;border-radius:4px;cursor:pointer;font-size:0.7rem;">
+          <i class="fas fa-copy"></i> Copy Verification Link
+        </button>
+      </div>
+    `;
+    
+    // Insert before the certificate details or at a suitable location
+    const certDetails = document.getElementById('certificateDetails');
+    if (certDetails && certDetails.parentNode) {
+      certDetails.parentNode.insertBefore(qrSection, certDetails);
+    }
+  } else {
+    // Update existing QR code image
+    const qrImg = document.getElementById('qrCodeImage');
+    if (qrImg) {
+      qrImg.src = qrUrl;
+      qrImg.style.display = 'block';
+      const errorMsg = document.getElementById('qrErrorMsg');
+      if (errorMsg) errorMsg.style.display = 'none';
+    }
+  }
+}
+
+// ── ADD FINGERPRINT / HASH DISPLAY ────────────────────────────────────────────
+function displayFingerprintInfo(data) {
+  const container = document.getElementById('certificateDetails');
+  if (!container) return;
+  
+  const fingerprintSection = document.createElement('div');
+  fingerprintSection.id = 'fingerprintSection';
+  fingerprintSection.style.cssText = 'margin-top:16px;padding:12px;background:rgba(201,153,58,0.05);border-left:3px solid var(--gold);border-radius:4px;';
+  
+  const contentHash = data.content_hash || data.fingerprint || '—';
+  const hashShort = contentHash !== '—' ? contentHash.substring(0, 16) + '…' + contentHash.substring(contentHash.length - 8) : '—';
+  
+  fingerprintSection.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <i class="fas fa-fingerprint" style="color:var(--gold);"></i>
+      <strong style="font-size:0.75rem;letter-spacing:0.06em;">CONTENT FINGERPRINT (SHA-256)</strong>
+    </div>
+    <div style="font-family:monospace;font-size:0.7rem;color:var(--white-dim);word-break:break-all;">
+      ${contentHash}
+    </div>
+    <div style="font-size:0.65rem;color:var(--white-dim);margin-top:6px;">
+      <i class="fas fa-info-circle"></i> Unique identifier for this exact version of your work
+    </div>
+  `;
+  
+  // Remove old fingerprint section if exists
+  const oldSection = document.getElementById('fingerprintSection');
+  if (oldSection) oldSection.remove();
+  
+  // Insert after QR section or at the end
+  const qrSection = document.getElementById('qrCodeSection');
+  if (qrSection && qrSection.nextSibling) {
+    qrSection.parentNode.insertBefore(fingerprintSection, qrSection.nextSibling);
+  } else {
+    container.appendChild(fingerprintSection);
+  }
+}
+
+// ── UPDATE renderCompletedState TO INCLUDE QR + FINGERPRINT ───────────────────
+// Replace the existing renderCompletedState function
+const newRenderCompletedState = function(data) {
+  const certId    = data.cert_id  || CertificationState.certId || '—';
+  const title     = data.title    || document.getElementById('workTitle')?.value?.trim() || 'Your Work';
+  const riskScore = data.overall_risk_score ?? '—';
+  const riskLevel = data.risk_level || '—';
+  const plan      = data.plan || window.selectedPlan || 'free';
+  const now       = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+
+  const certIdLine = document.getElementById('certIdLine');
+  if (certIdLine) certIdLine.textContent = `${certId} · ${now}`;
+
+  const certDetails = document.getElementById('certificateDetails');
+  if (certDetails) {
+    const mode    = window.mode;
+    const collabs = window.collaborators || [];
+
+    let ownerRows = `<div class="cert-ownership-row"><span>You (Primary Creator)</span><span>${mode==='collab'?(100-collabs.reduce((s,c)=>s+c.split,0))+'%':'100%'}</span></div>`;
+    if (mode === 'collab') {
+      collabs.forEach(c => {
+        ownerRows += `<div class="cert-ownership-row"><span>${escHtml(c.fullName||c.email)}</span><span>${c.split}%</span></div>`;
+      });
+    }
+
+    const workTypeEl = document.getElementById('workType');
+    const workTypeText = workTypeEl ? workTypeEl.options[workTypeEl.selectedIndex]?.text?.trim() : '—';
+
+    certDetails.innerHTML = `
+      <div style="display:grid;gap:10px;font-size:0.88rem;">
+        <div><strong style="color:var(--white-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;">Certificate ID</strong><br>
+          <span style="font-family:monospace;color:var(--gold-light);">${certId}</span></div>
+        <div><strong style="color:var(--white-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;">Work Title</strong><br>${escHtml(title)}</div>
+        <div><strong style="color:var(--white-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;">Work Type</strong><br>${escHtml(workTypeText)}</div>
+        <div><strong style="color:var(--white-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;">Plan</strong><br>${escHtml(plan)}</div>
+        <div><strong style="color:var(--white-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;">Risk Level</strong><br>
+          <span style="color:${riskLevel==='low'?'var(--success)':riskLevel==='medium'?'var(--warning)':'var(--danger)'};">${riskLevel} (${riskScore})</span></div>
+        <div><strong style="color:var(--white-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;">Certified On</strong><br>${now}</div>
+        <div class="cert-ownership-block"><strong><i class="fas fa-shield-alt" style="margin-right:5px;"></i> Ownership</strong>${ownerRows}</div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+        <a href="verification_portal.html?cert=${encodeURIComponent(certId)}" target="_blank"
+           style="display:inline-flex;align-items:center;gap:7px;padding:8px 16px;background:var(--gold-glow);border:1px solid var(--border-strong);border-radius:3px;color:var(--gold-light);font-size:0.82rem;text-decoration:none;font-weight:600;">
+          <i class="fas fa-external-link-alt"></i> Verify Certificate
+        </a>
+        <button onclick="navigator.clipboard.writeText(window.location.origin+'/verification_portal.html?cert=${encodeURIComponent(certId)}').then(()=>alert('Verification link copied'))"
+           style="display:inline-flex;align-items:center;gap:7px;padding:8px 16px;background:transparent;border:1px solid var(--border);border-radius:3px;color:var(--white-dim);font-size:0.82rem;cursor:pointer;">
+          <i class="fas fa-link"></i> Copy Verify Link
+        </button>
+      </div>`;
+  }
+
+  // Display QR code
+  displayQRCode(certId, 'certificateDetails');
+  
+  // Display fingerprint/hash info
+  displayFingerprintInfo(data);
+  
+  // Navigate to final step
+  if (typeof showStep === 'function') showStep('final');
+};
+
+// Replace the function
+window.renderCompletedState = newRenderCompletedState;
