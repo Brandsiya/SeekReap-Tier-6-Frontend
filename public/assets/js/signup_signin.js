@@ -82,6 +82,8 @@ async function handleSignIn() {
       window.location.href = ROUTES.verify;
       return;
     }
+    // Set flag to prevent auth-guard redirect loop
+    sessionStorage.setItem('justSignedIn', 'true');
     const intent = localStorage.getItem('selectedPlan'); 
     if (['pro', 'elite', 'payg'].includes(intent)) { 
       window.location.href = '/checkout.html?plan=' + intent; 
