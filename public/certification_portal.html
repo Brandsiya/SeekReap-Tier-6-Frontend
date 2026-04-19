@@ -6,13 +6,12 @@
 <title>SeekReap · Certify Your Creative Work</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<!-- External CSS -->
 <link rel="stylesheet" href="assets/css/certification_portal.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js"></script>
 </head>
+
 <body>
 <div class="demo-container">
 
@@ -36,12 +35,13 @@
 </div>
 
 <!-- WORKFLOW STEPS -->
-<div class="workflow-steps">
+<div class="workflow-steps" id="workflowSteps">
   <div class="step active" id="step1"><div class="step-number">1</div><span class="step-icon"><i class="fas fa-tags"></i></span><span>Choose Plan</span></div>
   <div class="step" id="step2"><div class="step-number">2</div><span class="step-icon"><i class="fas fa-pen-nib"></i></span><span>Work Details</span></div>
-  <div class="step" id="step3"><div class="step-number">3</div><span class="step-icon" id="step3Icon"><i class="fas fa-users"></i></span><span id="step3Text">Ownership</span></div>
-  <div class="step" id="step4"><div class="step-number">4</div><span class="step-icon"><i class="fas fa-cloud-upload-alt"></i></span><span id="step4Title">Upload Work</span></div>
-  <div class="step" id="step5"><div class="step-number">5</div><span class="step-icon"><i class="fas fa-certificate"></i></span><span>Certify</span></div>
+  <div class="step" id="step3"><div class="step-number">3</div><span class="step-icon"><i class="fas fa-users"></i></span><span>Ownership</span></div>
+  <div class="step" id="step4"><div class="step-number">4</div><span class="step-icon" id="step4Icon"><i class="fas fa-cloud-upload-alt"></i></span><span id="step4Label">Upload</span></div>
+  <div class="step" id="step5c" style="display:none;"><div class="step-number">5</div><span class="step-icon"><i class="fas fa-percentage"></i></span><span>Splits</span></div>
+  <div class="step" id="stepFinal"><div class="step-number" id="stepFinalNum">5</div><span class="step-icon"><i class="fas fa-paper-plane"></i></span><span id="stepFinalLabel">Submit</span></div>
 </div>
 
 <!-- STEP 1: CHOOSE PLAN -->
@@ -52,11 +52,8 @@
   </div>
   <div class="card-body">
     <div class="plan-grid">
-
-      <!-- FREE -->
-      <div class="plan-card selected" id="planFree" data-plan="free" data-price="0" onclick="selectPlan(this)">
-        <div class="plan-badge free-badge">Free</div>
-        <div class="plan-price">$0<span class="plan-per">/mo</span></div>
+      <div class="plan-card selected" id="planFree" data-plan="free" onclick="selectPlan(this)">
+        <div class="plan-price">$0<span>/mo</span></div>
         <div class="plan-period">Always free</div>
         <ul class="plan-features">
           <li><i class="fas fa-check"></i> 1 certification / month</li>
@@ -66,12 +63,10 @@
           <li class="off"><i class="fas fa-times"></i> Co-ownership</li>
           <li class="off"><i class="fas fa-times"></i> Priority processing</li>
         </ul>
+        <div style="margin-top:10px;font-size:0.72rem;color:var(--gold);font-weight:600;letter-spacing:0.06em;">FREE</div>
       </div>
-
-      <!-- PAY AS YOU GO -->
-      <div class="plan-card" id="planPayg" data-plan="payg" data-price="1.99" onclick="selectPlan(this)">
-        <div class="plan-badge payg-badge">Pay As You Go</div>
-        <div class="plan-price">$1.99<span class="plan-per">/cert</span></div>
+      <div class="plan-card" id="planPayg" data-plan="payg" onclick="selectPlan(this)">
+        <div class="plan-price">$1.99<span>/cert</span></div>
         <div class="plan-period">No subscription</div>
         <ul class="plan-features">
           <li><i class="fas fa-check"></i> Per-certification pricing</li>
@@ -81,12 +76,10 @@
           <li class="off"><i class="fas fa-times"></i> Co-ownership</li>
           <li class="off"><i class="fas fa-times"></i> Priority processing</li>
         </ul>
+        <div style="margin-top:10px;font-size:0.72rem;color:var(--gold);font-weight:600;letter-spacing:0.06em;">PAY AS YOU GO</div>
       </div>
-
-      <!-- CREATOR -->
-      <div class="plan-card featured" id="planCreator" data-plan="creator" data-price="9.99" onclick="selectPlan(this)">
-        <div class="plan-badge creator-badge">Creator</div>
-        <div class="plan-price">$9.99<span class="plan-per">/mo</span></div>
+      <div class="plan-card featured" id="planCreator" data-plan="creator" onclick="selectPlan(this)">
+        <div class="plan-price">$9.99<span>/mo</span></div>
         <div class="plan-period">Billed monthly</div>
         <ul class="plan-features">
           <li><i class="fas fa-check"></i> 10 certifications / month</li>
@@ -96,12 +89,10 @@
           <li class="off"><i class="fas fa-times"></i> Co-ownership</li>
           <li class="off"><i class="fas fa-times"></i> Priority processing</li>
         </ul>
+        <div style="margin-top:10px;font-size:0.72rem;color:var(--gold);font-weight:600;letter-spacing:0.06em;">CREATOR</div>
       </div>
-
-      <!-- STUDIO -->
-      <div class="plan-card" id="planStudio" data-plan="studio" data-price="29.99" onclick="selectPlan(this)">
-        <div class="plan-badge studio-badge">Studio</div>
-        <div class="plan-price">$29.99<span class="plan-per">/mo</span></div>
+      <div class="plan-card" id="planStudio" data-plan="studio" onclick="selectPlan(this)">
+        <div class="plan-price">$29.99<span>/mo</span></div>
         <div class="plan-period">Billed monthly</div>
         <ul class="plan-features">
           <li><i class="fas fa-check"></i> Unlimited certifications</li>
@@ -111,8 +102,8 @@
           <li><i class="fas fa-check"></i> Co-ownership support</li>
           <li><i class="fas fa-check"></i> Priority processing</li>
         </ul>
+        <div style="margin-top:10px;font-size:0.72rem;color:var(--gold);font-weight:600;letter-spacing:0.06em;">STUDIO</div>
       </div>
-
     </div>
     <div class="button-group">
       <button class="btn-primary" id="nextToDetailsBtn"><i class="fas fa-arrow-right"></i> Continue</button>
@@ -127,13 +118,10 @@
     <p>Provide basic information about your creative work</p>
   </div>
   <div class="card-body">
-    <div class="form-group">
-      <label>Artistic Name <span class="required">*</span></label>
-      <input type="text" placeholder="e.g., NovaKai" id="artisticName" value="">
-    </div>
+    <input type="hidden" id="artisticName" value="">
     <div class="form-group">
       <label>Work Title <span class="required">*</span></label>
-      <input type="text" placeholder="e.g., Summer Vibes" id="workTitle" value="">
+      <input type="text" placeholder="e.g., Summer Vibes" id="workTitle">
     </div>
     <div class="form-group">
       <label>Description</label>
@@ -142,14 +130,13 @@
     <div class="form-group">
       <label>Work Type</label>
       <div class="work-type-selector">
-        <span class="work-type-icon" id="workTypeIcon">🎵</span>
         <select id="workType">
-          <option value="audio">🎵  Audio / Music Track</option>
-          <option value="video">🎬  Video / Film</option>
-          <option value="image">🖼️  Image / Artwork</option>
-          <option value="epub">📖  eBook / EPUB</option>
-          <option value="pdf">📄  Script / PDF</option>
-          <option value="code">💻  Code / Script</option>
+          <option value="audio">🎵 Audio / Music Track</option>
+          <option value="video">🎬 Video / Film</option>
+          <option value="image">🖼️ Image / Artwork</option>
+          <option value="epub">📖 eBook / EPUB</option>
+          <option value="pdf">📄 Script / PDF</option>
+          <option value="code">💻 Code / Script</option>
         </select>
       </div>
     </div>
@@ -163,7 +150,7 @@
 <!-- STEP 3: OWNERSHIP TYPE -->
 <div class="workflow-card hidden" id="step3Card">
   <div class="card-header">
-    <h2 id="step3HeaderTitle"><i class="fas fa-users" style="color:var(--gold);font-size:1.1rem;"></i> Select Ownership Type</h2>
+    <h2><i class="fas fa-users" style="color:var(--gold);font-size:1.1rem;"></i> Select Ownership Type</h2>
     <p>Choose how you want to certify your work</p>
   </div>
   <div class="card-body">
@@ -194,91 +181,103 @@
   </div>
   <div class="card-body">
 
-    <!-- SOLO CONTENT -->
+    <!-- ── SOLO ──────────────────────────────────────────────────────────────── -->
     <div id="soloContent" class="hidden">
       <div class="creator-files">
         <h4><i class="fas fa-file-upload" style="margin-right:6px;"></i> Your Work File</h4>
+
         <div class="upload-area" id="soloUploadArea">
-          <i class="fas fa-cloud-upload-alt"></i> Click to upload or drag &amp; drop
+          <i class="fas fa-cloud-upload-alt ua-icon"></i>
+          <span class="ua-text" id="soloUploadText">Click to upload or drag &amp; drop</span>
+          <button class="ua-reset" id="soloResetBtn" title="Reset upload"><i class="fas fa-times"></i></button>
         </div>
         <input type="file" id="soloFileInput">
+        <div class="upload-file-info" id="soloFileInfo">
+          <span class="ufi-icon" id="soloFileIcon">📄</span>
+          <span class="ufi-name" id="soloFileName">—</span>
+          <span class="ufi-size" id="soloFileSz">—</span>
+        </div>
         <div class="upload-progress" id="soloProgress">
           <div class="progress-bar-container"><div class="progress-bar" id="soloProgressBar"></div></div>
           <div class="progress-text" id="soloProgressText">Uploading...</div>
         </div>
-        <div class="file-list" id="soloFileList"></div>
-        <div id="soloPreview" class="file-preview hidden">
-          <div class="preview-header">
-            <span id="soloPreviewLabel">Preview</span>
-            <span id="soloPreviewType"></span>
-          </div>
-          <div class="preview-body" id="soloPreviewBody"></div>
-        </div>
+
+        <div class="viewer-type-label" id="soloViewerLabel">PDF Document Viewer</div>
+        <div class="viewer-embed" id="soloViewerEmbed"></div>
+        <div class="file-stats" id="soloFileStats" style="display:none;"></div>
       </div>
+
       <div class="ownership-box">
         <strong><i class="fas fa-shield-alt" style="margin-right:5px;"></i> Ownership</strong>
-        <div class="ownership-row"><span>You (Primary Creator)</span><span class="pct">100%</span></div>
+        <div class="ownership-row"><span id="soloOwnerName">Username</span><span class="pct">100%</span></div>
       </div>
     </div>
 
-    <!-- COLLAB CONTENT -->
+    <!-- ── COLLAB ─────────────────────────────────────────────────────────────── -->
     <div id="collabContent" class="hidden">
       <div class="creator-files">
         <h4><i class="fas fa-file-upload" style="margin-right:6px;"></i> Your Work File</h4>
+
         <div class="upload-area" id="primaryUploadArea">
-          <i class="fas fa-cloud-upload-alt"></i> Click to upload your contribution
+          <i class="fas fa-cloud-upload-alt ua-icon"></i>
+          <span class="ua-text" id="primaryUploadText">Click to upload or drag &amp; drop</span>
+          <button class="ua-reset" id="primaryResetBtn" title="Reset upload"><i class="fas fa-times"></i></button>
         </div>
         <input type="file" id="primaryFileInput">
+        <div class="upload-file-info" id="primaryFileInfo">
+          <span class="ufi-icon" id="primaryFileIcon">📄</span>
+          <span class="ufi-name" id="primaryFileName">—</span>
+          <span class="ufi-size" id="primaryFileSz">—</span>
+        </div>
         <div class="upload-progress" id="primaryProgress">
           <div class="progress-bar-container"><div class="progress-bar" id="primaryProgressBar"></div></div>
           <div class="progress-text" id="primaryProgressText">Uploading...</div>
         </div>
-        <div class="file-list" id="primaryFileList"></div>
-        <div id="primaryPreview" class="file-preview hidden">
-          <div class="preview-header">
-            <span id="primaryPreviewLabel">Preview</span>
-            <span id="primaryPreviewType"></span>
-          </div>
-          <div class="preview-body" id="primaryPreviewBody"></div>
-        </div>
-      </div>
 
-      <div class="collaborator-section">
-        <h3><i class="fas fa-user-friends" style="color:var(--gold);margin-right:8px;"></i> Co-owners &amp; Ownership Split</h3>
-        <div class="collaborator-list" id="collaboratorList">
-          <div class="collaborator-item">
-            <div class="collaborator-avatar"><i class="fas fa-user"></i></div>
-            <div class="collaborator-info">
-              <div class="collaborator-name">You (Primary Creator)</div>
-              <div class="collaborator-email" id="primaryEmail">—</div>
-            </div>
-            <div class="split-control">
-              <div class="split-slider">
-                <input type="range" min="0" max="100" value="100" id="primarySplit" disabled>
-                <span class="split-percentage" id="primaryPercent">100%</span>
-              </div>
-            </div>
-            <div class="collab-status owner">Owner</div>
-          </div>
-        </div>
-        <button class="add-collaborator-btn" id="addCollaboratorBtn"><i class="fas fa-plus" style="margin-right:6px;"></i> Add Co-owner</button>
-        <div class="split-summary" id="splitSummary">
-          <strong><i class="fas fa-chart-pie" style="margin-right:5px;"></i> Ownership Distribution</strong>
-          <div class="split-visual" id="splitVisual"></div>
-          <div id="splitWarning" class="warning-msg"></div>
-        </div>
+        <div class="viewer-type-label" id="primaryViewerLabel">PDF Document Viewer</div>
+        <div class="viewer-embed" id="primaryViewerEmbed"></div>
+        <div class="file-stats" id="primaryFileStats" style="display:none;"></div>
       </div>
     </div>
 
     <div class="button-group">
       <button class="btn-secondary" onclick="showStep(3)"><i class="fas fa-arrow-left"></i> Back</button>
-      <button class="btn-primary" id="finalizeBtn"><i class="fas fa-certificate"></i> Get Certified</button>
+      <button class="btn-primary" id="step4NextBtn"><i class="fas fa-arrow-right"></i> Continue</button>
     </div>
   </div>
 </div>
 
-<!-- STEP 5: CERTIFICATE -->
-<div class="workflow-card hidden" id="step5Card">
+<!-- STEP 5 (COLLAB ONLY): SPLITS & CO-OWNERS -->
+<div class="workflow-card hidden" id="step5collabCard">
+  <div class="card-header">
+    <h2><i class="fas fa-percentage" style="color:var(--gold);font-size:1.1rem;"></i> Splits &amp; Co-Owners</h2>
+    <p>Define ownership split and invite co-creators</p>
+  </div>
+  <div class="card-body">
+    <div class="collaborator-section">
+      <div class="collaborator-list" id="collaboratorList">
+        <!-- Primary creator row injected by JS -->
+      </div>
+      <div class="collab-bulk-btns">
+        <button class="add-collaborator-btn" id="addCollaboratorBtn"><i class="fas fa-plus" style="margin-right:6px;"></i> Add Co-owner</button>
+        <button class="bulk-btn" id="inviteAllBtn"><i class="fas fa-envelope" style="margin-right:6px;"></i> Invite All</button>
+        <button class="bulk-btn danger" id="removeAllBtn"><i class="fas fa-trash-alt" style="margin-right:6px;"></i> Remove All</button>
+      </div>
+      <div class="split-summary" id="splitSummary">
+        <strong><i class="fas fa-chart-pie" style="margin-right:5px;"></i> Ownership Distribution</strong>
+        <div class="split-visual" id="splitVisual"></div>
+        <div id="splitWarning" class="warning-msg"></div>
+      </div>
+    </div>
+    <div class="button-group">
+      <button class="btn-secondary" onclick="showStep(4)"><i class="fas fa-arrow-left"></i> Back</button>
+      <button class="btn-primary" id="finalizeBtn"><i class="fas fa-paper-plane"></i> Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP FINAL: CERTIFICATE (solo goes here from step4, collab from step5collab) -->
+<div class="workflow-card hidden" id="stepFinalCard">
   <div class="card-header success-header">
     <h2><i class="fas fa-certificate" style="color:var(--gold);font-size:1.1rem;"></i> Certificate Ready</h2>
     <p>Your work has been certified and blockchain-timestamped</p>
@@ -311,28 +310,75 @@
 <!-- INVITE MODAL -->
 <div class="modal" id="inviteModal">
   <div class="modal-content">
-    <h3 style="font-family:\'Cormorant Garamond\',serif;font-size:1.3rem;color:var(--white);margin-bottom:16px;"><i class="fas fa-envelope" style="color:var(--gold);margin-right:8px;"></i> Invitations Sent</h3>
+    <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--white);margin-bottom:16px;"><i class="fas fa-envelope" style="color:var(--gold);margin-right:8px;"></i> Invitations Sent</h3>
     <div id="inviteList"></div>
     <div class="invite-link">
       <input type="text" id="shareLink" readonly>
       <button class="copy-btn" onclick="copyLink()"><i class="fas fa-copy"></i> Copy</button>
     </div>
     <div class="button-group">
-      <button class="btn-primary" id="closeModalBtn"><i class="fas fa-certificate"></i> Get Certificate</button>
+      <button class="btn-primary" id="closeModalBtn"><i class="fas fa-paper-plane"></i> Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- CO-OWNER FORM MODAL -->
+<div class="coowner-modal" id="coownerModal">
+  <div class="coowner-modal-box">
+    <div class="coowner-modal-title"><i class="fas fa-user-plus"></i> Add Co-owner</div>
+    <div class="modal-form-grid">
+      <div>
+        <label class="modal-form-label">Full Name (as on ID) <span style="color:var(--gold);">*</span></label>
+        <input class="modal-form-input" type="text" id="coFullName" placeholder="e.g., Jane Smith">
+      </div>
+      <div>
+        <label class="modal-form-label">Gender</label>
+        <select class="modal-form-input" id="coGender">
+          <option value="">— Select —</option>
+          <option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option>
+        </select>
+      </div>
+      <div>
+        <label class="modal-form-label">Title</label>
+        <select class="modal-form-input" id="coTitle">
+          <option value="">— Select —</option>
+          <option>Mr</option><option>Ms</option><option>Mrs</option><option>Dr</option><option>Prof</option><option>Mx</option>
+        </select>
+      </div>
+      <div>
+        <label class="modal-form-label">Artistic Name</label>
+        <input class="modal-form-input" type="text" id="coArtisticName" placeholder="e.g., Nova">
+      </div>
+      <div>
+        <label class="modal-form-label">Country</label>
+        <input class="modal-form-input" type="text" id="coCountry" placeholder="e.g., South Africa">
+      </div>
+      <div>
+        <label class="modal-form-label">Ownership Title</label>
+        <input class="modal-form-input" type="text" id="coOwnershipTitle" placeholder="e.g., Co-Writer">
+      </div>
+      <div>
+        <label class="modal-form-label">Ownership % <span style="color:var(--gold);">*</span></label>
+        <input class="modal-form-input" type="number" id="coSplit" min="1" max="99" placeholder="e.g., 25">
+      </div>
+      <div>
+        <label class="modal-form-label">Email Address <span style="color:var(--gold);">*</span></label>
+        <input class="modal-form-input" type="email" id="coEmail" placeholder="co-owner@email.com">
+      </div>
+    </div>
+    <div class="modal-form-actions">
+      <button class="btn-secondary" id="coownerCancelBtn"><i class="fas fa-times"></i> Cancel</button>
+      <button class="btn-primary" id="coownerSaveBtn"><i class="fas fa-check"></i> Add Co-owner</button>
     </div>
   </div>
 </div>
 
 </div><!-- .demo-container -->
 
-<!-- External JS -->
-
-  <!-- Auth: must load before portal JS -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script src="/supabase-config.js"></script>
-  <script src="/assets/js/routes.js"></script>
-  <script src="/assets/js/auth-guard.js"></script>
-  <script src="assets/js/certification_portal.js"></script>
-  <!-- Supabase + Auth Guard -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script src="/assets/js/routes.js"></script>
+<script src="/assets/js/auth-guard.js"></script>
+<script src="assets/js/certification_portal.js"></script>
 </body>
 </html>
