@@ -540,3 +540,44 @@ function copyLink() {
 // ── INIT FILE UPLOADS ─────────────────────────────────────────────────────────
 setupFileUpload('soloUploadArea','soloFileInput','soloFileList','soloPreview','soloPreviewLabel','soloPreviewType','soloPreviewBody','soloProgress','soloProgressBar','soloProgressText');
 setupFileUpload('primaryUploadArea','primaryFileInput','primaryFileList','primaryPreview','primaryPreviewLabel','primaryPreviewType','primaryPreviewBody','primaryProgress','primaryProgressBar','primaryProgressText');
+
+// ── CREATE COLLABORATOR INVITES ──────────────────────────────────────────────
+async function createCollaboratorInvites(certificateId, collaborators, creatorId, workTitle) {
+  try {
+    const response = await fetch(`${TIER4_URL}/api/certify/invites`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        collaborators: collaborators,
+        certificate_id: certificateId,
+        creator_id: creatorId,
+        work_title: workTitle
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) throw new Error(data.error);
+    
+    console.log(`✅ Created ${data.invites.length} collaborator invites`);
+    return data;
+  } catch (error) {
+    console.error('Failed to create invites:', error);
+    throw error;
+  }
+}
+
+// Update the finalizeBtn listener to create invites for collaborators
+// This should be called after successful certification
+async function createInvitesForCollaborators(certificateId, collaborators, creatorId, workTitle) {
+  if (!collaborators || collaborators.length === 0) return;
+  
+  try {
+    const result = await createCollaboratorInvites(certificateId, collaborators, creatorId, workTitle);
+    console.log('📧 Invites sent:', result);
+    return result;
+  } catch (error) {
+    console.warn('Failed to create invites, but certification completed:', error);
+    // Don't block certification flow
+  }
+}
