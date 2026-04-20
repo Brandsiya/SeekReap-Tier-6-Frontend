@@ -375,9 +375,13 @@
 
 </div><!-- .demo-container -->
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="/supabase-config.js"></script>
-<script src="/assets/js/routes.js"></script>
-<script src="assets/js/certification_portal.js"></script>
+
+
+  <!-- Supabase + auth — must precede certification_portal.js -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="/supabase-config.js"></script>
+  <script src="/assets/js/routes.js"></script>
+  <script src="/assets/js/auth-guard.js"></script>
+  <script src="assets/js/certification_portal.js"></script>
 </body>
 </html>

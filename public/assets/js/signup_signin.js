@@ -18,7 +18,7 @@ function clearMsg() { const el = document.getElementById('message-container'); i
 function setBusy(id, busy) {
   const btn = document.getElementById(id);
   if (!btn) return;
-  btn.disabled     = busy;
+  btn.disabled      = busy;
   btn.style.opacity = busy ? '0.6' : '1';
   btn.style.cursor  = busy ? 'not-allowed' : '';
 }
@@ -26,25 +26,23 @@ function setBusy(id, busy) {
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
 function raw(id)  { return document.getElementById(id)?.value ?? ''; }
 function trim(id) { return raw(id).trim(); }
 
-// ── get intended redirect destination ────────────────────────────────────────
+// Same-origin redirect from ?redirect= param
 function getRedirectTarget(defaultPath) {
   const params = new URLSearchParams(window.location.search);
   const r = params.get('redirect');
   if (r) {
     try {
-      // Only allow same-origin redirects
       const url = new URL(decodeURIComponent(r), window.location.origin);
       if (url.origin === window.location.origin) return url.pathname + url.search;
-    } catch (e) {}
+    } catch (_) {}
   }
   return defaultPath;
 }
 
-// ── validate signup fields ────────────────────────────────────────────────────
+// ── signup field validation ───────────────────────────────────────────────────
 function validateSignupFields() {
   const fullName       = trim('signup-fullname');
   const title          = trim('signup-title');
@@ -58,30 +56,30 @@ function validateSignupFields() {
   const confirm        = raw('signup-confirm');
   const terms          = document.getElementById('accept-terms')?.checked;
 
-  if (!fullName)       return { valid:false, msg:'Please enter your full name as on ID.' };
-  if (!title)          return { valid:false, msg:'Please select your title.' };
-  if (!gender)         return { valid:false, msg:'Please select your gender.' };
-  if (!artisticName)   return { valid:false, msg:'Please enter your artistic name.' };
-  if (!ownershipTitle) return { valid:false, msg:'Please enter your ownership title.' };
-  if (!ownershipPct)   return { valid:false, msg:'Please enter your ownership percentage.' };
+  if (!fullName)       return { valid: false, msg: 'Please enter your full name as on ID.' };
+  if (!title)          return { valid: false, msg: 'Please select your title.' };
+  if (!gender)         return { valid: false, msg: 'Please select your gender.' };
+  if (!artisticName)   return { valid: false, msg: 'Please enter your artistic name.' };
+  if (!ownershipTitle) return { valid: false, msg: 'Please enter your ownership title.' };
+  if (!ownershipPct)   return { valid: false, msg: 'Please enter your ownership percentage.' };
   const pctNum = parseInt(ownershipPct);
-  if (isNaN(pctNum)||pctNum<0||pctNum>100) return { valid:false, msg:'Ownership % must be 0–100.' };
-  if (!country) return { valid:false, msg:'Please select your country.' };
-  if (!email)   return { valid:false, msg:'Please enter your email address.' };
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { valid:false, msg:'Please enter a valid email.' };
-  if (password.length < 8) return { valid:false, msg:'Password must be at least 8 characters.' };
-  if (password !== confirm) return { valid:false, msg:'Passwords do not match.' };
-  if (!terms) return { valid:false, msg:'Please accept the Terms of Service and Privacy Policy.' };
+  if (isNaN(pctNum) || pctNum < 0 || pctNum > 100) return { valid: false, msg: 'Ownership % must be 0–100.' };
+  if (!country) return { valid: false, msg: 'Please select your country.' };
+  if (!email)   return { valid: false, msg: 'Please enter your email address.' };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { valid: false, msg: 'Please enter a valid email.' };
+  if (password.length < 8) return { valid: false, msg: 'Password must be at least 8 characters.' };
+  if (password !== confirm) return { valid: false, msg: 'Passwords do not match.' };
+  if (!terms) return { valid: false, msg: 'Please accept the Terms of Service and Privacy Policy.' };
 
-  return { valid:true, data:{ fullName, title, gender, artisticName, ownershipTitle, ownershipPct:pctNum, country, email, password } };
+  return { valid: true, data: { fullName, title, gender, artisticName, ownershipTitle, ownershipPct: pctNum, country, email, password } };
 }
 
-// ── sign in ───────────────────────────────────────────────────────────────────
+// ── sign in → certification_portal.html ──────────────────────────────────────
 async function handleSignIn() {
   clearMsg();
   const email    = trim('signin-email');
   const password = raw('signin-password');
-  if (!email||!password) return showMsg('Please enter your email and password.');
+  if (!email || !password) return showMsg('Please enter your email and password.');
 
   setBusy('signin-btn', true);
   try {
@@ -95,7 +93,7 @@ async function handleSignIn() {
       return;
     }
 
-    // Respect ?redirect= param, default to certification portal
+    // After sign-in: go to certification portal (or ?redirect= if set)
     window.location.href = getRedirectTarget('/certification_portal.html');
 
   } catch (err) {
@@ -108,7 +106,7 @@ async function handleSignIn() {
   }
 }
 
-// ── sign up ───────────────────────────────────────────────────────────────────
+// ── sign up → dashboard.html (or email verify if confirmation required) ───────
 async function handleSignUp() {
   clearMsg();
   const validation = validateSignupFields();
@@ -132,7 +130,8 @@ async function handleSignUp() {
           ownership_percentage: ownershipPct,
           country:              country,
         },
-        emailRedirectTo: 'https://seekreap-frontend.onrender.com/certification_portal.html',
+        // After email confirmation link click, land on dashboard
+        emailRedirectTo: 'https://seekreap-frontend.onrender.com/dashboard.html',
       },
     });
     if (error) throw error;
@@ -142,7 +141,7 @@ async function handleSignUp() {
       fullName, title, gender, artisticName, ownershipTitle, ownershipPct, country
     }));
 
-    // If Supabase auto-confirmed (e.g. email confirmations disabled), go straight to dashboard
+    // If Supabase auto-confirmed (email confirmation disabled in project settings)
     if (data.user?.email_confirmed_at) {
       window.location.href = '/dashboard.html';
     } else {
@@ -177,11 +176,10 @@ function togglePassword(inputId, icon) {
   icon.classList.toggle('fa-eye-slash');
 }
 
-// ── wire events ───────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('signin-btn')?.addEventListener('click', handleSignIn);
   document.getElementById('signup-btn')?.addEventListener('click', handleSignUp);
-  ['signin-email','signin-password'].forEach(id => {
-    document.getElementById(id)?.addEventListener('keydown', e => { if (e.key==='Enter') handleSignIn(); });
+  ['signin-email', 'signin-password'].forEach(id => {
+    document.getElementById(id)?.addEventListener('keydown', e => { if (e.key === 'Enter') handleSignIn(); });
   });
 });
