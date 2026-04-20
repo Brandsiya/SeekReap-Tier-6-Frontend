@@ -1,4 +1,4 @@
-/* certification_portal.js — complete portal logic
+/* certification_portal.js - complete portal logic
    Handles: plan selection, step navigation, mode, file upload,
    collaborators, API submission, polling, certificate rendering.
    Auth is handled by auth-guard.js (loaded before this file). */
@@ -103,9 +103,9 @@ function waitForAuth(timeoutMs) {
 
 // ── STATUS UI ─────────────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
-  queued:     { color:'#E8A040', bg:'rgba(232,160,64,0.1)',  icon:'⏳', text:'Certification queued — processing will begin shortly…' },
-  processing: { color:'#569cd6', bg:'rgba(86,156,214,0.1)', icon:'🔄', text:'Analysing your work — this may take a few moments…' },
-  analyzed:   { color:'#3DB87A', bg:'rgba(61,184,122,0.08)',icon:'🔬', text:'Analysis complete — finalising certificate…' },
+  queued:     { color:'#E8A040', bg:'rgba(232,160,64,0.1)',  icon:'⏳', text:'Certification queued - processing will begin shortly…' },
+  processing: { color:'#569cd6', bg:'rgba(86,156,214,0.1)', icon:'🔄', text:'Analysing your work - this may take a few moments…' },
+  analyzed:   { color:'#3DB87A', bg:'rgba(61,184,122,0.08)',icon:'🔬', text:'Analysis complete - finalising certificate…' },
   completed:  { color:'#3DB87A', bg:'rgba(61,184,122,0.1)', icon:'✅', text:'Certification complete!' },
   failed:     { color:'#E05555', bg:'rgba(224,85,85,0.1)',   icon:'❌', text:'Certification failed.' },
 };
@@ -181,7 +181,7 @@ function updateUIBasedOnState() {
           return;
         }
         if (attempts < maxAttempts) setTimeout(poll, intervalMs);
-        else { CertificationState.status = 'failed'; CertificationState.error = 'Timed out — check your dashboard.'; updateUIBasedOnState(); }
+        else { CertificationState.status = 'failed'; CertificationState.error = 'Timed out - check your dashboard.'; updateUIBasedOnState(); }
       })
       .catch(function(err) {
         console.warn('Poll ' + attempts, err.message);
@@ -194,10 +194,10 @@ function updateUIBasedOnState() {
 
 // ── RENDER COMPLETED ──────────────────────────────────────────────────────────
 function renderCompletedState(data) {
-  var certId    = data.cert_id            || CertificationState.certId || '—';
+  var certId    = data.cert_id            || CertificationState.certId || '-';
   var title     = data.title              || (document.getElementById('workTitle') || {}).value || 'Your Work';
-  var riskScore = data.overall_risk_score != null ? data.overall_risk_score : '—';
-  var riskLevel = data.risk_level         || '—';
+  var riskScore = data.overall_risk_score != null ? data.overall_risk_score : '-';
+  var riskLevel = data.risk_level         || '-';
   var plan      = data.plan               || window.selectedPlan || 'free';
   var now       = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
 
@@ -216,7 +216,7 @@ function renderCompletedState(data) {
     });
 
     var workTypeEl   = document.getElementById('workType');
-    var workTypeText = workTypeEl ? workTypeEl.options[workTypeEl.selectedIndex].text.trim() : '—';
+    var workTypeText = workTypeEl ? workTypeEl.options[workTypeEl.selectedIndex].text.trim() : '-';
     var riskColor    = riskLevel === 'low' ? 'var(--success)' : riskLevel === 'medium' ? 'var(--warning)' : 'var(--danger)';
 
     certDetails.innerHTML =
@@ -247,7 +247,7 @@ function renderErrorState(data) {
   var msg = data.failure_reason || CertificationState.error || 'Certification failed';
   var el  = getOrCreateStatusEl();
   el.style.cssText = 'margin-top:14px;padding:11px 16px;border-radius:4px;font-size:0.85rem;background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#E05555;display:block;';
-  el.innerHTML = '❌ ' + escHtml(msg) + ' — <a href="certification_portal.html" style="color:#E05555;text-decoration:underline;">Try again</a>';
+  el.innerHTML = '❌ ' + escHtml(msg) + ' - <a href="certification_portal.html" style="color:#E05555;text-decoration:underline;">Try again</a>';
 }
 
 // ── HYDRATION ─────────────────────────────────────────────────────────────────
@@ -403,7 +403,7 @@ function renderPreview(cfg, file, wt) {
           '<div><div class="ve-track-title">' + escHtml(file.name.replace(/\.[^.]+$/, '')) + '</div></div>' +
         '</div>' +
         '<div class="ve-progress-row">' +
-          '<div class="ve-time-row"><span id="veAT_' + cfg.areaId + '">0:00</span><span id="veDur_' + cfg.areaId + '">—</span></div>' +
+          '<div class="ve-time-row"><span id="veAT_' + cfg.areaId + '">0:00</span><span id="veDur_' + cfg.areaId + '">-</span></div>' +
           '<div class="ve-progress-track" id="veTrack_' + cfg.areaId + '"><div class="ve-progress-fill" id="veFill_' + cfg.areaId + '"></div></div>' +
         '</div>' +
         '<div class="ve-btn-row">' +
@@ -926,7 +926,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (s && c) {
       window.location.href = 'certificate_loader.html?id=' + encodeURIComponent(s) + '&cert=' + encodeURIComponent(c);
     } else {
-      alert('Certificate not yet available — please wait for processing to complete.');
+      alert('Certificate not yet available - please wait for processing to complete.');
     }
   });
 
@@ -1118,7 +1118,7 @@ function pollCertificationStatus(submissionId, maxAttempts = 60, baseIntervalMs 
         setTimeout(poll, backoffMs);
       } else {
         CertificationState.status = 'failed';
-        CertificationState.error = 'Timed out. Your certificate may still process — check the dashboard.';
+        CertificationState.error = 'Timed out. Your certificate may still process - check the dashboard.';
         updateUIBasedOnState();
       }
 
@@ -1140,3 +1140,101 @@ function pollCertificationStatus(submissionId, maxAttempts = 60, baseIntervalMs 
 
   poll();
 }
+
+// ── SIMPLE FIX FOR OWNERSHIP BUTTONS ─────────────────────────────────────────
+// This ensures the Continue button works after selecting ownership type
+
+(function fixOwnershipButtons() {
+  // Wait for DOM to be ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fixButtons);
+  } else {
+    fixButtons();
+  }
+  
+  function fixButtons() {
+    const soloBtn = document.getElementById('soloModeBtn');
+    const collabBtn = document.getElementById('collabModeBtn');
+    const nextBtn = document.getElementById('nextToUploadBtn');
+    
+    // Set initial window.mode if not set
+    if (!window.mode && soloBtn && soloBtn.classList.contains('active')) {
+      window.mode = 'solo';
+    }
+    if (!window.mode && collabBtn && collabBtn.classList.contains('active')) {
+      window.mode = 'collab';
+    }
+    
+    // Fix Solo button click
+    if (soloBtn && !soloBtn._fixed) {
+      soloBtn._fixed = true;
+      soloBtn.addEventListener('click', function() {
+        window.mode = 'solo';
+        soloBtn.classList.add('active');
+        if (collabBtn) collabBtn.classList.remove('active');
+        console.log('[fix] Mode set to: solo');
+      });
+    }
+    
+    // Fix Collab button click
+    if (collabBtn && !collabBtn._fixed) {
+      collabBtn._fixed = true;
+      collabBtn.addEventListener('click', function() {
+        window.mode = 'collab';
+        collabBtn.classList.add('active');
+        if (soloBtn) soloBtn.classList.remove('active');
+        // Show step5 in workflow
+        const step5c = document.getElementById('step5c');
+        if (step5c) step5c.style.display = '';
+        const stepFinalNum = document.getElementById('stepFinalNum');
+        if (stepFinalNum) stepFinalNum.textContent = '6';
+        console.log('[fix] Mode set to: collab');
+      });
+    }
+    
+    // Fix Continue button
+    if (nextBtn && !nextBtn._fixed) {
+      nextBtn._fixed = true;
+      nextBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Check if mode is selected
+        if (!window.mode) {
+          alert('Please select Sole Ownership or Co-ownership before continuing.');
+          return;
+        }
+        
+        console.log('[fix] Continue clicked, mode:', window.mode);
+        
+        // Show step 4
+        if (typeof showStep === 'function') {
+          showStep(4);
+        } else {
+          // Fallback if showStep not defined
+          const step4Card = document.getElementById('step4Card');
+          if (step4Card) step4Card.classList.remove('hidden');
+          
+          // Update step indicators
+          [1,2,3].forEach(function(n) {
+            const el = document.getElementById('step' + n);
+            if (el) {
+              el.classList.remove('active');
+              el.classList.add('completed');
+            }
+          });
+          const step4 = document.getElementById('step4');
+          if (step4) step4.classList.add('active');
+        }
+        
+        // Show correct content based on mode
+        const soloContent = document.getElementById('soloContent');
+        const collabContent = document.getElementById('collabContent');
+        
+        if (soloContent) soloContent.classList.toggle('hidden', window.mode !== 'solo');
+        if (collabContent) collabContent.classList.toggle('hidden', window.mode !== 'collab');
+      });
+    }
+    
+    console.log('[fix] Ownership buttons fixed. Current mode:', window.mode);
+  }
+})();
