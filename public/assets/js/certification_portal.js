@@ -88,7 +88,9 @@ function getOrCreateStatusEl() {
 }
 
 function updateUIBasedOnState() {
-  var el = getOrCreateStatusEl(), btn = document.getElementById('finalizeBtn');
+  var el = getOrCreateStatusEl();
+  var btn = document.getElementById('finalizeBtn') ||
+            document.getElementById('step4NextBtn');
   var cfg = STATUS_CONFIG[CertificationState.status];
   if (!cfg) { el.style.display = 'none'; return; }
   var msg = cfg.text;
@@ -709,10 +711,21 @@ if (btn) { btn.disabled = true; btn.innerHTML = '\u23F3 Submitting\u2026'; }
     })
     .catch(function(err) {
       console.error('Submission error:', err);
-      CertificationState.status = 'failed'; CertificationState.error = err.message;
+      var msg = err.message || 'Network error';
+      if (msg.toLowerCase().indexOf('failed to fetch') !== -1)
+        msg = 'Could not reach the certification server. Please check your connection and try again.';
+      CertificationState.status = 'failed'; CertificationState.error = msg;
       updateUIBasedOnState();
-      var btn2 = document.getElementById('finalizeBtn');
-      if (btn2) { btn2.disabled = false; btn2.innerHTML = '<i class="fas fa-paper-plane"></i> Submit'; }
+      var btn2 = document.getElementById('finalizeBtn') ||
+                 document.getElementById('step4NextBtn');
+      if (btn2) {
+        btn2.disabled = false;
+        if (window.mode === 'collab') {
+          btn2.innerHTML = '<i class="fas fa-paper-plane"></i> Submit';
+        } else {
+          btn2.innerHTML = '<i class="fas fa-arrow-right"></i> Continue';
+        }
+      }
     });
   }
   if (window.uploadedFile) {
