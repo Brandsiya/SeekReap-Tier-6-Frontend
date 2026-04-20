@@ -141,7 +141,7 @@ function updateUIBasedOnState() {
 }
 
 // ── POLLING ───────────────────────────────────────────────────────────────────
-function pollCertificationStatus(submissionId, maxAttempts, intervalMs) {
+// OLD function pollCertificationStatus(submissionId, maxAttempts, intervalMs) {
   maxAttempts = maxAttempts || 60;
   intervalMs  = intervalMs  || 3000;
   var attempts = 0;
@@ -985,3 +985,158 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Start at step 1
   showStep(1);
 });
+// ── FIX: Ownership Type State Management ─────────────────────────────────────
+// Add this to certification_portal.js
+
+// Initialize ownership type
+let ownershipType = null;
+
+// Bind ownership buttons if not already bound
+document.addEventListener('DOMContentLoaded', function() {
+  const soloBtn = document.getElementById('soloModeBtn');
+  const collabBtn = document.getElementById('collabModeBtn');
+  const nextToUploadBtn = document.getElementById('nextToUploadBtn');
+  
+  if (soloBtn) {
+    soloBtn.onclick = function() {
+      ownershipType = 'solo';
+      soloBtn.classList.add('active');
+      if (collabBtn) collabBtn.classList.remove('active');
+      window.mode = 'solo';
+    };
+  }
+  
+  if (collabBtn) {
+    collabBtn.onclick = function() {
+      ownershipType = 'collab';
+      collabBtn.classList.add('active');
+      if (soloBtn) soloBtn.classList.remove('active');
+      window.mode = 'collab';
+    };
+  }
+  
+  // Fix nextToUploadBtn to check ownership type
+  if (nextToUploadBtn) {
+    nextToUploadBtn.onclick = function() {
+      if (!ownershipType && !window.mode) {
+        alert('Please select an ownership type (Sole Ownership or Co-ownership)');
+        return;
+      }
+      
+      showStep(4);
+      
+      const soloContent = document.getElementById('soloContent');
+      const collabContent = document.getElementById('collabContent');
+      
+      if (ownershipType === 'solo' || window.mode === 'solo') {
+        if (soloContent) soloContent.classList.remove('hidden');
+        if (collabContent) collabContent.classList.add('hidden');
+      } else {
+        if (collabContent) collabContent.classList.remove('hidden');
+        if (soloContent) soloContent.classList.add('hidden');
+      }
+    };
+  }
+});
+
+
+
+// ── FIX: Polling with exponential backoff and proper state handling ─────────
+// Replace the existing pollCertificationStatus function
+
+let pollController = null;
+let pollAttempts = 0;
+
+function pollCertificationStatus(submissionId, maxAttempts = 60, baseIntervalMs = 3000) {
+  // Abort any existing polling
+  if (pollController) {
+    pollController.abort();
+  }
+  
+  pollController = new AbortController();
+  pollAttempts = 0;
+  
+  async function poll() {
+    pollAttempts++;
+    
+    // Exponential backoff: start at 2s, max 15s
+    const backoffMs = Math.min(baseIntervalMs * Math.pow(1.2, pollAttempts - 1), 15000);
+    
+    try {
+      const res = await fetch(`${TIER4_URL}/api/certify/${encodeURIComponent(submissionId)}`, {
+        signal: pollController.signal
+      });
+      
+      if (!res.ok) throw new Error(`Status check HTTP ${res.status}`);
+      const data = await res.json();
+
+      CertificationState.submissionId = submissionId;
+      CertificationState.certId = data.cert_id || CertificationState.certId;
+      CertificationState.status = data.status || CertificationState.status;
+      CertificationState.data = data;
+
+      updateUIBasedOnState();
+
+      // FIX: Handle 'analyzed' as intermediate state, not completed
+      if (data.status === 'completed') {
+        CertificationState.status = 'completed';
+        updateUIBasedOnState();
+        renderCompletedState(data);
+        
+        sessionStorage.setItem('activeCert', JSON.stringify({
+          submission_id: submissionId,
+          cert_id: data.cert_id || CertificationState.certId,
+          plan: data.plan || 'free',
+          title: data.title || '',
+          status: 'completed',
+        }));
+        sessionStorage.removeItem('activeCertification');
+        return;
+      }
+      
+      // Handle 'analyzed' as intermediate state
+      if (data.status === 'analyzed') {
+        CertificationState.status = 'analyzed';
+        updateUIBasedOnState();
+        // Continue polling for completion
+        if (pollAttempts < maxAttempts) {
+          setTimeout(poll, backoffMs);
+        }
+        return;
+      }
+
+      if (data.status === 'failed') {
+        CertificationState.status = 'failed';
+        CertificationState.error = data.failure_reason || 'Processing failed';
+        updateUIBasedOnState();
+        renderErrorState(data);
+        return;
+      }
+
+      // Still in flight (queued, processing)
+      if (pollAttempts < maxAttempts) {
+        setTimeout(poll, backoffMs);
+      } else {
+        CertificationState.status = 'failed';
+        CertificationState.error = 'Timed out. Your certificate may still process — check the dashboard.';
+        updateUIBasedOnState();
+      }
+
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        console.log('Polling aborted');
+        return;
+      }
+      console.warn('Poll attempt', pollAttempts, err.message);
+      if (pollAttempts < maxAttempts) {
+        setTimeout(poll, backoffMs);
+      } else {
+        CertificationState.status = 'failed';
+        CertificationState.error = err.message;
+        updateUIBasedOnState();
+      }
+    }
+  }
+
+  poll();
+}
