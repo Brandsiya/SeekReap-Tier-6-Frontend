@@ -683,9 +683,9 @@ function doSubmit() {
       window.location.href = 'pay.html?plan=' + encodeURIComponent(plan) + '&title=' + encodeURIComponent(title);
       return;
     }
-var btn = document.getElementById('finalizeBtn') ||
-          document.getElementById('step4NextBtn');
-if (btn) { btn.disabled = true; btn.innerHTML = '\u23F3 Submitting\u2026'; }
+    var btn = document.getElementById('finalizeBtn') ||
+              document.getElementById('step4NextBtn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '\u23F3 Submitting\u2026'; }
     CertificationState.status = 'queued'; updateUIBasedOnState();
     fetch(TIER4_URL + '/api/certify', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -817,7 +817,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   // Step 5 finalize
   var fb = document.getElementById('finalizeBtn');
-  if (fb) { var ff = fb.cloneNode(true); fb.parentNode.replaceChild(ff, fb); ff.addEventListener('click', doSubmit); }
+  if (fb) fb.addEventListener('click', doSubmit);
 
   // Co-owner modal
   var addBtn = document.getElementById('addCollaboratorBtn'); if (addBtn) addBtn.addEventListener('click', openCoownerModal);
