@@ -996,3 +996,33 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (!window.mode) window.mode = 'solo';
   }
 })();
+
+// ── FIX: Ensure ownership mode is set when user selects it ──
+(function bindOwnershipMode() {
+  function init() {
+    const soloBtn = document.getElementById('soloModeBtn');
+    const collabBtn = document.getElementById('collabModeBtn');
+
+    if (soloBtn && !soloBtn._modeBound) {
+      soloBtn._modeBound = true;
+      soloBtn.addEventListener('click', () => {
+        window.mode = 'solo';
+        console.log('[fix] mode=solo');
+      });
+    }
+
+    if (collabBtn && !collabBtn._modeBound) {
+      collabBtn._modeBound = true;
+      collabBtn.addEventListener('click', () => {
+        window.mode = 'collab';
+        console.log('[fix] mode=collab');
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
