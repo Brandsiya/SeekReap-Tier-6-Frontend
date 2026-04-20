@@ -681,8 +681,9 @@ function doSubmit() {
       window.location.href = 'pay.html?plan=' + encodeURIComponent(plan) + '&title=' + encodeURIComponent(title);
       return;
     }
-    var btn = document.getElementById('finalizeBtn');
-    if (btn) { btn.disabled = true; btn.innerHTML = '\u23F3 Submitting\u2026'; }
+var btn = document.getElementById('finalizeBtn') ||
+          document.getElementById('step4NextBtn');
+if (btn) { btn.disabled = true; btn.innerHTML = '\u23F3 Submitting\u2026'; }
     CertificationState.status = 'queued'; updateUIBasedOnState();
     fetch(TIER4_URL + '/api/certify', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
