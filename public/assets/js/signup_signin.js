@@ -1,4 +1,4 @@
-// ── helpers ──────────────────────────────────────────────────────────────────
+// ── helpers ───────────────────────────────────────────────────────────────────
 function getClient(ms = 6000) {
   if (window.supabaseClient) return Promise.resolve(window.supabaseClient);
   return new Promise((resolve, reject) => {
@@ -10,7 +10,7 @@ function getClient(ms = 6000) {
 function showMsg(text, type = 'error') {
   const el = document.getElementById('message-container');
   if (!el) return;
-  const icon = { error: 'exclamation-circle', success: 'check-circle', info: 'info-circle' }[type] || 'info-circle';
+  const icon = { error:'exclamation-circle', success:'check-circle', info:'info-circle' }[type] || 'info-circle';
   el.innerHTML = `<div class="msg msg-${type}"><i class="fas fa-${icon}"></i><span>${esc(text)}</span></div>`;
 }
 function clearMsg() { const el = document.getElementById('message-container'); if (el) el.innerHTML = ''; }
@@ -18,7 +18,7 @@ function clearMsg() { const el = document.getElementById('message-container'); i
 function setBusy(id, busy) {
   const btn = document.getElementById(id);
   if (!btn) return;
-  btn.disabled = busy;
+  btn.disabled     = busy;
   btn.style.opacity = busy ? '0.6' : '1';
   btn.style.cursor  = busy ? 'not-allowed' : '';
 }
@@ -30,47 +30,58 @@ function esc(s) {
 function raw(id)  { return document.getElementById(id)?.value ?? ''; }
 function trim(id) { return raw(id).trim(); }
 
-// Validate all required signup fields
-function validateSignupFields() {
-  const fullName = trim('signup-fullname');
-  const title = trim('signup-title');
-  const gender = trim('signup-gender');
-  const artisticName = trim('signup-artisticname');
-  const ownershipTitle = trim('signup-ownershiptitle');
-  const ownershipPct = trim('signup-ownershippct');
-  const country = trim('signup-country');
-  const email = trim('signup-email');
-  const password = raw('signup-password');
-  const confirm = raw('signup-confirm');
-  const terms = document.getElementById('accept-terms')?.checked;
-
-  if (!fullName) return { valid: false, msg: 'Please enter your full name as on ID.' };
-  if (!title) return { valid: false, msg: 'Please select your title.' };
-  if (!gender) return { valid: false, msg: 'Please select your gender.' };
-  if (!artisticName) return { valid: false, msg: 'Please enter your artistic name.' };
-  if (!ownershipTitle) return { valid: false, msg: 'Please enter your ownership title (e.g., Co-author, Sole Creator).' };
-  if (!ownershipPct) return { valid: false, msg: 'Please enter your ownership percentage.' };
-  const pctNum = parseInt(ownershipPct);
-  if (isNaN(pctNum) || pctNum < 0 || pctNum > 100) return { valid: false, msg: 'Ownership percentage must be between 0 and 100.' };
-  if (!country) return { valid: false, msg: 'Please select your country.' };
-  if (!email) return { valid: false, msg: 'Please enter your email address.' };
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { valid: false, msg: 'Please enter a valid email address.' };
-  if (password.length < 8) return { valid: false, msg: 'Password must be at least 8 characters.' };
-  if (password !== confirm) return { valid: false, msg: 'Passwords do not match.' };
-  if (!terms) return { valid: false, msg: 'Please accept the Terms of Service and Privacy Policy.' };
-
-  return { valid: true, data: {
-    fullName, title, gender, artisticName, ownershipTitle, ownershipPct: pctNum, country, email, password
-  } };
+// ── get intended redirect destination ────────────────────────────────────────
+function getRedirectTarget(defaultPath) {
+  const params = new URLSearchParams(window.location.search);
+  const r = params.get('redirect');
+  if (r) {
+    try {
+      // Only allow same-origin redirects
+      const url = new URL(decodeURIComponent(r), window.location.origin);
+      if (url.origin === window.location.origin) return url.pathname + url.search;
+    } catch (e) {}
+  }
+  return defaultPath;
 }
 
-// ── sign in ──────────────────────────────────────────────────────────────────
+// ── validate signup fields ────────────────────────────────────────────────────
+function validateSignupFields() {
+  const fullName       = trim('signup-fullname');
+  const title          = trim('signup-title');
+  const gender         = trim('signup-gender');
+  const artisticName   = trim('signup-artisticname');
+  const ownershipTitle = trim('signup-ownershiptitle');
+  const ownershipPct   = trim('signup-ownershippct');
+  const country        = trim('signup-country');
+  const email          = trim('signup-email');
+  const password       = raw('signup-password');
+  const confirm        = raw('signup-confirm');
+  const terms          = document.getElementById('accept-terms')?.checked;
+
+  if (!fullName)       return { valid:false, msg:'Please enter your full name as on ID.' };
+  if (!title)          return { valid:false, msg:'Please select your title.' };
+  if (!gender)         return { valid:false, msg:'Please select your gender.' };
+  if (!artisticName)   return { valid:false, msg:'Please enter your artistic name.' };
+  if (!ownershipTitle) return { valid:false, msg:'Please enter your ownership title.' };
+  if (!ownershipPct)   return { valid:false, msg:'Please enter your ownership percentage.' };
+  const pctNum = parseInt(ownershipPct);
+  if (isNaN(pctNum)||pctNum<0||pctNum>100) return { valid:false, msg:'Ownership % must be 0–100.' };
+  if (!country) return { valid:false, msg:'Please select your country.' };
+  if (!email)   return { valid:false, msg:'Please enter your email address.' };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { valid:false, msg:'Please enter a valid email.' };
+  if (password.length < 8) return { valid:false, msg:'Password must be at least 8 characters.' };
+  if (password !== confirm) return { valid:false, msg:'Passwords do not match.' };
+  if (!terms) return { valid:false, msg:'Please accept the Terms of Service and Privacy Policy.' };
+
+  return { valid:true, data:{ fullName, title, gender, artisticName, ownershipTitle, ownershipPct:pctNum, country, email, password } };
+}
+
+// ── sign in ───────────────────────────────────────────────────────────────────
 async function handleSignIn() {
-  console.log("🔐 handleSignIn called");
   clearMsg();
   const email    = trim('signin-email');
   const password = raw('signin-password');
-  if (!email || !password) return showMsg('Please enter your email and password.');
+  if (!email||!password) return showMsg('Please enter your email and password.');
 
   setBusy('signin-btn', true);
   try {
@@ -78,24 +89,16 @@ async function handleSignIn() {
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
     if (error) throw error;
 
-    console.log("✅ Sign in successful, email confirmed:", data.user.email_confirmed_at);
-
     if (!data.user.email_confirmed_at) {
       sessionStorage.setItem('pendingVerifyEmail', email);
       window.location.href = '/email_verify_pending.html';
       return;
     }
-    
-    // Set flag to prevent redirect loop
-    sessionStorage.setItem('justSignedIn', 'true');
-    console.log("📌 Set justSignedIn flag");
-    
-    // Direct to certification portal without any checks
-    console.log("🚀 Redirecting to /certification_portal.html");
-    window.location.href = '/certification_portal.html';
-    
+
+    // Respect ?redirect= param, default to certification portal
+    window.location.href = getRedirectTarget('/certification_portal.html');
+
   } catch (err) {
-    console.error("Sign in error:", err);
     const msg = /invalid login|invalid credentials/i.test(err.message)
       ? 'Incorrect email or password. Please try again.'
       : err.message;
@@ -105,9 +108,8 @@ async function handleSignIn() {
   }
 }
 
-// ── sign up with profile metadata ────────────────────────────────────────────
+// ── sign up ───────────────────────────────────────────────────────────────────
 async function handleSignUp() {
-  console.log("📝 handleSignUp called");
   clearMsg();
   const validation = validateSignupFields();
   if (!validation.valid) return showMsg(validation.msg);
@@ -120,36 +122,34 @@ async function handleSignUp() {
     const { data, error } = await sb.auth.signUp({
       email,
       password,
-      options: { 
-        data: { 
-          full_name: fullName,
-          title: title,
-          gender: gender,
-          artistic_name: artisticName,
-          ownership_title: ownershipTitle,
+      options: {
+        data: {
+          full_name:            fullName,
+          title:                title,
+          gender:               gender,
+          artistic_name:        artisticName,
+          ownership_title:      ownershipTitle,
           ownership_percentage: ownershipPct,
-          country: country,
-          email: email
-        }, 
-        emailRedirectTo: 'https://seekreap-frontend.onrender.com/certification_portal.html' 
-      }
+          country:              country,
+        },
+        emailRedirectTo: 'https://seekreap-frontend.onrender.com/certification_portal.html',
+      },
     });
     if (error) throw error;
 
-    console.log("✅ Sign up successful");
-
-    // Store profile data for later use
     sessionStorage.setItem('pendingVerifyEmail', email);
-    sessionStorage.setItem('justSignedUp', 'true');
-    console.log("📌 Set justSignedUp flag");
-    
     sessionStorage.setItem('pendingUserProfile', JSON.stringify({
       fullName, title, gender, artisticName, ownershipTitle, ownershipPct, country
     }));
-    
-    window.location.href = '/email_verify_pending.html';
+
+    // If Supabase auto-confirmed (e.g. email confirmations disabled), go straight to dashboard
+    if (data.user?.email_confirmed_at) {
+      window.location.href = '/dashboard.html';
+    } else {
+      window.location.href = '/email_verify_pending.html';
+    }
+
   } catch (err) {
-    console.error("Sign up error:", err);
     const msg = /already registered/i.test(err.message)
       ? 'An account with this email already exists. Try signing in.'
       : err.message;
@@ -159,7 +159,7 @@ async function handleSignUp() {
   }
 }
 
-// ── tab switching ─────────────────────────────────────────────────────────────
+// ── ui helpers ────────────────────────────────────────────────────────────────
 function switchTab(tab) {
   clearMsg();
   const isSignin = tab === 'signin';
@@ -179,14 +179,9 @@ function togglePassword(inputId, icon) {
 
 // ── wire events ───────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("📄 signup_signin.js DOM loaded");
   document.getElementById('signin-btn')?.addEventListener('click', handleSignIn);
   document.getElementById('signup-btn')?.addEventListener('click', handleSignUp);
-
-  // Enter-key submit on sign-in fields
-  ['signin-email', 'signin-password'].forEach(id => {
-    document.getElementById(id)?.addEventListener('keydown', e => {
-      if (e.key === 'Enter') handleSignIn();
-    });
+  ['signin-email','signin-password'].forEach(id => {
+    document.getElementById(id)?.addEventListener('keydown', e => { if (e.key==='Enter') handleSignIn(); });
   });
 });

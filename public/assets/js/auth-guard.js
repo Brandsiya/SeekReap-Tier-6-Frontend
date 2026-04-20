@@ -1,41 +1,28 @@
-// SIMPLIFIED AUTH GUARD - No aggressive redirects
+// auth-guard.js — sets window.currentUser then dispatches 'authReady'.
+// NEVER redirects. Let each page decide what to do with the auth result.
 (async function authGuard() {
-  console.log("🔐 Auth guard starting...");
-  
-  // Wait for Supabase client
+  // Wait for supabaseClient
   let sb = window.supabaseClient;
   if (!sb) {
-    console.log("⏳ Waiting for Supabase client...");
-    await new Promise((resolve) => {
-      const check = setInterval(() => {
-        if (window.supabaseClient) {
-          clearInterval(check);
-          sb = window.supabaseClient;
-          console.log("✅ Supabase client ready");
-          resolve();
-        }
-      }, 100);
+    await new Promise(resolve => {
+      const iv = setInterval(() => {
+        if (window.supabaseClient) { clearInterval(iv); sb = window.supabaseClient; resolve(); }
+      }, 50);
     });
   }
-  
-  // Get session
-  const { data: { session }, error } = await sb.auth.getSession();
-  console.log("Session exists:", !!session);
-  
-  if (session && session.user) {
-    console.log("User:", session.user.email);
-    console.log("Email confirmed:", session.user.email_confirmed_at);
-    window.currentUser = session.user;
-    
-    // Dispatch event for other scripts
-    document.dispatchEvent(new CustomEvent("authReady", { 
-      detail: { user: session.user } 
-    }));
-  } else {
-    console.log("No session found");
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    window.currentUser = session?.user ?? null;
+  } catch (e) {
+    console.warn('auth-guard getSession error:', e.message);
     window.currentUser = null;
   }
-  
-  // DO NOT REDIRECT - Let the page handle its own auth requirements
-  // The certification portal should check window.currentUser and redirect only when needed
+
+  // Always dispatch — pages waiting on this event need it whether user is set or null
+  document.dispatchEvent(new CustomEvent('authReady', {
+    detail: { user: window.currentUser }
+  }));
+
+  console.log('authReady dispatched, user:', window.currentUser?.email ?? 'none');
 })();
