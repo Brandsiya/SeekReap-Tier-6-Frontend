@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SeekReap · Payment Processing</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --bg:           #0a0a08;
+    --surface:      #111110;
+    --surface-2:    #181816;
+    --border:       rgba(255,255,255,0.08);
+    --border-strong:rgba(201,153,58,0.3);
+    --gold:         #C9993A;
+    --gold-light:   #E8C06A;
+    --gold-glow:    rgba(201,153,58,0.12);
+    --white:        #FAFAF8;
+    --white-dim:    rgba(250,250,248,0.55);
+    --success:      #3DB87A;
+    --danger:       #E05555;
+    --warning:      #E8A040;
+    --radius:       6px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--white);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+
+  /* ── Header ── */
+  .page-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    margin-bottom: 48px;
+  }
+  .page-logo-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 480px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 28px 28px 20px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
+  .card-header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .card-header p {
+    font-size: 0.85rem;
+    color: var(--white-dim);
+  }
+
+  .card-body {
+    padding: 28px;
+  }
+
+  /* ── Status display ── */
+  .status-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 20px;
+    transition: all 0.3s ease;
+  }
+  .status-icon.spinning {
+    background: rgba(201,153,58,0.1);
+    border: 2px solid var(--gold);
+    animation: spin-border 1.5s linear infinite;
+    font-size: 1.6rem;
+    color: var(--gold);
+  }
+  .status-icon.success {
+    background: rgba(61,184,122,0.12);
+    border: 2px solid var(--success);
+    color: var(--success);
+  }
+  .status-icon.error {
+    background: rgba(224,85,85,0.1);
+    border: 2px solid var(--danger);
+    color: var(--danger);
+  }
+
+  @keyframes spin-border {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .status-title {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--white);
+  }
+  .status-msg {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--white-dim);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  /* ── Progress steps ── */
+  .progress-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .progress-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    font-size: 0.84rem;
+    transition: all 0.3s ease;
+  }
+  .progress-step .step-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    border: 1.5px solid var(--border);
+    color: var(--white-dim);
+  }
+  .progress-step.done .step-dot {
+    background: var(--success);
+    border-color: var(--success);
+    color: #fff;
+  }
+  .progress-step.active .step-dot {
+    background: var(--gold-glow);
+    border-color: var(--gold);
+    color: var(--gold);
+    animation: pulse-dot 1.4s ease-in-out infinite;
+  }
+  .progress-step.done { border-color: rgba(61,184,122,0.2); }
+  .progress-step.active { border-color: var(--border-strong); }
+
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(201,153,58,0.4); }
+    50%       { box-shadow: 0 0 0 6px rgba(201,153,58,0); }
+  }
+
+  .step-label { flex: 1; color: var(--white-dim); }
+  .progress-step.done .step-label,
+  .progress-step.active .step-label { color: var(--white); }
+
+  .step-badge {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .badge-done    { background: rgba(61,184,122,0.15); color: var(--success); }
+  .badge-active  { background: var(--gold-glow); color: var(--gold); }
+  .badge-pending { background: rgba(255,255,255,0.05); color: var(--white-dim); }
+
+  /* ── Cert summary ── */
+  .cert-summary {
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 20px;
+    display: none;
+  }
+  .cert-summary.visible { display: block; }
+  .cert-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 0.84rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .cert-row:last-child { border-bottom: none; }
+  .cert-row span:first-child { color: var(--white-dim); }
+  .cert-row span:last-child  { color: var(--white); font-weight: 500; font-family: monospace; }
+
+  /* ── Buttons ── */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 13px 20px;
+    background: linear-gradient(135deg, var(--gold) 0%, #b8872e 100%);
+    color: #000;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    margin-top: 8px;
+  }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 11px 20px;
+    background: transparent;
+    color: var(--white-dim);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+    margin-top: 8px;
+  }
+  .btn-secondary:hover { border-color: var(--border-strong); color: var(--white); }
+
+  .btn-group { display: flex; flex-direction: column; gap: 0; }
+
+  /* ── Error box ── */
+  .error-box {
+    background: rgba(224,85,85,0.08);
+    border: 1px solid rgba(224,85,85,0.25);
+    border-radius: 4px;
+    padding: 14px 16px;
+    font-size: 0.84rem;
+    color: #f08080;
+    margin-bottom: 16px;
+    display: none;
+    line-height: 1.5;
+  }
+  .error-box.visible { display: block; }
+
+  /* ── Timeout notice ── */
+  .timeout-notice {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--white-dim);
+    margin-top: 16px;
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="page-logo">
+  <svg width="32" height="32" viewBox="0 0 100 100" fill="none">
+    <defs>
+      <linearGradient id="ls" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FAFAF8"/><stop offset="100%" stop-color="#E8C06A"/></linearGradient>
+      <linearGradient id="lr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C9993A"/><stop offset="100%" stop-color="#9B7520"/></linearGradient>
+    </defs>
+    <text x="38" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#ls)">S</text>
+    <text x="62" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#lr)">R</text>
+  </svg>
+  <span class="page-logo-text">SeekReap</span>
+</a>
+
+<div class="card">
+  <div class="card-header">
+    <h1 id="cardTitle">Processing Payment</h1>
+    <p id="cardSubtitle">Please wait while we verify your payment</p>
+  </div>
+  <div class="card-body">
+
+    <div class="status-icon spinning" id="statusIcon">
+      <i class="fas fa-sync-alt"></i>
+    </div>
+    <div class="status-title" id="statusTitle">Verifying payment…</div>
+    <div class="status-msg"   id="statusMsg">This usually takes a few seconds. Do not close this tab.</div>
+
+    <div class="progress-steps">
+      <div class="progress-step active" id="stepPayment">
+        <div class="step-dot"><i class="fas fa-credit-card"></i></div>
+        <span class="step-label">Payment verification</span>
+        <span class="step-badge badge-active" id="badgePayment">Verifying</span>
+      </div>
+      <div class="progress-step" id="stepQueue">
+        <div class="step-dot"><i class="fas fa-clock"></i></div>
+        <span class="step-label">Certification queued</span>
+        <span class="step-badge badge-pending" id="badgeQueue">Waiting</span>
+      </div>
+      <div class="progress-step" id="stepCert">
+        <div class="step-dot"><i class="fas fa-certificate"></i></div>
+        <span class="step-label">Certificate generated</span>
+        <span class="step-badge badge-pending" id="badgeCert">Waiting</span>
+      </div>
+    </div>
+
+    <div class="cert-summary" id="certSummary">
+      <div class="cert-row">
+        <span>Certificate ID</span>
+        <span id="summCertId">—</span>
+      </div>
+      <div class="cert-row">
+        <span>Plan</span>
+        <span id="summPlan">—</span>
+      </div>
+      <div class="cert-row">
+        <span>Status</span>
+        <span id="summStatus">—</span>
+      </div>
+    </div>
+
+    <div class="error-box" id="errorBox"></div>
+
+    <div class="btn-group" id="btnGroup" style="display:none;">
+      <a href="#" class="btn-primary" id="btnViewCert">
+        <i class="fas fa-certificate"></i> View Certificate
+      </a>
+      <a href="certification_portal.html" class="btn-secondary" id="btnRetry" style="display:none;">
+        <i class="fas fa-redo"></i> Try Again
+      </a>
+    </div>
+
+    <div class="timeout-notice" id="timeoutNotice"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script src="/assets/js/routes.js"></script>
+
+<script>
+'use strict';
+
+const TIER4_URL = 'https://seekreap-tier-4-dev.fly.dev';
+
+// ── Read params from URL (Paystack appends ?reference=xxx&trxref=xxx) ─────────
+const params    = new URLSearchParams(window.location.search);
+const reference = params.get('reference') || params.get('trxref');
+const paymentId = params.get('payment_id'); // fallback if we stored it
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+function setStep(stepId, state) {
+  // state: 'done' | 'active' | 'pending'
+  const el    = document.getElementById(stepId);
+  const badge = document.getElementById(stepId.replace('step', 'badge'));
+  if (!el) return;
+  el.classList.remove('done', 'active');
+  if (state === 'done')   { el.classList.add('done');   badge.className = 'step-badge badge-done';    badge.textContent = 'Done'; }
+  if (state === 'active') { el.classList.add('active'); badge.className = 'step-badge badge-active';  badge.textContent = 'Processing'; }
+  if (state === 'pending'){ badge.className = 'step-badge badge-pending'; badge.textContent = 'Waiting'; }
+}
+
+function showError(msg) {
+  const icon = document.getElementById('statusIcon');
+  icon.className = 'status-icon error';
+  icon.innerHTML = '<i class="fas fa-times"></i>';
+  document.getElementById('statusTitle').textContent = 'Something went wrong';
+  document.getElementById('statusMsg').textContent   = '';
+  const eb = document.getElementById('errorBox');
+  eb.textContent = msg; eb.classList.add('visible');
+  document.getElementById('btnGroup').style.display = 'flex';
+  document.getElementById('btnRetry').style.display = 'flex';
+  document.getElementById('btnViewCert').style.display = 'none';
+}
+
+function showSuccess(certId, submissionId, plan) {
+  const icon = document.getElementById('statusIcon');
+  icon.className = 'status-icon success';
+  icon.innerHTML = '<i class="fas fa-check"></i>';
+  document.getElementById('cardTitle').textContent    = 'Payment Successful';
+  document.getElementById('cardSubtitle').textContent = 'Your work has been certified';
+  document.getElementById('statusTitle').textContent  = 'Certification complete!';
+  document.getElementById('statusMsg').textContent    = 'Your certificate is ready. You can view and download it below.';
+
+  setStep('stepPayment', 'done');
+  setStep('stepQueue',   'done');
+  setStep('stepCert',    'done');
+
+  document.getElementById('summCertId').textContent = certId || '—';
+  document.getElementById('summPlan').textContent   = (plan || 'paid').toUpperCase();
+  document.getElementById('summStatus').textContent = 'Certified ✓';
+  document.getElementById('certSummary').classList.add('visible');
+
+  const btnView = document.getElementById('btnViewCert');
+  btnView.href = 'certificate_loader.html?id=' + encodeURIComponent(submissionId) +
+                 '&cert=' + encodeURIComponent(certId || '');
+  document.getElementById('btnGroup').style.display = 'flex';
+}
+
+// ── Poll /api/payments/:id ────────────────────────────────────────────────────
+async function pollPayment(payId, attempts, maxAttempts) {
+  if (attempts >= maxAttempts) {
+    document.getElementById('timeoutNotice').textContent =
+      'Payment verification is taking longer than expected. ' +
+      'Check your email or visit My Certifications.';
+    return;
+  }
+
+  try {
+    const res  = await fetch(TIER4_URL + '/api/payments/' + encodeURIComponent(payId));
+    const data = await res.json();
+
+    if (!res.ok) {
+      showError(data.error || 'Could not verify payment.');
+      return;
+    }
+
+    const status     = data.status;
+    const certStatus = data.cert_status;
+    const certId     = data.cert_id;
+    const subId      = data.submission_id;
+
+    if (status === 'pending') {
+      // Payment not yet confirmed by webhook — keep polling
+      setStep('stepPayment', 'active');
+      document.getElementById('statusTitle').textContent = 'Waiting for payment confirmation…';
+      setTimeout(() => pollPayment(payId, attempts + 1, maxAttempts), 3000);
+      return;
+    }
+
+    if (status === 'failed') {
+      showError('Payment was not completed. Please try again.');
+      return;
+    }
+
+    if (status === 'paid') {
+      setStep('stepPayment', 'done');
+
+      if (!subId) {
+        // Paid but cert not triggered yet
+        setStep('stepQueue', 'active');
+        document.getElementById('statusTitle').textContent = 'Payment confirmed — queuing certification…';
+        setTimeout(() => pollPayment(payId, attempts + 1, maxAttempts), 3000);
+        return;
+      }
+
+      setStep('stepQueue', 'done');
+
+      if (certStatus === 'completed' || certStatus === 'analyzed') {
+        showSuccess(certId, subId, data.plan);
+        return;
+      }
+
+      if (certStatus === 'failed') {
+        showError('Certification failed after payment. Please contact support with payment reference: ' + payId);
+        return;
+      }
+
+      // queued or processing
+      setStep('stepCert', 'active');
+      document.getElementById('statusTitle').textContent = 'Certifying your work…';
+      document.getElementById('statusMsg').textContent   = 'Analysing your file. This may take a minute.';
+      setTimeout(() => pollPayment(payId, attempts + 1, maxAttempts), 4000);
+    }
+  } catch (err) {
+    console.warn('Poll error:', err);
+    setTimeout(() => pollPayment(payId, attempts + 1, maxAttempts), 5000);
+  }
+}
+
+// ── Resolve payment ID from URL or sessionStorage ─────────────────────────────
+async function init() {
+  let resolvedPaymentId = paymentId;
+
+  // Paystack redirects with ?reference=<payment_uuid> — that IS the payment ID
+  if (!resolvedPaymentId && reference) {
+    resolvedPaymentId = reference;
+  }
+
+  // Fallback: check sessionStorage (set by pay.html before redirect)
+  if (!resolvedPaymentId) {
+    const pending = sessionStorage.getItem('pendingPaymentId');
+    if (pending) resolvedPaymentId = pending;
+  }
+
+  if (!resolvedPaymentId) {
+    showError('No payment reference found. If you completed payment, please check your email or contact support.');
+    return;
+  }
+
+  // Store so user can refresh page
+  sessionStorage.setItem('pendingPaymentId', resolvedPaymentId);
+
+  // Max 5 minutes of polling (60 attempts × 5s avg)
+  pollPayment(resolvedPaymentId, 0, 60);
+}
+
+init();
+</script>
+</body>
+</html>
