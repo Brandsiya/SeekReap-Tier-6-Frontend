@@ -372,6 +372,28 @@
 <script>
 'use strict';
 
+  // ── Get Supabase Bearer token ─────────────────────────────────────────────
+  async function getAuthToken() {
+    // Prefer live session token from Supabase client
+    if (window.supabase) {
+      try {
+        const { data } = await window.supabase.auth.getSession();
+        if (data?.session?.access_token) return data.session.access_token;
+      } catch (_e) {}
+    }
+    // Fallback: if auth-guard already set currentUser with a token attached
+    if (window.currentUser?._token) return window.currentUser._token;
+    return null;
+  }
+
+  async function authHeaders() {
+    const token = await getAuthToken();
+    const h = { 'Content-Type': 'application/json' };
+    if (token) h['Authorization'] = 'Bearer ' + token;
+    return h;
+  }
+
+
 const TIER4_URL = 'https://seekreap-tier-4-dev.fly.dev';
 
 // ── Read params from URL (Paystack appends ?reference=xxx&trxref=xxx) ─────────
@@ -438,7 +460,10 @@ async function pollPayment(payId, attempts, maxAttempts) {
   }
 
   try {
-    const res  = await fetch(TIER4_URL + '/api/payments/' + encodeURIComponent(payId));
+    const headers = await authHeaders();
+    const res  = await fetch(TIER4_URL + '/api/payments/' + encodeURIComponent(payId), {
+      headers: headers,
+    });
     const data = await res.json();
 
     if (!res.ok) {

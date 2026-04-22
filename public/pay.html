@@ -1,196 +1,335 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>SeekReap · Complete Payment</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root{--gold:#C9993A;--gold-light:#E8C06A;--gold-dark:#9B7520;--gold-glow:rgba(201,153,58,0.15);--black:#08080A;--black-2:#111115;--black-3:#18181E;--black-4:#222228;--white:#FAFAF8;--white-dim:rgba(250,250,248,0.65);--border:rgba(201,153,58,0.15);--border-strong:rgba(201,153,58,0.35);--success:#3DB87A;}
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:"DM Sans",sans-serif;background:radial-gradient(ellipse 100% 60% at 50% 0%,rgba(201,153,58,0.08) 0%,transparent 60%),var(--black);color:var(--white);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;}
-    .pay-card{background:var(--black-2);border:1px solid var(--border-strong);border-radius:8px;max-width:480px;width:100%;padding:36px 32px;position:relative;overflow:hidden;}
-    .pay-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-    .brand{display:flex;align-items:center;gap:10px;margin-bottom:28px;text-decoration:none;}
-    .brand-name{font-family:"Cormorant Garamond",serif;font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,var(--white),var(--gold-light));background-clip:text;-webkit-background-clip:text;color:transparent;}
-    h2{font-family:"Cormorant Garamond",serif;font-size:1.6rem;font-weight:600;color:var(--white);margin-bottom:6px;}
-    .subtitle{color:var(--white-dim);font-size:0.88rem;margin-bottom:24px;}
-    .plan-summary{background:var(--black-3);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:4px;padding:16px 18px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;}
-    .plan-name{font-weight:600;color:var(--white);font-size:0.95rem;}
-    .plan-price{font-family:"Cormorant Garamond",serif;font-size:1.6rem;font-weight:700;color:var(--gold);}
-    .plan-title{font-size:0.8rem;color:var(--white-dim);margin-top:4px;word-break:break-word;}
-    .form-group{margin-bottom:18px;}
-    label{display:block;font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;color:var(--white-dim);margin-bottom:7px;}
-    .input-wrap{position:relative;}
-    .input-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:0.9rem;}
-    input{width:100%;padding:11px 14px 11px 40px;background:var(--black-3);border:1px solid var(--border);border-radius:3px;font-family:"DM Sans",sans-serif;font-size:0.93rem;color:var(--white);outline:none;transition:all 0.2s;}
-    input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-glow);}
-    input::placeholder{color:rgba(250,250,248,0.3);}
-    .card-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-    .btn-pay{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--black);font-family:"DM Sans",sans-serif;font-weight:700;font-size:0.95rem;border:none;border-radius:4px;cursor:pointer;transition:all 0.3s;letter-spacing:0.04em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;}
-    .btn-pay:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,153,58,0.3);}
-    .btn-pay:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
-    .btn-back{width:100%;padding:12px;background:transparent;border:1px solid var(--border-strong);color:var(--white-dim);font-family:"DM Sans",sans-serif;font-weight:500;font-size:0.88rem;border-radius:4px;cursor:pointer;margin-top:10px;transition:all 0.2s;}
-    .btn-back:hover{border-color:var(--gold);color:var(--gold);}
-    .security-note{display:flex;align-items:center;gap:8px;margin-top:18px;font-size:0.75rem;color:var(--white-dim);justify-content:center;}
-    .security-note i{color:var(--gold);}
-    .msg{padding:12px 14px;border-radius:4px;font-size:0.85rem;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
-    .msg-error{background:rgba(224,90,90,0.1);border:1px solid rgba(224,90,90,0.3);color:#E05A5A;}
-    .msg-success{background:rgba(61,184,122,0.1);border:1px solid rgba(61,184,122,0.3);color:var(--success);}
-    .spinner{width:18px;height:18px;border:2px solid rgba(8,8,10,0.3);border-top:2px solid var(--black);border-radius:50%;animation:spin 0.8s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg);}}
-    @media(max-width:400px){.pay-card{padding:24px 18px;}.card-row{grid-template-columns:1fr;}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SeekReap · Complete Payment</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --bg:           #0a0a08;
+    --surface:      #111110;
+    --surface-2:    #181816;
+    --border:       rgba(255,255,255,0.08);
+    --border-strong:rgba(201,153,58,0.3);
+    --gold:         #C9993A;
+    --gold-light:   #E8C06A;
+    --gold-glow:    rgba(201,153,58,0.12);
+    --white:        #FAFAF8;
+    --white-dim:    rgba(250,250,248,0.55);
+    --danger:       #E05555;
+    --radius:       6px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--white);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+  .page-logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; margin-bottom: 40px;
+  }
+  .page-logo-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem; font-weight: 700; color: var(--white); letter-spacing: 0.04em;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 100%; max-width: 440px; overflow: hidden;
+  }
+  .card-header {
+    padding: 24px 24px 18px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
+  .card-header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.45rem; font-weight: 600; margin-bottom: 4px;
+  }
+  .card-header p { font-size: 0.83rem; color: var(--white-dim); }
+  .card-body { padding: 24px; }
+
+  .order-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+    font-size: 0.86rem;
+  }
+  .order-row:last-child { border-bottom: none; }
+  .order-row .label { color: var(--white-dim); }
+  .order-row .value { color: var(--white); font-weight: 500; }
+  .order-row.total  { padding-top: 14px; }
+  .order-row.total .label { font-weight: 600; color: var(--white); }
+  .order-row.total .value {
+    font-size: 1.1rem; font-weight: 700; color: var(--gold-light);
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+  .secure-note {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.78rem; color: var(--white-dim);
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 4px; padding: 10px 12px; margin-bottom: 18px;
+  }
+  .secure-note i { color: var(--gold); }
+
+  .btn-pay {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, var(--gold) 0%, #b8872e 100%);
+    color: #000; border: none; border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem; font-weight: 700; cursor: pointer;
+    transition: opacity 0.2s; margin-bottom: 10px;
+  }
+  .btn-pay:hover { opacity: 0.88; }
+  .btn-pay:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .btn-cancel {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; width: 100%;
+    padding: 11px 20px;
+    background: transparent; color: var(--white-dim);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.86rem; cursor: pointer; text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-cancel:hover { border-color: var(--border-strong); color: var(--white); }
+
+  .error-box {
+    background: rgba(224,85,85,0.08);
+    border: 1px solid rgba(224,85,85,0.25);
+    border-radius: 4px; padding: 12px 14px;
+    font-size: 0.83rem; color: #f08080;
+    margin-bottom: 14px; display: none; line-height: 1.5;
+  }
+  .error-box.visible { display: block; }
+
+  .gateway-logos {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; margin-top: 16px; opacity: 0.45;
+    font-size: 0.72rem; color: var(--white-dim);
+  }
+</style>
 </head>
 <body>
-  <div class="pay-card">
-    <a href="certification_portal.html" class="brand">
-      <svg width="32" height="32" viewBox="0 0 100 100" fill="none">
-        <defs>
-          <linearGradient id="pS" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FAFAF8"/><stop offset="100%" stop-color="#E8C06A"/></linearGradient>
-          <linearGradient id="pR" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C9993A"/><stop offset="100%" stop-color="#9B7520"/></linearGradient>
-        </defs>
-        <path d="M50 20 L50 24 M48 22 L52 26 M46 24 L54 30 M44 28 L56 34 M42 34 L58 38 M42 42 L58 42 M44 48 L56 48 M46 54 L54 54 M48 58 L52 58 M50 62 L50 66" stroke="url(#pR)" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.8"/>
-        <text x="38" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#pS)">S</text>
-        <text x="62" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#pR)">R</text>
-      </svg>
-      <span class="brand-name">SeekReap</span>
+
+<a href="index.html" class="page-logo">
+  <svg width="30" height="30" viewBox="0 0 100 100" fill="none">
+    <defs>
+      <linearGradient id="ls" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FAFAF8"/><stop offset="100%" stop-color="#E8C06A"/></linearGradient>
+      <linearGradient id="lr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C9993A"/><stop offset="100%" stop-color="#9B7520"/></linearGradient>
+    </defs>
+    <text x="38" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#ls)">S</text>
+    <text x="62" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#lr)">R</text>
+  </svg>
+  <span class="page-logo-text">SeekReap</span>
+</a>
+
+<div class="card">
+  <div class="card-header">
+    <h1><i class="fas fa-lock" style="color:var(--gold);font-size:1rem;margin-right:8px;"></i>Complete Your Order</h1>
+    <p>You will be redirected to our secure payment gateway</p>
+  </div>
+  <div class="card-body">
+
+    <div class="order-row">
+      <span class="label">Plan</span>
+      <span class="value" id="orderPlan">—</span>
+    </div>
+    <div class="order-row">
+      <span class="label">Work Title</span>
+      <span class="value" id="orderTitle">—</span>
+    </div>
+    <div class="order-row">
+      <span class="label">Billing</span>
+      <span class="value" id="orderBilling">—</span>
+    </div>
+    <div class="order-row total">
+      <span class="label">Total</span>
+      <span class="value" id="orderAmount">—</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="secure-note">
+      <i class="fas fa-shield-alt"></i>
+      Payment is processed securely via Paystack. SeekReap does not store your card details.
+    </div>
+
+    <div class="error-box" id="errorBox"></div>
+
+    <button class="btn-pay" id="payBtn">
+      <i class="fas fa-lock"></i> Pay &amp; Certify
+    </button>
+    <a href="certification_portal.html" class="btn-cancel">
+      <i class="fas fa-arrow-left"></i> Back to Portal
     </a>
 
-    <h2>Complete Payment</h2>
-    <p class="subtitle">Secure checkout — your certification will begin immediately after payment.</p>
-
-    <div class="plan-summary">
-      <div>
-        <div class="plan-name" id="planName">Creator Plan</div>
-        <div class="plan-title" id="certTitle">—</div>
-      </div>
-      <div class="plan-price" id="planPrice">$9.99</div>
-    </div>
-
-    <div id="msgBox"></div>
-
-    <div class="form-group">
-      <label><i class="fas fa-user" style="margin-right:5px;"></i> Cardholder Name</label>
-      <div class="input-wrap"><i class="fas fa-user"></i><input type="text" id="cardName" placeholder="Alex Creator" autocomplete="cc-name"></div>
-    </div>
-    <div class="form-group">
-      <label><i class="fas fa-credit-card" style="margin-right:5px;"></i> Card Number</label>
-      <div class="input-wrap"><i class="fas fa-credit-card"></i><input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="cc-number"></div>
-    </div>
-    <div class="card-row">
-      <div class="form-group">
-        <label>Expiry</label>
-        <div class="input-wrap"><i class="fas fa-calendar"></i><input type="text" id="cardExpiry" placeholder="MM / YY" maxlength="7" autocomplete="cc-exp"></div>
-      </div>
-      <div class="form-group">
-        <label>CVC</label>
-        <div class="input-wrap"><i class="fas fa-lock"></i><input type="text" id="cardCvc" placeholder="123" maxlength="4" autocomplete="cc-csc"></div>
-      </div>
-    </div>
-
-    <button class="btn-pay" id="payBtn" onclick="processPayment()">
-      <i class="fas fa-lock"></i> Pay & Certify
-    </button>
-    <button class="btn-back" onclick="history.back()">
-      <i class="fas fa-arrow-left"></i> Back
-    </button>
-
-    <div class="security-note">
-      <i class="fas fa-shield-alt"></i>
-      <span>256-bit SSL encryption · Powered by Stripe</span>
+    <div class="gateway-logos">
+      <i class="fas fa-shield-alt"></i> Secured by Paystack &nbsp;·&nbsp; SSL Encrypted
     </div>
   </div>
+</div>
 
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script src="/supabase-config.js"></script>
-  <script>
-    const TIER4_URL = 'https://seekreap-tier-4-dev.fly.dev';
-    const PLANS = {
-      creator: { name: 'Creator Plan', price: '$9.99' },
-      studio:  { name: 'Studio Plan',  price: '$29.99' }
-    };
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script src="/assets/js/routes.js"></script>
+<script src="/assets/js/auth-guard.js"></script>
 
-    // Read URL params
-    const params = new URLSearchParams(location.search);
-    const plan  = params.get('plan') || 'creator';
-    const title = params.get('title') || 'Your Work';
-    const info  = PLANS[plan] || PLANS.creator;
+<script>
+'use strict';
 
-    document.getElementById('planName').textContent  = info.name;
-    document.getElementById('planPrice').textContent = info.price;
-    document.getElementById('certTitle').textContent = decodeURIComponent(title);
-
-    // Card number formatting
-    document.getElementById('cardNumber').addEventListener('input', function(e) {
-      let v = e.target.value.replace(/\D/g,'').slice(0,16);
-      e.target.value = v.replace(/(\d{4})(?=\d)/g,'$1 ');
-    });
-    document.getElementById('cardExpiry').addEventListener('input', function(e) {
-      let v = e.target.value.replace(/\D/g,'').slice(0,4);
-      if (v.length >= 3) v = v.slice(0,2) + ' / ' + v.slice(2);
-      e.target.value = v;
-    });
-
-    function showMsg(text, type) {
-      const el = document.getElementById('msgBox');
-      el.innerHTML = `<div class="msg msg-${type}"><i class="fas fa-${type==='error'?'exclamation-circle':'check-circle'}"></i><span>${text}</span></div>`;
-    }
-
-    async function processPayment() {
-      const name   = document.getElementById('cardName').value.trim();
-      const number = document.getElementById('cardNumber').value.replace(/\s/g,'');
-      const expiry = document.getElementById('cardExpiry').value.trim();
-      const cvc    = document.getElementById('cardCvc').value.trim();
-
-      if (!name)            return showMsg('Please enter the cardholder name.','error');
-      if (number.length < 15) return showMsg('Please enter a valid card number.','error');
-      if (!expiry.includes('/')) return showMsg('Please enter a valid expiry date.','error');
-      if (cvc.length < 3)   return showMsg('Please enter a valid CVC.','error');
-
-      const btn = document.getElementById('payBtn');
-      btn.disabled = true;
-      btn.innerHTML = '<div class="spinner"></div> Processing...';
-
-      // Simulate payment gateway delay (replace with real Stripe call)
-      await new Promise(r => setTimeout(r, 1800));
-
-      // Payment "approved" — now submit certification
-      showMsg('Payment approved! Submitting certification…','success');
-
+  // ── Get Supabase Bearer token ─────────────────────────────────────────────
+  async function getAuthToken() {
+    // Prefer live session token from Supabase client
+    if (window.supabase) {
       try {
-        // Get pending cert data stored by certification_portal.js
-        const pendingRaw = sessionStorage.getItem('pendingCert');
-        if (!pendingRaw) throw new Error('No certification data found. Please restart from the portal.');
-
-        const pending = JSON.parse(pendingRaw);
-        pending.plan = plan;
-
-        const res = await fetch(TIER4_URL + '/api/certify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(pending)
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Certification API error');
-
-        sessionStorage.setItem('activeCert', JSON.stringify({
-          submission_id: data.submission_id,
-          cert_id: data.cert_id,
-          plan: data.plan,
-          title: pending.title,
-          work_type_text: pending.work_type_text || pending.work_type
-        }));
-        sessionStorage.removeItem('pendingCert');
-
-        window.location.href = `certificate_loader.html?id=${data.submission_id}&cert=${data.cert_id}`;
-      } catch(err) {
-        showMsg(err.message, 'error');
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-lock"></i> Pay & Certify';
-      }
+        const { data } = await window.supabase.auth.getSession();
+        if (data?.session?.access_token) return data.session.access_token;
+      } catch (_e) {}
     }
-  </script>
+    // Fallback: if auth-guard already set currentUser with a token attached
+    if (window.currentUser?._token) return window.currentUser._token;
+    return null;
+  }
+
+  async function authHeaders() {
+    const token = await getAuthToken();
+    const h = { 'Content-Type': 'application/json' };
+    if (token) h['Authorization'] = 'Bearer ' + token;
+    return h;
+  }
+
+
+const TIER4_URL = 'https://seekreap-tier-4-dev.fly.dev';
+
+const PLAN_LABELS = {
+  payg:    { label: 'Pay As You Go', billing: 'One-time', amount: 199  },
+  creator: { label: 'Creator',       billing: 'Monthly',  amount: 999  },
+  studio:  { label: 'Studio',        billing: 'Monthly',  amount: 2999 },
+};
+
+function formatZAR(cents) {
+  return 'R' + (cents / 100).toFixed(2);
+}
+
+function showError(msg) {
+  const eb = document.getElementById('errorBox');
+  eb.textContent = msg; eb.classList.add('visible');
+  const btn = document.getElementById('payBtn');
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-lock"></i> Pay &amp; Certify';
+}
+
+// ── Read URL params ────────────────────────────────────────────────────────────
+const params = new URLSearchParams(window.location.search);
+const plan   = (params.get('plan') || 'payg').toLowerCase();
+const title  = params.get('title') || 'Untitled Work';
+const info   = PLAN_LABELS[plan] || PLAN_LABELS['payg'];
+
+document.getElementById('orderPlan').textContent    = info.label;
+document.getElementById('orderTitle').textContent   = title;
+document.getElementById('orderBilling').textContent = info.billing;
+document.getElementById('orderAmount').textContent  = formatZAR(info.amount);
+
+// ── Pay button ────────────────────────────────────────────────────────────────
+document.getElementById('payBtn').addEventListener('click', async function () {
+  const btn = this;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting to gateway…';
+  document.getElementById('errorBox').classList.remove('visible');
+
+  // Wait for auth
+  const waitForUser = () => new Promise(resolve => {
+    if (window.currentUser) return resolve(window.currentUser);
+    const t = setTimeout(() => resolve(null), 6000);
+    document.addEventListener('authReady', e => { clearTimeout(t); resolve(e.detail?.user || null); }, { once: true });
+  });
+
+  const user = await waitForUser();
+  if (!user) {
+    showError('Session expired. Please sign in again.');
+    window.location.href = '/signup_signin.html?redirect=' + encodeURIComponent(window.location.href);
+    return;
+  }
+
+  // Retrieve pending cert data stored by certification_portal.js
+  let pendingMeta = {};
+  try {
+    const raw = sessionStorage.getItem('pendingCert');
+    if (raw) pendingMeta = JSON.parse(raw);
+  } catch (e) {}
+
+  const payload = {
+    creator_id:      user.id || user.sub,
+    email:           user.email || '',
+    plan:            plan,
+    amount:          info.amount,
+    title:           pendingMeta.title    || title,
+    work_type:       pendingMeta.work_type || 'other',
+    content_hash:    pendingMeta.content_hash || '',
+    collaborators:   pendingMeta.collaborators || [],
+    ownership_split: pendingMeta.ownership_split || {},
+    artistic_name:   pendingMeta.artistic_name  || '',
+  };
+
+  try {
+    const headers = await authHeaders();
+    const res  = await fetch(TIER4_URL + '/api/payments/initiate', {
+      method:  'POST',
+      headers: headers,
+      body:    JSON.stringify(payload),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      showError(data.error || 'Payment initiation failed. Please try again.');
+      return;
+    }
+
+    if (data.gateway === 'paystack' && data.authorization_url) {
+      // Store reference so payment_success.html can poll
+      sessionStorage.setItem('pendingPaymentId', data.reference);
+      sessionStorage.removeItem('pendingCert');
+      window.location.href = data.authorization_url;
+      return;
+    }
+
+    if (data.gateway === 'payfast' && data.action_url) {
+      // Build and auto-submit a form for PayFast
+      sessionStorage.removeItem('pendingCert');
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = data.action_url;
+      Object.entries(data.fields).forEach(([k, v]) => {
+        const inp = document.createElement('input');
+        inp.type = 'hidden'; inp.name = k; inp.value = v;
+        form.appendChild(inp);
+      });
+      document.body.appendChild(form);
+      form.submit();
+      return;
+    }
+
+    showError('Unexpected gateway response. Please try again.');
+  } catch (err) {
+    console.error('Payment error:', err);
+    showError('Could not connect to payment server. Please check your connection.');
+  }
+});
+</script>
 </body>
 </html>
