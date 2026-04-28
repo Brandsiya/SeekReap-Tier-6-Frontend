@@ -1,62 +1,69 @@
-// auth-guard.js — resolves currentUser then dispatches 'authReady'.
-// Uses onAuthStateChange which fires after Supabase restores session from
-// localStorage (and after processing #access_token from email confirmation).
-// NEVER redirects — each page handles its own routing.
-(async function authGuard() {
+/**
+ * SeekReap auth-guard.js — FIXED
+ * Bug fixed: bare `supabase` global → `window.supabaseClient`
+ */
+(function () {
+  'use strict';
 
-  // 1. Wait for supabaseClient to exist
-  let sb = window.supabaseClient;
-  if (!sb) {
-    await new Promise(resolve => {
-      const iv = setInterval(() => {
-        if (window.supabaseClient) { clearInterval(iv); sb = window.supabaseClient; resolve(); }
-      }, 50);
-      // Hard timeout so we never hang
-      setTimeout(() => { clearInterval(iv); resolve(); }, 6000);
-    });
+  function getClient() {
+    return window.supabaseClient || null;
   }
 
-  if (!sb) {
-    window.currentUser = null;
-    document.dispatchEvent(new CustomEvent('authReady', { detail: { user: null } }));
-    console.warn('[auth-guard] Supabase client never became available');
-    return;
-  }
-
-  // 2. onAuthStateChange fires with the INITIAL_SESSION event after Supabase
-  //    restores from localStorage — this is more reliable than getSession()
-  //    because createClient() is async internally.
-  await new Promise(resolve => {
-    let settled = false;
-
-    const settle = (user) => {
-      if (settled) return;
-      settled = true;
-      window.currentUser = user ?? null;
-      try { sub && sub.unsubscribe(); } catch (_) {}
-      resolve();
-    };
-
-    const { data: { subscription: sub } } = sb.auth.onAuthStateChange((_event, session) => {
-      settle(session?.user ?? null);
-    });
-
-    // Fallback: if onAuthStateChange never fires (shouldn't happen), use getSession
-    setTimeout(async () => {
-      if (settled) return;
-      try {
-        const { data: { session } } = await sb.auth.getSession();
-        settle(session?.user ?? null);
-      } catch (e) {
-        console.warn('[auth-guard] getSession fallback error:', e.message);
-        settle(null);
+  window.waitForAuth = function (timeoutMs) {
+    timeoutMs = timeoutMs || 8000;
+    return new Promise(function (resolve) {
+      var resolved = false;
+      function done(user) {
+        if (resolved) return;
+        resolved = true;
+        window.currentUser = user || null;
+        resolve(user || null);
       }
-    }, 4000);
-  });
+      var attempts = 0;
+      var iv = setInterval(function () {
+        attempts++;
+        var client = getClient();
+        if (client) {
+          clearInterval(iv);
+          client.auth.getSession().then(function (result) {
+            var session = result && result.data && result.data.session;
+            if (session && session.user) done(session.user);
+          }).catch(function () {});
+        } else if (attempts > 40) {
+          clearInterval(iv);
+          done(null);
+        }
+      }, 100);
+      function subscribe() {
+        var client = getClient();
+        if (!client) { setTimeout(subscribe, 250); return; }
+        client.auth.onAuthStateChange(function (event, session) {
+          if (session && session.user) done(session.user);
+          else if (event === 'SIGNED_OUT') done(null);
+        });
+      }
+      subscribe();
+      setTimeout(function () { done(null); }, timeoutMs);
+    });
+  };
 
-  document.dispatchEvent(new CustomEvent('authReady', {
-    detail: { user: window.currentUser }
-  }));
-  console.log('[auth-guard] authReady →', window.currentUser?.email ?? 'no session');
+  window.requireAuth = function (redirectUrl) {
+    redirectUrl = redirectUrl || window.location.href;
+    return window.waitForAuth(6000).then(function (user) {
+      if (!user) {
+        window.location.href = '/signup_signin.html?redirect=' +
+          encodeURIComponent(redirectUrl);
+      }
+      return user;
+    });
+  };
 
+  window.seekreapSignOut = function () {
+    var client = getClient();
+    if (!client) return;
+    client.auth.signOut().then(function () {
+      window.currentUser = null;
+      window.location.href = '/signup_signin.html';
+    });
+  };
 })();
