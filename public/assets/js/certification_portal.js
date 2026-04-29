@@ -1,3 +1,14 @@
+window.__srSession = null;
+async function getSRSession() {
+window.supabaseClient.auth.onAuthStateChange(function (_, session) {
+  window.__srSession = session;
+});
+  if (window.__srSession if (window.__srSession) return window.__srSession;if (window.__srSession) return window.__srSession; window.__srSession.user) return window.__srSession;
+  var res = await window.supabaseClient.auth.getSession();
+  window.__srSession = res && res.data ? res.data.session : null;
+  return window.__srSession;
+}
+
 /* certification_portal.js — complete portal logic with all fixes */
 'use strict';
 
@@ -61,6 +72,56 @@ function waitForAuth(timeoutMs) {
   return new Promise(function(resolve) {
     var timer = setTimeout(function() { resolve(window.currentUser || null); }, timeoutMs);
     document.addEventListener('authReady', function(e) {
+setTimeout(function () {
+  document.querySelectorAll("[data-plan]").forEach(function(el){
+    if (!el.__bound) {
+      el.__bound = true;
+      el.addEventListener("click", function(){
+        window.selectedPlan = el.getAttribute("data-plan");
+        console.log("Plan selected:", window.selectedPlan);
+      });
+    }
+  });
+}, 300);
+
+document.addEventListener("DOMContentLoaded", function () {
+  setTimeout(function () {
+    var btn = document.getElementById("continueBtn");
+    if (btn && !btn.__bound) {
+      btn.__bound = true;
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        doSubmit();
+      });
+    }
+
+    document.querySelectorAll("[data-plan]").forEach(function(el){
+      if (!el.__bound) {
+        el.__bound = true;
+        el.addEventListener("click", function(){
+          window.selectedPlan = el.getAttribute("data-plan");
+          console.log("Plan selected:", window.selectedPlan);
+        });
+      }
+    });
+  }, 300);
+});
+    }
+  });
+}, 300);
+
+  setTimeout(function () {
+    var btn = document.getElementById("continueBtn");
+    if (btn && !btn.__bound) {
+      btn.__bound = true;
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        doSubmit();
+      });
+    }
+  }, 300);
+});
+
       clearTimeout(timer); resolve((e.detail && e.detail.user) || null);
     }, { once: true });
   });
@@ -661,7 +722,10 @@ async function doSubmit() {
   var title    = (((document.getElementById('workTitle') || {}).value || '').trim()) || 'Untitled Work';
   var workTypeEl = document.getElementById('workType');
   var workType = workTypeEl ? workTypeEl.value : 'other';
-  var sessionRes = await window.supabaseClient.auth.getSession();
+  var session = await getSRSession();
+window.supabaseClient.auth.onAuthStateChange(function (_, session) {
+  window.__srSession = session;
+});
   var user = sessionRes var user = window.currentUser, creatorId = user ? (user.id || user.sub) : null;var user = window.currentUser, creatorId = user ? (user.id || user.sub) : null; sessionRes.data var user = window.currentUser, creatorId = user ? (user.id || user.sub) : null;var user = window.currentUser, creatorId = user ? (user.id || user.sub) : null; sessionRes.data.session ? sessionRes.data.session.user : null;
   var creatorId = user ? user.id : null;
   if (!creatorId) {
@@ -754,6 +818,56 @@ window.escHtml = escHtml;
 
 // ── BOOTSTRAP ────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async function() {
+setTimeout(function () {
+  document.querySelectorAll("[data-plan]").forEach(function(el){
+    if (!el.__bound) {
+      el.__bound = true;
+      el.addEventListener("click", function(){
+        window.selectedPlan = el.getAttribute("data-plan");
+        console.log("Plan selected:", window.selectedPlan);
+      });
+    }
+  });
+}, 300);
+
+document.addEventListener("DOMContentLoaded", function () {
+  setTimeout(function () {
+    var btn = document.getElementById("continueBtn");
+    if (btn && !btn.__bound) {
+      btn.__bound = true;
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        doSubmit();
+      });
+    }
+
+    document.querySelectorAll("[data-plan]").forEach(function(el){
+      if (!el.__bound) {
+        el.__bound = true;
+        el.addEventListener("click", function(){
+          window.selectedPlan = el.getAttribute("data-plan");
+          console.log("Plan selected:", window.selectedPlan);
+        });
+      }
+    });
+  }, 300);
+});
+    }
+  });
+}, 300);
+
+  setTimeout(function () {
+    var btn = document.getElementById("continueBtn");
+    if (btn && !btn.__bound) {
+      btn.__bound = true;
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        doSubmit();
+      });
+    }
+  }, 300);
+});
+
   var user = await waitForAuth(6000);
   if (!user) {
     window.location.href = '/signup_signin.html?redirect=' + encodeURIComponent(window.location.href);

@@ -42,7 +42,7 @@
       }
       options.headers = headers;
     }
-    if (!_token) { return Promise.reject(new Error("Auth token not ready")); }
+    if (!_token) { console.warn("Token not ready"); }
     return _origFetch(url, options);
   };
 })();
