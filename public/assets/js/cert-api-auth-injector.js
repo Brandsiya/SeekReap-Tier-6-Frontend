@@ -15,7 +15,7 @@
 
   function _initToken() {
     var client = window.supabaseClient;
-    if (!client) { setTimeout(_initToken, 200); return; }
+    if (!client) { console.error('Supabase client not ready'); setTimeout(_initToken, 200); return; }
     client.auth.getSession().then(function (r) {
       _setToken(r && r.data && r.data.session);
     });
@@ -34,7 +34,7 @@
     var tier4 = (typeof API_CONFIG !== 'undefined' && API_CONFIG.TIER4_URL)
     ? API_CONFIG.TIER4_URL
     : ((typeof TIER4_URL !== 'undefined') ? TIER4_URL : '');
-    if (tier4 && typeof url === 'string' && url.indexOf(tier4) === 0 && _token) {
+    if (tier4 && typeof url === 'string' && url.includes(tier4) && url.startsWith(tier4) && _token) {
       options = options ? Object.assign({}, options) : {};
       var headers = Object.assign({}, options.headers || {});
       if (!headers['Authorization'] && !headers['authorization']) {
@@ -42,6 +42,7 @@
       }
       options.headers = headers;
     }
+    if (!_token) { return Promise.reject(new Error("Auth token not ready")); }
     return _origFetch(url, options);
   };
 })();

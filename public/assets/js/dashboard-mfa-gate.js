@@ -129,13 +129,19 @@ window.SeekReapMFA = (function () {
   }
 
   async function init() {
-    _injectStyles();
+    _injectStyles(); if (document.getElementById('sr-mfa-overlay')) return;
     var waited = 0;
     while (!window.supabaseClient && waited < 5000) {
       await new Promise(function(r){ setTimeout(r, 100); }); waited += 100;
     }
     _client = window.supabaseClient;
     if (!_client) { console.error('SeekReapMFA: supabaseClient not found'); return; }
+    var sessionCheck = await _client.auth.getSession();
+    if (!sessionCheck || !sessionCheck.data || !sessionCheck.data.session) {
+      console.error("No session for MFA");
+      return;
+    }
+
     var aalRes = await _client.auth.mfa.getAuthenticatorAssuranceLevel();
     if (aalRes.error) { console.error('AAL check failed:', aalRes.error); return; }
     var current = aalRes.data.currentLevel;
