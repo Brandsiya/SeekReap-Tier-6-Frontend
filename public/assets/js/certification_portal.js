@@ -969,3 +969,30 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   showStep(1);
 });
+
+// ── SeekReap: Auth‑aware UI binding ────────────────────────────────
+window.waitForAuth().then(function(user) {
+  if (user) {
+    // Continue button
+    var continueBtn = document.getElementById("continueBtn");
+    if (continueBtn) {
+      continueBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        console.log("Continue clicked by:", user.email);
+        handleContinue();   // existing function
+      });
+    }
+
+    // Plan selection buttons
+    var planButtons = document.querySelectorAll(".plan-select");
+    planButtons.forEach(function(btn) {
+      btn.addEventListener("click", function(e) {
+        e.preventDefault();
+        console.log("Plan selected by:", user.email, "→", btn.dataset.plan);
+        handlePlanSelection(btn.dataset.plan);  // existing function
+      });
+    });
+  } else {
+    console.warn("No user session — buttons disabled.");
+  }
+});
