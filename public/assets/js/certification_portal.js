@@ -1,5 +1,18 @@
 document.addEventListener("DOMContentLoaded", function() {
-  // ── Loading state ───────────────────────────────────────────────
+  // ── Global function definitions ───────────────────────────────
+  window.handleContinue = function() {
+    console.log("handleContinue executed");
+    // TODO: insert your existing continue logic here
+    // e.g., redirect to next step or submit form
+  };
+
+  window.handlePlanSelection = function(plan) {
+    console.log("handlePlanSelection executed with plan:", plan);
+    // TODO: insert your existing plan selection logic here
+    // e.g., save plan choice, update UI, call Supabase
+  };
+
+  // ── Loading state ─────────────────────────────────────────────
   var loadingMsg = document.createElement("div");
   loadingMsg.id = "loadingState";
   loadingMsg.style.cssText = "position:fixed;top:10px;left:50%;transform:translateX(-50%);padding:8px 16px;background:#222;color:#fff;border-radius:4px;z-index:9999;";
@@ -11,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function() {
   if (continueBtn) continueBtn.disabled = true;
   planButtons.forEach(btn => btn.disabled = true);
 
-  // ── Auth-aware binding ──────────────────────────────────────────
+  // ── Auth-aware binding ────────────────────────────────────────
   if (typeof window.waitForAuth === "function") {
     window.waitForAuth().then(function(user) {
       var msg = document.getElementById("loadingState");
@@ -22,12 +35,7 @@ document.addEventListener("DOMContentLoaded", function() {
           continueBtn.disabled = false;
           continueBtn.addEventListener("click", function(e) {
             e.preventDefault();
-            console.log("Continue clicked by:", user.email);
-            if (typeof handleContinue === "function") {
-              handleContinue();
-            } else {
-              console.warn("handleContinue() not defined");
-            }
+            window.handleContinue();
           });
         }
 
@@ -35,12 +43,7 @@ document.addEventListener("DOMContentLoaded", function() {
           btn.disabled = false;
           btn.addEventListener("click", function(e) {
             e.preventDefault();
-            console.log("Plan selected:", btn.dataset.plan, "by", user.email);
-            if (typeof handlePlanSelection === "function") {
-              handlePlanSelection(btn.dataset.plan);
-            } else {
-              console.warn("handlePlanSelection() not defined");
-            }
+            window.handlePlanSelection(btn.dataset.plan);
           });
         });
       } else {
