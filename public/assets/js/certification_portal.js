@@ -76,6 +76,29 @@ function waitForAuth(timeoutMs) {
   return new Promise(function(resolve) {
     var timer = setTimeout(function() { resolve(window.currentUser || null); }, timeoutMs);
     document.addEventListener('authReady', function(e) {
+<<<<<<< Updated upstream
+=======
+
+document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("click", function(e){
+  if (e.target && e.target.id === "continueBtn") {
+    e.preventDefault();
+    if (typeof doSubmit === "function") doSubmit();
+  }
+  if (e.target && e.target.closest("[data-plan]")) {
+    var el = e.target.closest("[data-plan]");
+    window.selectedPlan = el.getAttribute("data-plan");
+    console.log("Plan selected:", window.selectedPlan);
+  }
+});
+});
+    }
+  });
+}, 300);
+
+});
+
+>>>>>>> Stashed changes
       clearTimeout(timer); resolve((e.detail && e.detail.user) || null);
     }, { once: true });
   });
@@ -732,10 +755,62 @@ function escHtml(s) {
 }
 window.escHtml = escHtml;
 
+<<<<<<< Updated upstream
 // ── DELEGATED CLICK HANDLER ───────────────────────────────────────────────────
 // Single listener on document catches all button clicks regardless of when
 // elements are inserted or whether step cards are hidden at page load.
 document.addEventListener('click', function(e) {
+=======
+// ── BOOTSTRAP ────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener("click", function(e){
+  if (e.target && e.target.id === "continueBtn") {
+    e.preventDefault();
+    if (typeof doSubmit === "function") doSubmit();
+  }
+  if (e.target && e.target.closest("[data-plan]")) {
+    var el = e.target.closest("[data-plan]");
+    window.selectedPlan = el.getAttribute("data-plan");
+    console.log("Plan selected:", window.selectedPlan);
+  }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("click", function(e){
+  if (e.target && e.target.id === "continueBtn") {
+    e.preventDefault();
+    if (typeof doSubmit === "function") doSubmit();
+  }
+  if (e.target && e.target.closest("[data-plan]")) {
+    var el = e.target.closest("[data-plan]");
+    window.selectedPlan = el.getAttribute("data-plan");
+    console.log("Plan selected:", window.selectedPlan);
+  }
+});
+});
+    }
+  });
+}, 300);
+
+});
+
+  var user = await waitForAuth(6000);
+  if (!user) {
+    window.location.href = '/signup_signin.html?redirect=' + encodeURIComponent(window.location.href);
+    return;
+  }
+
+  // ── FIX #5: Show Full Name + Artistic Name from user profile ─────────────
+  var ownerNameEl = document.getElementById('soloOwnerName');
+  if (ownerNameEl) {
+    var meta = user.user_metadata || {};
+    var fullName    = meta.full_name    || user.email || 'You';
+    var artisticName = meta.artistic_name || '';
+    ownerNameEl.innerHTML =
+      '<span style="font-weight:600;">' + escHtml(fullName) + '</span>' +
+      (artisticName ? '<br><span style="font-size:var(--fs-xs);color:var(--white-dim);font-style:italic;">' + escHtml(artisticName) + '</span>' : '');
+  }
+>>>>>>> Stashed changes
 
   // ── Plan cards ────────────────────────────────────────────────────────────
   var planCard = e.target.closest('.plan-card');
