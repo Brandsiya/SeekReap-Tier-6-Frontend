@@ -649,7 +649,7 @@ async function doSubmit() {
   var creatorId = user ? user.id : null;
   if (!creatorId) {
     alert('Your session has expired. Please sign in again.');
-    window.location.href = 'signup_signin.html?redirect=' + encodeURIComponent(window.location.href);
+    window.location.href = 'certification_portal.html?redirect=' + encodeURIComponent(window.location.href);
     return;
   }
   var plan    = window.selectedPlan || 'free';
