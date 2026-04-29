@@ -93,8 +93,9 @@
           // synchronously). If we're still on this page after 400ms, we
           // take over — this covers the email-confirm flow where
           // signup_signin.js may not have a SIGNED_IN listener active.
-          setTimeout(function () {
-            if (window.location.pathname.indexOf('signup_signin') !== -1) {
+          setTimeout(async function () {
+            var sessionRes = await window.supabaseClient.auth.getSession();
+            if (sessionRes && sessionRes.data && sessionRes.data.session && window.location.pathname.indexOf("signup_signin") !== -1) {
               window.seekreapPostLoginRedirect();
             }
           }, 400);

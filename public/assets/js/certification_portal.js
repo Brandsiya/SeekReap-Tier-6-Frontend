@@ -657,11 +657,13 @@ function saveCoowner() {
 }
 
 // ── SUBMIT ────────────────────────────────────────────────────────────────────
-function doSubmit() {
+async function doSubmit() {
   var title    = (((document.getElementById('workTitle') || {}).value || '').trim()) || 'Untitled Work';
   var workTypeEl = document.getElementById('workType');
   var workType = workTypeEl ? workTypeEl.value : 'other';
-  var user = window.currentUser, creatorId = user ? (user.id || user.sub) : null;
+  var sessionRes = await window.supabaseClient.auth.getSession();
+  var user = sessionRes var user = window.currentUser, creatorId = user ? (user.id || user.sub) : null;var user = window.currentUser, creatorId = user ? (user.id || user.sub) : null; sessionRes.data var user = window.currentUser, creatorId = user ? (user.id || user.sub) : null;var user = window.currentUser, creatorId = user ? (user.id || user.sub) : null; sessionRes.data.session ? sessionRes.data.session.user : null;
+  var creatorId = user ? user.id : null;
   if (!creatorId) {
     alert('Your session has expired. Please sign in again.');
     window.location.href = 'signup_signin.html?redirect=' + encodeURIComponent(window.location.href);
