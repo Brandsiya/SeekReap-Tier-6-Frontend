@@ -31,7 +31,9 @@
   }
 
   window.fetch = function (url, options) {
-    var tier4 = (typeof TIER4_URL !== 'undefined') ? TIER4_URL : '';
+    var tier4 = (typeof API_CONFIG !== 'undefined' && API_CONFIG.TIER4_URL)
+    ? API_CONFIG.TIER4_URL
+    : ((typeof TIER4_URL !== 'undefined') ? TIER4_URL : '');
     if (tier4 && typeof url === 'string' && url.indexOf(tier4) === 0 && _token) {
       options = options ? Object.assign({}, options) : {};
       var headers = Object.assign({}, options.headers || {});

@@ -1,6 +1,10 @@
 /**
- * SeekReap auth-guard.js — FIXED
- * Bug fixed: bare `supabase` global → `window.supabaseClient`
+ * SeekReap auth-guard.js — v2
+ * Fixes:
+ *   1. Listens for supabaseReady event (fired by supabase-init) in addition to polling
+ *   2. Increased client-discovery timeout: 40→100 attempts (10s) to survive Render cold starts
+ *   3. requireAuth timeout raised 6000→12000ms
+ *   4. waitForAuth default raised 8000→12000ms
  */
 (function () {
   'use strict';
@@ -10,15 +14,18 @@
   }
 
   window.waitForAuth = function (timeoutMs) {
-    timeoutMs = timeoutMs || 8000;
+    timeoutMs = timeoutMs || 12000;
     return new Promise(function (resolve) {
       var resolved = false;
+
       function done(user) {
         if (resolved) return;
         resolved = true;
         window.currentUser = user || null;
         resolve(user || null);
       }
+
+      // ── Path A: poll for supabaseClient ──────────────────────────────────
       var attempts = 0;
       var iv = setInterval(function () {
         attempts++;
@@ -29,11 +36,24 @@
             var session = result && result.data && result.data.session;
             if (session && session.user) done(session.user);
           }).catch(function () {});
-        } else if (attempts > 40) {
+        } else if (attempts > 100) {   // 10 seconds
           clearInterval(iv);
           done(null);
         }
       }, 100);
+
+      // ── Path B: supabaseReady event (fires when init script completes) ───
+      document.addEventListener('supabaseReady', function () {
+        var client = getClient();
+        if (!client || resolved) return;
+        clearInterval(iv);
+        client.auth.getSession().then(function (result) {
+          var session = result && result.data && result.data.session;
+          if (session && session.user) done(session.user);
+        }).catch(function () {});
+      }, { once: true });
+
+      // ── Path C: onAuthStateChange subscription ───────────────────────────
       function subscribe() {
         var client = getClient();
         if (!client) { setTimeout(subscribe, 250); return; }
@@ -43,13 +63,15 @@
         });
       }
       subscribe();
+
+      // ── Hard timeout ─────────────────────────────────────────────────────
       setTimeout(function () { done(null); }, timeoutMs);
     });
   };
 
   window.requireAuth = function (redirectUrl) {
     redirectUrl = redirectUrl || window.location.href;
-    return window.waitForAuth(6000).then(function (user) {
+    return window.waitForAuth(12000).then(function (user) {
       if (!user) {
         window.location.href = '/signup_signin.html?redirect=' +
           encodeURIComponent(redirectUrl);
