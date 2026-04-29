@@ -1,18 +1,22 @@
+/* certification_portal.js — full event delegation, no static per-button binding */
+'use strict';
+
+const TIER4_URL = 'https://seekreap-tier-4-dev.fly.dev';
+
+// ── SESSION ───────────────────────────────────────────────────────────────────
 window.__srSession = null;
+if (window.supabaseClient) {
+  window.supabaseClient.auth.onAuthStateChange(function(_, session) {
+    window.__srSession = session;
+  });
+}
+
 async function getSRSession() {
-window.supabaseClient.auth.onAuthStateChange(function (_, session) {
-  window.__srSession = session;
-});
-  if (window.__srSession if (window.__srSession) return window.__srSession;if (window.__srSession) return window.__srSession; window.__srSession.user) return window.__srSession;
+  if (window.__srSession && window.__srSession.user) return window.__srSession;
   var res = await window.supabaseClient.auth.getSession();
   window.__srSession = res && res.data ? res.data.session : null;
   return window.__srSession;
 }
-
-/* certification_portal.js — complete portal logic with all fixes */
-'use strict';
-
-const TIER4_URL = 'https://seekreap-tier-4-dev.fly.dev';
 
 // ── GLOBAL STATE ──────────────────────────────────────────────────────────────
 window.selectedPlan  = 'free';
@@ -72,56 +76,6 @@ function waitForAuth(timeoutMs) {
   return new Promise(function(resolve) {
     var timer = setTimeout(function() { resolve(window.currentUser || null); }, timeoutMs);
     document.addEventListener('authReady', function(e) {
-setTimeout(function () {
-  document.querySelectorAll("[data-plan]").forEach(function(el){
-    if (!el.__bound) {
-      el.__bound = true;
-      el.addEventListener("click", function(){
-        window.selectedPlan = el.getAttribute("data-plan");
-        console.log("Plan selected:", window.selectedPlan);
-      });
-    }
-  });
-}, 300);
-
-document.addEventListener("DOMContentLoaded", function () {
-  setTimeout(function () {
-    var btn = document.getElementById("continueBtn");
-    if (btn && !btn.__bound) {
-      btn.__bound = true;
-      btn.addEventListener("click", function (e) {
-        e.preventDefault();
-        doSubmit();
-      });
-    }
-
-    document.querySelectorAll("[data-plan]").forEach(function(el){
-      if (!el.__bound) {
-        el.__bound = true;
-        el.addEventListener("click", function(){
-          window.selectedPlan = el.getAttribute("data-plan");
-          console.log("Plan selected:", window.selectedPlan);
-        });
-      }
-    });
-  }, 300);
-});
-    }
-  });
-}, 300);
-
-  setTimeout(function () {
-    var btn = document.getElementById("continueBtn");
-    if (btn && !btn.__bound) {
-      btn.__bound = true;
-      btn.addEventListener("click", function (e) {
-        e.preventDefault();
-        doSubmit();
-      });
-    }
-  }, 300);
-});
-
       clearTimeout(timer); resolve((e.detail && e.detail.user) || null);
     }, { once: true });
   });
@@ -150,8 +104,7 @@ function getOrCreateStatusEl() {
 
 function updateUIBasedOnState() {
   var el = getOrCreateStatusEl();
-  var btn = document.getElementById('finalizeBtn') ||
-            document.getElementById('step4NextBtn');
+  var btn = document.getElementById('finalizeBtn') || document.getElementById('step4NextBtn');
   var cfg = STATUS_CONFIG[CertificationState.status];
   if (!cfg) { el.style.display = 'none'; return; }
   var msg = cfg.text;
@@ -221,9 +174,9 @@ function renderCompletedState(data) {
     if (window.mode === 'collab') collabs.forEach(function(c) {
       ownerRows += '<div class="cert-ownership-row"><span>' + escHtml(c.fullName || c.email) + '</span><span>' + c.split + '%</span></div>';
     });
-    var workTypeEl = document.getElementById('workType');
+    var workTypeEl   = document.getElementById('workType');
     var workTypeText = workTypeEl ? workTypeEl.options[workTypeEl.selectedIndex].text.trim() : '\u2014';
-    var riskColor = riskLevel === 'low' ? 'var(--success)' : riskLevel === 'medium' ? 'var(--warning)' : 'var(--danger)';
+    var riskColor    = riskLevel === 'low' ? 'var(--success)' : riskLevel === 'medium' ? 'var(--warning)' : 'var(--danger)';
     certDetails.innerHTML =
       '<div style="display:grid;gap:10px;font-size:0.88rem;">' +
         '<div><strong style="color:var(--white-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;">Certificate ID</strong><br>' +
@@ -250,7 +203,7 @@ function renderCompletedState(data) {
 
 function renderErrorState(data) {
   var msg = data.failure_reason || CertificationState.error || 'Certification failed';
-  var el = getOrCreateStatusEl();
+  var el  = getOrCreateStatusEl();
   el.style.cssText = 'margin-top:14px;padding:11px 16px;border-radius:4px;font-size:0.85rem;background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#E05555;display:block;';
   el.innerHTML = '\u274C ' + escHtml(msg) + ' \u2014 <a href="certification_portal.html" style="color:#E05555;text-decoration:underline;">Try again</a>';
 }
@@ -302,6 +255,7 @@ function setupUploadArea(cfg) {
   var wtSel = document.getElementById('workType');
   if (wtSel) wtSel.addEventListener('change', refreshAccept);
 
+  // Upload areas are always present in the static HTML, so direct binding is safe here
   area.addEventListener('click', function(e) {
     if (e.target === resetBtn || (resetBtn && resetBtn.contains(e.target))) return;
     refreshAccept(); input.click();
@@ -359,7 +313,6 @@ function renderPreview(cfg, file, wt) {
   embed.innerHTML = ''; embed.classList.add('visible');
   var url = URL.createObjectURL(file);
 
-  // ── AUDIO ──────────────────────────────────────────────────────────────────
   if (wt === 'audio') {
     if (label) { label.textContent = 'Audio Player'; label.classList.add('visible'); }
     embed.innerHTML =
@@ -373,24 +326,24 @@ function renderPreview(cfg, file, wt) {
           '<div class="ve-progress-track" id="veTrack_' + cfg.areaId + '"><div class="ve-progress-fill" id="veFill_' + cfg.areaId + '"></div></div>' +
         '</div>' +
         '<div class="ve-btn-row">' +
-          '<button class="ve-ctrl" id="vePrev_' + cfg.areaId + '" title="Previous" disabled style="opacity:0.35;cursor:not-allowed;"><i class="fas fa-step-backward"></i></button>' +
-          '<button class="ve-ctrl" id="veRew_' + cfg.areaId + '" title="Rewind 10s" style="position:relative;"><i class="fas fa-undo" style="font-size:0.72rem;"></i><sup style="font-size:0.55rem;position:absolute;right:4px;top:4px;">10</sup></button>' +
+          '<button class="ve-ctrl" id="vePrev_' + cfg.areaId + '" disabled style="opacity:0.35;cursor:not-allowed;"><i class="fas fa-step-backward"></i></button>' +
+          '<button class="ve-ctrl" id="veRew_' + cfg.areaId + '" style="position:relative;"><i class="fas fa-undo" style="font-size:0.72rem;"></i><sup style="font-size:0.55rem;position:absolute;right:4px;top:4px;">10</sup></button>' +
           '<button class="ve-ctrl play" id="vePlay_' + cfg.areaId + '"><i class="fas fa-play"></i></button>' +
-          '<button class="ve-ctrl" id="veFFwd_' + cfg.areaId + '" title="Forward 10s" style="position:relative;"><i class="fas fa-redo" style="font-size:0.72rem;"></i><sup style="font-size:0.55rem;position:absolute;right:4px;top:4px;">10</sup></button>' +
-          '<button class="ve-ctrl" id="veNext_' + cfg.areaId + '" title="Next" disabled style="opacity:0.35;cursor:not-allowed;"><i class="fas fa-step-forward"></i></button>' +
+          '<button class="ve-ctrl" id="veFFwd_' + cfg.areaId + '" style="position:relative;"><i class="fas fa-redo" style="font-size:0.72rem;"></i><sup style="font-size:0.55rem;position:absolute;right:4px;top:4px;">10</sup></button>' +
+          '<button class="ve-ctrl" id="veNext_' + cfg.areaId + '" disabled style="opacity:0.35;cursor:not-allowed;"><i class="fas fa-step-forward"></i></button>' +
         '</div>' +
         '<div class="ve-vol-row"><i class="fas fa-volume-down"></i><input type="range" class="ve-vol" min="0" max="1" step="0.02" value="0.8" id="veVol_' + cfg.areaId + '"><i class="fas fa-volume-up"></i></div>' +
         '<audio id="veAudio_' + cfg.areaId + '" src="' + url + '" style="display:none;"></audio>' +
       '</div>';
     setTimeout(function() {
-      var audio = document.getElementById('veAudio_' + cfg.areaId);
-      var playBtn = document.getElementById('vePlay_' + cfg.areaId);
-      var fill    = document.getElementById('veFill_' + cfg.areaId);
+      var audio   = document.getElementById('veAudio_' + cfg.areaId);
+      var playBtn = document.getElementById('vePlay_'  + cfg.areaId);
+      var fill    = document.getElementById('veFill_'  + cfg.areaId);
       var track   = document.getElementById('veTrack_' + cfg.areaId);
-      var curEl   = document.getElementById('veAT_' + cfg.areaId);
-      var durEl   = document.getElementById('veDur_' + cfg.areaId);
-      var volEl   = document.getElementById('veVol_' + cfg.areaId);
-      var rewBtn  = document.getElementById('veRew_' + cfg.areaId);
+      var curEl   = document.getElementById('veAT_'   + cfg.areaId);
+      var durEl   = document.getElementById('veDur_'  + cfg.areaId);
+      var volEl   = document.getElementById('veVol_'  + cfg.areaId);
+      var rewBtn  = document.getElementById('veRew_'  + cfg.areaId);
       var fwdBtn  = document.getElementById('veFFwd_' + cfg.areaId);
       if (!audio) return;
       function fmt(s) { s = Math.floor(s || 0); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
@@ -413,16 +366,13 @@ function renderPreview(cfg, file, wt) {
       if (fwdBtn) fwdBtn.addEventListener('click', function() { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10); });
     }, 50);
 
-  // ── VIDEO ─────────────────────────────────────────────────────────────────
   } else if (wt === 'video') {
     if (label) { label.textContent = 'Video Preview'; label.classList.add('visible'); }
     embed.innerHTML = '<div class="ve-video"><video controls src="' + url + '" style="max-height:260px;"></video></div>';
 
-  // ── IMAGE (zoom + rotate, no reset) ──────────────────────────────────────
   } else if (wt === 'image') {
     if (label) { label.textContent = 'Image Preview'; label.classList.add('visible'); }
     var imgId = 'veImg_' + cfg.areaId;
-    // Helper to update transform from data attributes
     var upd = 'function(el){el.style.transform="scale("+parseFloat(el.dataset.sc||"1")+") rotate("+parseInt(el.dataset.rt||"0")+"deg)"}';
     embed.innerHTML =
       '<div class="ve-toolbar">' +
@@ -436,7 +386,6 @@ function renderPreview(cfg, file, wt) {
           ' style="max-width:100%;max-height:280px;object-fit:contain;transform-origin:center;transition:transform 0.25s;">' +
       '</div>';
 
-  // ── PDF (page nav + zoom) ─────────────────────────────────────────────────
   } else if (wt === 'pdf') {
     if (label) { label.textContent = 'PDF Document Viewer'; label.classList.add('visible'); }
     if (typeof pdfjsLib === 'undefined') {
@@ -454,16 +403,15 @@ function renderPreview(cfg, file, wt) {
         '<button class="ve-btn" id="vePdfZoomOut_' + cfg.areaId + '"><i class="fas fa-search-minus"></i> Zoom Out</button>' +
       '</div>' +
       '<div class="ve-pdf"><canvas id="' + canvasId + '"></canvas></div>';
-
     var reader = new FileReader();
     reader.onload = function(e) {
       pdfjsLib.getDocument({ data: e.target.result }).promise.then(function(doc) {
         var pageNum = 1, pdfScale = 1.2;
         function renderPage(n) {
           doc.getPage(n).then(function(page) {
-            var baseW  = page.getViewport({ scale: 1 }).width;
-            var fitSc  = Math.min(pdfScale, 580 / baseW);
-            var vp = page.getViewport({ scale: fitSc });
+            var baseW = page.getViewport({ scale: 1 }).width;
+            var fitSc = Math.min(pdfScale, 580 / baseW);
+            var vp    = page.getViewport({ scale: fitSc });
             var canvas = document.getElementById(canvasId); if (!canvas) return;
             canvas.height = vp.height; canvas.width = vp.width;
             page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise.then(function() {
@@ -490,7 +438,6 @@ function renderPreview(cfg, file, wt) {
     };
     reader.readAsArrayBuffer(file);
 
-  // ── EPUB ──────────────────────────────────────────────────────────────────
   } else if (wt === 'epub') {
     if (label) { label.textContent = 'EPUB Reader'; label.classList.add('visible'); }
     var epubTargetId = 'veEpub_' + cfg.areaId;
@@ -511,7 +458,6 @@ function renderPreview(cfg, file, wt) {
     if (ep) ep.addEventListener('click', function() { rendition.prev(); });
     if (en) en.addEventListener('click', function() { rendition.next(); });
 
-  // ── CODE (icon label, preview, split, zoom) ───────────────────────────────
   } else if (wt === 'code') {
     if (label) {
       label.innerHTML = '<i class="fas fa-code" style="margin-right:5px;color:var(--gold);"></i>Code Viewer';
@@ -521,54 +467,44 @@ function renderPreview(cfg, file, wt) {
     reader2.onload = function(ev) {
       var raw  = ev.target.result;
       var code = raw.slice(0, 8000);
-      var codeId    = 'veCodeArea_' + cfg.areaId;
-      var lineNumId = 'veLineNums_' + cfg.areaId;
-      var previewId = 'veCodePreviewPane_' + cfg.areaId;
+      var codeId    = 'veCodeArea_'       + cfg.areaId;
+      var lineNumId = 'veLineNums_'       + cfg.areaId;
+      var previewId = 'veCodePreviewPane_'+ cfg.areaId;
       var ext = file.name.split('.').pop().toLowerCase();
-
       embed.innerHTML =
         '<div class="ve-toolbar">' +
           '<span class="ve-info"><i class="fas fa-file-code" style="margin-right:5px;"></i>' + escHtml(file.name) + '</span>' +
           '<div style="flex:1;"></div>' +
-          '<button class="ve-btn" id="veCodePrev_'   + cfg.areaId + '" title="Preview"><i class="fas fa-eye"></i> Preview</button>' +
-          '<button class="ve-btn" id="veCodeSplit_'  + cfg.areaId + '" title="Toggle line numbers"><i class="fas fa-columns"></i> Split</button>' +
-          '<button class="ve-btn" id="veCodeZoomIn_' + cfg.areaId + '" title="Zoom in"><i class="fas fa-search-plus"></i></button>' +
-          '<button class="ve-btn" id="veCodeZoomOut_'+ cfg.areaId + '" title="Zoom out"><i class="fas fa-search-minus"></i></button>' +
+          '<button class="ve-btn" id="veCodePrev_'   + cfg.areaId + '"><i class="fas fa-eye"></i> Preview</button>' +
+          '<button class="ve-btn" id="veCodeSplit_'  + cfg.areaId + '"><i class="fas fa-columns"></i> Split</button>' +
+          '<button class="ve-btn" id="veCodeZoomIn_' + cfg.areaId + '"><i class="fas fa-search-plus"></i></button>' +
+          '<button class="ve-btn" id="veCodeZoomOut_'+ cfg.areaId + '"><i class="fas fa-search-minus"></i></button>' +
         '</div>' +
         '<div id="veCodeWrap_' + cfg.areaId + '" style="display:flex;overflow:auto;max-height:280px;">' +
           '<div id="' + lineNumId + '" style="display:none;padding:12px 6px 12px 8px;background:#0e0e0e;border-right:1px solid #2a2a2a;font-family:\'Courier New\',monospace;font-size:12px;line-height:1.55;color:#555;text-align:right;user-select:none;white-space:pre;min-width:38px;flex-shrink:0;"></div>' +
           '<div class="ve-code" id="' + codeId + '" style="flex:1;font-size:12px;white-space:pre-wrap;">' + escHtml(code) + (code.length >= 8000 ? '\n\u2026 (truncated)' : '') + '</div>' +
         '</div>' +
         '<div id="' + previewId + '" style="display:none;"></div>';
-
       setTimeout(function() {
-        var codeEl  = document.getElementById(codeId);
-        var lineEl  = document.getElementById(lineNumId);
-        var wrapEl  = document.getElementById('veCodeWrap_' + cfg.areaId);
-        var prevEl  = document.getElementById(previewId);
-        var prevBtn = document.getElementById('veCodePrev_'   + cfg.areaId);
-        var splitBtn= document.getElementById('veCodeSplit_'  + cfg.areaId);
-        var zInBtn  = document.getElementById('veCodeZoomIn_' + cfg.areaId);
-        var zOutBtn = document.getElementById('veCodeZoomOut_'+ cfg.areaId);
+        var codeEl   = document.getElementById(codeId);
+        var lineEl   = document.getElementById(lineNumId);
+        var wrapEl   = document.getElementById('veCodeWrap_' + cfg.areaId);
+        var prevEl   = document.getElementById(previewId);
+        var prevBtn  = document.getElementById('veCodePrev_'   + cfg.areaId);
+        var splitBtn = document.getElementById('veCodeSplit_'  + cfg.areaId);
+        var zInBtn   = document.getElementById('veCodeZoomIn_' + cfg.areaId);
+        var zOutBtn  = document.getElementById('veCodeZoomOut_'+ cfg.areaId);
         var fontSize = 12, splitOn = false, previewOn = false;
-
         function getLines() {
           var lines = (codeEl ? codeEl.textContent : '').split('\n').length;
           return Array.from({length: lines}, function(_,i){ return i+1; }).join('\n');
         }
-
         if (splitBtn) splitBtn.addEventListener('click', function() {
-          splitOn = !splitOn;
-          splitBtn.classList.toggle('active', splitOn);
-          if (lineEl) {
-            lineEl.style.display = splitOn ? 'block' : 'none';
-            if (splitOn) lineEl.textContent = getLines();
-          }
+          splitOn = !splitOn; splitBtn.classList.toggle('active', splitOn);
+          if (lineEl) { lineEl.style.display = splitOn ? 'block' : 'none'; if (splitOn) lineEl.textContent = getLines(); }
         });
-
         if (prevBtn) prevBtn.addEventListener('click', function() {
-          previewOn = !previewOn;
-          prevBtn.classList.toggle('active', previewOn);
+          previewOn = !previewOn; prevBtn.classList.toggle('active', previewOn);
           if (previewOn) {
             if (wrapEl) wrapEl.style.display = 'none';
             if (prevEl) {
@@ -577,12 +513,9 @@ function renderPreview(cfg, file, wt) {
                 var iframe = document.createElement('iframe');
                 iframe.sandbox = 'allow-scripts';
                 iframe.style.cssText = 'width:100%;height:280px;border:none;background:#fff;border-radius:0 0 4px 4px;';
-                iframe.srcdoc = raw;
-                prevEl.innerHTML = '';
-                prevEl.appendChild(iframe);
+                iframe.srcdoc = raw; prevEl.innerHTML = ''; prevEl.appendChild(iframe);
               } else {
-                prevEl.innerHTML =
-                  '<div style="padding:14px 16px;color:var(--white-dim);font-size:0.82rem;">' +
+                prevEl.innerHTML = '<div style="padding:14px 16px;color:var(--white-dim);font-size:0.82rem;">' +
                   '<i class="fas fa-info-circle" style="color:var(--gold);margin-right:6px;"></i>' +
                   'Live preview is available for HTML files only. Current file: <code>.' + escHtml(ext) + '</code></div>';
               }
@@ -592,7 +525,6 @@ function renderPreview(cfg, file, wt) {
             if (prevEl) { prevEl.style.display = 'none'; prevEl.innerHTML = ''; }
           }
         });
-
         if (zInBtn) zInBtn.addEventListener('click', function() {
           fontSize = Math.min(fontSize + 2, 26);
           if (codeEl) codeEl.style.fontSize = fontSize + 'px';
@@ -613,8 +545,8 @@ function renderPreview(cfg, file, wt) {
 function renderPrimaryRow() {
   var list = document.getElementById('collaboratorList'); if (!list) return;
   if (list.querySelector('.primary-creator-row')) return;
-  var meta = (window.currentUser && window.currentUser.user_metadata) || {};
-  var fullName    = meta.full_name    || (window.currentUser && window.currentUser.email) || 'You';
+  var meta         = (window.currentUser && window.currentUser.user_metadata) || {};
+  var fullName     = meta.full_name     || (window.currentUser && window.currentUser.email) || 'You';
   var artisticName = meta.artistic_name || '';
   var row = document.createElement('div');
   row.className = 'collaborator-item primary-creator-row';
@@ -632,6 +564,8 @@ function renderPrimaryRow() {
   list.prepend(row);
 }
 
+// NOTE: .collab-split-input and .remove-coowner are handled by delegated listeners below;
+//       no per-element addEventListener needed here.
 function renderCollaborators() {
   var list = document.getElementById('collaboratorList'); if (!list) return;
   list.querySelectorAll('.collab-row').forEach(function(el) { el.remove(); });
@@ -646,38 +580,26 @@ function renderCollaborators() {
           (c.artisticName ? ' \u00B7 <em>' + escHtml(c.artisticName) + '</em>' : '') + '</div>' +
       '</div>' +
       '<div class="split-control"><div class="split-slider-wrap">' +
-        '<input type="range" min="0" max="100" value="' + c.split + '" class="collab-split-input" data-id="' + c.id + '" style="accent-color:var(--gold);">' +
+        '<input type="range" min="0" max="100" value="' + c.split + '"' +
+          ' class="collab-split-input" data-id="' + c.id + '" style="accent-color:var(--gold);">' +
         '<span class="split-percentage collab-pct-' + c.id + '">' + c.split + '%</span>' +
       '</div></div>' +
-      '<div class="coowner-actions"><button class="action-btn remove-coowner" data-id="' + c.id + '"><i class="fas fa-times"></i></button></div>';
+      '<div class="coowner-actions">' +
+        '<button class="action-btn remove-coowner" data-id="' + c.id + '"><i class="fas fa-times"></i></button>' +
+      '</div>';
     list.appendChild(row);
-  });
-  list.querySelectorAll('.collab-split-input').forEach(function(inp) {
-    inp.addEventListener('input', function(e) {
-      var co = window.collaborators.find(function(x) { return x.id === e.target.dataset.id; });
-      if (co) co.split = parseInt(e.target.value, 10);
-      var sp = list.querySelector('.collab-pct-' + e.target.dataset.id);
-      if (sp) sp.textContent = e.target.value + '%';
-      updateSplitSummary();
-    });
-  });
-  list.querySelectorAll('.remove-coowner').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      window.collaborators = window.collaborators.filter(function(c) { return c.id !== btn.dataset.id; });
-      renderCollaborators(); updateSplitSummary();
-    });
   });
   updateSplitSummary();
 }
 
 function updateSplitSummary() {
-  var total = window.collaborators.reduce(function(s,c){ return s + c.split; }, 0), primary = 100 - total;
-  var pInp = document.getElementById('primarySplit'), pPct = document.getElementById('primaryPercent');
+  var total   = window.collaborators.reduce(function(s,c){ return s + c.split; }, 0), primary = 100 - total;
+  var pInp    = document.getElementById('primarySplit'), pPct = document.getElementById('primaryPercent');
   if (pInp) pInp.value = primary; if (pPct) pPct.textContent = primary + '%';
-  var warn = document.getElementById('splitWarning');
+  var warn    = document.getElementById('splitWarning');
   if (warn) warn.textContent = primary < 0 ? '\u26A0 Total split exceeds 100%' : '';
-  var COLORS = ['#C9993A','#3DB87A','#E8A040','#569cd6','#E05555'];
-  var html = '<div class="split-piece"><div class="split-circle" style="background:' + COLORS[0] + ';"></div><div class="split-label">You \u00B7 ' + primary + '%</div></div>';
+  var COLORS  = ['#C9993A','#3DB87A','#E8A040','#569cd6','#E05555'];
+  var html    = '<div class="split-piece"><div class="split-circle" style="background:' + COLORS[0] + ';"></div><div class="split-label">You \u00B7 ' + primary + '%</div></div>';
   window.collaborators.forEach(function(c, i) {
     html += '<div class="split-piece"><div class="split-circle" style="background:' + COLORS[(i+1)%COLORS.length] + ';"></div>' +
       '<div class="split-label">' + escHtml((c.fullName||c.email||'').split('@')[0]) + ' \u00B7 ' + c.split + '%</div></div>';
@@ -696,11 +618,11 @@ function closeCoownerModal() {
   var modal = document.getElementById('coownerModal'); if (modal) modal.classList.remove('active');
 }
 function saveCoowner() {
-  var name  = ((document.getElementById('coFullName')  || {}).value || '').trim();
-  var email = ((document.getElementById('coEmail')     || {}).value || '').trim();
-  var split = parseInt(((document.getElementById('coSplit')  || {}).value || '0'), 10);
+  var name           = ((document.getElementById('coFullName')       || {}).value || '').trim();
+  var email          = ((document.getElementById('coEmail')          || {}).value || '').trim();
+  var split          = parseInt(((document.getElementById('coSplit') || {}).value || '0'), 10);
   var ownershipTitle = ((document.getElementById('coOwnershipTitle') || {}).value || '').trim() || 'Co-owner';
-  var artisticName   = ((document.getElementById('coArtisticName')  || {}).value || '').trim();
+  var artisticName   = ((document.getElementById('coArtisticName')   || {}).value || '').trim();
   if (!name)  { alert('Full name is required.'); return; }
   if (!email) { alert('Email address is required.'); return; }
   if (!email.includes('@')) { alert('Please enter a valid email.'); return; }
@@ -710,30 +632,29 @@ function saveCoowner() {
   window.collaborators.push({
     id: Date.now().toString(), fullName: name, email: email, split: split,
     ownershipTitle: ownershipTitle, artisticName: artisticName,
-    gender: ((document.getElementById('coGender') || {}).value || ''),
-    title:  ((document.getElementById('coTitle')  || {}).value || ''),
-    country:((document.getElementById('coCountry')|| {}).value || ''),
+    gender: ((document.getElementById('coGender')  || {}).value || ''),
+    title:  ((document.getElementById('coTitle')   || {}).value || ''),
+    country:((document.getElementById('coCountry') || {}).value || ''),
   });
   renderCollaborators(); closeCoownerModal();
 }
 
 // ── SUBMIT ────────────────────────────────────────────────────────────────────
 async function doSubmit() {
-  var title    = (((document.getElementById('workTitle') || {}).value || '').trim()) || 'Untitled Work';
+  var title     = (((document.getElementById('workTitle') || {}).value || '').trim()) || 'Untitled Work';
   var workTypeEl = document.getElementById('workType');
-  var workType = workTypeEl ? workTypeEl.value : 'other';
-  var session = await getSRSession();
-window.supabaseClient.auth.onAuthStateChange(function (_, session) {
-  window.__srSession = session;
-});
-  var user = sessionRes var user = window.currentUser, creatorId = user ? (user.id || user.sub) : null;var user = window.currentUser, creatorId = user ? (user.id || user.sub) : null; sessionRes.data var user = window.currentUser, creatorId = user ? (user.id || user.sub) : null;var user = window.currentUser, creatorId = user ? (user.id || user.sub) : null; sessionRes.data.session ? sessionRes.data.session.user : null;
+  var workType  = workTypeEl ? workTypeEl.value : 'other';
+  var session   = await getSRSession();
+  var user      = session ? session.user : null;
   var creatorId = user ? user.id : null;
   if (!creatorId) {
     alert('Your session has expired. Please sign in again.');
     window.location.href = 'signup_signin.html?redirect=' + encodeURIComponent(window.location.href);
     return;
   }
-  var plan = window.selectedPlan || 'free', mode = window.mode || 'solo', collabs = window.collaborators || [];
+  var plan    = window.selectedPlan || 'free';
+  var mode    = window.mode || 'solo';
+  var collabs = window.collaborators || [];
   var ownershipSplit = {};
   if (mode === 'collab' && collabs.length) {
     collabs.forEach(function(c) { ownershipSplit[c.email] = c.split; });
@@ -749,8 +670,7 @@ window.supabaseClient.auth.onAuthStateChange(function (_, session) {
       window.location.href = 'pay.html?plan=' + encodeURIComponent(plan) + '&title=' + encodeURIComponent(title);
       return;
     }
-    var btn = document.getElementById('finalizeBtn') ||
-              document.getElementById('step4NextBtn');
+    var btn = document.getElementById('finalizeBtn') || document.getElementById('step4NextBtn');
     if (btn) { btn.disabled = true; btn.innerHTML = '\u23F3 Submitting\u2026'; }
     CertificationState.status = 'queued'; updateUIBasedOnState();
     fetch(TIER4_URL + '/api/certify', {
@@ -771,7 +691,6 @@ window.supabaseClient.auth.onAuthStateChange(function (_, session) {
       sessionStorage.setItem('activeCert', JSON.stringify({
         submission_id: data.submission_id, cert_id: data.cert_id, plan: 'free', title: title,
       }));
-      // ── FIX #7: free solo plan → redirect to certificate_loader.html ──────
       window.location.href = 'certificate_loader.html?id=' + encodeURIComponent(data.submission_id) +
         '&cert=' + encodeURIComponent(data.cert_id || '');
     })
@@ -782,15 +701,12 @@ window.supabaseClient.auth.onAuthStateChange(function (_, session) {
         msg = 'Could not reach the certification server. Please check your connection and try again.';
       CertificationState.status = 'failed'; CertificationState.error = msg;
       updateUIBasedOnState();
-      var btn2 = document.getElementById('finalizeBtn') ||
-                 document.getElementById('step4NextBtn');
+      var btn2 = document.getElementById('finalizeBtn') || document.getElementById('step4NextBtn');
       if (btn2) {
         btn2.disabled = false;
-        if (window.mode === 'collab') {
-          btn2.innerHTML = '<i class="fas fa-paper-plane"></i> Submit';
-        } else {
-          btn2.innerHTML = '<i class="fas fa-arrow-right"></i> Continue';
-        }
+        btn2.innerHTML = window.mode === 'collab'
+          ? '<i class="fas fa-paper-plane"></i> Submit'
+          : '<i class="fas fa-arrow-right"></i> Continue';
       }
     });
   }
@@ -816,57 +732,123 @@ function escHtml(s) {
 }
 window.escHtml = escHtml;
 
-// ── BOOTSTRAP ────────────────────────────────────────────────────────────────
+// ── DELEGATED CLICK HANDLER ───────────────────────────────────────────────────
+// Single listener on document catches all button clicks regardless of when
+// elements are inserted or whether step cards are hidden at page load.
+document.addEventListener('click', function(e) {
+
+  // ── Plan cards ────────────────────────────────────────────────────────────
+  var planCard = e.target.closest('.plan-card');
+  if (planCard) { selectPlan(planCard); return; }
+
+  // ── Step 1 → 2 ───────────────────────────────────────────────────────────
+  if (e.target.closest('#nextToDetailsBtn')) { showStep(2); return; }
+
+  // ── Step 2 → 3 ───────────────────────────────────────────────────────────
+  if (e.target.closest('#nextToOwnershipBtn')) {
+    if (!(document.getElementById('workTitle') || {}).value.trim()) { alert('Please enter a work title.'); return; }
+    showStep(3); return;
+  }
+
+  // ── Solo mode ────────────────────────────────────────────────────────────
+  if (e.target.closest('#soloModeBtn')) {
+    window.mode = 'solo';
+    document.getElementById('soloModeBtn').classList.add('active');
+    var cb = document.getElementById('collabModeBtn'); if (cb) cb.classList.remove('active');
+    var s5 = document.getElementById('step5c'); if (s5) s5.style.display = 'none';
+    var sfn = document.getElementById('stepFinalNum'); if (sfn) sfn.textContent = '5';
+    return;
+  }
+
+  // ── Collab mode ──────────────────────────────────────────────────────────
+  if (e.target.closest('#collabModeBtn')) {
+    window.mode = 'collab';
+    document.getElementById('collabModeBtn').classList.add('active');
+    var sb = document.getElementById('soloModeBtn'); if (sb) sb.classList.remove('active');
+    var s5b = document.getElementById('step5c'); if (s5b) s5b.style.display = '';
+    var sfn2 = document.getElementById('stepFinalNum'); if (sfn2) sfn2.textContent = '6';
+    return;
+  }
+
+  // ── Step 3 → 4 ───────────────────────────────────────────────────────────
+  if (e.target.closest('#nextToUploadBtn')) {
+    if (!window.mode) { alert('Please select an ownership type.'); return; }
+    showStep(4);
+    var sc = document.getElementById('soloContent'), cc = document.getElementById('collabContent');
+    if (sc) sc.classList.toggle('hidden', window.mode !== 'solo');
+    if (cc) cc.classList.toggle('hidden', window.mode !== 'collab');
+    return;
+  }
+
+  // ── Step 4 → next (solo submits, collab goes to splits) ──────────────────
+  if (e.target.closest('#step4NextBtn')) {
+    if (window.mode === 'collab') { renderPrimaryRow(); renderCollaborators(); showStep('5c'); }
+    else { doSubmit(); }
+    return;
+  }
+
+  // ── Finalize / Submit (step 5 collab) ────────────────────────────────────
+  if (e.target.closest('#finalizeBtn')) { doSubmit(); return; }
+
+  // ── Add co-owner ─────────────────────────────────────────────────────────
+  if (e.target.closest('#addCollaboratorBtn')) { openCoownerModal(); return; }
+
+  // ── Save co-owner ─────────────────────────────────────────────────────────
+  if (e.target.closest('#coownerSaveBtn')) { saveCoowner(); return; }
+
+  // ── Cancel co-owner modal ─────────────────────────────────────────────────
+  if (e.target.closest('#coownerCancelBtn')) { closeCoownerModal(); return; }
+
+  // ── Co-owner modal backdrop click ─────────────────────────────────────────
+  if (e.target.id === 'coownerModal') { closeCoownerModal(); return; }
+
+  // ── Remove single co-owner ────────────────────────────────────────────────
+  var removeBtn = e.target.closest('.remove-coowner');
+  if (removeBtn) {
+    var id = removeBtn.dataset.id;
+    window.collaborators = window.collaborators.filter(function(c) { return c.id !== id; });
+    renderCollaborators(); return;
+  }
+
+  // ── Invite all ────────────────────────────────────────────────────────────
+  if (e.target.closest('#inviteAllBtn')) {
+    if (!window.collaborators.length) { alert('No co-owners to invite.'); return; }
+    alert('Invitations sent to: ' + window.collaborators.map(function(c){ return c.email; }).join(', '));
+    return;
+  }
+
+  // ── Remove all co-owners ──────────────────────────────────────────────────
+  if (e.target.closest('#removeAllBtn')) {
+    if (!window.collaborators.length) return;
+    if (confirm('Remove all co-owners?')) { window.collaborators = []; renderCollaborators(); }
+    return;
+  }
+
+  // ── Download / close cert ─────────────────────────────────────────────────
+  if (e.target.closest('#downloadCertBtn')) {
+    var s = CertificationState.submissionId, c = CertificationState.certId;
+    if (s && c) window.location.href = 'certificate_loader.html?id=' + encodeURIComponent(s) + '&cert=' + encodeURIComponent(c);
+    else alert('Certificate not yet available \u2014 please wait for processing to complete.');
+    return;
+  }
+
+  if (e.target.closest('#closeModalBtn')) { doSubmit(); return; }
+});
+
+// ── DELEGATED INPUT HANDLER ───────────────────────────────────────────────────
+// Handles dynamically-inserted split sliders without needing re-binding on each render.
+document.addEventListener('input', function(e) {
+  if (!e.target.classList.contains('collab-split-input')) return;
+  var id = e.target.dataset.id;
+  var co = window.collaborators.find(function(x) { return x.id === id; });
+  if (co) co.split = parseInt(e.target.value, 10);
+  var sp = document.querySelector('.collab-pct-' + id);
+  if (sp) sp.textContent = e.target.value + '%';
+  updateSplitSummary();
+});
+
+// ── BOOTSTRAP ─────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async function() {
-setTimeout(function () {
-  document.querySelectorAll("[data-plan]").forEach(function(el){
-    if (!el.__bound) {
-      el.__bound = true;
-      el.addEventListener("click", function(){
-        window.selectedPlan = el.getAttribute("data-plan");
-        console.log("Plan selected:", window.selectedPlan);
-      });
-    }
-  });
-}, 300);
-
-document.addEventListener("DOMContentLoaded", function () {
-  setTimeout(function () {
-    var btn = document.getElementById("continueBtn");
-    if (btn && !btn.__bound) {
-      btn.__bound = true;
-      btn.addEventListener("click", function (e) {
-        e.preventDefault();
-        doSubmit();
-      });
-    }
-
-    document.querySelectorAll("[data-plan]").forEach(function(el){
-      if (!el.__bound) {
-        el.__bound = true;
-        el.addEventListener("click", function(){
-          window.selectedPlan = el.getAttribute("data-plan");
-          console.log("Plan selected:", window.selectedPlan);
-        });
-      }
-    });
-  }, 300);
-});
-    }
-  });
-}, 300);
-
-  setTimeout(function () {
-    var btn = document.getElementById("continueBtn");
-    if (btn && !btn.__bound) {
-      btn.__bound = true;
-      btn.addEventListener("click", function (e) {
-        e.preventDefault();
-        doSubmit();
-      });
-    }
-  }, 300);
-});
 
   var user = await waitForAuth(6000);
   if (!user) {
@@ -874,102 +856,25 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  // ── FIX #5: Show Full Name + Artistic Name from user profile ─────────────
+  // Populate solo ownership name display
   var ownerNameEl = document.getElementById('soloOwnerName');
   if (ownerNameEl) {
-    var meta = user.user_metadata || {};
-    var fullName    = meta.full_name    || user.email || 'You';
+    var meta         = user.user_metadata || {};
+    var fullName     = meta.full_name     || user.email || 'You';
     var artisticName = meta.artistic_name || '';
     ownerNameEl.innerHTML =
       '<span style="font-weight:600;">' + escHtml(fullName) + '</span>' +
       (artisticName ? '<br><span style="font-size:var(--fs-xs);color:var(--white-dim);font-style:italic;">' + escHtml(artisticName) + '</span>' : '');
   }
 
-  // Plan selection (also bound via onclick in HTML, addEventListener ensures JS state stays synced)
-  document.querySelectorAll('.plan-card').forEach(function(card) {
-    card.addEventListener('click', function() { selectPlan(card); });
-  });
-
-  // Step 1 → 2
-  var b = document.getElementById('nextToDetailsBtn');
-  if (b) b.addEventListener('click', function() { showStep(2); });
-
-  // Step 2 → 3
-  var b2 = document.getElementById('nextToOwnershipBtn');
-  if (b2) b2.addEventListener('click', function() {
-    if (!(document.getElementById('workTitle') || {}).value.trim()) { alert('Please enter a work title.'); return; }
-    showStep(3);
-  });
-
-  // Mode selection (step 3)
-  var soloBtn = document.getElementById('soloModeBtn'), collabBtn = document.getElementById('collabModeBtn');
-  if (soloBtn) soloBtn.addEventListener('click', function() {
-    window.mode = 'solo'; soloBtn.classList.add('active'); if (collabBtn) collabBtn.classList.remove('active');
-    var s5 = document.getElementById('step5c'); if (s5) s5.style.display = 'none';
-    var sfn = document.getElementById('stepFinalNum'); if (sfn) sfn.textContent = '5';
-  });
-  if (collabBtn) collabBtn.addEventListener('click', function() {
-    window.mode = 'collab'; collabBtn.classList.add('active'); if (soloBtn) soloBtn.classList.remove('active');
-    var s5 = document.getElementById('step5c'); if (s5) s5.style.display = '';
-    var sfn = document.getElementById('stepFinalNum'); if (sfn) sfn.textContent = '6';
-  });
-
-  // Step 3 → 4
-  var b3 = document.getElementById('nextToUploadBtn');
-  if (b3) b3.addEventListener('click', function() {
-    if (!window.mode) { alert('Please select an ownership type.'); return; }
-    showStep(4);
-    var sc = document.getElementById('soloContent'), cc = document.getElementById('collabContent');
-    if (sc) sc.classList.toggle('hidden', window.mode !== 'solo');
-    if (cc) cc.classList.toggle('hidden', window.mode !== 'collab');
-  });
-
-  // Step 4 → next
-  var b4 = document.getElementById('step4NextBtn');
-  if (b4) b4.addEventListener('click', function() {
-    if (window.mode === 'collab') { renderPrimaryRow(); renderCollaborators(); showStep('5c'); }
-    else { doSubmit(); }
-  });
-
-  // Step 5 finalize
-  var fb = document.getElementById('finalizeBtn');
-  if (fb) fb.addEventListener('click', doSubmit);
-
-  // Co-owner modal
-  var addBtn = document.getElementById('addCollaboratorBtn'); if (addBtn) addBtn.addEventListener('click', openCoownerModal);
-  var saveBtn = document.getElementById('coownerSaveBtn');   if (saveBtn) saveBtn.addEventListener('click', saveCoowner);
-  var cancelBtn = document.getElementById('coownerCancelBtn'); if (cancelBtn) cancelBtn.addEventListener('click', closeCoownerModal);
-  var coModal = document.getElementById('coownerModal');
-  if (coModal) coModal.addEventListener('click', function(e) { if (e.target === coModal) closeCoownerModal(); });
-
-  // Invite / remove all
-  var iaBtn = document.getElementById('inviteAllBtn');
-  if (iaBtn) iaBtn.addEventListener('click', function() {
-    if (!window.collaborators.length) { alert('No co-owners to invite.'); return; }
-    alert('Invitations sent to: ' + window.collaborators.map(function(c){ return c.email; }).join(', '));
-  });
-  var raBtn = document.getElementById('removeAllBtn');
-  if (raBtn) raBtn.addEventListener('click', function() {
-    if (!window.collaborators.length) return;
-    if (confirm('Remove all co-owners?')) { window.collaborators = []; renderCollaborators(); }
-  });
-
-  // Download cert
-  var dlBtn = document.getElementById('downloadCertBtn');
-  if (dlBtn) dlBtn.addEventListener('click', function() {
-    var s = CertificationState.submissionId, c = CertificationState.certId;
-    if (s && c) window.location.href = 'certificate_loader.html?id=' + encodeURIComponent(s) + '&cert=' + encodeURIComponent(c);
-    else alert('Certificate not yet available \u2014 please wait for processing to complete.');
-  });
-
-  // File upload areas
-  setupUploadArea({ areaId:'soloUploadArea', inputId:'soloFileInput', resetId:'soloResetBtn',
-    textId:'soloUploadText', infoId:'soloFileInfo', iconId:'soloFileIcon', nameId:'soloFileName',
-    sizeId:'soloFileSz', progressId:'soloProgress', barId:'soloProgressBar', progTextId:'soloProgressText',
-    embedId:'soloViewerEmbed', labelId:'soloViewerLabel', statsId:'soloFileStats' });
+  // Upload areas are static in the HTML, so direct binding is safe here
+  setupUploadArea({ areaId:'soloUploadArea',    inputId:'soloFileInput',    resetId:'soloResetBtn',
+    textId:'soloUploadText',    infoId:'soloFileInfo',    iconId:'soloFileIcon',    nameId:'soloFileName',
+    sizeId:'soloFileSz',        progressId:'soloProgress',    barId:'soloProgressBar', progTextId:'soloProgressText',
+    embedId:'soloViewerEmbed',  labelId:'soloViewerLabel',  statsId:'soloFileStats' });
   setupUploadArea({ areaId:'primaryUploadArea', inputId:'primaryFileInput', resetId:'primaryResetBtn',
     textId:'primaryUploadText', infoId:'primaryFileInfo', iconId:'primaryFileIcon', nameId:'primaryFileName',
-    sizeId:'primaryFileSz', progressId:'primaryProgress', barId:'primaryProgressBar', progTextId:'primaryProgressText',
+    sizeId:'primaryFileSz',     progressId:'primaryProgress', barId:'primaryProgressBar', progTextId:'primaryProgressText',
     embedId:'primaryViewerEmbed', labelId:'primaryViewerLabel', statsId:'primaryFileStats' });
 
   // Page-refresh / URL recovery
