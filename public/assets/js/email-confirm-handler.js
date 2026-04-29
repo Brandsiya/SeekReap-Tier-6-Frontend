@@ -2,8 +2,10 @@
  * SeekReap email-confirm-handler.js
  * 1. Detects Supabase email-confirmation redirect and shows sign-in
  *    form with a "Email confirmed" banner.
- * 2. After SIGNED_IN event, redirects to certification_portal.html
- *    (or ?redirect= param).
+ * 2. After SIGNED_IN event on the auth page, redirects to
+ *    certification_portal.html ONLY when coming from an email
+ *    confirmation link (not after a normal sign-in, which
+ *    signup_signin.js already handles).
  */
 (function () {
   'use strict';
@@ -12,6 +14,8 @@
   var hashParams  = new URLSearchParams(hash.replace(/^#/, ''));
   var queryParams = new URLSearchParams(search);
 
+  // Only activate the auto-redirect when this is genuinely an
+  // email-confirmation landing (Supabase adds type=signup to the URL).
   var isEmailConfirmed =
     hashParams.get('type')  === 'signup' ||
     queryParams.get('type') === 'signup' ||
@@ -34,9 +38,9 @@
       }
       return null;
     };
-    var tab    = tryIds(['signinTab','signin-tab','loginTab','login-tab']);
-    var sForm  = tryIds(['signinForm','signin-form','loginForm','login-form']);
-    var rForm  = tryIds(['signupForm','signup-form','registerForm','register-form']);
+    var tab   = tryIds(['signinTab','signin-tab','loginTab','login-tab']);
+    var sForm = tryIds(['signinForm','signin-form','loginForm','login-form']);
+    var rForm = tryIds(['signupForm','signup-form','registerForm','register-form']);
     if (tab)   tab.click();
     if (rForm) rForm.style.display = 'none';
     if (sForm) sForm.style.display = '';
@@ -74,13 +78,26 @@
     window.location.href = '/certification_portal.html';
   };
 
+  // ── Auto-redirect after email confirmation sign-in ONLY ──────────────────
+  // signup_signin.js handles the redirect for normal sign-ins (line 97).
+  // We only wire our own listener when the user landed here from a
+  // confirmation email — isEmailConfirmed is true in that case.
+  // Without this guard, both handlers fire and cause a redirect race.
   var isAuthPage = window.location.pathname.indexOf('signup_signin') !== -1;
-  if (isAuthPage) {
+  if (isAuthPage && isEmailConfirmed) {
     (function waitAndListen() {
       if (!window.supabaseClient) { setTimeout(waitAndListen, 200); return; }
       window.supabaseClient.auth.onAuthStateChange(function (event, session) {
         if (event === 'SIGNED_IN' && session) {
-          setTimeout(window.seekreapPostLoginRedirect, 150);
+          // Let signup_signin.js finish its own redirect first (it runs
+          // synchronously). If we're still on this page after 400ms, we
+          // take over — this covers the email-confirm flow where
+          // signup_signin.js may not have a SIGNED_IN listener active.
+          setTimeout(function () {
+            if (window.location.pathname.indexOf('signup_signin') !== -1) {
+              window.seekreapPostLoginRedirect();
+            }
+          }, 400);
         }
       });
     })();
