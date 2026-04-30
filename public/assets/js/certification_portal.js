@@ -143,3 +143,389 @@ document.addEventListener("DOMContentLoaded", function() {
     if (msg) msg.remove();
   }
 });
+
+
+
+
+
+// ── Upload wiring (solo + collab) ─────────────────────────────────────────────
+(function () {
+
+  // ── Config ──────────────────────────────────────────────────────────────────
+  var ACCEPT = '*/*';
+  var MAX_BYTES = 500 * 1024 * 1024; // 500 MB
+
+  var FILE_ICONS = {
+    audio : '🎵', video : '🎬', image : '🖼️',
+    pdf   : '📄', epub  : '📖', code  : '💻', default: '📄'
+  };
+
+  // Map MIME / extension → icon key
+  function iconKey(file) {
+    var t = file.type || '';
+    if (t.startsWith('audio'))                      return 'audio';
+    if (t.startsWith('video'))                      return 'video';
+    if (t.startsWith('image'))                      return 'image';
+    if (t === 'application/pdf')                    return 'pdf';
+    if (t === 'application/epub+zip')               return 'epub';
+    if (t.includes('javascript') || t.includes('text/x-') ||
+        /\.(js|ts|py|go|java|cpp|c|sh|rb|rs|kt)$/i.test(file.name)) return 'code';
+    return 'default';
+  }
+
+  function fmtBytes(b) {
+    if (b < 1024)          return b + ' B';
+    if (b < 1024 * 1024)   return (b / 1024).toFixed(1) + ' KB';
+    return (b / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+
+  // ── Core: wire one upload zone ───────────────────────────────────────────────
+  //
+  //  ids: {
+  //    area, text, resetBtn, fileInput,
+  //    fileInfo, fileIcon, fileName, fileSz,
+  //    progress, progressBar, progressText,
+  //    viewerLabel, viewerEmbed, fileStats      (viewer ids optional)
+  //  }
+  //
+  function wireUploadZone(ids) {
+
+    var area        = document.getElementById(ids.area);
+    var text        = document.getElementById(ids.text);
+    var resetBtn    = document.getElementById(ids.resetBtn);
+    var fileInput   = document.getElementById(ids.fileInput);
+    var fileInfo    = document.getElementById(ids.fileInfo);
+    var fileIcon    = document.getElementById(ids.fileIcon);
+    var fileName    = document.getElementById(ids.fileName);
+    var fileSz      = document.getElementById(ids.fileSz);
+    var progress    = document.getElementById(ids.progress);
+    var progressBar = document.getElementById(ids.progressBar);
+    var progressTxt = document.getElementById(ids.progressText);
+
+    // Optional viewer elements
+    var viewerLabel = ids.viewerLabel ? document.getElementById(ids.viewerLabel) : null;
+    var viewerEmbed = ids.viewerEmbed ? document.getElementById(ids.viewerEmbed) : null;
+    var fileStats   = ids.fileStats   ? document.getElementById(ids.fileStats)   : null;
+
+    if (!area || !fileInput) return; // guard: elements not in DOM yet
+
+    // Stored file reference exposed for submit logic
+    area._uploadedFile = null;
+
+    // ── Helpers ────────────────────────────────────────────────────────────────
+
+    function showProgress(pct, label) {
+      if (!progress) return;
+      progress.style.display = 'block';
+      if (progressBar) progressBar.style.width = pct + '%';
+      if (progressTxt) progressTxt.textContent  = label || 'Uploading…';
+    }
+
+    function hideProgress() {
+      if (progress) progress.style.display = 'none';
+    }
+
+    function clearViewer() {
+      if (viewerLabel) viewerLabel.style.display = 'none';
+      if (viewerEmbed) { viewerEmbed.innerHTML = ''; viewerEmbed.style.display = 'none'; }
+      if (fileStats)   { fileStats.innerHTML  = ''; fileStats.style.display   = 'none'; }
+    }
+
+    function resetZone() {
+      area._uploadedFile = null;
+      fileInput.value    = '';
+
+      if (text) text.textContent = 'Click to upload or drag & drop';
+      area.classList.remove('has-file', 'drag-over', 'error');
+
+      if (fileInfo) fileInfo.style.display = 'none';
+      if (fileIcon) fileIcon.textContent   = '📄';
+      if (fileName) fileName.textContent   = '—';
+      if (fileSz)   fileSz.textContent     = '—';
+
+      hideProgress();
+      clearViewer();
+    }
+
+    // ── Preview / viewer ───────────────────────────────────────────────────────
+
+    function renderViewer(file) {
+      clearViewer();
+      if (!viewerEmbed) return;
+
+      var t = file.type || '';
+      var url = URL.createObjectURL(file);
+
+      // ── Image ──────────────────────────────────────────────────────────────
+      if (t.startsWith('image')) {
+        viewerLabel && (viewerLabel.textContent = 'Image Preview');
+        viewerLabel && (viewerLabel.style.display = 'block');
+        var img = document.createElement('img');
+        img.src   = url;
+        img.style.cssText = 'max-width:100%;max-height:320px;border-radius:6px;display:block;margin:0 auto;';
+        img.onload = function () { URL.revokeObjectURL(url); };
+        viewerEmbed.appendChild(img);
+        viewerEmbed.style.display = 'block';
+        return;
+      }
+
+      // ── Audio ──────────────────────────────────────────────────────────────
+      if (t.startsWith('audio')) {
+        viewerLabel && (viewerLabel.textContent = 'Audio Player');
+        viewerLabel && (viewerLabel.style.display = 'block');
+        var aud = document.createElement('audio');
+        aud.controls = true;
+        aud.src      = url;
+        aud.style.cssText = 'width:100%;margin-top:8px;';
+        aud.onended = function () { URL.revokeObjectURL(url); };
+        viewerEmbed.appendChild(aud);
+        viewerEmbed.style.display = 'block';
+        return;
+      }
+
+      // ── Video ──────────────────────────────────────────────────────────────
+      if (t.startsWith('video')) {
+        viewerLabel && (viewerLabel.textContent = 'Video Player');
+        viewerLabel && (viewerLabel.style.display = 'block');
+        var vid = document.createElement('video');
+        vid.controls = true;
+        vid.src      = url;
+        vid.style.cssText = 'width:100%;max-height:320px;border-radius:6px;';
+        viewerEmbed.appendChild(vid);
+        viewerEmbed.style.display = 'block';
+        return;
+      }
+
+      // ── PDF (pdf.js) ───────────────────────────────────────────────────────
+      if (t === 'application/pdf') {
+        viewerLabel && (viewerLabel.textContent = 'PDF Document Viewer');
+        viewerLabel && (viewerLabel.style.display = 'block');
+
+        if (window.pdfjsLib) {
+          var canvas = document.createElement('canvas');
+          canvas.style.cssText = 'width:100%;border-radius:6px;display:block;';
+          viewerEmbed.appendChild(canvas);
+          viewerEmbed.style.display = 'block';
+
+          var reader = new FileReader();
+          reader.onload = function (ev) {
+            window.pdfjsLib.getDocument({ data: ev.target.result }).promise
+              .then(function (pdf) {
+                if (fileStats) {
+                  fileStats.innerHTML  = '<strong>' + pdf.numPages + '</strong> page' +
+                    (pdf.numPages !== 1 ? 's' : '');
+                  fileStats.style.display = 'block';
+                }
+                return pdf.getPage(1);
+              })
+              .then(function (page) {
+                var vp  = page.getViewport({ scale: 1.5 });
+                canvas.width  = vp.width;
+                canvas.height = vp.height;
+                return page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+              })
+              .catch(function (err) {
+                console.warn('PDF render error:', err);
+                viewerEmbed.innerHTML = '<p style="color:#aaa;font-size:0.85rem;">Preview unavailable.</p>';
+              });
+          };
+          reader.readAsArrayBuffer(file);
+        } else {
+          viewerEmbed.innerHTML = '<p style="color:#aaa;font-size:0.85rem;">pdf.js not loaded — preview unavailable.</p>';
+          viewerEmbed.style.display = 'block';
+        }
+        return;
+      }
+
+      // ── EPUB (epub.js) ─────────────────────────────────────────────────────
+      if (t === 'application/epub+zip' || file.name.endsWith('.epub')) {
+        viewerLabel && (viewerLabel.textContent = 'eBook Preview');
+        viewerLabel && (viewerLabel.style.display = 'block');
+
+        if (window.ePub) {
+          var epubDiv = document.createElement('div');
+          epubDiv.style.cssText = 'width:100%;height:320px;border-radius:6px;overflow:hidden;background:#111;';
+          viewerEmbed.appendChild(epubDiv);
+          viewerEmbed.style.display = 'block';
+
+          var fReader = new FileReader();
+          fReader.onload = function (ev) {
+            var book = window.ePub(ev.target.result);
+            book.renderTo(epubDiv, { width: '100%', height: 320 });
+          };
+          fReader.readAsArrayBuffer(file);
+        } else {
+          viewerEmbed.innerHTML = '<p style="color:#aaa;font-size:0.85rem;">epub.js not loaded — preview unavailable.</p>';
+          viewerEmbed.style.display = 'block';
+        }
+        return;
+      }
+
+      // ── Plain text / code ──────────────────────────────────────────────────
+      var textTypes = ['text/', 'application/json', 'application/xml',
+                       'application/javascript', 'application/x-sh'];
+      var isText = textTypes.some(function (p) { return t.startsWith(p); }) ||
+                   /\.(txt|md|json|xml|js|ts|py|go|sh|rb|rs|kt|css|html|yaml|toml)$/i.test(file.name);
+
+      if (isText) {
+        viewerLabel && (viewerLabel.textContent = 'File Preview');
+        viewerLabel && (viewerLabel.style.display = 'block');
+
+        var tReader = new FileReader();
+        tReader.onload = function (ev) {
+          var pre = document.createElement('pre');
+          pre.style.cssText = 'margin:0;padding:10px;max-height:240px;overflow:auto;' +
+                              'font-size:0.78rem;line-height:1.5;color:#d4c89a;background:#111;' +
+                              'border-radius:6px;white-space:pre-wrap;word-break:break-word;';
+          pre.textContent = ev.target.result.slice(0, 8000); // cap at 8 KB for display
+          viewerEmbed.innerHTML = '';
+          viewerEmbed.appendChild(pre);
+          viewerEmbed.style.display = 'block';
+        };
+        tReader.readAsText(file);
+        return;
+      }
+
+      // ── Fallback: no preview ───────────────────────────────────────────────
+      URL.revokeObjectURL(url);
+    }
+
+    // ── Simulated upload progress then show file info ──────────────────────────
+
+    function processFile(file) {
+      if (file.size > MAX_BYTES) {
+        area.classList.add('error');
+        if (text) text.textContent = 'File too large (max 500 MB)';
+        return;
+      }
+
+      area._uploadedFile = file;
+      area.classList.add('has-file');
+      area.classList.remove('error');
+
+      // Update text inside the drop zone
+      if (text) text.textContent = file.name;
+
+      // Show file info row
+      if (fileInfo) fileInfo.style.display = 'flex';
+      if (fileIcon) fileIcon.textContent   = FILE_ICONS[iconKey(file)] || FILE_ICONS.default;
+      if (fileName) fileName.textContent   = file.name;
+      if (fileSz)   fileSz.textContent     = fmtBytes(file.size);
+
+      // Simulated progress (XHR-style feel without real upload yet)
+      var pct = 0;
+      showProgress(0, 'Hashing file…');
+      var interval = setInterval(function () {
+        pct += Math.random() * 18 + 4;
+        if (pct >= 100) {
+          pct = 100;
+          clearInterval(interval);
+          if (progressBar) progressBar.style.width = '100%';
+          if (progressTxt) progressTxt.textContent  = 'Ready ✓';
+          setTimeout(function () {
+            hideProgress();
+            renderViewer(file);
+          }, 600);
+        } else {
+          showProgress(Math.min(pct, 95), 'Processing…');
+        }
+      }, 90);
+    }
+
+    // ── Click to open file dialog ──────────────────────────────────────────────
+
+    area.addEventListener('click', function (e) {
+      // Don't fire if the reset button inside the area was clicked
+      if (e.target.closest && e.target.closest('.ua-reset')) return;
+      fileInput.click();
+    });
+
+    fileInput.setAttribute('accept', ACCEPT);
+    fileInput.addEventListener('change', function () {
+      if (fileInput.files && fileInput.files[0]) processFile(fileInput.files[0]);
+    });
+
+    // ── Drag & drop ────────────────────────────────────────────────────────────
+
+    area.addEventListener('dragenter', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      area.classList.add('drag-over');
+    });
+    area.addEventListener('dragover', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      area.classList.add('drag-over');
+    });
+    area.addEventListener('dragleave', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      // Only remove class when pointer leaves the area entirely (not child elements)
+      if (!area.contains(e.relatedTarget)) area.classList.remove('drag-over');
+    });
+    area.addEventListener('drop', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      area.classList.remove('drag-over');
+      var files = e.dataTransfer && e.dataTransfer.files;
+      if (files && files[0]) processFile(files[0]);
+    });
+
+    // ── Reset button ───────────────────────────────────────────────────────────
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function (e) {
+        e.stopPropagation(); // don't re-open file dialog
+        resetZone();
+      });
+    }
+
+    // ── Expose accessor for submit logic ───────────────────────────────────────
+    //  Usage:  var file = getUploadedFile(ids.area);
+    area.getUploadedFile = function () { return area._uploadedFile; };
+  }
+
+  // ── Wire solo zone ─────────────────────────────────────────────────────────
+  wireUploadZone({
+    area        : 'soloUploadArea',
+    text        : 'soloUploadText',
+    resetBtn    : 'soloResetBtn',
+    fileInput   : 'soloFileInput',
+    fileInfo    : 'soloFileInfo',
+    fileIcon    : 'soloFileIcon',
+    fileName    : 'soloFileName',
+    fileSz      : 'soloFileSz',
+    progress    : 'soloProgress',
+    progressBar : 'soloProgressBar',
+    progressText: 'soloProgressText',
+    viewerLabel : 'soloViewerLabel',
+    viewerEmbed : 'soloViewerEmbed',
+    fileStats   : 'soloFileStats'
+  });
+
+  // ── Wire collab (primary) zone ─────────────────────────────────────────────
+  wireUploadZone({
+    area        : 'primaryUploadArea',
+    text        : 'primaryUploadText',
+    resetBtn    : 'primaryResetBtn',
+    fileInput   : 'primaryFileInput',
+    fileInfo    : 'primaryFileInfo',
+    fileIcon    : 'primaryFileIcon',
+    fileName    : 'primaryFileName',
+    fileSz      : 'primaryFileSz',
+    progress    : 'primaryProgress',
+    progressBar : 'primaryProgressBar',
+    progressText: 'primaryProgressText',
+    viewerLabel : 'primaryViewerLabel',
+    viewerEmbed : 'primaryViewerEmbed',
+    fileStats   : 'primaryFileStats'
+  });
+
+  // ── Global accessor (used by submit / finalize handlers) ───────────────────
+  //
+  //  window.getUploadedFile('solo')    → File | null
+  //  window.getUploadedFile('primary') → File | null
+  //
+  window.getUploadedFile = function (which) {
+    var areaId = which === 'solo' ? 'soloUploadArea' : 'primaryUploadArea';
+    var area   = document.getElementById(areaId);
+    return (area && area._uploadedFile) ? area._uploadedFile : null;
+  };
+
+}());
