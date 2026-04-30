@@ -144,3 +144,154 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
+
+// ── Upload wiring ─────────────────────────────────────────────────────────────
+(function () {
+  var uploadedFile = null;
+
+  var FILE_ICONS = {
+    audio: '🎵', video: '🎬', image: '🖼️', epub: '📖', pdf: '📄', code: '💻'
+  };
+
+  function formatBytes(b) {
+    if (b < 1024) return b + ' B';
+    if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+    return (b / 1048576).toFixed(1) + ' MB';
+  }
+
+  function getTypeIcon(name) {
+    var ext = (name.split('.').pop() || '').toLowerCase();
+    var map = { mp3:'audio', wav:'audio', flac:'audio', ogg:'audio',
+                mp4:'video', mov:'video', avi:'video', mkv:'video',
+                jpg:'image', jpeg:'image', png:'image', gif:'image', webp:'image',
+                epub:'epub', pdf:'pdf',
+                js:'code', py:'code', ts:'code', html:'code', css:'code' };
+    return FILE_ICONS[map[ext]] || '📄';
+  }
+
+  function simulateProgress(barId, textId, onDone) {
+    var bar  = document.getElementById(barId);
+    var text = document.getElementById(textId);
+    var prog = document.getElementById(barId.replace('Bar', ''));
+    if (prog) prog.style.display = 'block';
+    var pct = 0;
+    var iv = setInterval(function () {
+      pct += Math.random() * 18 + 5;
+      if (pct >= 100) { pct = 100; clearInterval(iv); if (onDone) onDone(); }
+      if (bar)  bar.style.width = pct + '%';
+      if (text) text.textContent = pct < 100 ? 'Processing… ' + Math.floor(pct) + '%' : 'Ready ✓';
+    }, 120);
+  }
+
+  function handleFile(file, prefix) {
+    uploadedFile = file;
+    var nameEl = document.getElementById(prefix + 'FileName');
+    var sizeEl = document.getElementById(prefix + 'FileSz');
+    var iconEl = document.getElementById(prefix + 'FileIcon');
+    var infoEl = document.getElementById(prefix + 'FileInfo');
+    var areaEl = document.getElementById(prefix + 'UploadArea');
+    var step4Next = document.getElementById('step4NextBtn');
+
+    if (nameEl) nameEl.textContent = file.name;
+    if (sizeEl) sizeEl.textContent = formatBytes(file.size);
+    if (iconEl) iconEl.textContent = getTypeIcon(file.name);
+    if (infoEl) infoEl.style.display = 'flex';
+    if (areaEl) areaEl.classList.add('has-file');
+
+    // Disable Continue until processing done
+    if (step4Next) step4Next.disabled = true;
+
+    simulateProgress(prefix + 'ProgressBar', prefix + 'ProgressText', function () {
+      if (step4Next) step4Next.disabled = false;
+    });
+  }
+
+  function resetUpload(prefix) {
+    uploadedFile = null;
+    var nameEl   = document.getElementById(prefix + 'FileName');
+    var sizeEl   = document.getElementById(prefix + 'FileSz');
+    var iconEl   = document.getElementById(prefix + 'FileIcon');
+    var infoEl   = document.getElementById(prefix + 'FileInfo');
+    var areaEl   = document.getElementById(prefix + 'UploadArea');
+    var barEl    = document.getElementById(prefix + 'ProgressBar');
+    var textEl   = document.getElementById(prefix + 'ProgressText');
+    var progEl   = document.getElementById(prefix + 'Progress');
+    var inputEl  = document.getElementById(prefix + 'FileInput');
+    var step4Next = document.getElementById('step4NextBtn');
+
+    if (nameEl)  nameEl.textContent  = '—';
+    if (sizeEl)  sizeEl.textContent  = '—';
+    if (iconEl)  iconEl.textContent  = '📄';
+    if (infoEl)  infoEl.style.display = 'none';
+    if (areaEl)  areaEl.classList.remove('has-file');
+    if (barEl)   barEl.style.width   = '0%';
+    if (textEl)  textEl.textContent  = 'Uploading...';
+    if (progEl)  progEl.style.display = 'none';
+    if (inputEl) inputEl.value = '';
+    if (step4Next) step4Next.disabled = true;
+  }
+
+  function wireZone(prefix) {
+    var area     = document.getElementById(prefix + 'UploadArea');
+    var input    = document.getElementById(prefix + 'FileInput');
+    var resetBtn = document.getElementById(prefix + 'ResetBtn');
+
+    if (!area || !input) return;
+
+    // Click area → trigger file input
+    area.addEventListener('click', function (e) {
+      if (e.target === resetBtn || (resetBtn && resetBtn.contains(e.target))) return;
+      input.click();
+    });
+
+    // File chosen via dialog
+    input.addEventListener('change', function () {
+      if (input.files && input.files[0]) handleFile(input.files[0], prefix);
+    });
+
+    // Drag and drop
+    area.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      area.classList.add('drag-over');
+    });
+    area.addEventListener('dragleave', function () {
+      area.classList.remove('drag-over');
+    });
+    area.addEventListener('drop', function (e) {
+      e.preventDefault();
+      area.classList.remove('drag-over');
+      var f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) handleFile(f, prefix);
+    });
+
+    // Reset button
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        resetUpload(prefix);
+      });
+    }
+  }
+
+  // ── Wire step4NextBtn → step 5 (collab) or stepFinal (solo) ─────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    wireZone('solo');
+    wireZone('primary');
+
+    // Disable Continue on step 4 by default until file is chosen
+    var step4Next = document.getElementById('step4NextBtn');
+    if (step4Next) {
+      step4Next.disabled = true;
+      step4Next.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (!uploadedFile) {
+          alert('Please upload your work file before continuing.');
+          return;
+        }
+        var collabActive = document.getElementById('collabModeBtn') &&
+          document.getElementById('collabModeBtn').classList.contains('active');
+        window.showStep(collabActive ? 5 : 6);
+      });
+    }
+  });
+})();
