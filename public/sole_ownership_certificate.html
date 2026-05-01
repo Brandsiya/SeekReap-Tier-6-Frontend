@@ -1,1 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SeekReap Sole Ownership Certificate | Blockchain-Verified Ownership</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --gold-primary: #C9993A;
+      --gold-light: #E8C06A;
+      --gold-dark: #9B7520;
+      --gold-glow: rgba(201, 153, 58, 0.25);
+      --gold-border: rgba(201, 153, 58, 0.35);
+      --black-base: #0A0A0E;
+      --black-elevated: #111115;
+      --black-surface: #15151C;
+      --white-pure: #FAFAF8;
+      --white-dim: rgba(250, 250, 248, 0.65);
+      --white-muted: rgba(250, 250, 248, 0.4);
+      
+      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
+      --shadow-gold: 0 0 30px rgba(201, 153, 58, 0.15);
+      --shadow-glow: 0 0 60px rgba(201, 153, 58, 0.08);
+    }
 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at 10% 20%, var(--black-base), #000000);
+      min-height: 100vh;
+      padding: 48px 24px;
+      color: var(--white-pure);
+    }
+
+    /* Certificate Container - Premium Card */
+    .certificate-wrapper {
+      max-width: 1000px;
+      margin: 0 auto;
+      animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .certificate {
+      background: linear-gradient(145deg, var(--black-elevated) 0%, var(--black-surface) 100%);
+      border: 1px solid var(--gold-border);
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg), var(--shadow-gold), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+
+    .certificate:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg), var(--shadow-glow);
+    }
+
+    /* Decorative border pattern */
+    .certificate::before {
+      content: '';
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      border: 1px solid rgba(201, 153, 58, 0.12);
+      border-radius: 20px;
+      pointer-events: none;
+    }
+
+    .certificate::after {
+      content: '✦ ✦ ✦ ✦ ✦';
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(145deg, var(--black-elevated), var(--black-surface));
+      padding: 0 24px;
+      color: var(--gold-primary);
+      font-size: 12px;
+      letter-spacing: 8px;
+      font-weight: 300;
+      pointer-events: none;
+    }
+
+    /* Header Section */
+    .cert-header {
+      padding: 48px 48px 32px;
+      text-align: center;
+      border-bottom: 2px solid var(--gold-border);
+      position: relative;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .logo-icon {
+      width: 64px;
+      height: 64px;
+    }
+
+    .logo-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--white-pure) 0%, var(--gold-light) 40%, var(--gold-primary) 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .cert-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, rgba(201, 153, 58, 0.15), rgba(201, 153, 58, 0.05));
+      border: 1px solid var(--gold-border);
+      padding: 12px 28px;
+      border-radius: 60px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      backdrop-filter: blur(10px);
+    }
+
+    .cert-badge::before {
+      content: '🔗';
+      font-size: 1rem;
+    }
+
+    /* Main Content Grid */
+    .cert-main {
+      padding: 48px;
+      display: grid;
+      grid-template-columns: 1fr 0.9fr;
+      gap: 48px;
+    }
+
+    /* Certificate Details Card */
+    .details-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--gold-border);
+      border-radius: 24px;
+      padding: 32px;
+      backdrop-filter: blur(4px);
+    }
+
+    .details-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      color: var(--gold-primary);
+      margin-bottom: 8px;
+    }
+
+    .details-subtitle {
+      font-size: 0.8rem;
+      color: var(--white-dim);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--gold-border);
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .detail-item:last-of-type {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--white-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .detail-value {
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-align: right;
+      word-break: break-word;
+      max-width: 55%;
+    }
+
+    .hash-value {
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.7rem;
+      background: rgba(201, 153, 58, 0.1);
+      padding: 6px 10px;
+      border-radius: 8px;
+      border-left: 3px solid var(--gold-primary);
+    }
+
+    /* QR Section */
+    .qr-section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .qr-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--gold-border);
+      border-radius: 24px;
+      padding: 32px;
+      text-align: center;
+    }
+
+    .qr-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      color: var(--gold-primary);
+      margin-bottom: 20px;
+    }
+
+    .qr-container {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    #qrcode {
+      background: white;
+      padding: 12px;
+      border-radius: 16px;
+      box-shadow: 0 0 0 3px var(--gold-primary), 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .qr-text {
+      font-size: 0.8rem;
+      color: var(--white-dim);
+      margin-top: 16px;
+    }
+
+    /* Blockchain Proof Card */
+    .blockchain-card {
+      background: linear-gradient(135deg, rgba(201, 153, 58, 0.08), rgba(201, 153, 58, 0.02));
+      border: 1px solid var(--gold-border);
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .blockchain-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      color: var(--gold-primary);
+    }
+
+    .tx-hash {
+      background: var(--black-base);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-family: monospace;
+      font-size: 0.7rem;
+      word-break: break-all;
+      color: var(--gold-light);
+      margin: 16px 0;
+      border: 1px solid rgba(201, 153, 58, 0.2);
+    }
+
+    .verify-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--gold-primary);
+      color: var(--gold-light);
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 12px;
+    }
+
+    .verify-btn:hover {
+      background: var(--gold-primary);
+      color: var(--black-base);
+    }
+
+    /* Ownership Section */
+    .ownership-section {
+      grid-column: 1 / -1;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--gold-border);
+      border-radius: 24px;
+      padding: 40px;
+      margin-top: 8px;
+    }
+
+    .ownership-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      text-align: center;
+      color: var(--gold-primary);
+      margin-bottom: 32px;
+    }
+
+    .owners-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .owner-card {
+      background: linear-gradient(145deg, var(--black-elevated), var(--black-surface));
+      border: 1px solid var(--gold-border);
+      border-radius: 20px;
+      padding: 28px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .owner-card:hover {
+      border-color: var(--gold-primary);
+      transform: translateY(-4px);
+    }
+
+    .owner-avatar {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--black-base);
+    }
+
+    .owner-name {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+    }
+
+    .owner-role {
+      font-size: 0.75rem;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+
+    .owner-share {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    /* Footer */
+    .cert-footer {
+      padding: 40px 48px;
+      border-top: 2px solid var(--gold-border);
+      text-align: center;
+    }
+
+    .signatures {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      flex-wrap: wrap;
+      margin: 32px 0;
+    }
+
+    .signature-item {
+      text-align: center;
+      min-width: 200px;
+    }
+
+    .signature-line {
+      width: 180px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold-primary), var(--gold-light), var(--gold-primary), transparent);
+      margin-bottom: 12px;
+    }
+
+    .signature-name {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .signature-title {
+      font-size: 0.7rem;
+      color: var(--white-dim);
+      letter-spacing: 0.05em;
+    }
+
+    .cert-validity {
+      background: rgba(201, 153, 58, 0.05);
+      border: 1px solid var(--gold-border);
+      border-radius: 16px;
+      padding: 20px;
+      font-size: 0.8rem;
+      color: var(--white-dim);
+      margin-top: 24px;
+    }
+
+    /* Action Buttons */
+    .cert-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 32px;
+      padding: 0 48px 48px;
+    }
+
+    .action-btn {
+      padding: 12px 28px;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .action-btn-primary {
+      background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+      border: none;
+      color: var(--black-base);
+    }
+
+    .action-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(201, 153, 58, 0.3);
+    }
+
+    .action-btn-secondary {
+      background: transparent;
+      border: 1px solid var(--gold-border);
+      color: var(--white-pure);
+    }
+
+    .action-btn-secondary:hover {
+      border-color: var(--gold-primary);
+      background: rgba(201, 153, 58, 0.1);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .certificate {
+        box-shadow: none;
+        border: 2px solid #C9993A;
+      }
+      .certificate::before, .certificate::after {
+        display: none;
+      }
+      .cert-actions {
+        display: none;
+      }
+      .action-btn {
+        display: none;
+      }
+      .verify-btn {
+        display: none;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 800px) {
+      .cert-main {
+        grid-template-columns: 1fr;
+        padding: 32px;
+        gap: 32px;
+      }
+      .cert-header, .cert-footer {
+        padding: 32px;
+      }
+      .cert-actions {
+        flex-direction: column;
+        padding: 0 32px 32px;
+      }
+    }
+
+    @media (max-width: 500px) {
+      body {
+        padding: 16px;
+      }
+      .logo-text {
+        font-size: 2.2rem;
+      }
+      .owners-grid {
+        grid-template-columns: 1fr;
+      }
+      .signatures {
+        gap: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="certificate-wrapper">
+  <div class="certificate" id="seekreapCertificate">
+    <!-- Header -->
+    <div class="cert-header">
+      <div class="logo-container">
+        <svg class="logo-icon" viewBox="0 0 80 80" fill="none">
+          <defs>
+            <linearGradient id="gradS" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FAFAF8"/>
+              <stop offset="100%" stop-color="#E8C06A"/>
+            </linearGradient>
+            <linearGradient id="gradR" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#C9993A"/>
+              <stop offset="100%" stop-color="#9B7520"/>
+            </linearGradient>
+          </defs>
+          <text x="18" y="55" font-family="Cormorant Garamond, serif" font-size="42" font-weight="700" fill="url(#gradS)">S</text>
+          <text x="44" y="55" font-family="Cormorant Garamond, serif" font-size="42" font-weight="700" fill="url(#gradR)">R</text>
+          <path d="M40 58 L44 54 L48 58 L52 54" stroke="url(#gradR)" stroke-width="2.5" fill="none"/>
+        </svg>
+        <div class="logo-text">SeekReap</div>
+      </div>
+      <div class="cert-badge">
+        Blockchain-Certified Ownership
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="cert-main">
+      <!-- Left: Details -->
+      <div class="details-card">
+        <div class="details-title">Certificate of Creative Work Ownership</div>
+        <div class="details-subtitle">Immutable Proof of Existence</div>
+        
+        <div class="detail-item">
+          <span class="detail-label">Certificate ID</span>
+          <span class="detail-value" id="certId">SR-2026-0401-7842-A7F9</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Work Title</span>
+          <span class="detail-value" id="workTitle">Summer Vibes</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Work Type</span>
+          <span class="detail-value" id="workType">Audio / Music Track</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Certification Date</span>
+          <span class="detail-value" id="certDate">April 1, 2026 · 23:29 SAST</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Blockchain</span>
+          <span class="detail-value" id="blockchain">Ethereum Mainnet</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">File Hash (SHA-256)</span>
+          <span class="detail-value hash-value" id="fileHash">a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef1234567</span>
+        </div>
+      </div>
+
+      <!-- Right: QR + Blockchain -->
+      <div class="qr-section">
+        <div class="qr-card">
+          <div class="qr-title">🔍 Scan to Verify</div>
+          <div class="qr-container" id="qrcode"></div>
+          <div class="qr-text">Scan with any QR reader to instantly verify authenticity on blockchain</div>
+        </div>
+
+        <div class="blockchain-card">
+          <div class="blockchain-header">
+            <span>🔗</span> Blockchain Proof
+          </div>
+          <p style="font-size: 0.85rem; color: var(--white-dim); margin-bottom: 12px;">
+            This certificate is cryptographically anchored to the blockchain.
+          </p>
+          <div class="tx-hash" id="txHash">
+            0x742d35Cc6634C0532925a3b844Bc9e7595f0bC63e
+          </div>
+          <button class="verify-btn" onclick="verifyOnBlockchain()">
+            🔍 Verify on Etherscan
+          </button>
+          <div style="margin-top: 16px; font-size: 0.7rem; color: var(--white-muted);">
+            ⏱️ Timestamp: April 1, 2026 · Immutable forever
+          </div>
+        </div>
+      </div>
+
+      <!-- Ownership Distribution -->
+      <div class="ownership-section">
+        <div class="ownership-title">📜 Ownership Distribution</div>
+        <div class="owners-grid" id="ownersGrid">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="cert-footer">
+      <div style="font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--white-dim);">
+        This certifies that the above work has been timestamped on the blockchain<br>
+        and ownership rights are established as recorded above.
+      </div>
+      
+      <div class="signatures">
+        <div class="signature-item">
+          <div class="signature-line"></div>
+          <div class="signature-name" id="ownerName">Siyasamkela Cromwell Soxutywa</div>
+          <div class="signature-title">Work Owner & Primary Creator</div>
+        </div>
+        <div class="signature-item">
+          <div class="signature-line"></div>
+          <div class="signature-name">SeekReap Authority</div>
+          <div class="signature-title">Blockchain Timestamp Service</div>
+        </div>
+      </div>
+      
+      <div class="cert-validity">
+        <strong>⚡ Cryptographic Permanence:</strong> This document is cryptographically bound to the blockchain transaction above.
+        Any modification will invalidate the proofs. Verification: <strong>seekreap.com/verify</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="cert-actions">
+    <button class="action-btn action-btn-primary" onclick="downloadCertificate()">
+      ⬇️ Download PDF
+    </button>
+    <button class="action-btn action-btn-secondary" onclick="printCertificate()">
+      🖨️ Print Certificate
+    </button>
+    <button class="action-btn action-btn-secondary" onclick="shareCertificate()">
+      📤 Share
+    </button>
+  </div>
+</div>
+
+<script>
+  // Certificate Data (can be populated from URL params or API)
+  const certificateData = {
+    id: 'SR-2026-0401-7842-A7F9',
+    workTitle: 'Summer Vibes',
+    workType: 'Audio / Music Track',
+    date: 'April 1, 2026 · 23:29 SAST',
+    blockchain: 'Ethereum Mainnet',
+    fileHash: 'a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef1234567',
+    txHash: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bC63e',
+    owners: [
+      { name: 'Siyasamkela Cromwell Soxutywa', role: 'Primary Creator', share: '100%', avatar: '👤' }
+    ],
+    verificationUrl: 'https://seekreap.com/verify/SR-2026-0401-7842-A7F9'
+  };
+
+  // Populate certificate with dynamic data
+  function populateCertificate() {
+    document.getElementById('certId').textContent = certificateData.id;
+    document.getElementById('workTitle').textContent = certificateData.workTitle;
+    document.getElementById('workType').textContent = certificateData.workType;
+    document.getElementById('certDate').textContent = certificateData.date;
+    document.getElementById('blockchain').textContent = certificateData.blockchain;
+    document.getElementById('fileHash').textContent = certificateData.fileHash;
+    document.getElementById('txHash').textContent = certificateData.txHash;
+    document.getElementById('ownerName').textContent = certificateData.owners[0].name;
+
+    // Populate owners grid
+    const ownersGrid = document.getElementById('ownersGrid');
+    ownersGrid.innerHTML = certificateData.owners.map(owner => `
+      <div class="owner-card">
+        <div class="owner-avatar">${owner.avatar}</div>
+        <div class="owner-name">${owner.name}</div>
+        <div class="owner-role">${owner.role}</div>
+        <div class="owner-share">${owner.share}</div>
+      </div>
+    `).join('');
+
+    // Generate QR Code
+    const qrContainer = document.getElementById('qrcode');
+    qrContainer.innerHTML = '';
+    new QRCode(qrContainer, {
+      text: certificateData.verificationUrl,
+      width: 160,
+      height: 160,
+      colorDark: '#08080A',
+      colorLight: '#FAFAF8',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  }
+
+  // Verify on blockchain
+  function verifyOnBlockchain() {
+    const txHash = certificateData.txHash;
+    window.open(`https://etherscan.io/tx/${txHash}`, '_blank');
+  }
+
+  // Download as PDF
+  function downloadCertificate() {
+    const element = document.getElementById('seekreapCertificate');
+    const opt = {
+      margin: 0.5,
+      filename: `seekreap_certificate_${certificateData.id}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    
+    // Show loading
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = '⏳ Generating PDF...';
+    btn.disabled = true;
+    
+    html2pdf().set(opt).from(element).save().then(() => {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    });
+  }
+
+  // Print certificate
+  function printCertificate() {
+    window.print();
+  }
+
+  // Share certificate
+  function shareCertificate() {
+    if (navigator.share) {
+      navigator.share({
+        title: `SeekReap Certificate - ${certificateData.workTitle}`,
+        text: `Blockchain-verified ownership certificate for "${certificateData.workTitle}"`,
+        url: certificateData.verificationUrl
+      });
+    } else {
+      navigator.clipboard.writeText(certificateData.verificationUrl);
+      alert('Verification URL copied to clipboard!');
+    }
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    populateCertificate();
+  });
+</script>
+
+<!-- For PDF generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</body>
+  </html>
