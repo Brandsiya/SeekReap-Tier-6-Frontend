@@ -1,1 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SeekReap · Processing Certification</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#C9993A;--gold-light:#E8C06A;--gold-dark:#9B7520;--black:#08080A;--black-2:#111115;--black-3:#18181E;--black-4:#222228;--white:#FAFAF8;--white-dim:rgba(250,250,248,0.6);--border:rgba(201,153,58,0.2);--border-strong:rgba(201,153,58,0.4);--success:#3DB87A;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:radial-gradient(ellipse 120% 70% at 50% 0%,rgba(201,153,58,0.07) 0%,transparent 60%),var(--black);color:var(--white);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;overflow:hidden;}
+.wrap{max-width:540px;width:100%;text-align:center;position:relative;z-index:2;}
+.logo{display:inline-flex;align-items:center;gap:10px;margin-bottom:28px;text-decoration:none;}
+.logo svg{width:40px;height:40px;}
+.logo-text{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;background:linear-gradient(135deg,var(--white),var(--gold-light));background-clip:text;-webkit-background-clip:text;color:transparent;}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,5vw,2.4rem);font-weight:700;background:linear-gradient(135deg,var(--white) 0%,var(--gold-light) 100%);background-clip:text;-webkit-background-clip:text;color:transparent;margin-bottom:8px;line-height:1.15;}
+.sub{font-size:0.9rem;color:var(--white-dim);margin-bottom:32px;max-width:380px;margin-left:auto;margin-right:auto;}
 
+.card{background:var(--black-2);border:1px solid var(--border-strong);border-radius:14px;padding:28px 24px;margin-bottom:24px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:-100%;width:200%;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold-light),var(--gold),transparent);animation:slide 2.5s linear infinite;}
+@keyframes slide{to{left:100%;}}
+
+.stage-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.stage{display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:8px;background:var(--black-3);border:1px solid var(--border);font-size:0.85rem;opacity:0.35;transition:all 0.5s ease;}
+.stage.active{opacity:1;border-color:var(--gold);background:rgba(201,153,58,0.06);}
+.stage.done{opacity:0.7;border-color:rgba(61,184,122,0.3);background:rgba(61,184,122,0.05);}
+.stage-icon{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:var(--black-4);}
+.stage.active .stage-icon{background:rgba(201,153,58,0.15);animation:pulse 1.5s ease-in-out infinite;}
+.stage.done .stage-icon{background:rgba(61,184,122,0.15);}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+.stage-label{font-weight:500;flex:1;text-align:left;}
+.stage-status{font-size:0.75rem;color:var(--white-dim);}
+.stage.active .stage-status{color:var(--gold);}
+.stage.done .stage-status{color:var(--success);}
+
+.progress-track{background:var(--black-4);height:5px;border-radius:3px;overflow:hidden;border:1px solid var(--border);}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-dark),var(--gold),var(--gold-light));border-radius:2px;width:0%;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);position:relative;}
+.progress-fill::after{content:'';position:absolute;top:0;right:0;bottom:0;width:30px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.35));animation:shine 1.2s linear infinite;}
+@keyframes shine{0%{transform:translateX(-100%);}100%{transform:translateX(200%);}}
+
+.timer{font-family:'Cormorant Garamond',serif;font-size:0.9rem;color:var(--white-dim);margin-top:14px;}
+.timer span{color:var(--gold);font-weight:600;}
+
+.success-wrap{display:none;animation:fadeUp 0.7s ease-out;}
+.success-wrap.show{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.check-ring{width:72px;height:72px;margin:0 auto 20px;border-radius:50%;background:conic-gradient(var(--success) 0deg 360deg,transparent 360deg);display:flex;align-items:center;justify-content:center;animation:ringDraw 0.8s cubic-bezier(0.4,0,0.2,1);}
+@keyframes ringDraw{from{transform:scale(0) rotate(-90deg);}to{transform:scale(1) rotate(0);}}
+.check-ring span{font-size:2rem;color:var(--black);}
+.success-title{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--success);margin-bottom:10px;}
+.success-sub{font-size:0.9rem;color:var(--white-dim);margin-bottom:24px;}
+.btn-view{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#000;font-weight:700;font-size:0.95rem;padding:14px 32px;border-radius:8px;text-decoration:none;letter-spacing:0.03em;cursor:pointer;border:none;transition:all 0.3s;}
+.btn-view:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,153,58,0.3);}
+.redirect-note{font-size:0.78rem;color:var(--white-dim);margin-top:14px;}
+
+/* Floating particles */
+.particle{position:fixed;pointer-events:none;border-radius:50%;opacity:0;animation:float-up 8s ease-in infinite;}
+@keyframes float-up{0%{opacity:0;transform:translateY(100vh) scale(0);}10%{opacity:0.4;}90%{opacity:0.1;}100%{opacity:0;transform:translateY(-10vh) scale(1);}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a href="#" class="logo">
+    <svg viewBox="0 0 100 100" fill="none">
+      <defs>
+        <linearGradient id="lS" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FAFAF8"/><stop offset="100%" stop-color="#E8C06A"/></linearGradient>
+        <linearGradient id="lR" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C9993A"/><stop offset="100%" stop-color="#9B7520"/></linearGradient>
+      </defs>
+      <text x="14" y="68" font-family="Cormorant Garamond,serif" font-size="56" font-weight="700" fill="url(#lS)">S</text>
+      <text x="52" y="68" font-family="Cormorant Garamond,serif" font-size="56" font-weight="700" fill="url(#lR)">R</text>
+    </svg>
+    <span class="logo-text">SeekReap</span>
+  </a>
+
+  <h1>Certifying Your Work</h1>
+  <p class="sub">Generating your cryptographic fingerprint and anchoring it to the blockchain</p>
+
+  <!-- Loading -->
+  <div id="loadingWrap">
+    <div class="card">
+      <div class="stage-list" id="stageList">
+        <div class="stage" id="s1"><div class="stage-icon">🔍</div><div class="stage-label">File Analysis</div><div class="stage-status">Waiting…</div></div>
+        <div class="stage" id="s2"><div class="stage-icon">🔐</div><div class="stage-label">SHA-256 Hash Generation</div><div class="stage-status">Waiting…</div></div>
+        <div class="stage" id="s3"><div class="stage-icon">⛓</div><div class="stage-label">Blockchain Timestamp</div><div class="stage-status">Waiting…</div></div>
+        <div class="stage" id="s4"><div class="stage-icon">📱</div><div class="stage-label">QR Certificate Generation</div><div class="stage-status">Waiting…</div></div>
+        <div class="stage" id="s5"><div class="stage-icon">✦</div><div class="stage-label">Certificate Mint</div><div class="stage-status">Waiting…</div></div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="timer">Estimated time: <span id="etaDisplay">60–120 seconds</span></div>
+    </div>
+  </div>
+
+  <!-- Success -->
+  <div class="success-wrap" id="successWrap">
+    <div class="check-ring"><span>✓</span></div>
+    <div class="success-title">Certification Complete!</div>
+    <p class="success-sub">Your work is now permanently timestamped on the blockchain</p>
+    <button class="btn-view" onclick="viewCertificate()">↓ View Certificate</button>
+    <div class="redirect-note" id="redirectNote">Redirecting in <span id="countdown">5</span>s…</div>
+  </div>
+</div>
+
+<script>
+  const STAGES = [
+    { id: 's1', label: 'Analysing file metadata…',    pct: 20  },
+    { id: 's2', label: 'Computing SHA-256 hash…',     pct: 40  },
+    { id: 's3', label: 'Anchoring to blockchain…',    pct: 65  },
+    { id: 's4', label: 'Generating QR certificate…',  pct: 82  },
+    { id: 's5', label: 'Minting certificate…',        pct: 100 },
+  ];
+
+  const DELAYS = [800, 1400, 2200, 1600, 1200];
+  let stageIdx = 0;
+
+  function setProgress(pct) {
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+
+  function activateStage(i) {
+    if (i > 0) {
+      var prev = document.getElementById(STAGES[i-1].id);
+      prev.classList.remove('active');
+      prev.classList.add('done');
+      prev.querySelector('.stage-status').textContent = 'Done ✓';
+    }
+    var el = document.getElementById(STAGES[i].id);
+    el.classList.add('active');
+    el.querySelector('.stage-status').textContent = STAGES[i].label;
+    setProgress(STAGES[i].pct);
+  }
+
+  function runStages() {
+    if (stageIdx >= STAGES.length) {
+      // Mark last done
+      var last = document.getElementById(STAGES[STAGES.length-1].id);
+      last.classList.remove('active'); last.classList.add('done');
+      last.querySelector('.stage-status').textContent = 'Done ✓';
+      setTimeout(showSuccess, 600);
+      return;
+    }
+    activateStage(stageIdx);
+    stageIdx++;
+    setTimeout(runStages, DELAYS[stageIdx - 1] || 1200);
+  }
+
+  function showSuccess() {
+    document.getElementById('loadingWrap').style.display = 'none';
+    document.getElementById('successWrap').classList.add('show');
+    // Countdown
+    var n = 5;
+    var cd = document.getElementById('countdown');
+    var iv = setInterval(function() {
+      n--;
+      if (cd) cd.textContent = n;
+      if (n <= 0) { clearInterval(iv); viewCertificate(); }
+    }, 1000);
+  }
+
+  function viewCertificate() {
+    window.location.href = 'free_plan_certificate.html';
+  }
+
+  // Kick off
+  setTimeout(runStages, 500);
+
+  // Floating particles
+  for (var p = 0; p < 8; p++) {
+    var d = document.createElement('div');
+    d.className = 'particle';
+    d.style.cssText = 'width:' + (Math.random()*4+2) + 'px;height:' + (Math.random()*4+2) + 'px;' +
+      'left:' + (Math.random()*100) + '%;background:' + (Math.random()>0.5?'#C9993A':'#3DB87A') + ';' +
+      'animation-delay:' + (Math.random()*6) + 's;animation-duration:' + (Math.random()*5+6) + 's;';
+    document.body.appendChild(d);
+  }
+</script>
+</body>
+</html>
