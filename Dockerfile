@@ -1,14 +1,31 @@
 FROM nginx:alpine
 
-# Remove default config
-RUN rm /etc/nginx/conf.d/default.conf
+# Copy static files with correct ownership
+COPY --chown=nginx:nginx public /usr/share/nginx/html
 
-# Copy only the public/ directory contents as the web root
-COPY public/ /usr/share/nginx/html
-COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+# Create nginx config on port 8080
+RUN echo 'server { \
+    listen 8080; \
+    server_name _; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+    location /api/ { \
+        proxy_pass https://seekreap-tier-4-dev.fly.dev/api/; \
+        proxy_set_header Host $host; \
+        proxy_set_header X-Real-IP $remote_addr; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
 
-# nginx:alpine includes envsubst support built-in via docker-entrypoint.d
-# It automatically processes /etc/nginx/templates/*.template at startup
-# and writes the result to /etc/nginx/conf.d/ with $PORT substituted
+# Remove the "user nginx" directive (causes permission issues)
+RUN sed -i 's/^user  nginx;/# user nginx;/' /etc/nginx/nginx.conf
+
+# Ensure all files are readable
+RUN chmod -R 755 /usr/share/nginx/html
 
 EXPOSE 8080
+
+# Run nginx in foreground
+CMD ["nginx", "-g", "daemon off;"]
