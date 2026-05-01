@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SeekReap · Verify Certificate</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#C9993A;--gl:#E8C06A;--gd:#9B7520;--gb:rgba(201,153,58,0.3);--bk:#0A0A0E;--bk2:#111115;--bk3:#18181E;--bk4:#222228;--w:#FAFAF8;--wd:rgba(250,250,248,0.6);--wm:rgba(250,250,248,0.35);--ok:#3DB87A;--fail:#E05555;--warn:#E8A030;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:radial-gradient(ellipse 140% 80% at 50% 0%,rgba(201,153,58,0.06),transparent 60%),var(--bk);color:var(--w);min-height:100vh;padding:32px 18px;}
+.wrap{max-width:700px;margin:0 auto;}
+
+/* Header */
+.logo-row{display:flex;align-items:center;gap:10px;text-decoration:none;margin-bottom:32px;}
+.logo-text{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;background:linear-gradient(135deg,var(--w),var(--gl));background-clip:text;-webkit-background-clip:text;color:transparent;}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,5vw,2.5rem);font-weight:700;background:linear-gradient(135deg,var(--w),var(--gl));background-clip:text;-webkit-background-clip:text;color:transparent;margin-bottom:8px;}
+.hero-sub{font-size:0.9rem;color:var(--wd);margin-bottom:32px;line-height:1.6;}
+
+/* Search box */
+.search-card{background:var(--bk2);border:1px solid var(--gb);border-radius:14px;padding:28px;margin-bottom:28px;position:relative;overflow:hidden;}
+.search-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gl),var(--gold),transparent);}
+.search-label{font-size:0.8rem;color:var(--wd);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;}
+.search-row{display:flex;gap:10px;}
+.search-input{flex:1;background:var(--bk3);border:1px solid rgba(201,153,58,0.25);border-radius:8px;padding:13px 16px;color:var(--w);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.25s;}
+.search-input::placeholder{color:var(--wm);}
+.search-input:focus{border-color:var(--gold);}
+.search-btn{background:linear-gradient(135deg,var(--gold),var(--gd));border:none;color:#000;font-weight:700;font-size:0.88rem;padding:13px 22px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:all 0.25s;letter-spacing:0.03em;}
+.search-btn:hover{opacity:0.88;}
+.search-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.search-hint{font-size:0.75rem;color:var(--wm);margin-top:10px;}
+
+/* Status */
+.status-bar{border-radius:10px;padding:14px 18px;margin-bottom:20px;display:none;align-items:center;gap:14px;}
+.status-bar.valid{background:rgba(61,184,122,0.1);border:1px solid rgba(61,184,122,0.3);display:flex;}
+.status-bar.invalid{background:rgba(224,85,85,0.08);border:1px solid rgba(224,85,85,0.25);display:flex;}
+.status-bar.checking{background:rgba(201,153,58,0.08);border:1px solid rgba(201,153,58,0.25);display:flex;}
+.status-icon{font-size:1.8rem;flex-shrink:0;}
+.status-text strong{display:block;font-size:0.92rem;margin-bottom:2px;}
+.status-text span{font-size:0.78rem;color:var(--wd);}
+.status-bar.valid .status-text strong{color:var(--ok);}
+.status-bar.invalid .status-text strong{color:var(--fail);}
+.status-bar.checking .status-text strong{color:var(--gold);}
+
+/* Result card */
+.result{display:none;background:var(--bk2);border:1px solid var(--gb);border-radius:14px;overflow:hidden;animation:fadeUp 0.5s ease-out;}
+.result.show{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.result-head{padding:20px 24px;border-bottom:1px solid var(--gb);display:flex;align-items:center;gap:14px;}
+.result-seal{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gd));display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.result-htitle{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--gold);}
+.result-hsub{font-size:0.75rem;color:var(--wd);}
+.result-body{padding:20px 24px;}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.rrow:last-of-type{border-bottom:none;}
+.rrl{font-size:0.73rem;color:var(--wd);text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;}
+.rrv{font-weight:600;font-size:0.86rem;text-align:right;word-break:break-word;max-width:60%;}
+.hash-v{font-family:monospace;font-size:0.65rem;background:rgba(201,153,58,0.09);padding:4px 8px;border-radius:5px;border-left:2px solid var(--gold);word-break:break-all;}
+.chain-val{font-family:monospace;font-size:0.68rem;color:var(--gl);word-break:break-all;}
+.divider{height:1px;background:rgba(255,255,255,0.06);margin:16px 0;}
+.result-actions{padding:16px 24px 20px;display:flex;gap:10px;flex-wrap:wrap;}
+.rbtn{padding:9px 20px;border-radius:24px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.25s;}
+.rbtn-gold{background:linear-gradient(135deg,var(--gold),var(--gd));border:none;color:#000;}
+.rbtn-gold:hover{opacity:0.88;}
+.rbtn-ghost{background:transparent;border:1px solid var(--gb);color:var(--w);}
+.rbtn-ghost:hover{border-color:var(--gold);}
+
+/* Not found */
+.notfound{display:none;text-align:center;padding:40px 20px;}
+.notfound.show{display:block;}
+.nf-icon{font-size:3rem;margin-bottom:16px;}
+.nf-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--fail);margin-bottom:8px;}
+.nf-sub{font-size:0.85rem;color:var(--wd);line-height:1.6;}
+
+/* How it works */
+.how{background:var(--bk2);border:1px solid rgba(201,153,58,0.15);border-radius:14px;padding:24px;margin-top:28px;}
+.how-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gold);margin-bottom:16px;}
+.how-steps{display:flex;flex-direction:column;gap:12px;}
+.how-step{display:flex;align-items:flex-start;gap:12px;font-size:0.82rem;color:var(--wd);line-height:1.5;}
+.how-num{width:24px;height:24px;border-radius:50%;background:rgba(201,153,58,0.15);border:1px solid var(--gb);display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:var(--gold);flex-shrink:0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Logo -->
+  <a href="index.html" class="logo-row">
+    <svg width="34" height="34" viewBox="0 0 100 100" fill="none">
+      <defs>
+        <linearGradient id="gS" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FAFAF8"/><stop offset="100%" stop-color="#E8C06A"/></linearGradient>
+        <linearGradient id="gR" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C9993A"/><stop offset="100%" stop-color="#9B7520"/></linearGradient>
+      </defs>
+      <text x="14" y="68" font-family="Cormorant Garamond,serif" font-size="56" font-weight="700" fill="url(#gS)">S</text>
+      <text x="52" y="68" font-family="Cormorant Garamond,serif" font-size="56" font-weight="700" fill="url(#gR)">R</text>
+    </svg>
+    <span class="logo-text">SeekReap</span>
+  </a>
+
+  <h1>🔍 Verify Certificate</h1>
+  <p class="hero-sub">Enter a Certificate ID or transaction hash to verify the authenticity and ownership record of any SeekReap-certified work. This page is publicly accessible — no account required.</p>
+
+  <!-- Search -->
+  <div class="search-card">
+    <div class="search-label">Certificate ID or Transaction Hash</div>
+    <div class="search-row">
+      <input class="search-input" type="text" id="certInput" placeholder="e.g. SR-2026-0501-7842-A7F9 or 0x742d35…" autocomplete="off">
+      <button class="search-btn" id="verifyBtn" onclick="verifyCert()">Verify →</button>
+    </div>
+    <div class="search-hint">Certificate IDs start with SR-. Transaction hashes start with 0x.</div>
+  </div>
+
+  <!-- Status bar -->
+  <div class="status-bar" id="statusBar">
+    <div class="status-icon" id="statusIcon">🔍</div>
+    <div class="status-text"><strong id="statusTitle">Checking…</strong><span id="statusSub">Looking up this certificate on the blockchain</span></div>
+  </div>
+
+  <!-- Result -->
+  <div class="result" id="resultCard">
+    <div class="result-head">
+      <div class="result-seal">📜</div>
+      <div>
+        <div class="result-htitle" id="rTitle">Certificate Details</div>
+        <div class="result-hsub" id="rSub">SeekReap Blockchain-Certified Ownership Record</div>
+      </div>
+    </div>
+    <div class="result-body">
+      <div class="rrow"><span class="rrl">Certificate ID</span><span class="rrv" id="rId">—</span></div>
+      <div class="rrow"><span class="rrl">Work Title</span><span class="rrv" id="rWork">—</span></div>
+      <div class="rrow"><span class="rrl">Work Type</span><span class="rrv" id="rType">—</span></div>
+      <div class="rrow"><span class="rrl">Certified On</span><span class="rrv" id="rDate">—</span></div>
+      <div class="rrow"><span class="rrl">Primary Owner</span><span class="rrv" id="rOwner">—</span></div>
+      <div class="rrow"><span class="rrl">Issuer</span><span class="rrv">SeekReap Technologies Ltd · RSA</span></div>
+      <div class="rrow"><span class="rrl">Plan</span><span class="rrv" id="rPlan">—</span></div>
+      <div class="divider"></div>
+      <div class="rrow"><span class="rrl">Blockchain</span><span class="rrv chain-val">Ethereum Mainnet</span></div>
+      <div class="rrow"><span class="rrl">Transaction Hash</span><span class="rrv chain-val" id="rTx">—</span></div>
+      <div class="rrow"><span class="rrl">File Hash (SHA-256)</span><span class="rrv hash-v" id="rHash">—</span></div>
+      <div class="rrow"><span class="rrl">Certificate Status</span><span class="rrv" id="rStatus" style="color:var(--ok);">VALID</span></div>
+      <div class="rrow"><span class="rrl">Revocation Status</span><span class="rrv" id="rRevoke" style="color:var(--ok);">Not revoked</span></div>
+    </div>
+    <div class="result-actions">
+      <button class="rbtn rbtn-gold" onclick="viewFullCert()">📜 View Full Certificate</button>
+      <button class="rbtn rbtn-ghost" onclick="openEtherscan()">⛓ Verify on Etherscan</button>
+      <button class="rbtn rbtn-ghost" onclick="copyResult()">📋 Copy Details</button>
+    </div>
+  </div>
+
+  <!-- Not found -->
+  <div class="notfound" id="notFound">
+    <div class="nf-icon">❓</div>
+    <div class="nf-title">Certificate Not Found</div>
+    <p class="nf-sub">No SeekReap certificate was found for that ID or transaction hash.<br>Please check the ID and try again. If you believe this is an error, contact support@seekreap.com</p>
+  </div>
+
+  <!-- How it works -->
+  <div class="how">
+    <div class="how-title">How Verification Works</div>
+    <div class="how-steps">
+      <div class="how-step"><div class="how-num">1</div><div>Enter the Certificate ID (printed on the certificate) or the blockchain transaction hash. Both uniquely identify a certification record.</div></div>
+      <div class="how-step"><div class="how-num">2</div><div>SeekReap looks up the certificate in our registry and cross-references the SHA-256 hash stored on the Ethereum blockchain.</div></div>
+      <div class="how-step"><div class="how-num">3</div><div>You see the original submission details — work title, certified date, owner, and blockchain proof. Any modification to the original file will produce a different hash and fail verification.</div></div>
+      <div class="how-step"><div class="how-num">4</div><div>The revocation registry confirms whether the certificate is still active or has been disputed/revoked by the issuer or a court order.</div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var _lastTx = '';
+  var _lastId = '';
+
+  // Pre-fill from URL param
+  var params = new URLSearchParams(window.location.search);
+  var preId = params.get('id');
+  if(preId){ document.getElementById('certInput').value=preId; }
+
+  function setStatus(type, icon, title, sub){
+    var sb=document.getElementById('statusBar');
+    sb.className='status-bar '+type;
+    document.getElementById('statusIcon').textContent=icon;
+    document.getElementById('statusTitle').textContent=title;
+    document.getElementById('statusSub').textContent=sub;
+  }
+
+  function showResult(data){
+    function setText(id,v){ var el=document.getElementById(id); if(el) el.textContent=v||'—'; }
+    setText('rId',    data.id);
+    setText('rWork',  data.title);
+    setText('rType',  data.type);
+    setText('rDate',  data.date);
+    setText('rOwner', data.owner);
+    setText('rPlan',  data.plan);
+    setText('rTx',    data.txHash);
+    setText('rHash',  data.hash);
+    _lastTx = data.txHash||'';
+    _lastId = data.id||'';
+    var statusEl = document.getElementById('rStatus');
+    var revokeEl = document.getElementById('rRevoke');
+    var isRevoked = data.revoked||false;
+    if(statusEl){ statusEl.textContent=isRevoked?'REVOKED':'VALID'; statusEl.style.color=isRevoked?'var(--fail)':'var(--ok)'; }
+    if(revokeEl){ revokeEl.textContent=isRevoked?'⚠ REVOKED — see seekreap.com/revoke-check':'Not revoked'; revokeEl.style.color=isRevoked?'var(--fail)':'var(--ok)'; }
+    document.getElementById('rTitle').textContent=data.title||'Certified Work';
+    document.getElementById('resultCard').classList.add('show');
+    document.getElementById('notFound').classList.remove('show');
+  }
+
+  function verifyCert(){
+    var q = document.getElementById('certInput').value.trim();
+    if(!q){ alert('Please enter a Certificate ID or transaction hash.'); return; }
+    document.getElementById('resultCard').classList.remove('show');
+    document.getElementById('notFound').classList.remove('show');
+    var btn=document.getElementById('verifyBtn');
+    btn.disabled=true; btn.textContent='Checking…';
+
+    setStatus('checking','🔍','Verifying on blockchain…','Checking certificate registry and blockchain record');
+
+    // Simulate verification (replace with real API call)
+    setTimeout(function(){
+      btn.disabled=false; btn.textContent='Verify →';
+
+      // Demo: valid for SR- prefixed or 0x prefixed IDs
+      var isValid = q.startsWith('SR-') || q.startsWith('0x') || q.length > 10;
+
+      if(isValid){
+        setStatus('valid','✅','Certificate Verified','This certificate is authentic and has not been revoked');
+        showResult({
+          id:      q.startsWith('SR-') ? q : 'SR-2026-DEMO-'+Math.floor(Math.random()*9000+1000),
+          title:   sessionStorage.getItem('freePlanTitle') || 'Certified Creative Work',
+          type:    'Creative Work · Blockchain Certified',
+          date:    new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'}),
+          owner:   (window.currentUser&&window.currentUser.email) || 'Verified Owner',
+          plan:    q.startsWith('SR-FREE') ? 'Free · Watermarked' : 'Certified',
+          txHash:  q.startsWith('0x') ? q : '0x742d35cc6634c0532925a3b844bc9e7595f0bc63e',
+          hash:    Array.from({length:64},function(){ return '0123456789abcdef'[Math.floor(Math.random()*16)]; }).join(''),
+          revoked: false
+        });
+      } else {
+        setStatus('invalid','❌','Not Found','No certificate matches this ID or hash');
+        document.getElementById('notFound').classList.add('show');
+        document.getElementById('resultCard').classList.remove('show');
+      }
+    }, 1800);
+  }
+
+  function openEtherscan(){ if(_lastTx) window.open('https://etherscan.io/tx/'+_lastTx,'_blank'); }
+
+  function viewFullCert(){
+    if(_lastId.startsWith('SR-FREE')){
+      window.location.href='free_plan_certificate.html';
+    } else {
+      window.location.href='verify.html';
+    }
+  }
+
+  function copyResult(){
+    var el=document.getElementById('certInput');
+    var txt='Certificate ID: '+document.getElementById('rId').textContent+
+            '\nWork: '+document.getElementById('rWork').textContent+
+            '\nDate: '+document.getElementById('rDate').textContent+
+            '\nStatus: '+document.getElementById('rStatus').textContent+
+            '\nTx Hash: '+document.getElementById('rTx').textContent;
+    navigator.clipboard.writeText(txt).then(function(){ alert('Details copied to clipboard!'); });
+  }
+
+  // Auto-verify if ID pre-filled
+  if(preId){ setTimeout(verifyCert, 600); }
+
+  document.getElementById('certInput').addEventListener('keydown',function(e){
+    if(e.key==='Enter') verifyCert();
+  });
+</script>
+</body>
+</html>

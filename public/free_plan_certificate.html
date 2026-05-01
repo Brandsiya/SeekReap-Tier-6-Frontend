@@ -3,298 +3,272 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SeekReap Certificate · Blockchain-Verified Ownership</title>
+<title>SeekReap · Free Plan Certificate</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-:root{--gold:#C9993A;--gl:#E8C06A;--gd:#9B7520;--gg:rgba(201,153,58,0.2);--gb:rgba(201,153,58,0.35);--bk:#0A0A0E;--bk2:#111115;--bk3:#15151C;--w:#FAFAF8;--wd:rgba(250,250,248,0.65);--wm:rgba(250,250,248,0.38);--ok:#3DB87A;--warn:#E8A030;}
+:root{--gold:#C9993A;--gl:#E8C06A;--gd:#9B7520;--gg:rgba(201,153,58,0.18);--gb:rgba(201,153,58,0.3);--bk:#0A0A0E;--bk2:#111115;--bk3:#15151C;--w:#FAFAF8;--wd:rgba(250,250,248,0.62);--wm:rgba(250,250,248,0.35);--ok:#3DB87A;--warn:#E8A030;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'DM Sans',sans-serif;background:radial-gradient(circle at 15% 20%,#0d0d0a,#000);min-height:100vh;padding:40px 20px;color:var(--w);}
-.wrap{max-width:1040px;margin:0 auto;}
+body{font-family:'DM Sans',sans-serif;background:radial-gradient(circle at 15% 20%,#0d0d0a,#000);min-height:100vh;padding:32px 18px;color:var(--w);}
+.wrap{max-width:960px;margin:0 auto;}
 
-/* ── Certificate card ── */
-.cert{background:linear-gradient(150deg,var(--bk2) 0%,var(--bk3) 100%);border:1px solid var(--gb);border-radius:28px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.6),0 0 40px rgba(201,153,58,0.08),inset 0 1px 0 rgba(255,255,255,0.03);position:relative;animation:fadeUp 0.7s cubic-bezier(0.4,0,0.2,1);}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
-.cert::before{content:'';position:absolute;top:22px;left:22px;right:22px;bottom:22px;border:1px solid rgba(201,153,58,0.1);border-radius:18px;pointer-events:none;}
-.cert::after{content:'\2736 \2736 \2736 \2736 \2736';position:absolute;top:10px;left:50%;transform:translateX(-50%);background:linear-gradient(150deg,var(--bk2),var(--bk3));padding:0 20px;color:var(--gold);font-size:10px;letter-spacing:10px;pointer-events:none;}
+/* Free plan banner */
+.free-banner{background:linear-gradient(135deg,rgba(61,184,122,0.12),rgba(61,184,122,0.06));border:1px solid rgba(61,184,122,0.3);border-radius:10px;padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;font-size:0.85rem;}
+.free-banner-icon{font-size:1.4rem;}
+.free-banner-text strong{color:var(--ok);display:block;margin-bottom:2px;font-size:0.88rem;}
+.free-banner-text span{color:var(--wd);font-size:0.8rem;}
 
-/* ── Header ── */
-.cert-head{padding:44px 44px 28px;text-align:center;border-bottom:2px solid var(--gb);}
-.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px;}
-.logo-svg{width:56px;height:56px;}
-.logo-name{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:700;background:linear-gradient(135deg,var(--w) 0%,var(--gl) 50%,var(--gold) 100%);background-clip:text;-webkit-background-clip:text;color:transparent;letter-spacing:-0.02em;}
-.cert-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(201,153,58,0.14),rgba(201,153,58,0.04));border:1px solid var(--gb);padding:9px 22px;border-radius:40px;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--gl);}
-.status-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(61,184,122,0.12);border:1px solid rgba(61,184,122,0.3);padding:5px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--ok);margin-top:10px;letter-spacing:0.05em;}
-.status-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);animation:blink 2s ease-in-out infinite;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+/* Certificate card */
+.cert{background:linear-gradient(150deg,var(--bk2),var(--bk3));border:1px solid var(--gb);border-radius:24px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,0.55),0 0 35px rgba(201,153,58,0.07),inset 0 1px 0 rgba(255,255,255,0.03);position:relative;animation:fadeUp 0.6s ease-out;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
 
-/* ── Grid ── */
-.cert-grid{padding:40px 44px;display:grid;grid-template-columns:1fr 0.85fr;gap:40px;}
-@media(max-width:820px){.cert-grid{grid-template-columns:1fr;padding:28px;}}
+/* Watermark */
+.cert::after{content:'FREE PLAN';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-family:'Cormorant Garamond',serif;font-size:5rem;font-weight:700;color:rgba(201,153,58,0.06);letter-spacing:0.1em;pointer-events:none;white-space:nowrap;z-index:1;}
 
-/* ── Cards ── */
-.info-card{background:rgba(255,255,255,0.02);border:1px solid var(--gb);border-radius:18px;padding:28px;}
-.card-label{font-family:'Cormorant Garamond',serif;font-size:1.25rem;color:var(--gold);margin-bottom:6px;}
-.card-sub{font-size:0.72rem;color:var(--wd);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid var(--gb);}
-.row{display:flex;justify-content:space-between;align-items:baseline;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.cert-head{padding:36px 36px 24px;text-align:center;border-bottom:2px solid var(--gb);position:relative;z-index:2;}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:14px;}
+.logo-name{font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:700;background:linear-gradient(135deg,var(--w),var(--gl),var(--gold));background-clip:text;-webkit-background-clip:text;color:transparent;}
+.cert-badge{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,rgba(201,153,58,0.12),rgba(201,153,58,0.04));border:1px solid var(--gb);padding:8px 20px;border-radius:30px;font-size:0.75rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--gl);}
+.wmark-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(201,153,58,0.08);border:1px solid rgba(201,153,58,0.2);padding:5px 14px;border-radius:20px;font-size:0.72rem;font-weight:600;color:var(--gold);margin-top:8px;letter-spacing:0.06em;}
+
+/* Grid */
+.cert-grid{padding:32px 36px;display:grid;grid-template-columns:1fr 0.85fr;gap:32px;position:relative;z-index:2;}
+@media(max-width:760px){.cert-grid{grid-template-columns:1fr;padding:22px;gap:22px;}}
+
+/* Cards */
+.ic{background:rgba(255,255,255,0.02);border:1px solid var(--gb);border-radius:16px;padding:24px;}
+.icl{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--gold);margin-bottom:5px;}
+.ics{font-size:0.7rem;color:var(--wd);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--gb);}
+.row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
 .row:last-of-type{border-bottom:none;}
-.rl{font-size:0.75rem;font-weight:500;color:var(--wd);text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;}
-.rv{font-weight:600;font-size:0.88rem;text-align:right;word-break:break-word;max-width:58%;}
-.hash{font-family:monospace;font-size:0.68rem;background:rgba(201,153,58,0.09);padding:5px 9px;border-radius:6px;border-left:3px solid var(--gold);word-break:break-all;}
+.rl{font-size:0.72rem;font-weight:500;color:var(--wd);text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;}
+.rv{font-weight:600;font-size:0.85rem;text-align:right;word-break:break-word;max-width:58%;}
+.hash{font-family:monospace;font-size:0.65rem;background:rgba(201,153,58,0.09);padding:4px 8px;border-radius:5px;border-left:3px solid var(--gold);word-break:break-all;}
 
-/* ── QR col ── */
-.qr-col{display:flex;flex-direction:column;gap:18px;}
-.qr-card{background:rgba(255,255,255,0.02);border:1px solid var(--gb);border-radius:18px;padding:28px;text-align:center;}
-.qr-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--gold);margin-bottom:16px;}
+/* QR */
+.qr-card{background:rgba(255,255,255,0.02);border:1px solid var(--gb);border-radius:16px;padding:24px;text-align:center;}
+.qr-title{font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:var(--gold);margin-bottom:14px;}
 #qrcode{display:flex;justify-content:center;margin:8px 0;}
-#qrcode img,#qrcode canvas{border-radius:10px;box-shadow:0 0 0 3px var(--gold),0 8px 24px rgba(0,0,0,0.3);}
-.qr-note{font-size:0.75rem;color:var(--wd);margin-top:12px;line-height:1.5;}
+#qrcode img,#qrcode canvas{border-radius:8px;box-shadow:0 0 0 3px var(--gold);}
+.qr-note{font-size:0.72rem;color:var(--wd);margin-top:10px;line-height:1.5;}
 
-/* ── Blockchain card ── */
-.chain-card{background:linear-gradient(135deg,rgba(201,153,58,0.07),rgba(201,153,58,0.02));border:1px solid var(--gb);border-radius:18px;padding:24px;}
-.chain-head{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gold);margin-bottom:14px;}
-.chain-row{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
-.chain-key{font-size:0.7rem;color:var(--wm);text-transform:uppercase;letter-spacing:0.06em;}
-.chain-val{font-family:monospace;font-size:0.72rem;color:var(--gl);background:var(--bk);padding:7px 10px;border-radius:8px;border:1px solid rgba(201,153,58,0.18);word-break:break-all;}
-.verify-btn{width:100%;background:transparent;border:1px solid var(--gold);color:var(--gl);padding:10px;border-radius:10px;font-size:0.83rem;font-weight:600;cursor:pointer;transition:all 0.25s;margin-top:6px;}
-.verify-btn:hover{background:var(--gold);color:var(--bk);}
+/* Owner */
+.own-card{background:rgba(255,255,255,0.02);border:1px solid var(--gb);border-radius:16px;padding:24px;margin-top:0;}
+.own-title{font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:var(--gold);margin-bottom:14px;}
+.owner-row{display:flex;align-items:center;gap:14px;padding:12px 0;}
+.owner-av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gd));display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--bk);font-weight:700;flex-shrink:0;}
+.owner-name{font-weight:600;font-size:0.9rem;}
+.owner-role{font-size:0.7rem;color:var(--gl);letter-spacing:0.05em;}
+.owner-pct{margin-left:auto;font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;background:linear-gradient(135deg,var(--gl),var(--gold));background-clip:text;-webkit-background-clip:text;color:transparent;}
 
-/* ── Sig card ── */
-.sig-card{background:linear-gradient(135deg,rgba(201,153,58,0.06),rgba(201,153,58,0.01));border:1px solid var(--gb);border-radius:18px;padding:24px;margin-top:0;}
-.sig-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.sig-val{font-family:monospace;font-size:0.65rem;color:rgba(201,153,58,0.6);background:var(--bk);padding:8px 10px;border-radius:8px;border:1px solid rgba(201,153,58,0.15);word-break:break-all;line-height:1.6;}
-.sig-note{font-size:0.72rem;color:var(--wm);margin-top:8px;line-height:1.5;}
+/* Footer */
+.cert-foot{padding:28px 36px;border-top:2px solid var(--gb);text-align:center;position:relative;z-index:2;}
+.foot-text{font-family:'Cormorant Garamond',serif;font-size:0.98rem;color:var(--wd);margin-bottom:20px;line-height:1.7;}
+.sigs{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-bottom:20px;}
+.sig-item{text-align:center;min-width:160px;}
+.sig-line{width:150px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gl),var(--gold),transparent);margin:0 auto 8px;}
+.sig-name{font-weight:700;font-size:0.85rem;margin-bottom:2px;}
+.sig-role{font-size:0.65rem;color:var(--wd);letter-spacing:0.05em;}
+.legal{background:rgba(201,153,58,0.03);border:1px solid var(--gb);border-radius:10px;padding:14px;font-size:0.72rem;color:var(--wd);line-height:1.7;text-align:left;}
+.vtag{display:inline-block;background:var(--bk);border:1px solid var(--gb);border-radius:16px;padding:3px 10px;font-size:0.65rem;color:var(--wm);letter-spacing:0.06em;margin-top:12px;}
 
-/* ── Ownership ── */
-.own-section{grid-column:1/-1;background:rgba(255,255,255,0.02);border:1px solid var(--gb);border-radius:18px;padding:36px;margin-top:6px;}
-.own-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;text-align:center;color:var(--gold);margin-bottom:8px;}
-.own-sub{font-size:0.78rem;text-align:center;color:var(--wd);margin-bottom:28px;letter-spacing:0.04em;}
-.owners-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;}
-.owner-card{background:linear-gradient(145deg,var(--bk2),var(--bk3));border:1px solid var(--gb);border-radius:16px;padding:24px;text-align:center;transition:all 0.25s;}
-.owner-card:hover{border-color:var(--gold);transform:translateY(-3px);}
-.owner-av{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gd));margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--bk);}
-.owner-name{font-weight:700;font-size:0.95rem;margin-bottom:4px;}
-.owner-role{font-size:0.7rem;color:var(--gl);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px;}
-.owner-pct{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;background:linear-gradient(135deg,var(--gl),var(--gold));background-clip:text;-webkit-background-clip:text;color:transparent;}
-.own-basis{font-size:0.72rem;color:var(--wm);margin-top:4px;}
-
-/* ── Footer ── */
-.cert-foot{padding:36px 44px;border-top:2px solid var(--gb);text-align:center;}
-.foot-text{font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--wd);margin-bottom:24px;line-height:1.7;}
-.sigs{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;margin-bottom:24px;}
-.sig-item{text-align:center;min-width:180px;}
-.sig-line{width:160px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gl),var(--gold),transparent);margin:0 auto 10px;}
-.sig-name{font-weight:700;font-size:0.9rem;margin-bottom:3px;}
-.sig-role{font-size:0.68rem;color:var(--wd);letter-spacing:0.05em;}
-.legal{background:rgba(201,153,58,0.04);border:1px solid var(--gb);border-radius:12px;padding:18px;font-size:0.75rem;color:var(--wd);line-height:1.7;text-align:left;}
-.legal strong{color:var(--gl);}
-.ver-tag{display:inline-block;background:var(--bk);border:1px solid var(--gb);border-radius:20px;padding:4px 12px;font-size:0.68rem;color:var(--wm);letter-spacing:0.06em;margin-top:14px;}
-
-/* ── Actions ── */
-.actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;padding:0 44px 44px;}
-.btn{padding:11px 26px;border-radius:30px;font-weight:600;cursor:pointer;font-size:0.85rem;transition:all 0.25s;}
+/* Note + Actions */
+.cert-note{background:rgba(232,160,48,0.08);border:1px solid rgba(232,160,48,0.25);border-radius:10px;padding:14px 18px;margin:20px 0;display:flex;align-items:center;gap:12px;font-size:0.82rem;color:rgba(232,160,48,0.9);}
+.cert-note-icon{font-size:1.2rem;flex-shrink:0;}
+.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:0 0 32px;}
+.btn{padding:10px 22px;border-radius:26px;font-weight:600;cursor:pointer;font-size:0.83rem;transition:all 0.25s;}
 .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gd));border:none;color:var(--bk);}
-.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(201,153,58,0.3);}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 7px 18px rgba(201,153,58,0.3);}
 .btn-ghost{background:transparent;border:1px solid var(--gb);color:var(--w);}
 .btn-ghost:hover{border-color:var(--gold);background:rgba(201,153,58,0.08);}
+.btn-locked{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:rgba(250,250,248,0.3);cursor:not-allowed;}
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="cert" id="seekreapCert">
 
-  <!-- Header -->
-  <div class="cert-head">
-    <div class="logo-row">
-      <svg class="logo-svg" viewBox="0 0 100 100" fill="none">
-        <defs>
-          <linearGradient id="gS" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FAFAF8"/><stop offset="100%" stop-color="#E8C06A"/></linearGradient>
-          <linearGradient id="gR" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C9993A"/><stop offset="100%" stop-color="#9B7520"/></linearGradient>
-        </defs>
-        <text x="14" y="68" font-family="Cormorant Garamond,serif" font-size="56" font-weight="700" fill="url(#gS)">S</text>
-        <text x="52" y="68" font-family="Cormorant Garamond,serif" font-size="56" font-weight="700" fill="url(#gR)">R</text>
-        <path d="M50 70 L54 66 L58 70 L62 66" stroke="url(#gR)" stroke-width="2.5" fill="none"/>
-      </svg>
-      <div class="logo-name">SeekReap</div>
+  <!-- Free plan notice -->
+  <div class="free-banner">
+    <div class="free-banner-icon">📜</div>
+    <div class="free-banner-text">
+      <strong>Free Plan Certificate</strong>
+      <span>This certificate includes a watermark. Upgrade to Creator or Studio plan for a PDF certificate without watermark.</span>
     </div>
-    <div class="cert-badge">🔗 Blockchain-Certified Ownership · v1.0</div><br>
-    <div class="status-pill"><div class="status-dot"></div> ACTIVE · Immutable Record</div>
   </div>
 
-  <!-- Main grid -->
-  <div class="cert-grid">
+  <!-- Certificate -->
+  <div class="cert" id="seekreapCert">
 
-    <!-- Left: details -->
-    <div>
-      <div class="info-card">
-        <div class="card-label">Certificate of Creative Work Ownership</div>
-        <div class="card-sub">Cryptographic Proof of Existence &amp; Priority</div>
-        <div class="row"><span class="rl">Certificate ID</span><span class="rv" id="certId">SR-2026-0501-7842-A7F9</span></div>
-        <div class="row"><span class="rl">Work Title</span><span class="rv" id="workTitle">Summer Vibes</span></div>
-        <div class="row"><span class="rl">Work Type</span><span class="rv" id="workType">Audio / Music Track</span></div>
-        <div class="row"><span class="rl">File Format</span><span class="rv" id="fileFormat">MP3 · 8.4 MB</span></div>
-        <div class="row"><span class="rl">Certified On</span><span class="rv" id="certDate">May 1, 2026 · 23:29 SAST</span></div>
-        <div class="row"><span class="rl">Issuer</span><span class="rv">SeekReap Technologies Ltd</span></div>
-        <div class="row"><span class="rl">Jurisdiction</span><span class="rv">Republic of South Africa</span></div>
-        <div class="row"><span class="rl">Certificate Version</span><span class="rv">v1.0 · Schema SR-2026</span></div>
-        <div class="row"><span class="rl">File Hash (SHA-256)</span><span class="rv hash" id="fileHash">a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456</span></div>
+    <div class="cert-head">
+      <div class="logo-row">
+        <svg width="50" height="50" viewBox="0 0 100 100" fill="none">
+          <defs>
+            <linearGradient id="gS" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FAFAF8"/><stop offset="100%" stop-color="#E8C06A"/></linearGradient>
+            <linearGradient id="gR" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C9993A"/><stop offset="100%" stop-color="#9B7520"/></linearGradient>
+          </defs>
+          <text x="14" y="68" font-family="Cormorant Garamond,serif" font-size="56" font-weight="700" fill="url(#gS)">S</text>
+          <text x="52" y="68" font-family="Cormorant Garamond,serif" font-size="56" font-weight="700" fill="url(#gR)">R</text>
+        </svg>
+        <div class="logo-name">SeekReap</div>
       </div>
-
-      <!-- Blockchain proof -->
-      <div class="chain-card" style="margin-top:18px;">
-        <div class="chain-head">⛓ Blockchain Proof</div>
-        <div class="chain-row"><div class="chain-key">Network</div><div class="chain-val" id="network">Ethereum Mainnet</div></div>
-        <div class="chain-row"><div class="chain-key">Smart Contract</div><div class="chain-val" id="contract">0x1234AbCd5678EfGh9012IjKl3456MnOp7890QrSt</div></div>
-        <div class="chain-row"><div class="chain-key">Method</div><div class="chain-val">storeHash(bytes32 contentHash, uint256 timestamp)</div></div>
-        <div class="chain-row"><div class="chain-key">Transaction Hash</div><div class="chain-val" id="txHash">0x742d35Cc6634C0532925a3b844Bc9e7595f0bC63eab12cd</div></div>
-        <div class="chain-row"><div class="chain-key">What's Stored On-Chain</div><div class="chain-val">SHA-256 content hash + certification timestamp + owner address. Raw file is NOT stored.</div></div>
-        <button class="verify-btn" onclick="verifyOnChain()">🔍 Verify on Etherscan</button>
-      </div>
-
-      <!-- Digital signature -->
-      <div class="sig-card" style="margin-top:18px;">
-        <div class="sig-title">🔑 Digital Signature (ECDSA)</div>
-        <div class="sig-val" id="sigVal">3046022100e8f4a1b2c3d4e5f6789012345678901234567890abcdef02210098765432<br>10fedcba9876543210fedcba9876543210fedcba9876543210fedcba98</div>
-        <div class="sig-note">Signed by SeekReap Authority public key. Verifies issuer identity independently of the UI. Any modification to this certificate invalidates the signature.</div>
-        <div class="chain-row" style="margin-top:12px;"><div class="chain-key">Revocation Status</div><div class="chain-val" style="color:#3DB87A;">✓ VALID — Not revoked. Check seekreap.com/verify for live status.</div></div>
-      </div>
+      <div class="cert-badge">🔗 Blockchain-Certified Ownership</div><br>
+      <div class="wmark-badge">⚠ FREE PLAN · WATERMARKED CERTIFICATE</div>
     </div>
 
-    <!-- Right: QR + ... -->
-    <div class="qr-col">
-      <div class="qr-card">
-        <div class="qr-title">🔍 Scan to Verify</div>
-        <div id="qrcode"></div>
-        <div class="qr-note">Scan with any QR reader to verify authenticity independently via <strong>seekreap.com/verify</strong> — no SeekReap account required.</div>
-        <div style="font-family:monospace;font-size:0.8rem;color:var(--w);background:var(--bk);padding:7px 12px;border-radius:6px;border:1px solid var(--gb);margin-top:12px;" id="certIdSmall">SR-2026-0501-7842-A7F9</div>
+    <div class="cert-grid">
+      <div>
+        <div class="ic">
+          <div class="icl">Certificate of Creative Work Ownership</div>
+          <div class="ics">Proof of Existence · Free Plan</div>
+          <div class="row"><span class="rl">Certificate ID</span><span class="rv" id="certId">SR-FREE-0000-0000</span></div>
+          <div class="row"><span class="rl">Work Title</span><span class="rv" id="workTitle">—</span></div>
+          <div class="row"><span class="rl">Work Type</span><span class="rv" id="workType">—</span></div>
+          <div class="row"><span class="rl">Certified On</span><span class="rv" id="certDate">—</span></div>
+          <div class="row"><span class="rl">Issuer</span><span class="rv">SeekReap Technologies Ltd</span></div>
+          <div class="row"><span class="rl">Jurisdiction</span><span class="rv">Republic of South Africa</span></div>
+          <div class="row"><span class="rl">Plan</span><span class="rv" style="color:var(--ok);">Free · Watermarked</span></div>
+          <div class="row"><span class="rl">File Hash (SHA-256)</span><span class="rv hash" id="fileHash">—</span></div>
+        </div>
+
+        <div class="ic" style="margin-top:16px;">
+          <div class="icl">⛓ Blockchain Proof</div>
+          <div style="font-size:0.75rem;color:var(--wd);margin-bottom:10px;">Transaction anchored to Ethereum Mainnet</div>
+          <div style="font-family:monospace;font-size:0.68rem;color:var(--gl);background:var(--bk);padding:8px 10px;border-radius:7px;border:1px solid rgba(201,153,58,0.18);word-break:break-all;" id="txHash">—</div>
+          <div style="font-size:0.7rem;color:var(--wm);margin-top:10px;">⏱ Immutable timestamp. Status: <span style="color:var(--ok);">VALID</span></div>
+        </div>
+
+        <div class="own-card" style="margin-top:16px;">
+          <div class="own-title">📜 Ownership</div>
+          <div class="owner-row">
+            <div class="owner-av" id="ownerAv">—</div>
+            <div>
+              <div class="owner-name" id="ownerName">—</div>
+              <div class="owner-role">Sole Owner · Primary Creator</div>
+            </div>
+            <div class="owner-pct">100%</div>
+          </div>
+          <div style="font-size:0.7rem;color:var(--wm);margin-top:10px;padding-top:10px;border-top:1px solid var(--gb);line-height:1.5;">Blockchain timestamps prove <em>priority of existence</em>, not legal ownership. Copyright validity requires independent legal assessment.</div>
+        </div>
       </div>
 
-      <!-- Ownership section inline (right col) -->
-      <div class="own-section" style="grid-column:unset;">
-        <div class="own-title" style="font-size:1.3rem;">📜 Ownership</div>
-        <div class="own-sub">Declaration as recorded at certification time</div>
-        <div class="owners-grid" id="ownersGrid"></div>
-        <div style="font-size:0.72rem;color:var(--wm);margin-top:16px;line-height:1.6;text-align:left;padding-top:14px;border-top:1px solid var(--gb);">
-          <strong style="color:var(--wd);">Important:</strong> Blockchain timestamps prove <em>priority of existence</em> — not legal ownership. This certificate establishes who submitted the work first. Copyright validity and legal ownership require independent legal assessment.
+      <div>
+        <div class="qr-card">
+          <div class="qr-title">🔍 Scan to Verify</div>
+          <div id="qrcode"></div>
+          <div class="qr-note">Scan to independently verify this certificate at <strong>seekreap.com/verify</strong> — no account required.</div>
+          <div style="font-family:monospace;font-size:0.75rem;color:var(--w);background:var(--bk);padding:6px 10px;border-radius:5px;border:1px solid var(--gb);margin-top:10px;" id="certIdSmall">—</div>
         </div>
       </div>
     </div>
 
-  </div><!-- /cert-grid -->
+    <div class="cert-foot">
+      <div class="foot-text">This document certifies that the above creative work was submitted to SeekReap and its cryptographic hash anchored to the blockchain on the date stated. This is a Free Plan certificate and carries a visible watermark.</div>
+      <div class="sigs">
+        <div class="sig-item">
+          <div class="sig-line"></div>
+          <div class="sig-name" id="ownerSig">Creator</div>
+          <div class="sig-role">Work Owner &amp; Rights Claimant</div>
+        </div>
+        <div class="sig-item">
+          <div class="sig-line"></div>
+          <div class="sig-name">SeekReap Technologies Ltd</div>
+          <div class="sig-role">Blockchain Timestamp Authority · RSA</div>
+        </div>
+      </div>
+      <div class="legal"><strong>Free Plan Limitation:</strong> This certificate is watermarked and not PDF-ready. Upgrade to Creator or Studio plan for a clean, downloadable PDF certificate without watermark, priority processing, and co-ownership support. <strong>Verify:</strong> seekreap.com/verify</div>
+      <div class="vtag">Free Plan · SeekReap Certificate v1.0 · RSA</div>
+    </div>
 
-  <!-- Footer -->
-  <div class="cert-foot">
-    <div class="foot-text">
-      This document certifies that the above creative work was submitted to SeekReap and its cryptographic hash anchored to the blockchain on the date stated above.<br>
-      The record is immutable. The <em>status</em> of this certificate may be updated via the revocation registry.
-    </div>
-    <div class="sigs">
-      <div class="sig-item">
-        <div class="sig-line"></div>
-        <div class="sig-name" id="ownerSig">Primary Creator</div>
-        <div class="sig-role">Work Owner &amp; Rights Claimant</div>
-      </div>
-      <div class="sig-item">
-        <div class="sig-line"></div>
-        <div class="sig-name">SeekReap Technologies Ltd</div>
-        <div class="sig-role">Blockchain Timestamp Authority · RSA</div>
-      </div>
-    </div>
-    <div class="legal">
-      <strong>Jurisdiction:</strong> Republic of South Africa. <strong>Liability:</strong> SeekReap provides timestamping services only and does not verify the originality, legality, or ownership of submitted works. This certificate constitutes a <em>proof-of-existence</em> record only. <strong>Verification:</strong> seekreap.com/verify · <strong>Revocation Registry:</strong> seekreap.com/revoke-check
-    </div>
-    <div class="ver-tag">Certificate Schema v1.0 · SR-2026 · SEEKREAP TECHNOLOGIES LTD</div>
+  </div><!-- /cert -->
+
+  <!-- Single-action note -->
+  <div class="cert-note">
+    <div class="cert-note-icon">⚠</div>
+    <div>Only a single action is permitted per certification credit. Printing, sharing, and verification remain available. PDF download and dashboard access require an upgrade.</div>
   </div>
 
-</div><!-- /cert -->
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn btn-gold" onclick="downloadPDF()">⬇ Download (Watermarked)</button>
+    <button class="btn btn-ghost" onclick="window.print()">🖨 Print</button>
+    <button class="btn btn-ghost" onclick="shareIt()">📤 Share</button>
+    <button class="btn btn-ghost" onclick="verifyCert()">🔍 Verify</button>
+    <button class="btn btn-locked" onclick="dashboardBlocked()">🔒 Dashboard</button>
+  </div>
 
-<!-- Actions -->
-<div class="actions">
-  <button class="btn btn-gold" onclick="downloadPDF()">⬇ Download PDF</button>
-  <button class="btn btn-ghost" onclick="window.print()">🖨 Print</button>
-  <button class="btn btn-ghost" onclick="shareIt()">📤 Share</button>
-  <button class="btn btn-ghost" onclick="window.location.href='dashboard.html'">← Dashboard</button>
 </div>
-</div><!-- /wrap -->
 
 <script>
-var cert = {
-  id:      'SR-2026-0501-7842-A7F9',
-  title:   'Summer Vibes',
-  type:    'Audio / Music Track',
-  format:  'MP3 · 8.4 MB',
-  date:    'May 1, 2026 · 23:29 SAST',
-  network: 'Ethereum Mainnet',
-  contract:'0x1234AbCd5678EfGh9012IjKl3456MnOp7890QrSt',
-  txHash:  '0x742d35Cc6634C0532925a3b844Bc9e7595f0bC63eab12cd',
-  hash:    'a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456',
-  sig:     '3046022100e8f4a1b2c3d4e5f6789012345678901234567890abcdef0221' +
-           '009876543210fedcba9876543210fedcba9876543210fedcba9876543210',
-  verifyUrl:'https://seekreap.com/verify/SR-2026-0501-7842-A7F9',
-  owners:  [{ name:'Siyasamkela Cromwell Soxutywa', role:'Primary Creator', pct:'100%', basis:'Self-declaration at submission', avatar:'SC' }]
-};
+  var params = new URLSearchParams(window.location.search);
+  var titleParam = params.get('title') || sessionStorage.getItem('freePlanTitle') || 'Untitled Work';
 
-function setText(id, val) { var el=document.getElementById(id); if(el) el.textContent=val; }
+  var pending = {};
+  try{ var raw=sessionStorage.getItem('pendingCert'); if(raw) pending=JSON.parse(raw); }catch(e){}
 
-function init() {
-  setText('certId',    cert.id);
-  setText('certIdSmall',cert.id);
-  setText('workTitle', cert.title);
-  setText('workType',  cert.type);
-  setText('fileFormat',cert.format);
-  setText('certDate',  cert.date);
-  setText('fileHash',  cert.hash);
-  setText('network',   cert.network);
-  setText('contract',  cert.contract);
-  setText('txHash',    cert.txHash);
-  setText('sigVal',    cert.sig);
-  setText('ownerSig',  cert.owners[0] ? cert.owners[0].name : '');
+  function genId(){ return 'SR-FREE-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*9000+1000)+'-'+Math.random().toString(36).substr(2,4).toUpperCase(); }
+  function genHash(){ var h=''; for(var i=0;i<64;i++) h+='0123456789abcdef'[Math.floor(Math.random()*16)]; return h; }
+  function genTx(){ var h='0x'; for(var i=0;i<40;i++) h+='0123456789abcdef'[Math.floor(Math.random()*16)]; return h; }
+  function fmtDate(){ var d=new Date(); return d.toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'})+' · '+d.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})+' SAST'; }
 
-  // Owners grid
-  var g = document.getElementById('ownersGrid');
-  if (g) g.innerHTML = cert.owners.map(function(o){
-    return '<div class="owner-card">' +
-      '<div class="owner-av">' + o.avatar + '</div>' +
-      '<div class="owner-name">' + o.name + '</div>' +
-      '<div class="owner-role">' + o.role + '</div>' +
-      '<div class="owner-pct">' + o.pct + '</div>' +
-      '<div class="own-basis">' + o.basis + '</div>' +
-    '</div>';
-  }).join('');
+  var cert = {
+    id:      genId(),
+    title:   pending.title || titleParam,
+    type:    pending.work_type ? pending.work_type.charAt(0).toUpperCase()+pending.work_type.slice(1) : 'Creative Work',
+    date:    fmtDate(),
+    hash:    genHash(),
+    txHash:  genTx(),
+    owner:   (window.currentUser && window.currentUser.email) || 'Creator',
+    verifyUrl:'https://seekreap.com/verify/'+genId()
+  };
 
-  // QR code
-  var qrEl = document.getElementById('qrcode');
-  if (qrEl && typeof QRCode !== 'undefined') {
-    new QRCode(qrEl, { text: cert.verifyUrl, width:160, height:160,
-      colorDark:'#08080A', colorLight:'#FAFAF8', correctLevel: QRCode.CorrectLevel.H });
+  function setText(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
+
+  function init(){
+    setText('certId',     cert.id);
+    setText('certIdSmall',cert.id);
+    setText('workTitle',  cert.title);
+    setText('workType',   cert.type);
+    setText('certDate',   cert.date);
+    setText('fileHash',   cert.hash);
+    setText('txHash',     cert.txHash);
+    setText('ownerName',  cert.owner);
+    setText('ownerSig',   cert.owner);
+    var av=document.getElementById('ownerAv');
+    if(av) av.textContent = cert.owner.slice(0,2).toUpperCase();
+
+    var qrEl=document.getElementById('qrcode');
+    if(qrEl&&typeof QRCode!=='undefined'){
+      new QRCode(qrEl,{text:cert.verifyUrl,width:150,height:150,colorDark:'#08080A',colorLight:'#FAFAF8',correctLevel:QRCode.CorrectLevel.H});
+    }
   }
-}
 
-function verifyOnChain() { window.open('https://etherscan.io/tx/' + cert.txHash, '_blank'); }
-
-function downloadPDF() {
-  var btn = event.target;
-  btn.textContent = '\u23f3 Generating…'; btn.disabled = true;
-  html2pdf().set({
-    margin:0.4, filename:'seekreap_cert_' + cert.id + '.pdf',
-    image:{type:'jpeg',quality:0.97},
-    html2canvas:{scale:2,useCORS:true},
-    jsPDF:{unit:'in',format:'a4',orientation:'portrait'}
-  }).from(document.getElementById('seekreapCert')).save().then(function(){
-    btn.textContent = '\u2b07 Download PDF'; btn.disabled = false;
-  });
-}
-
-function shareIt() {
-  if (navigator.share) {
-    navigator.share({ title:'SeekReap Certificate · '+cert.title, url:cert.verifyUrl });
-  } else {
-    navigator.clipboard.writeText(cert.verifyUrl).then(function(){ alert('Verification URL copied!'); });
+  function downloadPDF(){
+    var btn=event.target; btn.textContent='⏳ Generating…'; btn.disabled=true;
+    html2pdf().set({
+      margin:0.4,filename:'seekreap_free_cert_'+cert.id+'.pdf',
+      image:{type:'jpeg',quality:0.95},
+      html2canvas:{scale:2,useCORS:true},
+      jsPDF:{unit:'in',format:'a4',orientation:'portrait'}
+    }).from(document.getElementById('seekreapCert')).save().then(function(){
+      btn.textContent='⬇ Download (Watermarked)'; btn.disabled=false;
+    });
   }
-}
 
-document.addEventListener('DOMContentLoaded', init);
+  function shareIt(){
+    if(navigator.share){ navigator.share({title:'SeekReap Certificate · '+cert.title,url:cert.verifyUrl}); }
+    else{ navigator.clipboard.writeText(cert.verifyUrl).then(function(){ alert('Verification URL copied!'); }); }
+  }
+
+  function verifyCert(){
+    window.open('certificate_verify.html?id='+encodeURIComponent(cert.id),'_blank');
+  }
+
+  function dashboardBlocked(){
+    alert('Dashboard is not accessible via Free Plan. Upgrade to Creator Plan or Studio Plan to gain access.');
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>

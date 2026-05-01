@@ -1,432 +1,312 @@
+/* ═══════════════════════════════════════════════════════════
+   SeekReap · certification_portal.js · complete rewrite
+   ═══════════════════════════════════════════════════════════ */
+
 // ── Step navigation ───────────────────────────────────────────────────────────
-var STEP_CARDS = {
-  1: 'step1Card',
-  2: 'step2Card',
-  3: 'step3Card',
-  4: 'step4Card',
-  5: 'step5collabCard',
-  6: 'stepFinalCard'
-};
-var STEP_INDICATORS = { 1:'step1', 2:'step2', 3:'step3', 4:'step4', 5:'step5c', 6:'stepFinal' };
+var CARDS = {1:'step1Card',2:'step2Card',3:'step3Card',4:'step4Card',5:'step5collabCard',6:'stepFinalCard'};
+var INDS  = {1:'step1',2:'step2',3:'step3',4:'step4',5:'step5c',6:'stepFinal'};
 
 window.showStep = function(n) {
-  Object.values(STEP_CARDS).forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.classList.add('hidden');
-  });
-  var card = document.getElementById(STEP_CARDS[n]);
-  if (card) card.classList.remove('hidden');
-
-  Object.values(STEP_INDICATORS).forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.classList.remove('active');
-  });
-  var ind = document.getElementById(STEP_INDICATORS[n]);
-  if (ind) ind.classList.add('active');
+  Object.values(CARDS).forEach(function(id){ var e=document.getElementById(id); if(e) e.classList.add('hidden'); });
+  var c=document.getElementById(CARDS[n]); if(c) c.classList.remove('hidden');
+  Object.values(INDS).forEach(function(id){ var e=document.getElementById(id); if(e) e.classList.remove('active'); });
+  var ind=document.getElementById(INDS[n]); if(ind) ind.classList.add('active');
 };
 
 // ── Plan selection ────────────────────────────────────────────────────────────
 window.selectedPlan = 'free';
 
 window.selectPlan = function(el) {
-  document.querySelectorAll('.plan-card').forEach(function(c) {
-    c.classList.remove('selected');
-  });
+  document.querySelectorAll('.plan-card').forEach(function(c){ c.classList.remove('selected'); });
   el.classList.add('selected');
   window.selectedPlan = el.dataset.plan;
-
-  // Co-ownership only available on studio plan
-  var collabStep = document.getElementById('step5c');
+  var collabBtn    = document.getElementById('collabModeBtn');
+  var step5c       = document.getElementById('step5c');
   var stepFinalNum = document.getElementById('stepFinalNum');
-  var stepFinalLabel = document.getElementById('stepFinalLabel');
-  if (window.selectedPlan === 'studio') {
-    if (collabStep) collabStep.style.display = '';
-    if (stepFinalNum) stepFinalNum.textContent = '6';
+  if (window.selectedPlan === 'free') {
+    if (collabBtn) { collabBtn.style.opacity='0.35'; collabBtn.style.pointerEvents='none'; collabBtn.style.cursor='not-allowed'; }
+    if (step5c) step5c.style.display='none';
+    if (stepFinalNum) stepFinalNum.textContent='5';
   } else {
-    if (collabStep) collabStep.style.display = 'none';
-    if (stepFinalNum) stepFinalNum.textContent = '5';
+    if (collabBtn) { collabBtn.style.opacity=''; collabBtn.style.pointerEvents=''; collabBtn.style.cursor=''; }
+    if (window.selectedPlan === 'studio') {
+      if (step5c) step5c.style.display='';
+      if (stepFinalNum) stepFinalNum.textContent='6';
+    } else {
+      if (step5c) step5c.style.display='none';
+      if (stepFinalNum) stepFinalNum.textContent='5';
+    }
   }
 };
 
-// ── Auth-aware init ───────────────────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", function() {
+// ── File helpers ──────────────────────────────────────────────────────────────
+function _fmtBytes(b){
+  if(b<1024) return b+' B';
+  if(b<1048576) return (b/1024).toFixed(1)+' KB';
+  return (b/1048576).toFixed(1)+' MB';
+}
+function _typeIcon(name){
+  var ext=(name.split('.').pop()||'').toLowerCase();
+  var m={mp3:'🎵',wav:'🎵',flac:'🎵',ogg:'🎵',aac:'🎵',
+         mp4:'🎬',mov:'🎬',avi:'🎬',mkv:'🎬',webm:'🎬',
+         jpg:'🖼️',jpeg:'🖼️',png:'🖼️',gif:'🖼️',webp:'🖼️',svg:'🖼️',
+         epub:'📖',pdf:'📄',
+         js:'💻',ts:'💻',py:'💻',html:'💻',css:'💻',json:'💻',txt:'📄'};
+  return m[ext]||'📄';
+}
 
-  // Show loading overlay
-  var loadingMsg = document.createElement("div");
-  loadingMsg.id = "loadingState";
-  loadingMsg.style.cssText = "position:fixed;top:10px;left:50%;transform:translateX(-50%);padding:8px 16px;background:#222;color:#fff;border-radius:4px;z-index:9999;";
-  loadingMsg.innerText = "Preparing your dashboard\u2026";
-  document.body.appendChild(loadingMsg);
-
-  var continueBtn = document.getElementById("nextToDetailsBtn");
-  if (continueBtn) continueBtn.disabled = true;
-
-  if (typeof window.waitForAuth === "function") {
-    window.waitForAuth().then(function(user) {
-      var msg = document.getElementById("loadingState");
-      if (msg) msg.remove();
-
-      if (user) {
-        // Populate creator name in solo ownership box
-        var soloOwnerName = document.getElementById("soloOwnerName");
-        if (soloOwnerName && user.email) soloOwnerName.textContent = user.email;
-
-        // Wire Continue button (step 1 → step 2)
-        if (continueBtn) {
-          continueBtn.disabled = false;
-          continueBtn.addEventListener("click", function(e) {
-            e.preventDefault();
-            window.showStep(2);
-          });
-        }
-
-        // Wire step 2 → 3
-        var nextToOwnershipBtn = document.getElementById("nextToOwnershipBtn");
-        if (nextToOwnershipBtn) {
-          nextToOwnershipBtn.addEventListener("click", function(e) {
-            e.preventDefault();
-            var title = document.getElementById("workTitle");
-            if (!title || !title.value.trim()) {
-              alert("Please enter a work title before continuing.");
-              return;
-            }
-            window.showStep(3);
-          });
-        }
-
-        // Wire step 3 → 4
-        var nextToUploadBtn = document.getElementById("nextToUploadBtn");
-        if (nextToUploadBtn) {
-          nextToUploadBtn.addEventListener("click", function(e) {
-            e.preventDefault();
-            var isSolo = document.getElementById("soloModeBtn");
-            var isCollab = document.getElementById("collabModeBtn");
-            var soloActive = isSolo && isSolo.classList.contains('active');
-            var collabActive = isCollab && isCollab.classList.contains('active');
-            if (!soloActive && !collabActive) {
-              alert("Please select an ownership type.");
-              return;
-            }
-            var soloContent = document.getElementById("soloContent");
-            var collabContent = document.getElementById("collabContent");
-            if (soloContent) soloContent.classList.toggle('hidden', !soloActive);
-            if (collabContent) collabContent.classList.toggle('hidden', !collabActive);
-            window.showStep(4);
-          });
-        }
-
-        // Wire ownership toggle buttons
-        var soloModeBtn = document.getElementById("soloModeBtn");
-        var collabModeBtn = document.getElementById("collabModeBtn");
-        if (soloModeBtn) {
-          soloModeBtn.addEventListener("click", function() {
-            soloModeBtn.classList.add('active');
-            if (collabModeBtn) collabModeBtn.classList.remove('active');
-          });
-        }
-        if (collabModeBtn) {
-          collabModeBtn.addEventListener("click", function() {
-            collabModeBtn.classList.add('active');
-            if (soloModeBtn) soloModeBtn.classList.remove('active');
-          });
-        }
-
-      } else {
-        alert("You must sign in to continue.");
-        window.location.href = '/signup_signin.html?redirect=' +
-          encodeURIComponent(window.location.href);
-      }
-    });
-  } else {
-    console.error("waitForAuth not available — check script order in certification_portal.html");
-    var msg = document.getElementById("loadingState");
-    if (msg) msg.remove();
-  }
-});
-
-
-// ── Upload wiring ─────────────────────────────────────────────────────────────
-(function () {
-  var uploadedFile = null;
-
-  var FILE_ICONS = {
-    audio: '🎵', video: '🎬', image: '🖼️', epub: '📖', pdf: '📄', code: '💻'
-  };
-
-  function formatBytes(b) {
-    if (b < 1024) return b + ' B';
-    if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
-    return (b / 1048576).toFixed(1) + ' MB';
-  }
-
-  function getTypeIcon(name) {
-    var ext = (name.split('.').pop() || '').toLowerCase();
-    var map = { mp3:'audio', wav:'audio', flac:'audio', ogg:'audio',
-                mp4:'video', mov:'video', avi:'video', mkv:'video',
-                jpg:'image', jpeg:'image', png:'image', gif:'image', webp:'image',
-                epub:'epub', pdf:'pdf',
-                js:'code', py:'code', ts:'code', html:'code', css:'code' };
-    return FILE_ICONS[map[ext]] || '📄';
-  }
-
-  function simulateProgress(barId, textId, onDone) {
-    var bar  = document.getElementById(barId);
-    var text = document.getElementById(textId);
-    var prog = document.getElementById(barId.replace('Bar', ''));
-    if (prog) prog.style.display = 'block';
-    var pct = 0;
-    var iv = setInterval(function () {
-      pct += Math.random() * 18 + 5;
-      if (pct >= 100) { pct = 100; clearInterval(iv); if (onDone) onDone(); }
-      if (bar)  bar.style.width = pct + '%';
-      if (text) text.textContent = pct < 100 ? 'Processing… ' + Math.floor(pct) + '%' : 'Ready ✓';
-    }, 120);
-  }
-
-  function handleFile(file, prefix) {
-    uploadedFile = file;
-    var nameEl = document.getElementById(prefix + 'FileName');
-    var sizeEl = document.getElementById(prefix + 'FileSz');
-    var iconEl = document.getElementById(prefix + 'FileIcon');
-    var infoEl = document.getElementById(prefix + 'FileInfo');
-    var areaEl = document.getElementById(prefix + 'UploadArea');
-    var step4Next = document.getElementById('step4NextBtn');
-
-    if (nameEl) nameEl.textContent = file.name;
-    if (sizeEl) sizeEl.textContent = formatBytes(file.size);
-    if (iconEl) iconEl.textContent = getTypeIcon(file.name);
-    if (infoEl) infoEl.style.display = 'flex';
-    if (areaEl) areaEl.classList.add('has-file');
-
-    // Disable Continue until processing done
-    if (step4Next) step4Next.disabled = true;
-
-    simulateProgress(prefix + 'ProgressBar', prefix + 'ProgressText', function () {
-      if (step4Next) step4Next.disabled = false;
-    });
-  }
-
-  function resetUpload(prefix) {
-    uploadedFile = null;
-    var nameEl   = document.getElementById(prefix + 'FileName');
-    var sizeEl   = document.getElementById(prefix + 'FileSz');
-    var iconEl   = document.getElementById(prefix + 'FileIcon');
-    var infoEl   = document.getElementById(prefix + 'FileInfo');
-    var areaEl   = document.getElementById(prefix + 'UploadArea');
-    var barEl    = document.getElementById(prefix + 'ProgressBar');
-    var textEl   = document.getElementById(prefix + 'ProgressText');
-    var progEl   = document.getElementById(prefix + 'Progress');
-    var inputEl  = document.getElementById(prefix + 'FileInput');
-    var step4Next = document.getElementById('step4NextBtn');
-
-    if (nameEl)  nameEl.textContent  = '—';
-    if (sizeEl)  sizeEl.textContent  = '—';
-    if (iconEl)  iconEl.textContent  = '📄';
-    if (infoEl)  infoEl.style.display = 'none';
-    if (areaEl)  areaEl.classList.remove('has-file');
-    if (barEl)   barEl.style.width   = '0%';
-    if (textEl)  textEl.textContent  = 'Uploading...';
-    if (progEl)  progEl.style.display = 'none';
-    if (inputEl) inputEl.value = '';
-    if (step4Next) step4Next.disabled = true;
-  }
-
-  function wireZone(prefix) {
-    var area     = document.getElementById(prefix + 'UploadArea');
-    var input    = document.getElementById(prefix + 'FileInput');
-    var resetBtn = document.getElementById(prefix + 'ResetBtn');
-
-    if (!area || !input) return;
-
-    // Click area → trigger file input
-    area.addEventListener('click', function (e) {
-      if (e.target === resetBtn || (resetBtn && resetBtn.contains(e.target))) return;
-      input.click();
-    });
-
-    // File chosen via dialog
-    input.addEventListener('change', function () {
-      if (input.files && input.files[0]) handleFile(input.files[0], prefix);
-    });
-
-    // Drag and drop
-    area.addEventListener('dragover', function (e) {
-      e.preventDefault();
-      area.classList.add('drag-over');
-    });
-    area.addEventListener('dragleave', function () {
-      area.classList.remove('drag-over');
-    });
-    area.addEventListener('drop', function (e) {
-      e.preventDefault();
-      area.classList.remove('drag-over');
-      var f = e.dataTransfer.files && e.dataTransfer.files[0];
-      if (f) handleFile(f, prefix);
-    });
-
-    // Reset button
-    if (resetBtn) {
-      resetBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        resetUpload(prefix);
-      });
-    }
-  }
-
-  // ── Wire step4NextBtn → step 5 (collab) or stepFinal (solo) ─────────────────
-  document.addEventListener('DOMContentLoaded', function () {
-    wireZone('solo');
-    wireZone('primary');
-
-    // Disable Continue on step 4 by default until file is chosen
-    var step4Next = document.getElementById('step4NextBtn');
-    if (step4Next) {
-      step4Next.disabled = true;
-      step4Next.addEventListener('click', function (e) {
-        e.preventDefault();
-        if (!uploadedFile) {
-          alert('Please upload your work file before continuing.');
-          return;
-        }
-        var collabActive = document.getElementById('collabModeBtn') &&
-          document.getElementById('collabModeBtn').classList.contains('active');
-        window.showStep(collabActive ? 5 : 6);
-      });
-    }
-  });
-})();
-
-// ── File Previewers ───────────────────────────────────────────────────────────
+// ── File previewers ───────────────────────────────────────────────────────────
 window._showPreview = function(file, prefix) {
-  var embedEl = document.getElementById(prefix + 'ViewerEmbed');
-  var labelEl = document.getElementById(prefix + 'ViewerLabel');
-  if (!embedEl) return;
-  embedEl.innerHTML = '';
-  var url  = URL.createObjectURL(file);
-  var t    = file.type || '';
-  var ext  = (file.name.split('.').pop() || '').toLowerCase();
+  var embed = document.getElementById(prefix+'ViewerEmbed');
+  var label = document.getElementById(prefix+'ViewerLabel');
+  if (!embed) return;
+  embed.innerHTML = '';
+  embed.style.cssText = 'display:block;margin-top:14px;';
+  var url = URL.createObjectURL(file);
+  var t   = file.type || '';
+  var ext = (file.name.split('.').pop()||'').toLowerCase();
+  var border = 'border:1px solid rgba(201,153,58,0.25);border-radius:8px;overflow:hidden;';
 
   if (t.startsWith('audio/')) {
-    if (labelEl) labelEl.textContent = 'Audio Player';
-    var a = document.createElement('audio');
-    a.controls = true; a.style.cssText = 'width:100%;margin-top:10px;'; a.src = url;
-    embedEl.appendChild(a);
+    if(label){label.textContent='🎵 Audio Player';label.style.display='block';}
+    var wrap=document.createElement('div');
+    wrap.style.cssText=border+'background:rgba(201,153,58,0.06);padding:20px;';
+    var a=document.createElement('audio');
+    a.controls=true;a.style.cssText='width:100%;display:block;outline:none;';a.src=url;
+    wrap.appendChild(a);embed.appendChild(wrap);
 
   } else if (t.startsWith('video/')) {
-    if (labelEl) labelEl.textContent = 'Video Player';
-    var v = document.createElement('video');
-    v.controls = true;
-    v.style.cssText = 'width:100%;max-height:220px;margin-top:10px;border-radius:6px;display:block;';
-    v.src = url; embedEl.appendChild(v);
+    if(label){label.textContent='🎬 Video Player';label.style.display='block';}
+    var v=document.createElement('video');
+    v.controls=true;v.style.cssText='width:100%;max-height:260px;display:block;border-radius:8px;background:#000;';
+    v.src=url;embed.appendChild(v);
 
   } else if (t.startsWith('image/')) {
-    if (labelEl) labelEl.textContent = 'Image Preview';
-    var img = document.createElement('img');
-    img.src = url;
-    img.style.cssText = 'max-width:100%;max-height:220px;border-radius:6px;margin:10px auto 0;display:block;';
-    embedEl.appendChild(img);
+    if(label){label.textContent='🖼️ Image Preview';label.style.display='block';}
+    var img=document.createElement('img');
+    img.src=url;img.style.cssText='max-width:100%;max-height:260px;display:block;border-radius:8px;object-fit:contain;';
+    embed.appendChild(img);
 
-  } else if (t === 'application/pdf' || ext === 'pdf') {
-    if (labelEl) labelEl.textContent = 'PDF Viewer';
-    var fr = document.createElement('iframe');
-    fr.src = url;
-    fr.style.cssText = 'width:100%;height:300px;border:none;border-radius:6px;margin-top:10px;background:#fff;';
-    embedEl.appendChild(fr);
+  } else if (t==='application/pdf'||ext==='pdf') {
+    if(label){label.textContent='📄 PDF Viewer';label.style.display='block';}
+    var fr=document.createElement('iframe');
+    fr.src=url;fr.style.cssText='width:100%;height:340px;border:none;border-radius:8px;display:block;background:#fff;';
+    embed.appendChild(fr);
 
-  } else if (t === 'application/epub+zip' || ext === 'epub') {
-    if (labelEl) labelEl.textContent = 'eBook / EPUB';
-    embedEl.innerHTML = '<div style="padding:16px;background:rgba(201,153,58,0.08);border:1px solid rgba(201,153,58,0.25);border-radius:6px;margin-top:10px;font-size:0.85rem;color:#E8C06A;">' +
-      '\uD83D\uDCD6 <strong>' + file.name + '</strong><br>' +
-      '<span style="color:rgba(250,250,248,0.55);font-size:0.78rem;">Full eBook reader available after certification</span></div>';
+  } else if (ext==='epub') {
+    if(label){label.textContent='📖 eBook / EPUB';label.style.display='block';}
+    embed.innerHTML='<div style="'+border+'background:rgba(201,153,58,0.06);padding:24px;text-align:center;">' +
+      '<div style="font-size:2.5rem;margin-bottom:10px;">📖</div>' +
+      '<div style="font-weight:600;color:#E8C06A;margin-bottom:6px;">'+file.name+'</div>' +
+      '<div style="font-size:0.78rem;color:rgba(250,250,248,0.5);">Full reader available after certification</div></div>';
 
   } else {
-    if (labelEl) labelEl.textContent = 'Code / Script Preview';
-    var rd = new FileReader();
-    rd.onload = function(e) {
-      var pre = document.createElement('pre');
-      pre.style.cssText = 'background:rgba(0,0,0,0.4);border:1px solid rgba(201,153,58,0.2);border-radius:6px;' +
-        'padding:12px;font-size:0.72rem;color:#E8C06A;overflow:auto;max-height:220px;margin-top:10px;' +
-        'white-space:pre-wrap;word-break:break-all;';
-      pre.textContent = (e.target.result || '').slice(0, 3000);
-      embedEl.appendChild(pre);
+    if(label){label.textContent='💻 Code / Script Preview';label.style.display='block';}
+    var rd=new FileReader();
+    rd.onload=function(e){
+      var pre=document.createElement('pre');
+      pre.style.cssText=border+'background:rgba(0,0,0,0.5);padding:14px;font-size:0.72rem;' +
+        'color:#E8C06A;overflow:auto;max-height:260px;white-space:pre-wrap;word-break:break-all;' +
+        'font-family:monospace;line-height:1.5;display:block;';
+      pre.textContent=(e.target.result||'').slice(0,4000)+((e.target.result||'').length>4000?'\n…(truncated)':'');
+      embed.appendChild(pre);
     };
     rd.readAsText(file);
   }
 };
 
-document.addEventListener('DOMContentLoaded', function () {
+// ── Upload zone ───────────────────────────────────────────────────────────────
+var _uploadedFile = null;
 
-  // Hook previewers onto file inputs
-  ['solo', 'primary'].forEach(function(prefix) {
-    var inp = document.getElementById(prefix + 'FileInput');
-    if (inp) inp.addEventListener('change', function() {
-      if (inp.files && inp.files[0]) window._showPreview(inp.files[0], prefix);
-    });
+function _handleFile(file, prefix) {
+  _uploadedFile = file;
+  var n=document.getElementById(prefix+'FileName');
+  var s=document.getElementById(prefix+'FileSz');
+  var i=document.getElementById(prefix+'FileIcon');
+  var info=document.getElementById(prefix+'FileInfo');
+  var area=document.getElementById(prefix+'UploadArea');
+  var next=document.getElementById('step4NextBtn');
+  if(n)    n.textContent=file.name;
+  if(s)    s.textContent=_fmtBytes(file.size);
+  if(i)    i.textContent=_typeIcon(file.name);
+  if(info) info.style.display='flex';
+  if(area) area.classList.add('has-file');
+  if(next) next.disabled=true;
+  window._showPreview(file, prefix);
+  var bar=document.getElementById(prefix+'ProgressBar');
+  var txt=document.getElementById(prefix+'ProgressText');
+  var prg=document.getElementById(prefix+'Progress');
+  if(prg) prg.style.display='block';
+  var pct=0;
+  var iv=setInterval(function(){
+    pct+=Math.random()*18+8;
+    if(pct>=100){pct=100;clearInterval(iv);if(next)next.disabled=false;if(txt)txt.textContent='Ready ✓';}
+    if(bar) bar.style.width=pct+'%';
+    if(txt&&pct<100) txt.textContent='Processing… '+Math.floor(pct)+'%';
+  },100);
+}
+
+function _resetUpload(prefix){
+  _uploadedFile=null;
+  var ids={FileName:'—',FileSz:'—',FileIcon:'📄',ProgressText:'Uploading...'};
+  Object.keys(ids).forEach(function(k){
+    var el=document.getElementById(prefix+k); if(el) el.textContent=ids[k];
   });
+  var hide=['FileInfo','Progress'];
+  hide.forEach(function(k){ var el=document.getElementById(prefix+k); if(el) el.style.display='none'; });
+  var bar=document.getElementById(prefix+'ProgressBar'); if(bar) bar.style.width='0%';
+  var inp=document.getElementById(prefix+'FileInput');   if(inp) inp.value='';
+  var area=document.getElementById(prefix+'UploadArea'); if(area) area.classList.remove('has-file');
+  var emb=document.getElementById(prefix+'ViewerEmbed'); if(emb){emb.innerHTML='';emb.style.display='none';}
+  var lbl=document.getElementById(prefix+'ViewerLabel'); if(lbl) lbl.style.display='none';
+  var next=document.getElementById('step4NextBtn'); if(next) next.disabled=true;
+}
 
-  // ── Co-owner modal & splits ───────────────────────────────────────────────
-  var collaborators = [];
+function _wireZone(prefix){
+  var area=document.getElementById(prefix+'UploadArea');
+  var inp =document.getElementById(prefix+'FileInput');
+  var rst =document.getElementById(prefix+'ResetBtn');
+  if(!area||!inp) return;
+  area.addEventListener('click',function(e){
+    if(rst&&(e.target===rst||rst.contains(e.target))) return;
+    inp.click();
+  });
+  inp.addEventListener('change',function(){
+    if(inp.files&&inp.files[0]) _handleFile(inp.files[0],prefix);
+  });
+  area.addEventListener('dragover',function(e){ e.preventDefault(); area.classList.add('drag-over'); });
+  area.addEventListener('dragleave',function(){ area.classList.remove('drag-over'); });
+  area.addEventListener('drop',function(e){
+    e.preventDefault(); area.classList.remove('drag-over');
+    var f=e.dataTransfer.files&&e.dataTransfer.files[0];
+    if(f) _handleFile(f,prefix);
+  });
+  if(rst) rst.addEventListener('click',function(e){ e.stopPropagation(); _resetUpload(prefix); });
+}
 
-  function initPrimaryRow() {
-    var user  = window.currentUser || {};
-    var label = user.email || 'You (Primary Creator)';
-    collaborators = [{ name: label, email: user.email || '', split: 100, role: 'Primary Creator', isPrimary: true }];
-    renderCollaborators();
-  }
+// ── Co-owner management ───────────────────────────────────────────────────────
+var _collabs = [];
 
-  function renderCollaborators() {
-    var list = document.getElementById('collaboratorList');
-    if (!list) return;
-    list.innerHTML = collaborators.map(function(c, i) {
-      return '<div style="display:flex;justify-content:space-between;align-items:center;' +
-             'padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);">' +
-        '<div>' +
-          '<div style="font-size:0.88rem;font-weight:600;">' + c.name + '</div>' +
-          '<div style="font-size:0.75rem;color:rgba(250,250,248,0.5);">' + c.role +
-            (c.email ? ' \u00b7 ' + c.email : '') + '</div>' +
+function _initPrimary(){
+  var u=window.currentUser||{};
+  var name=(u.user_metadata&&u.user_metadata.full_name)||u.email||'You (Primary Creator)';
+  _collabs=[{name:name,email:u.email||'',split:100,role:'Primary Creator',isPrimary:true}];
+  _renderCollabs();
+}
+window._initPrimaryRow = _initPrimary;
+
+function _renderCollabs(){
+  var list=document.getElementById('collaboratorList');
+  if(!list) return;
+  list.innerHTML = _collabs.map(function(c,i){
+    var readonlyAttr = c.isPrimary ? 'disabled style="flex:1;opacity:0.35;cursor:not-allowed;"' : 'style="flex:1;accent-color:#C9993A;cursor:pointer;"';
+    return '<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(201,153,58,0.18);border-radius:8px;padding:14px;margin-bottom:10px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
+        '<div style="min-width:0;flex:1;">' +
+          '<div style="font-size:0.88rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+c.name+'</div>' +
+          '<div style="font-size:0.72rem;color:rgba(250,250,248,0.45);">'+c.role+(c.email&&!c.isPrimary?' · '+c.email:'')+'</div>' +
         '</div>' +
-        '<div style="display:flex;align-items:center;gap:10px;">' +
-          '<span style="color:#C9993A;font-weight:700;font-size:1rem;">' + c.split + '%</span>' +
+        '<div style="display:flex;align-items:center;gap:7px;flex-shrink:0;margin-left:10px;">' +
+          '<span style="color:#C9993A;font-weight:700;font-size:1rem;min-width:40px;text-align:right;" id="pct_'+i+'">'+c.split+'%</span>' +
           (!c.isPrimary
-            ? '<button onclick="window._removeCoowner(' + i + ')" style="background:rgba(224,85,85,0.15);' +
-              'border:1px solid rgba(224,85,85,0.3);color:#f08080;border-radius:4px;' +
-              'padding:3px 8px;font-size:0.75rem;cursor:pointer;">\u2715</button>'
+            ? '<button onclick="window._inviteOne('+i+')" title="Invite" style="background:rgba(201,153,58,0.1);border:1px solid rgba(201,153,58,0.3);color:#E8C06A;border-radius:4px;padding:3px 9px;font-size:0.75rem;cursor:pointer;">✉</button>' +
+              '<button onclick="window._removeOne('+i+')" title="Remove" style="background:rgba(224,85,85,0.1);border:1px solid rgba(224,85,85,0.3);color:#f08080;border-radius:4px;padding:3px 9px;font-size:0.75rem;cursor:pointer;">✕</button>'
             : '') +
         '</div>' +
-      '</div>';
-    }).join('');
-    renderSplitVisual();
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:8px;">' +
+        '<span style="font-size:0.68rem;color:rgba(250,250,248,0.3);white-space:nowrap;">1%</span>' +
+        '<input type="range" min="1" max="99" value="'+c.split+'" '+readonlyAttr+' oninput="window._sliderChange('+i+',this.value)">' +
+        '<span style="font-size:0.68rem;color:rgba(250,250,248,0.3);white-space:nowrap;">99%</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  _renderSplitBar();
+}
+
+window._sliderChange = function(idx,val){
+  val=parseInt(val,10);
+  if(isNaN(val)||idx===0) return;
+  var diff=val-_collabs[idx].split;
+  if(diff>0 && _collabs[0].split-diff < 1){ val=_collabs[idx].split+_collabs[0].split-1; diff=val-_collabs[idx].split; }
+  if(diff===0) return;
+  _collabs[0].split -= diff;
+  _collabs[idx].split = val;
+  _renderCollabs();
+};
+
+window._removeOne = function(idx){
+  if(!_collabs[idx]||_collabs[idx].isPrimary) return;
+  _collabs[0].split = Math.min(100, _collabs[0].split + _collabs[idx].split);
+  _collabs.splice(idx,1);
+  _renderCollabs();
+};
+
+window._inviteOne = function(idx){
+  var c=_collabs[idx];
+  if(!c||!c.email){ alert('No email for this co-owner.'); return; }
+  alert('Invitation queued for: '+c.email);
+};
+
+function _renderSplitBar(){
+  var vis=document.getElementById('splitVisual');
+  var warn=document.getElementById('splitWarning');
+  if(!vis) return;
+  var total=_collabs.reduce(function(s,c){ return s+c.split; },0);
+  vis.innerHTML=_collabs.map(function(c){
+    return '<div title="'+c.name+': '+c.split+'%" style="display:inline-block;height:12px;width:'+c.split+
+      '%;background:'+(c.isPrimary?'#C9993A':'#3DB87A')+';border-radius:3px;margin-right:2px;vertical-align:top;transition:width 0.3s;"></div>';
+  }).join('');
+  if(warn){
+    warn.textContent = total===100 ? '✓ Splits balance to 100%' : '⚠ Total is '+total+'% — must equal exactly 100%';
+    warn.style.color = total===100 ? '#3DB87A' : '#f08080';
+  }
+}
+
+// ── Submit routing ────────────────────────────────────────────────────────────
+function _routeToPayment(){
+  var plan  = window.selectedPlan||'free';
+  var title = (document.getElementById('workTitle')||{}).value||'Untitled Work';
+  var wtype = (document.getElementById('workType') ||{}).value||'audio';
+  try {
+    sessionStorage.setItem('pendingCert', JSON.stringify({
+      title:title, work_type:wtype, plan:plan,
+      collaborators:_collabs.filter(function(c){ return !c.isPrimary; }),
+      ownership_split:_collabs.reduce(function(o,c){ o[c.email||c.name]=c.split; return o; },{})
+    }));
+  } catch(e){}
+  window.location.href='bill_review.html?plan='+encodeURIComponent(plan)+'&title='+encodeURIComponent(title);
+}
+
+// ── DOMContentLoaded ──────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function(){
+
+  // Loading overlay
+  var overlay=document.createElement('div');
+  overlay.id='loadingState';
+  overlay.style.cssText='position:fixed;top:12px;left:50%;transform:translateX(-50%);padding:9px 18px;background:#1a1a1a;color:#E8C06A;border:1px solid rgba(201,153,58,0.3);border-radius:6px;z-index:9999;font-size:0.83rem;letter-spacing:0.04em;';
+  overlay.textContent='Preparing your dashboard…';
+  document.body.appendChild(overlay);
+
+  // Wire upload zones immediately (no auth needed)
+  _wireZone('solo');
+  _wireZone('primary');
+
+  // Step 4 continue
+  var step4Next=document.getElementById('step4NextBtn');
+  if(step4Next){
+    step4Next.disabled=true;
+    step4Next.addEventListener('click',function(e){
+      e.preventDefault();
+      if(!_uploadedFile){ alert('Please upload your work file before continuing.'); return; }
+      var collabOn = document.getElementById('collabModeBtn') &&
+        document.getElementById('collabModeBtn').classList.contains('active');
+      if(collabOn && window.selectedPlan!=='free') window.showStep(5);
+      else _routeToPayment();
+    });
   }
 
-  window._removeCoowner = function(idx) {
-    if (!collaborators[idx] || collaborators[idx].isPrimary) return;
-    var freed = collaborators[idx].split;
-    collaborators.splice(idx, 1);
-    collaborators[0].split = Math.min(100, collaborators[0].split + freed);
-    renderCollaborators();
-  };
-
-  function renderSplitVisual() {
-    var vis  = document.getElementById('splitVisual');
-    var warn = document.getElementById('splitWarning');
-    if (!vis) return;
-    var total = collaborators.reduce(function(s, c) { return s + c.split; }, 0);
-    vis.innerHTML = collaborators.map(function(c) {
-      return '<div style="display:inline-block;height:14px;width:' + c.split + '%;' +
-             'background:' + (c.isPrimary ? '#C9993A' : '#3DB87A') + ';' +
-             'border-radius:3px;margin-right:2px;vertical-align:top;" title="' + c.name + ': ' + c.split + '%"></div>';
-    }).join('');
-    if (warn) {
-      if (total !== 100) {
-        warn.textContent = '\u26a0 Total is ' + total + '% \u2014 must equal exactly 100%';
-        warn.style.color = '#f08080';
-      } else {
-        warn.textContent = '\u2713 Splits balance to 100%';
-        warn.style.color = '#3DB87A';
-      }
-    }
-  }
-
+  // Co-owner modal
   var modal     = document.getElementById('coownerModal');
   var addBtn    = document.getElementById('addCollaboratorBtn');
   var cancelBtn = document.getElementById('coownerCancelBtn');
@@ -434,137 +314,149 @@ document.addEventListener('DOMContentLoaded', function () {
   var removeAll = document.getElementById('removeAllBtn');
   var inviteAll = document.getElementById('inviteAllBtn');
 
-  if (addBtn && modal) {
-    addBtn.addEventListener('click', function() {
-      var used = collaborators.reduce(function(s,c){ return s+c.split; }, 0);
-      var remaining = Math.max(0, 100 - used);
+  if(addBtn&&modal){
+    addBtn.addEventListener('click',function(){
       ['coFullName','coArtisticName','coCountry','coOwnershipTitle','coEmail'].forEach(function(id){
-        var el = document.getElementById(id); if(el) el.value = '';
+        var el=document.getElementById(id); if(el) el.value='';
       });
-      var gs = document.getElementById('coGender'); if(gs) gs.value = '';
-      var ts = document.getElementById('coTitle');  if(ts) ts.value = '';
-      var sp = document.getElementById('coSplit');  if(sp) sp.value = remaining > 0 ? remaining : '';
-      modal.style.display = 'flex';
+      var gs=document.getElementById('coGender'); if(gs) gs.value='';
+      var ts=document.getElementById('coTitle');  if(ts) ts.value='';
+      var sp=document.getElementById('coSplit');
+      var avail=_collabs.length ? Math.max(1, _collabs[0].split-1) : 25;
+      if(sp) sp.value=Math.min(avail,25);
+      modal.style.display='flex';
+    });
+  }
+  if(cancelBtn) cancelBtn.addEventListener('click',function(){ if(modal) modal.style.display='none'; });
+  if(modal) modal.addEventListener('click',function(e){ if(e.target===modal) modal.style.display='none'; });
+
+  if(saveBtn){
+    saveBtn.addEventListener('click',function(){
+      var name    =(document.getElementById('coFullName')      ||{}).value||'';
+      var email   =(document.getElementById('coEmail')         ||{}).value||'';
+      var split   =parseInt((document.getElementById('coSplit')||{}).value||'0',10);
+      var role    =(document.getElementById('coOwnershipTitle')||{}).value||'Co-owner';
+      var artistic=(document.getElementById('coArtisticName') ||{}).value||'';
+      var country =(document.getElementById('coCountry')       ||{}).value||'';
+      if(!name.trim())  { alert('Full name is required.');  return; }
+      if(!email.trim()) { alert('Email is required.');      return; }
+      if(!split||split<1||split>99){ alert('Ownership % must be 1–99.'); return; }
+      var primaryAvail=_collabs.length ? _collabs[0].split : 0;
+      if(split > primaryAvail-1){
+        alert('Maximum assignable: '+(primaryAvail-1)+'% (primary owner must keep at least 1%).');
+        return;
+      }
+      _collabs[0].split -= split;
+      _collabs.push({
+        name:     name+(artistic?' ('+artistic+')':''),
+        email:    email,
+        split:    split,
+        role:     role+(country?' · '+country:''),
+        isPrimary:false
+      });
+      _renderCollabs();
+      if(modal) modal.style.display='none';
     });
   }
 
-  if (cancelBtn && modal) {
-    cancelBtn.addEventListener('click', function() { modal.style.display = 'none'; });
+  if(removeAll){
+    removeAll.addEventListener('click',function(){
+      if(!confirm('Remove all co-owners?')) return;
+      _collabs=[{name:_collabs[0]?_collabs[0].name:'You',email:_collabs[0]?_collabs[0].email:'',split:100,role:'Primary Creator',isPrimary:true}];
+      _renderCollabs();
+    });
   }
-  if (modal) {
-    modal.addEventListener('click', function(e) { if(e.target === modal) modal.style.display = 'none'; });
+  if(inviteAll){
+    inviteAll.addEventListener('click',function(){
+      var co=_collabs.filter(function(c){ return !c.isPrimary; });
+      if(!co.length){ alert('No co-owners added yet.'); return; }
+      alert('Invitations queued for:\n'+co.map(function(c){ return '• '+c.email; }).join('\n'));
+    });
   }
 
-  if (saveBtn) {
-    saveBtn.addEventListener('click', function() {
-      var name    = (document.getElementById('coFullName')       || {}).value || '';
-      var email   = (document.getElementById('coEmail')          || {}).value || '';
-      var split   = parseInt((document.getElementById('coSplit') || {}).value || '0', 10);
-      var role    = (document.getElementById('coOwnershipTitle') || {}).value || 'Co-owner';
-      var artistic= (document.getElementById('coArtisticName')   || {}).value || '';
-      var country = (document.getElementById('coCountry')        || {}).value || '';
+  // Finalize (collab step → payment)
+  var finalizeBtn=document.getElementById('finalizeBtn');
+  if(finalizeBtn){
+    finalizeBtn.addEventListener('click',function(e){
+      e.preventDefault();
+      var total=_collabs.reduce(function(s,c){ return s+c.split; },0);
+      if(total!==100){ alert('Splits must total 100%. Currently: '+total+'%'); return; }
+      _routeToPayment();
+    });
+  }
 
-      if (!name.trim())   { alert('Full name is required.');            return; }
-      if (!email.trim())  { alert('Email address is required.');        return; }
-      if (!split || split < 1 || split > 99) { alert('Ownership % must be 1\u201399.'); return; }
+  // Auth
+  if(typeof window.waitForAuth==='function'){
+    window.waitForAuth().then(function(user){
+      var msg=document.getElementById('loadingState'); if(msg) msg.remove();
+      if(!user){
+        alert('You must sign in to continue.');
+        window.location.href='/signup_signin.html?redirect='+encodeURIComponent(window.location.href);
+        return;
+      }
+      window.currentUser=user;
+      _initPrimary();
 
-      var used = collaborators.reduce(function(s,c){ return s+c.split; }, 0);
-      if (used + split > 100) {
-        alert('Would exceed 100%. Available: ' + (100 - used) + '%'); return;
+      var soloName=document.getElementById('soloOwnerName');
+      if(soloName) soloName.textContent=user.email||'You';
+
+      // Step 1 → 2
+      var b1=document.getElementById('nextToDetailsBtn');
+      if(b1){ b1.disabled=false; b1.addEventListener('click',function(e){ e.preventDefault(); window.showStep(2); }); }
+
+      // Step 2 → 3
+      var b2=document.getElementById('nextToOwnershipBtn');
+      if(b2){
+        b2.addEventListener('click',function(e){
+          e.preventDefault();
+          var t=document.getElementById('workTitle');
+          if(!t||!t.value.trim()){ alert('Please enter a work title.'); return; }
+          window.showStep(3);
+        });
       }
 
-      collaborators[0].split -= split;
-      collaborators.push({
-        name:      name + (artistic ? ' (' + artistic + ')' : ''),
-        email:     email,
-        split:     split,
-        role:      role + (country ? ' \u00b7 ' + country : ''),
-        isPrimary: false
-      });
-      renderCollaborators();
-      modal.style.display = 'none';
-    });
-  }
+      // Ownership toggle
+      var soloBtn  =document.getElementById('soloModeBtn');
+      var collabBtn=document.getElementById('collabModeBtn');
+      if(soloBtn){
+        soloBtn.addEventListener('click',function(){
+          soloBtn.classList.add('active');
+          if(collabBtn) collabBtn.classList.remove('active');
+        });
+      }
+      if(collabBtn){
+        collabBtn.addEventListener('click',function(){
+          if(window.selectedPlan==='free'){
+            alert('Co-ownership work certification is not available on Free Plan. Upgrade to Creator Plan or Studio Plan to activate.');
+            return;
+          }
+          collabBtn.classList.add('active');
+          if(soloBtn) soloBtn.classList.remove('active');
+          var s5=document.getElementById('step5c'); if(s5) s5.style.display='';
+          var sn=document.getElementById('stepFinalNum'); if(sn) sn.textContent='6';
+          _initPrimary();
+        });
+      }
 
-  if (removeAll) {
-    removeAll.addEventListener('click', function() {
-      if (!confirm('Remove all co-owners?')) return;
-      collaborators = [{ name: collaborators[0].name, email: collaborators[0].email,
-                         split: 100, role: 'Primary Creator', isPrimary: true }];
-      renderCollaborators();
+      // Step 3 → 4
+      var b3=document.getElementById('nextToUploadBtn');
+      if(b3){
+        b3.addEventListener('click',function(e){
+          e.preventDefault();
+          var isSolo  =soloBtn  &&soloBtn.classList.contains('active');
+          var isCollab=collabBtn&&collabBtn.classList.contains('active');
+          if(!isSolo&&!isCollab){ alert('Please select an ownership type.'); return; }
+          var sc=document.getElementById('soloContent');
+          var cc=document.getElementById('collabContent');
+          if(sc) sc.classList.toggle('hidden',!isSolo);
+          if(cc) cc.classList.toggle('hidden',!isCollab);
+          window.showStep(4);
+        });
+      }
     });
-  }
-
-  if (inviteAll) {
-    inviteAll.addEventListener('click', function() {
-      var co = collaborators.filter(function(c){ return !c.isPrimary; });
-      if (!co.length) { alert('No co-owners added yet.'); return; }
-      alert('Invitations queued for:\n' + co.map(function(c){ return '\u2022 ' + c.email; }).join('\n'));
-    });
-  }
-
-  // Init primary row after auth resolves
-  if (window.currentUser) {
-    initPrimaryRow();
   } else {
-    setTimeout(function() { if (!collaborators.length) initPrimaryRow(); }, 2500);
-  }
-
-  // Also expose so collabModeBtn click can init
-  window._initPrimaryRow = initPrimaryRow;
-
-  // ── Submit routing ────────────────────────────────────────────────────────
-  function routeToPayment() {
-    var plan  = window.selectedPlan || 'free';
-    var title = (document.getElementById('workTitle') || {}).value || 'Untitled Work';
-    var wtype = (document.getElementById('workType')  || {}).value || 'audio';
-    try {
-      sessionStorage.setItem('pendingCert', JSON.stringify({
-        title: title, work_type: wtype,
-        collaborators:   collaborators.filter(function(c){ return !c.isPrimary; }),
-        ownership_split: collaborators.reduce(function(o,c){ o[c.email||c.name]=c.split; return o; }, {})
-      }));
-    } catch(e) {}
-    if (plan === 'free') {
-      window.showStep(6);
-    } else {
-      window.location.href = 'bill_review.html?plan=' + encodeURIComponent(plan) +
-                             '&title=' + encodeURIComponent(title);
-    }
-  }
-  window._routeToPayment = routeToPayment;
-
-  // Intercept showStep(6) for paid solo plans
-  var _origShow = window.showStep;
-  window.showStep = function(n) {
-    if (n === 6) {
-      var plan = window.selectedPlan || 'free';
-      var collabActive = document.getElementById('collabModeBtn') &&
-        document.getElementById('collabModeBtn').classList.contains('active');
-      if (!collabActive && plan !== 'free') { routeToPayment(); return; }
-    }
-    _origShow(n);
-  };
-
-  // Finalize button (step 5 collab → submit)
-  var finalizeBtn = document.getElementById('finalizeBtn');
-  if (finalizeBtn) {
-    finalizeBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      var total = collaborators.reduce(function(s,c){ return s+c.split; }, 0);
-      if (total !== 100) { alert('Splits must total 100% before submitting. Currently: ' + total + '%'); return; }
-      routeToPayment();
-    });
-  }
-
-  // Show step5c indicator when collab mode selected
-  var collabModeBtn2 = document.getElementById('collabModeBtn');
-  if (collabModeBtn2) {
-    collabModeBtn2.addEventListener('click', function() {
-      var s5 = document.getElementById('step5c'); if(s5) s5.style.display = '';
-      var sn = document.getElementById('stepFinalNum'); if(sn) sn.textContent = '6';
-      if (window._initPrimaryRow) window._initPrimaryRow();
-    });
+    var msg=document.getElementById('loadingState'); if(msg) msg.remove();
+    console.error('waitForAuth not available');
   }
 
 });
