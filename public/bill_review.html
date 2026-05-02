@@ -139,14 +139,12 @@ document.getElementById('payBtn').addEventListener('click',async function(){
   }
 
   // Paid plan — wait for auth then initiate payment
-  var waitForUser=function(){
-    return new Promise(function(resolve){
-      if(window.currentUser) return resolve(window.currentUser);
-      var t=setTimeout(function(){ resolve(null); },6000);
-      document.addEventListener('authReady',function(e){ clearTimeout(t); resolve(e.detail&&e.detail.user||null); },{once:true});
-    });
-  };
-  var user=await waitForUser();
+  var user = null;
+  if (typeof window.waitForAuth === 'function') {
+    user = await window.waitForAuth(12000);
+  } else if (window.currentUser) {
+    user = window.currentUser;
+  }
   if(!user){
     showError('Session expired. Please sign in again.');
     window.location.href='/signup_signin.html?redirect='+encodeURIComponent(window.location.href);

@@ -78,13 +78,13 @@ window._showPreview = function(file, prefix) {
   } else if (t.startsWith('video/')) {
     if(label){label.textContent='🎬 Video Player';label.style.display='block';}
     var v=document.createElement('video');
-    v.controls=true;v.style.cssText='width:100%;max-height:260px;display:block;border-radius:8px;background:#000;';
+    v.controls=true;v.style.cssText='width:100%;display:block;border-radius:8px;background:#000;max-height:320px;';
     v.src=url;embed.appendChild(v);
 
   } else if (t.startsWith('image/')) {
     if(label){label.textContent='🖼️ Image Preview';label.style.display='block';}
     var img=document.createElement('img');
-    img.src=url;img.style.cssText='max-width:100%;max-height:260px;display:block;border-radius:8px;object-fit:contain;';
+    img.src=url;img.style.cssText='width:100%;max-height:320px;display:block;border-radius:8px;object-fit:cover;';
     embed.appendChild(img);
 
   } else if (t==='application/pdf'||ext==='pdf') {
@@ -361,6 +361,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
   if(removeAll){
     removeAll.addEventListener('click',function(){
+      var co=_collabs.filter(function(c){ return !c.isPrimary; });
+      if(!co.length){ alert('No co-owners added yet.'); return; }
       if(!confirm('Remove all co-owners?')) return;
       _collabs=[{name:_collabs[0]?_collabs[0].name:'You',email:_collabs[0]?_collabs[0].email:'',split:100,role:'Primary Creator',isPrimary:true}];
       _renderCollabs();
