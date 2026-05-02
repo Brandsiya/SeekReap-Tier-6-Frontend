@@ -106,7 +106,7 @@ async function handleSignIn() {
   }
 }
 
-// ── sign up → dashboard.html (or email verify if confirmation required) ───────
+// ── sign up → certification_portal.html (or email verify if confirmation required) ───────
 async function handleSignUp() {
   clearMsg();
   const validation = validateSignupFields();
@@ -131,7 +131,7 @@ async function handleSignUp() {
           country:              country,
         },
         // After email confirmation link click, land on dashboard
-        emailRedirectTo: 'https://seekreap-frontend.onrender.com/dashboard.html',
+        emailRedirectTo: 'https://seekreap-frontend.onrender.com/certification_portal.html',
       },
     });
     if (error) throw error;
@@ -143,7 +143,7 @@ async function handleSignUp() {
 
     // If Supabase auto-confirmed (email confirmation disabled in project settings)
     if (data.user?.email_confirmed_at) {
-      window.location.href = '/dashboard.html';
+      window.location.href = '/certification_portal.html';
     } else {
       window.location.href = '/email_verify_pending.html';
     }
