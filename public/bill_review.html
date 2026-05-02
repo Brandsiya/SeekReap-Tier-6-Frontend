@@ -189,7 +189,7 @@ document.getElementById('payBtn').addEventListener('click',async function(){
       document.body.appendChild(form); form.submit(); return;
     }
     showError('Unexpected gateway response. Please try again.');
-  }catch(err){ console.error(err); showError('Could not connect to payment server. Check your connection.'); }
+  }catch(err){ console.error('Payment fetch error:', err); showError('Could not reach payment server. This may be a CORS or network issue — please try again in a moment.'); }
 });
 </script>
 </body>
