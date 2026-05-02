@@ -131,7 +131,7 @@ async function handleSignUp() {
           country:              country,
         },
         // After email confirmation link click, land on dashboard
-        emailRedirectTo: 'https://seekreap-frontend.onrender.com/certification_portal.html',
+        emailRedirectTo: 'https://seekreap-tier-6-frontend.fly.dev/certification_portal.html',
       },
     });
     if (error) throw error;

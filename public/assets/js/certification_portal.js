@@ -56,6 +56,15 @@ function _typeIcon(name){
 }
 
 // ── File previewers ───────────────────────────────────────────────────────────
+var PREVIEW_STYLE = 'border:1px solid rgba(201,153,58,0.3);border-radius:10px;overflow:hidden;background:rgba(0,0,0,0.35);';
+var CTRL_BAR = 'display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(201,153,58,0.07);border-bottom:1px solid rgba(201,153,58,0.2);flex-wrap:wrap;';
+var CTRL_BTN = 'background:rgba(201,153,58,0.12);border:1px solid rgba(201,153,58,0.3);color:#E8C06A;border-radius:6px;padding:5px 12px;font-size:0.75rem;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;';
+var FOOTER_BAR = 'padding:8px 14px;background:rgba(0,0,0,0.3);border-top:1px solid rgba(201,153,58,0.15);font-size:0.7rem;color:rgba(250,250,248,0.45);display:flex;gap:16px;flex-wrap:wrap;';
+
+function _makeBtn(label, onclick, extra) {
+  return '<button style="'+CTRL_BTN+(extra||'')+'" onclick="'+onclick+'">'+label+'</button>';
+}
+
 window._showPreview = function(file, prefix) {
   var embed = document.getElementById(prefix+'ViewerEmbed');
   var label = document.getElementById(prefix+'ViewerLabel');
@@ -65,54 +74,296 @@ window._showPreview = function(file, prefix) {
   var url = URL.createObjectURL(file);
   var t   = file.type || '';
   var ext = (file.name.split('.').pop()||'').toLowerCase();
-  var border = 'border:1px solid rgba(201,153,58,0.25);border-radius:8px;overflow:hidden;';
 
+  // ── AUDIO ──────────────────────────────────────────────────────────────────
   if (t.startsWith('audio/')) {
     if(label){label.textContent='🎵 Audio Player';label.style.display='block';}
-    var wrap=document.createElement('div');
-    wrap.style.cssText=border+'background:rgba(201,153,58,0.06);padding:20px;';
-    var a=document.createElement('audio');
-    a.controls=true;a.style.cssText='width:100%;display:block;outline:none;';a.src=url;
-    wrap.appendChild(a);embed.appendChild(wrap);
+    var wrap = document.createElement('div');
+    wrap.style.cssText = PREVIEW_STYLE;
+    var audioId = '_sr_audio_'+prefix;
+    wrap.innerHTML =
+      '<div style="'+CTRL_BAR+'">' +
+        '<span style="font-size:0.8rem;color:#E8C06A;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;" title="'+file.name+'">'+file.name+'</span>' +
+      '</div>' +
+      '<div style="padding:20px 16px;">' +
+        '<audio id="'+audioId+'" src="'+url+'" style="width:100%;display:block;margin-bottom:12px;" preload="metadata"></audio>' +
+        '<div id="'+audioId+'_prog" style="background:rgba(201,153,58,0.15);height:4px;border-radius:2px;margin-bottom:14px;cursor:pointer;" onclick="window._srAudioSeek(\''+audioId+'\',event,this)">' +
+          '<div id="'+audioId+'_fill" style="height:100%;background:linear-gradient(90deg,#C9993A,#E8C06A);border-radius:2px;width:0%;transition:width 0.1s;pointer-events:none;"></div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">' +
+          _makeBtn('⏮ -15s', 'window._srSkip(\''+audioId+'\',-15)') +
+          _makeBtn('⏪ -5s',  'window._srSkip(\''+audioId+'\',-5)') +
+          _makeBtn('▶ Play',  'window._srToggle(\''+audioId+'\')', '') +
+          _makeBtn('⏩ +5s',  'window._srSkip(\''+audioId+'\',5)') +
+          _makeBtn('⏭ +15s', 'window._srSkip(\''+audioId+'\',15)') +
+        '</div>' +
+      '</div>' +
+      '<div style="'+FOOTER_BAR+'"><span id="'+audioId+'_time">0:00 / 0:00</span></div>';
+    embed.appendChild(wrap);
 
+    // Hook progress
+    setTimeout(function(){
+      var el=document.getElementById(audioId);
+      if(!el) return;
+      el.addEventListener('timeupdate',function(){
+        var fill=document.getElementById(audioId+'_fill');
+        var time=document.getElementById(audioId+'_time');
+        if(fill&&el.duration) fill.style.width=(el.currentTime/el.duration*100)+'%';
+        if(time) time.textContent=_srFmtTime(el.currentTime)+' / '+_srFmtTime(el.duration||0);
+      });
+      el.addEventListener('loadedmetadata',function(){
+        var time=document.getElementById(audioId+'_time');
+        if(time) time.textContent='0:00 / '+_srFmtTime(el.duration||0);
+      });
+    },100);
+
+  // ── VIDEO ──────────────────────────────────────────────────────────────────
   } else if (t.startsWith('video/')) {
     if(label){label.textContent='🎬 Video Player';label.style.display='block';}
-    var v=document.createElement('video');
-    v.controls=true;v.style.cssText='width:100%;display:block;border-radius:8px;background:#000;max-height:320px;';
-    v.src=url;embed.appendChild(v);
+    var wrap=document.createElement('div');
+    wrap.style.cssText=PREVIEW_STYLE;
+    var vid='_sr_vid_'+prefix;
+    wrap.innerHTML =
+      '<div style="'+CTRL_BAR+'">' +
+        '<span style="font-size:0.8rem;color:#E8C06A;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px;">'+file.name+'</span>' +
+      '</div>' +
+      '<video id="'+vid+'" src="'+url+'" style="width:100%;display:block;background:#000;max-height:340px;" preload="metadata"></video>' +
+      '<div style="'+CTRL_BAR.replace('border-bottom','border-top')+'">' +
+        '<div id="'+vid+'_prog" style="flex:1;background:rgba(201,153,58,0.15);height:4px;border-radius:2px;cursor:pointer;min-width:60px;" onclick="window._srAudioSeek(\''+vid+'\',event,this)">' +
+          '<div id="'+vid+'_fill" style="height:100%;background:linear-gradient(90deg,#C9993A,#E8C06A);border-radius:2px;width:0%;pointer-events:none;"></div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;flex-wrap:wrap;background:rgba(0,0,0,0.2);">' +
+        _makeBtn('⏮ -15s','window._srSkip(\''+vid+'\',-15)') +
+        _makeBtn('⏪ -5s', 'window._srSkip(\''+vid+'\',-5)') +
+        _makeBtn('▶ Play', 'window._srToggle(\''+vid+'\')') +
+        _makeBtn('⏩ +5s', 'window._srSkip(\''+vid+'\',5)') +
+        _makeBtn('⏭ +15s','window._srSkip(\''+vid+'\',15)') +
+      '</div>' +
+      '<div style="'+FOOTER_BAR+'"><span id="'+vid+'_time">0:00 / 0:00</span></div>';
+    embed.appendChild(wrap);
 
+    setTimeout(function(){
+      var el=document.getElementById(vid);
+      if(!el) return;
+      el.addEventListener('timeupdate',function(){
+        var fill=document.getElementById(vid+'_fill');
+        var time=document.getElementById(vid+'_time');
+        if(fill&&el.duration) fill.style.width=(el.currentTime/el.duration*100)+'%';
+        if(time) time.textContent=_srFmtTime(el.currentTime)+' / '+_srFmtTime(el.duration||0);
+      });
+    },100);
+
+  // ── IMAGE ──────────────────────────────────────────────────────────────────
   } else if (t.startsWith('image/')) {
     if(label){label.textContent='🖼️ Image Preview';label.style.display='block';}
-    var img=document.createElement('img');
-    img.src=url;img.style.cssText='width:100%;max-height:320px;display:block;border-radius:8px;object-fit:cover;';
-    embed.appendChild(img);
+    var wrap=document.createElement('div');
+    wrap.style.cssText=PREVIEW_STYLE;
+    var imgId='_sr_img_'+prefix;
+    wrap.innerHTML =
+      '<div style="'+CTRL_BAR+'">' +
+        '<span style="font-size:0.8rem;color:#E8C06A;font-weight:600;">'+file.name+'</span>' +
+        '<div style="margin-left:auto;display:flex;gap:6px;">' +
+          _makeBtn('↺ Rotate',  'window._srRotate(\''+imgId+'\')') +
+          _makeBtn('🔍+',       'window._srZoom(\''+imgId+'\',1.15)') +
+          _makeBtn('🔍−',       'window._srZoom(\''+imgId+'\',0.87)') +
+          _makeBtn('↔ Fit',     'window._srImgFit(\''+imgId+'\')') +
+        '</div>' +
+      '</div>' +
+      '<div style="overflow:auto;max-height:360px;display:flex;align-items:center;justify-content:center;padding:10px;background:rgba(0,0,0,0.2);">' +
+        '<img id="'+imgId+'" src="'+url+'" style="width:100%;display:block;border-radius:6px;transform-origin:center;transition:transform 0.2s;" data-rot="0" data-zoom="1">' +
+      '</div>' +
+      '<div style="'+FOOTER_BAR+'">' +
+        '<span>'+file.name+'</span>' +
+        '<span>'+_fmtBytes(file.size)+'</span>' +
+        '<span id="'+imgId+'_info">100%</span>' +
+      '</div>';
+    embed.appendChild(wrap);
 
+  // ── PDF ────────────────────────────────────────────────────────────────────
   } else if (t==='application/pdf'||ext==='pdf') {
     if(label){label.textContent='📄 PDF Viewer';label.style.display='block';}
-    var fr=document.createElement('iframe');
-    fr.src=url;fr.style.cssText='width:100%;height:340px;border:none;border-radius:8px;display:block;background:#fff;';
-    embed.appendChild(fr);
+    var wrap=document.createElement('div');
+    wrap.style.cssText=PREVIEW_STYLE;
+    var canvasId='_sr_pdf_'+prefix;
+    var pageInfoId=canvasId+'_info';
+    var charInfoId=canvasId+'_chars';
+    wrap.innerHTML =
+      '<div style="'+CTRL_BAR+'">' +
+        '<span style="font-size:0.8rem;color:#E8C06A;font-weight:600;flex:1;">'+file.name+'</span>' +
+        _makeBtn('◀', 'window._srPdfPage(\''+canvasId+'\',-1)') +
+        '<span id="'+pageInfoId+'" style="font-size:0.75rem;color:#E8C06A;white-space:nowrap;">Page 1</span>' +
+        _makeBtn('▶', 'window._srPdfPage(\''+canvasId+'\',1)') +
+        _makeBtn('🔍+','window._srPdfZoom(\''+canvasId+'\',1.2)') +
+        _makeBtn('🔍−','window._srPdfZoom(\''+canvasId+'\',0.83)') +
+      '</div>' +
+      '<div style="overflow:auto;max-height:480px;background:#1a1a1a;display:flex;justify-content:center;padding:12px;">' +
+        '<canvas id="'+canvasId+'" style="display:block;border-radius:4px;box-shadow:0 4px 16px rgba(0,0,0,0.5);max-width:100%;"></canvas>' +
+      '</div>' +
+      '<div style="'+FOOTER_BAR+'">' +
+        '<span id="'+pageInfoId+'_foot">Loading…</span>' +
+        '<span id="'+charInfoId+'">—</span>' +
+      '</div>';
+    embed.appendChild(wrap);
 
+    // Render with PDF.js
+    if(typeof pdfjsLib !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+      var pdfState = { doc:null, page:1, scale:1.4 };
+      window['_pdfState_'+canvasId] = pdfState;
+
+      pdfjsLib.getDocument(url).promise.then(function(doc){
+        pdfState.doc = doc;
+        pdfState.totalPages = doc.numPages;
+        document.getElementById(pageInfoId+'_foot').textContent = 'Page 1 of '+doc.numPages;
+        window._srPdfRender(canvasId);
+        // Extract text for char count
+        doc.getPage(1).then(function(p){
+          p.getTextContent().then(function(tc){
+            var txt=tc.items.map(function(i){return i.str;}).join(' ');
+            var ci=document.getElementById(charInfoId);
+            if(ci) ci.textContent=txt.length+' chars · '+txt.split(/\s+/).filter(Boolean).length+' words (page 1)';
+          });
+        });
+      }).catch(function(e){ 
+        document.getElementById(canvasId).parentElement.innerHTML='<div style="padding:24px;color:#f08080;font-size:0.85rem;">PDF load error: '+e.message+'</div>';
+      });
+    } else {
+      // Fallback to iframe
+      wrap.querySelector('[style*="overflow:auto"]').innerHTML='<iframe src="'+url+'" style="width:100%;height:480px;border:none;background:#fff;"></iframe>';
+    }
+
+  // ── EPUB ───────────────────────────────────────────────────────────────────
   } else if (ext==='epub') {
     if(label){label.textContent='📖 eBook / EPUB';label.style.display='block';}
-    embed.innerHTML='<div style="'+border+'background:rgba(201,153,58,0.06);padding:24px;text-align:center;">' +
-      '<div style="font-size:2.5rem;margin-bottom:10px;">📖</div>' +
-      '<div style="font-weight:600;color:#E8C06A;margin-bottom:6px;">'+file.name+'</div>' +
-      '<div style="font-size:0.78rem;color:rgba(250,250,248,0.5);">Full reader available after certification</div></div>';
+    var wrap=document.createElement('div');
+    wrap.style.cssText=PREVIEW_STYLE;
+    wrap.innerHTML =
+      '<div style="'+CTRL_BAR+'">' +
+        '<span style="font-size:0.8rem;color:#E8C06A;font-weight:600;">'+file.name+'</span>' +
+      '</div>' +
+      '<div style="padding:32px;text-align:center;background:rgba(201,153,58,0.03);">' +
+        '<div style="font-size:3.5rem;margin-bottom:14px;">📖</div>' +
+        '<div style="font-weight:600;color:#E8C06A;font-size:0.95rem;margin-bottom:6px;">'+file.name+'</div>' +
+        '<div style="font-size:0.78rem;color:rgba(250,250,248,0.45);margin-bottom:16px;">'+_fmtBytes(file.size)+' · EPUB eBook</div>' +
+        '<div style="font-size:0.8rem;color:rgba(250,250,248,0.55);">Full reader available after certification</div>' +
+      '</div>' +
+      '<div style="'+FOOTER_BAR+'"><span>'+file.name+'</span><span>'+_fmtBytes(file.size)+'</span></div>';
+    embed.appendChild(wrap);
 
+  // ── CODE / SCRIPT ──────────────────────────────────────────────────────────
   } else {
-    if(label){label.textContent='💻 Code / Script Preview';label.style.display='block';}
+    if(label){label.textContent='💻 Code / Script Viewer';label.style.display='block';}
+    var wrap=document.createElement('div');
+    wrap.style.cssText=PREVIEW_STYLE;
+    var codeId='_sr_code_'+prefix;
+    var prevId=codeId+'_prev';
+    wrap.innerHTML =
+      '<div style="'+CTRL_BAR+'">' +
+        '<span style="font-size:0.8rem;color:#E8C06A;font-weight:600;flex:1;">'+file.name+'</span>' +
+        _makeBtn('👁 Preview','window._srCodePreview(\''+codeId+'\',\''+prevId+'\')',' margin-left:auto;') +
+        _makeBtn('&lt;/&gt; Code','window._srCodeBack(\''+codeId+'\',\''+prevId+'\')') +
+      '</div>' +
+      '<div id="'+codeId+'" style="overflow:auto;max-height:420px;background:rgba(0,0,0,0.55);padding:16px;display:block;">' +
+        '<pre style="font-family:monospace;font-size:0.76rem;color:#E8C06A;white-space:pre-wrap;word-break:break-all;line-height:1.65;margin:0;"></pre>' +
+      '</div>' +
+      '<div id="'+prevId+'" style="overflow:auto;max-height:420px;display:none;">' +
+        '<iframe style="width:100%;height:420px;border:none;background:#fff;" sandbox="allow-scripts allow-same-origin"></iframe>' +
+      '</div>' +
+      '<div style="'+FOOTER_BAR+'" id="'+codeId+'_foot"><span>Loading…</span></div>';
+    embed.appendChild(wrap);
+
     var rd=new FileReader();
     rd.onload=function(e){
-      var pre=document.createElement('pre');
-      pre.style.cssText=border+'background:rgba(0,0,0,0.5);padding:14px;font-size:0.72rem;' +
-        'color:#E8C06A;overflow:auto;max-height:260px;white-space:pre-wrap;word-break:break-all;' +
-        'font-family:monospace;line-height:1.5;display:block;';
-      pre.textContent=(e.target.result||'').slice(0,4000)+((e.target.result||'').length>4000?'\n…(truncated)':'');
-      embed.appendChild(pre);
+      var src=e.target.result||'';
+      var pre=document.getElementById(codeId);
+      if(pre) pre.querySelector('pre').textContent=src;
+      var fr=document.getElementById(prevId);
+      if(fr) fr.querySelector('iframe').srcdoc=src;
+      var foot=document.getElementById(codeId+'_foot');
+      var words=src.split(/\s+/).filter(Boolean).length;
+      var lines=src.split('\n').length;
+      if(foot) foot.innerHTML='<span>'+src.length+' chars</span><span>'+words+' words</span><span>'+lines+' lines</span><span>'+file.name+'</span>';
     };
     rd.readAsText(file);
   }
+};
+
+// ── Media control helpers ─────────────────────────────────────────────────────
+window._srFmtTime = function(s) {
+  if(!s||isNaN(s)) return '0:00';
+  var m=Math.floor(s/60), sec=Math.floor(s%60);
+  return m+':'+(sec<10?'0':'')+sec;
+};
+window._srToggle = function(id) {
+  var el=document.getElementById(id); if(!el) return;
+  var btn=event&&event.target;
+  if(el.paused){ el.play(); if(btn) btn.textContent='⏸ Pause'; }
+  else { el.pause(); if(btn) btn.textContent='▶ Play'; }
+};
+window._srSkip = function(id, sec) {
+  var el=document.getElementById(id); if(!el) return;
+  el.currentTime=Math.max(0,Math.min(el.duration||0,el.currentTime+sec));
+};
+window._srAudioSeek = function(id, e, bar) {
+  var el=document.getElementById(id); if(!el||!el.duration) return;
+  var rect=bar.getBoundingClientRect();
+  el.currentTime=((e.clientX-rect.left)/rect.width)*el.duration;
+};
+// Image controls
+window._srRotate = function(id) {
+  var el=document.getElementById(id); if(!el) return;
+  var r=(parseInt(el.dataset.rot||0)+90)%360;
+  el.dataset.rot=r;
+  el.style.transform='rotate('+r+'deg) scale('+(parseFloat(el.dataset.zoom||1))+')';
+  var info=document.getElementById(id+'_info'); if(info) info.textContent=r+'° / '+(Math.round(parseFloat(el.dataset.zoom||1)*100))+'%';
+};
+window._srZoom = function(id, factor) {
+  var el=document.getElementById(id); if(!el) return;
+  var z=Math.max(0.3,Math.min(4,parseFloat(el.dataset.zoom||1)*factor));
+  el.dataset.zoom=z;
+  el.style.transform='rotate('+(el.dataset.rot||0)+'deg) scale('+z+')';
+  var info=document.getElementById(id+'_info'); if(info) info.textContent=(el.dataset.rot||0)+'° / '+Math.round(z*100)+'%';
+};
+window._srImgFit = function(id) {
+  var el=document.getElementById(id); if(!el) return;
+  el.dataset.zoom=1; el.dataset.rot=0;
+  el.style.transform='rotate(0deg) scale(1)';
+  var info=document.getElementById(id+'_info'); if(info) info.textContent='0° / 100%';
+};
+// PDF controls
+window._srPdfRender = function(canvasId) {
+  var state=window['_pdfState_'+canvasId]; if(!state||!state.doc) return;
+  state.doc.getPage(state.page).then(function(page){
+    var vp=page.getViewport({scale:state.scale});
+    var canvas=document.getElementById(canvasId); if(!canvas) return;
+    canvas.height=vp.height; canvas.width=vp.width;
+    page.render({canvasContext:canvas.getContext('2d'),viewport:vp});
+    var info=document.getElementById(canvasId+'_info');
+    var foot=document.getElementById(canvasId+'_foot');
+    if(info) info.textContent='Page '+state.page;
+    if(foot) foot.textContent='Page '+state.page+' of '+state.totalPages+' · '+Math.round(state.scale*100)+'%';
+  });
+};
+window._srPdfPage = function(canvasId, dir) {
+  var state=window['_pdfState_'+canvasId]; if(!state||!state.doc) return;
+  var next=state.page+dir;
+  if(next<1||next>state.totalPages) return;
+  state.page=next; window._srPdfRender(canvasId);
+};
+window._srPdfZoom = function(canvasId, factor) {
+  var state=window['_pdfState_'+canvasId]; if(!state) return;
+  state.scale=Math.max(0.5,Math.min(3,state.scale*factor));
+  window._srPdfRender(canvasId);
+};
+// Code preview toggle
+window._srCodePreview = function(codeId, prevId) {
+  var c=document.getElementById(codeId); var p=document.getElementById(prevId);
+  if(c) c.style.display='none'; if(p) p.style.display='block';
+};
+window._srCodeBack = function(codeId, prevId) {
+  var c=document.getElementById(codeId); var p=document.getElementById(prevId);
+  if(c) c.style.display='block'; if(p) p.style.display='none';
 };
 
 // ── Upload zone ───────────────────────────────────────────────────────────────
