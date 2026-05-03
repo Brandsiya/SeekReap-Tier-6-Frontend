@@ -526,6 +526,11 @@ async function pollPayment(payId, attempts, maxAttempts) {
         return;
       }
 
+      // If we have a submission_id, certification is confirmed — show success
+      if (subId) {
+        showSuccess(certId || 'Processing', subId, data.plan);
+        return;
+      }
       // queued or processing
       setStep('stepCert', 'active');
       document.getElementById('statusTitle').textContent = 'Certifying your work…';
