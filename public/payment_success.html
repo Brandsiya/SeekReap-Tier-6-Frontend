@@ -368,6 +368,8 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="/supabase-config.js"></script>
 <script src="/assets/js/routes.js"></script>
+<script src="/assets/js/auth-guard.js"></script>
+<script src="/assets/js/cert-api-auth-injector.js"></script>
 
 <script>
 'use strict';
@@ -387,7 +389,19 @@
   }
 
   async function authHeaders() {
-    const token = await getAuthToken();
+    // Try cert-api-auth-injector token first (most reliable after redirect)
+    let token = null;
+    if (window.supabaseClient) {
+      try {
+        const { data } = await window.supabaseClient.auth.getSession();
+        if (data && data.session && data.session.access_token) {
+          token = data.session.access_token;
+        }
+      } catch(_e) {}
+    }
+    if (!token && window.currentUser && window.currentUser._token) {
+      token = window.currentUser._token;
+    }
     const h = { 'Content-Type': 'application/json' };
     if (token) h['Authorization'] = 'Bearer ' + token;
     return h;
@@ -551,7 +565,16 @@ async function init() {
   pollPayment(resolvedPaymentId, 0, 60);
 }
 
-init();
+// Wait for Supabase session to rehydrate after Paystack redirect
+if (typeof window.waitForAuth === "function") {
+  window.waitForAuth(12000).then(function(user) {
+    if (user) { window.currentUser = user; }
+    init();
+  });
+} else {
+  // Fallback: give Supabase 2s to restore session
+  setTimeout(init, 2000);
+}
 </script>
 </body>
 </html>
