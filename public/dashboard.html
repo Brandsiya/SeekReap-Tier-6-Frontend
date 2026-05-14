@@ -1,210 +1,1333 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SeekReap - Creator Dashboard</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f7fafc;
-            min-height: 100vh;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 32px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 32px 20px;
-        }
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .profile-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-        .stat {
-            background: #f7fafc;
-            padding: 16px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .stat-number {
-            font-size: 32px;
-            font-weight: bold;
-            color: #667eea;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        th {
-            background: #f7fafc;
-            font-weight: 600;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .status-completed { background: #d1fae5; color: #059669; }
-        .status-pending { background: #fef3c7; color: #d97706; }
-        .risk-critical { background: #fee2e2; color: #dc2626; }
-        button {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        button:hover { background: #5a67d8; }
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-    </style>
-    <link rel="stylesheet" href="/emblems/logo-styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SeekReap · Creator Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<style>
+:root{
+  --gold:#C9993A;--gold-light:#E8C06A;--gold-dark:#9B7520;
+  --gold-dim:rgba(201,153,58,0.12);--gold-border:rgba(201,153,58,0.25);
+  --bg:#08080E;--bg2:#0F0F18;--bg3:#161622;--bg4:#1E1E2A;
+  --surface:rgba(255,255,255,0.03);--surface2:rgba(255,255,255,0.06);
+  --text:#F0F0F0;--text-dim:#808098;--text-mid:#B0B0C8;
+  --green:#4CAF50;--red:#F44336;--amber:#FF9800;--blue:#2196F3;
+  --radius:16px;--radius-sm:10px;--t:0.2s cubic-bezier(0.4,0,0.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.35;}
+
+/* ── AUTH GATE ── */
+#authGate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;}
+.auth-card{background:var(--bg2);border:1px solid var(--gold-border);border-radius:22px;padding:40px;max-width:420px;width:100%;text-align:center;}
+.auth-logo{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;background:linear-gradient(135deg,#FAFAF8,#E8C06A);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:8px;}
+.auth-sub{color:var(--text-dim);font-size:14px;margin-bottom:28px;}
+.auth-form{display:flex;flex-direction:column;gap:14px;text-align:left;}
+.auth-input{width:100%;padding:12px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;transition:var(--t);}
+.auth-input:focus{outline:none;border-color:var(--gold-border);background:rgba(201,153,58,0.04);}
+.auth-btn{padding:12px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#0a0a0f;border:none;border-radius:var(--radius-sm);font-weight:700;font-size:14px;cursor:pointer;transition:var(--t);}
+.auth-btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(201,153,58,0.25);}
+.auth-switch{margin-top:16px;font-size:13px;color:var(--text-dim);}
+.auth-switch a{color:var(--gold-light);cursor:pointer;text-decoration:none;}
+.auth-err{background:rgba(244,67,54,0.1);border:1px solid rgba(244,67,54,0.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);display:none;}
+
+/* ── NAVBAR ── */
+.navbar{background:rgba(8,8,14,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--gold-border);padding:13px 32px;position:sticky;top:0;z-index:200;}
+.nav-container{max-width:1440px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;background:linear-gradient(135deg,#FAFAF8,#E8C06A);-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none;}
+
+/* Search bar */
+.nav-search{flex:1;max-width:380px;position:relative;}
+.nav-search input{width:100%;padding:8px 14px 8px 38px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:40px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;transition:var(--t);}
+.nav-search input:focus{outline:none;border-color:var(--gold-border);background:rgba(201,153,58,0.04);}
+.nav-search i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:13px;}
+.search-results{position:absolute;top:calc(100%+6px);left:0;right:0;background:var(--bg2);border:1px solid var(--gold-border);border-radius:var(--radius-sm);overflow:hidden;z-index:300;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.5);}
+.search-result-item{padding:10px 14px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:var(--t);}
+.search-result-item:hover{background:var(--gold-dim);}
+
+.nav-right{display:flex;align-items:center;gap:14px;}
+.rep-badge{display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:40px;font-size:12px;color:var(--gold-light);font-weight:600;}
+.notif-btn{position:relative;background:var(--surface);border:1px solid rgba(255,255,255,0.06);color:var(--gold-light);font-size:17px;cursor:pointer;padding:7px 10px;border-radius:var(--radius-sm);transition:var(--t);}
+.notif-btn:hover{background:var(--gold-dim);border-color:var(--gold-border);}
+.notif-badge{position:absolute;top:-5px;right:-5px;background:var(--red);color:#fff;font-size:9px;padding:2px 5px;border-radius:10px;font-weight:700;display:none;}
+.user-pill{display:flex;align-items:center;gap:9px;padding:4px 14px 4px 4px;background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:40px;cursor:pointer;transition:var(--t);text-decoration:none;color:var(--text);}
+.user-pill:hover{border-color:var(--gold-border);}
+.avatar{width:28px;height:28px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0a0a0f;}
+
+/* ── LAYOUT ── */
+.container{max-width:1440px;margin:0 auto;padding:26px 32px;position:relative;z-index:1;}
+
+/* ── WELCOME ── */
+.welcome-section{background:linear-gradient(135deg,rgba(201,153,58,0.08),rgba(155,117,32,0.04));border-radius:20px;padding:26px;margin-bottom:22px;border:1px solid var(--gold-border);}
+.welcome-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;}
+.welcome-text h1{font-size:24px;margin-bottom:5px;}
+.welcome-text p{color:var(--text-dim);font-size:13px;}
+.plan-indicator{display:flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(0,0,0,0.3);border:1px solid var(--gold-border);border-radius:40px;font-size:12px;}
+.plan-name{color:var(--gold-light);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;}
+.plan-upgrade{color:var(--text-dim);cursor:pointer;transition:var(--t);}
+.plan-upgrade:hover{color:var(--gold-light);}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:18px;}
+.stat-card{background:rgba(255,255,255,0.03);border-radius:13px;padding:16px;text-align:center;border:1px solid rgba(201,153,58,0.1);transition:var(--t);cursor:default;}
+.stat-card:hover{border-color:var(--gold-border);transform:translateY(-2px);}
+.stat-value{font-size:28px;font-weight:700;color:var(--gold-light);font-family:'Cormorant Garamond',serif;line-height:1;}
+.stat-label{font-size:10px;color:var(--text-dim);margin-top:5px;text-transform:uppercase;letter-spacing:0.05em;}
+
+/* ── ANALYTICS STRIP ── */
+.analytics-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:22px;}
+.analytics-card{background:var(--bg3);border-radius:var(--radius);padding:18px;border:1px solid rgba(255,255,255,0.06);position:relative;overflow:hidden;}
+.analytics-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0;}
+.analytics-card.gold-top::before{background:linear-gradient(90deg,var(--gold),var(--gold-light));}
+.analytics-card.green-top::before{background:linear-gradient(90deg,var(--green),#81c784);}
+.analytics-card.blue-top::before{background:linear-gradient(90deg,var(--blue),#64b5f6);}
+.analytics-card.red-top::before{background:linear-gradient(90deg,var(--red),#ef9a9a);}
+.analytics-label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;}
+.analytics-value{font-size:26px;font-weight:700;color:var(--text);font-family:'Cormorant Garamond',serif;}
+.analytics-sub{font-size:11px;color:var(--text-dim);margin-top:4px;}
+.mini-bar-row{display:flex;gap:3px;margin-top:10px;height:20px;align-items:flex-end;}
+.mini-bar{flex:1;background:var(--gold-dim);border-radius:2px;min-height:3px;transition:var(--t);}
+.mini-bar:hover{background:var(--gold-border);}
+
+/* ── COMMAND BAR ── */
+.command-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:13px;margin-bottom:22px;}
+.cmd-card{background:var(--bg3);border-radius:var(--radius);padding:16px 18px;border:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;gap:7px;transition:var(--t);position:relative;overflow:hidden;}
+.cmd-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0;}
+.cmd-card.action::before{background:linear-gradient(90deg,var(--gold),var(--gold-light));}
+.cmd-card.risk::before{background:linear-gradient(90deg,var(--red),var(--amber));}
+.cmd-card.insight::before{background:linear-gradient(90deg,var(--blue),#64b5f6);}
+.cmd-label{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;}
+.cmd-text{font-size:13px;color:var(--text);line-height:1.5;}
+.cmd-btn{align-self:flex-start;margin-top:3px;padding:5px 13px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#0a0a0f;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;transition:var(--t);}
+.cmd-btn:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(201,153,58,0.3);}
+
+/* ── FILTERS ROW ── */
+.filters-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
+.filter-group{display:flex;gap:8px;align-items:center;}
+.filter-select{padding:7px 12px;background:var(--surface);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);color:var(--text-mid);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:var(--t);}
+.filter-select:hover,.filter-select:focus{outline:none;border-color:var(--gold-border);}
+.filter-select option{background:var(--bg2);}
+
+/* ── QUICK ACTIONS ── */
+.quick-actions{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+.btn{padding:9px 18px;border-radius:var(--radius-sm);font-weight:600;cursor:pointer;border:none;font-size:12px;transition:var(--t);display:flex;align-items:center;gap:7px;}
+.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#0a0a0f;}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(201,153,58,0.25);}
+.btn-secondary{background:var(--surface);color:var(--gold-light);border:1px solid var(--gold-border);}
+.btn-secondary:hover{background:var(--gold-dim);}
+.btn-danger{background:rgba(244,67,54,0.1);color:var(--red);border:1px solid rgba(244,67,54,0.2);}
+.btn-danger:hover{background:rgba(244,67,54,0.2);}
+.bulk-actions{display:none;gap:8px;align-items:center;padding:8px 14px;background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:var(--radius-sm);}
+.bulk-actions.visible{display:flex;}
+.bulk-count{font-size:12px;color:var(--gold-light);font-weight:600;}
+
+/* ── CATEGORY TABS ── */
+.category-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.cat-tab{display:flex;align-items:center;gap:6px;padding:7px 16px;background:var(--surface);border:1px solid rgba(255,255,255,0.07);border-radius:40px;cursor:pointer;transition:var(--t);font-size:12px;white-space:nowrap;}
+.cat-tab:hover:not(.active){border-color:var(--gold-border);color:var(--gold-light);}
+.cat-tab.active{background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-color:transparent;color:#0a0a0f;font-weight:600;}
+.cat-count{background:rgba(0,0,0,0.2);border-radius:20px;padding:1px 6px;font-size:9px;font-weight:700;}
+
+/* ── WORKS GRID ── */
+.works-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px;margin-bottom:26px;}
+.work-card{background:var(--bg3);border-radius:18px;border:1px solid rgba(201,153,58,0.1);overflow:hidden;transition:var(--t);position:relative;}
+.work-card:hover{transform:translateY(-3px);border-color:var(--gold-border);box-shadow:0 10px 28px rgba(0,0,0,0.4);}
+.work-card.certified{box-shadow:0 0 0 1px rgba(76,175,80,0.2),0 0 20px rgba(76,175,80,0.05);border-color:rgba(76,175,80,0.18);}
+.work-card.failed{border-color:rgba(244,67,54,0.2);}
+.work-card.selected{border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,153,58,0.28);}
+.card-select{position:absolute;top:13px;left:13px;z-index:10;display:none;}
+.card-select input[type=checkbox]{width:17px;height:17px;cursor:pointer;accent-color:var(--gold);}
+.bulk-mode .card-select{display:block;}
+.work-header{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.bulk-mode .work-header{padding-left:42px;}
+.work-title{font-size:15px;font-weight:600;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.work-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.work-cat{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;background:var(--gold-dim);border-radius:20px;font-size:9px;color:var(--gold-light);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;}
+.cert-id{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-dim);}
+.status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;}
+.s-pending{background:rgba(255,152,0,0.1);color:var(--amber);}
+.s-queued,.s-processing{background:rgba(33,150,243,0.1);color:var(--blue);}
+.s-processing{animation:pulse 1.5s infinite;}
+.s-analyzed{background:rgba(76,175,80,0.08);color:#81c784;}
+.s-certified{background:rgba(76,175,80,0.1);color:var(--green);}
+.s-failed{background:rgba(244,67,54,0.1);color:var(--red);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+
+/* Lifecycle */
+.cert-lifecycle{padding:10px 18px;background:rgba(0,0,0,0.18);border-bottom:1px solid rgba(255,255,255,0.04);}
+.lc-steps{display:flex;align-items:center;}
+.lc-step{flex:1;text-align:center;position:relative;}
+.lc-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);margin:0 auto 3px;position:relative;z-index:2;transition:var(--t);}
+.lc-step.done .lc-dot{background:var(--green);border-color:var(--green);box-shadow:0 0 5px rgba(76,175,80,0.5);}
+.lc-step.active .lc-dot{background:var(--gold);border-color:var(--gold);box-shadow:0 0 7px rgba(201,153,58,0.6);animation:pulse 1.5s infinite;}
+.lc-step.fail-step .lc-dot{background:var(--red);border-color:var(--red);}
+.lc-lbl{font-size:8px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.04em;}
+.lc-step.done .lc-lbl{color:var(--green);}
+.lc-step.active .lc-lbl{color:var(--gold-light);}
+.lc-step::before{content:'';position:absolute;top:3px;right:50%;left:-50%;height:1px;background:rgba(255,255,255,0.07);z-index:1;}
+.lc-step:first-child::before{display:none;}
+.lc-step.done::before{background:rgba(76,175,80,0.35);}
+
+/* Ownership */
+.own-section{padding:13px 18px;background:rgba(0,0,0,0.13);}
+.own-header{display:flex;justify-content:space-between;margin-bottom:9px;font-size:11px;color:var(--text-dim);}
+.own-bar{height:5px;background:rgba(255,255,255,0.07);border-radius:10px;overflow:hidden;margin-bottom:8px;}
+.own-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:10px;transition:width 0.4s ease;}
+.co-list{margin-top:8px;}
+.co-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:11px;border-bottom:1px solid rgba(255,255,255,0.04);}
+.co-row:last-child{border-bottom:none;}
+.co-name{display:flex;align-items:center;gap:6px;color:var(--text-mid);}
+.co-pct{color:var(--gold-light);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:10px;}
+
+/* Matches alert */
+.matches-alert{margin:0 18px 10px;padding:8px 12px;background:rgba(244,67,54,0.08);border:1px solid rgba(244,67,54,0.18);border-radius:8px;font-size:11px;color:var(--red);display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:var(--t);}
+.matches-alert:hover{background:rgba(244,67,54,0.14);}
+
+/* Work actions */
+.work-actions{padding:10px 14px;display:flex;gap:7px;border-top:1px solid rgba(255,255,255,0.04);flex-wrap:wrap;}
+.act-btn{flex:1;min-width:50px;padding:6px 5px;background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:7px;color:var(--text-dim);cursor:pointer;transition:var(--t);display:flex;align-items:center;justify-content:center;gap:5px;font-size:10px;white-space:nowrap;}
+.act-btn:hover{background:var(--gold-dim);border-color:var(--gold-border);color:var(--gold-light);}
+.act-btn.cert-btn{background:var(--gold-dim);border-color:var(--gold-border);color:var(--gold-light);}
+.act-btn.dispute-btn{background:rgba(244,67,54,0.08);border-color:rgba(244,67,54,0.18);color:var(--red);}
+.act-btn.dispute-btn:hover{background:rgba(244,67,54,0.15);}
+
+/* ── INVITATIONS ── */
+.inv-section{background:var(--bg3);border-radius:var(--radius);padding:20px;margin-bottom:24px;border:1px solid var(--gold-border);display:none;}
+.section-title{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.section-title i{color:var(--gold-light);}
+.inv-item{display:flex;justify-content:space-between;align-items:center;padding:13px;background:var(--surface);border-radius:var(--radius-sm);margin-bottom:9px;gap:14px;flex-wrap:wrap;}
+.inv-info{flex:1;min-width:180px;}
+.inv-info strong{font-size:13px;}
+.inv-info p{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.inv-pct{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;color:var(--gold-light);white-space:nowrap;}
+.inv-actions{display:flex;gap:8px;}
+.btn-accept{padding:6px 14px;background:rgba(76,175,80,0.13);border:1px solid rgba(76,175,80,0.25);color:var(--green);border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;transition:var(--t);}
+.btn-accept:hover{background:rgba(76,175,80,0.22);}
+.btn-decline{padding:6px 14px;background:rgba(244,67,54,0.08);border:1px solid rgba(244,67,54,0.2);color:var(--red);border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;transition:var(--t);}
+.btn-decline:hover{background:rgba(244,67,54,0.18);}
+
+/* ── MODALS ── */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:1000;padding:18px;backdrop-filter:blur(4px);}
+.modal.open{display:flex;}
+.modal-content{background:var(--bg2);border-radius:20px;padding:26px;width:100%;max-width:500px;max-height:88vh;overflow-y:auto;border:1px solid var(--gold-border);animation:mIn 0.22s cubic-bezier(0.4,0,0.2,1);}
+.modal-content.wide{max-width:660px;}
+@keyframes mIn{from{transform:scale(0.95) translateY(8px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.modal-header h3{font-size:16px;font-weight:600;}
+.close-btn{background:var(--surface);border:1px solid rgba(255,255,255,0.07);color:var(--text-dim);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:var(--t);}
+.close-btn:hover{background:rgba(244,67,54,0.13);color:var(--red);}
+
+/* ── FORMS ── */
+.form-group{margin-bottom:16px;}
+label{display:block;margin-bottom:6px;font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;}
+input,select,textarea{width:100%;padding:10px 13px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;transition:var(--t);}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold-border);background:rgba(201,153,58,0.04);}
+textarea{resize:vertical;}
+select option{background:var(--bg2);}
+.own-hint{font-size:10px;color:var(--gold-light);margin-top:5px;font-family:'JetBrains Mono',monospace;}
+
+/* ── NOTIFICATION LIST ── */
+.notif-list{max-height:400px;overflow-y:auto;}
+.notif-item{padding:11px;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:var(--t);border-radius:5px;}
+.notif-item:hover{background:var(--surface);}
+.notif-unread{background:rgba(201,153,58,0.05);border-left:2px solid var(--gold);padding-left:9px;}
+.notif-text{font-size:12px;}
+.notif-time{font-size:10px;color:var(--text-dim);margin-top:3px;}
+.notif-act{display:flex;gap:7px;margin-top:7px;}
+
+/* ── DETAIL MODAL ── */
+.detail-section{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.detail-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.detail-lbl{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:9px;}
+.ledger-row{display:flex;justify-content:space-between;align-items:center;padding:7px 11px;background:var(--surface);border-radius:7px;margin-bottom:5px;font-size:12px;}
+.ledger-name{color:var(--text-mid);}
+.ledger-val{font-family:'JetBrains Mono',monospace;color:var(--gold-light);font-weight:600;}
+.tl-item{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px;}
+.tl-item:last-child{border-bottom:none;}
+.tl-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);margin-top:3px;flex-shrink:0;}
+.tl-dot.g{background:var(--green);}
+.tl-dot.r{background:var(--red);}
+.tl-text{color:var(--text-mid);}
+.tl-time{color:var(--text-dim);font-size:9px;margin-top:2px;}
+
+/* ── DISPUTE MODAL ── */
+.dispute-match-card{background:var(--surface);border-radius:9px;padding:12px;margin-bottom:10px;font-size:12px;}
+.dispute-match-title{color:var(--text-mid);margin-bottom:4px;}
+.dispute-score{font-family:'JetBrains Mono',monospace;color:var(--red);font-weight:600;}
+
+/* ── BILLING MODAL ── */
+.billing-plan{background:var(--surface);border:1px solid rgba(255,255,255,0.07);border-radius:11px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+.billing-plan.current{border-color:var(--gold-border);background:var(--gold-dim);}
+.billing-plan-name{font-weight:600;font-size:14px;}
+.billing-plan-price{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--gold-light);}
+.billing-history{margin-top:16px;}
+.billing-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:12px;color:var(--text-mid);}
+
+/* ── SHARE OPTIONS ── */
+.share-opt{padding:10px 14px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:9px;transition:var(--t);border-radius:8px;}
+.share-opt:hover{background:var(--gold-dim);color:var(--gold-light);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--bg2);border-radius:var(--radius-sm);padding:11px 17px;border-left:3px solid var(--green);animation:sIn 0.3s ease;z-index:2000;font-size:12px;max-width:300px;box-shadow:0 8px 22px rgba(0,0,0,0.5);}
+@keyframes sIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:56px 28px;color:var(--text-dim);grid-column:1/-1;}
+.empty-icon{font-size:44px;margin-bottom:14px;opacity:0.35;}
+.empty-state h3{font-size:16px;color:var(--text-mid);margin-bottom:7px;}
+.empty-state p{font-size:12px;margin-bottom:18px;}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:26px 32px;border-top:1px solid rgba(255,255,255,0.04);color:var(--text-dim);font-size:12px;position:relative;z-index:1;}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(201,153,58,0.28);border-radius:10px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .navbar{padding:11px 16px;}
+  .nav-search{display:none;}
+  .container{padding:14px;}
+  .works-grid{grid-template-columns:1fr;}
+  .command-bar,.analytics-strip{grid-template-columns:1fr;}
+  .quick-actions{gap:7px;}
+  .btn{padding:8px 13px;font-size:11px;}
+  .welcome-section{padding:18px;}
+  .modal-content{padding:18px;}
+}
+</style>
 </head>
 <body>
-    <div class="header">
-        <div class="container" style="padding: 0;">
-            <h1>📊 Creator Dashboard</h1>
-            <p>Manage your content submissions and verification status</p>
-        </div>
+
+<!-- ══ AUTH GATE ══ -->
+<div id="authGate">
+  <div class="auth-card">
+    <div class="auth-logo">SeekReap</div>
+    <div class="auth-sub">Creator Studio · Sign in to continue</div>
+    <div id="authErr" class="auth-err"></div>
+    <div id="loginForm" class="auth-form">
+      <input class="auth-input" id="loginEmail" type="email" placeholder="Email address" autocomplete="email">
+      <input class="auth-input" id="loginPass" type="password" placeholder="Password" autocomplete="current-password">
+      <button class="auth-btn" onclick="doLogin()">Sign In</button>
+      <div class="auth-switch">No account? <a onclick="showSignup()">Create one</a> · <a onclick="doDemo()">Continue as demo</a></div>
     </div>
-    <div class="container">
-        <div class="card">
-            <h2>👤 Profile</h2>
-            <div id="profile" class="loading">Loading profile...</div>
-        </div>
-        
-        <div class="card">
-            <h2>📊 Statistics</h2>
-            <div id="stats" class="loading">Loading stats...</div>
-        </div>
-        
-        <div class="card">
-            <h2>📝 Recent Submissions</h2>
-            <div id="submissions" class="loading">Loading submissions...</div>
-            <a href="logout_confirm.html"><button>Logout</button></a>
-        </div>
+    <div id="signupForm" class="auth-form" style="display:none;">
+      <input class="auth-input" id="signupName" type="text" placeholder="Your name or artist name">
+      <input class="auth-input" id="signupEmail" type="email" placeholder="Email address" autocomplete="email">
+      <input class="auth-input" id="signupPass" type="password" placeholder="Password (min 6 chars)" autocomplete="new-password">
+      <button class="auth-btn" onclick="doSignup()">Create Account</button>
+      <div class="auth-switch">Have an account? <a onclick="showLogin()">Sign in</a></div>
     </div>
-    
-    <script>
-        const TIER4_URL = window.API_CONFIG?.TIER4_URL || "https://seekreap-tier-4-dev.fly.dev";
-        const TIER6_URL = window.API_CONFIG?.TIER6_URL || "https://seekreap-backend-dev.fly.dev";
-        
-        // Get creator ID from localStorage or use default
-        let creatorId = localStorage.getItem('creatorId') || window.API_CONFIG?.DEV_CREATOR_ID || "";
-        
-        async function loadProfile() {
-            try {
-                const response = await fetch(`${TIER6_URL}/api/creator/profile`, {
-                    headers: { 'X-Creator-ID': creatorId }
-                });
-                if (!response.ok) throw new Error('Profile not found');
-                const profile = await response.json();
-                document.getElementById('profile').innerHTML = `
-                    <div class="profile-info">
-                        <div><strong>ID:</strong> ${profile.id}</div>
-                        <div><strong>Email:</strong> ${profile.email}</div>
-                        <div><strong>Subscription:</strong> ${profile.subscription_tier}</div>
-                        <div><strong>Credits:</strong> ${profile.credits_remaining}</div>
-                    </div>
-                `;
-            } catch (error) {
-                document.getElementById('profile').innerHTML = `<p style="color: red;">Error loading profile: ${error.message}</p>`;
-            }
-        }
-        
-        async function loadSubmissions() {
-            try {
-                const response = await fetch(`${TIER6_URL}/api/submissions`, {
-                    headers: { 'X-Creator-ID': creatorId }
-                });
-                if (!response.ok) throw new Error('Failed to load submissions');
-                const data = await response.json();
-                
-                const submissions = data.submissions || [];
-                const completed = submissions.filter(s => s.status === 'completed').length;
-                const pending = submissions.filter(s => s.status === 'pending').length;
-                const critical = submissions.filter(s => s.risk_level === 'critical').length;
-                
-                document.getElementById('stats').innerHTML = `
-                    <div class="profile-info">
-                        <div class="stat">
-                            <div class="stat-number">${submissions.length}</div>
-                            <div>Total Submissions</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-number">${completed}</div>
-                            <div>Completed</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-number">${pending}</div>
-                            <div>Pending</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-number">${critical}</div>
-                            <div>Critical Risk</div>
-                        </div>
-                    </div>
-                `;
-                
-                if (submissions.length === 0) {
-                    document.getElementById('submissions').innerHTML = '<p>No submissions yet. Submit some content to get started!</p>';
-                    return;
-                }
-                
-                document.getElementById('submissions').innerHTML = `
-                    <table>
-                        <thead>
-                            <tr><th>ID</th><th>Status</th><th>Risk</th><th>Submitted</th><th>Action</th></tr>
-                        </thead>
-                        <tbody>
-                            ${submissions.slice(0, 10).map(s => `
-                                <tr>
-                                    <td><code>${s.id.substring(0, 8)}...</code></td>
-                                    <td><span class="status-badge status-${s.status}">${s.status}</span></td>
-                                    <td><span class="status-badge risk-${s.risk_level}">${s.risk_level || 'N/A'}</span></td>
-                                    <td>${new Date(s.submitted_at).toLocaleDateString()}</td>
-                                    <td><button onclick="viewSubmission('${s.id}')">View</button></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                    ${submissions.length > 10 ? `<p style="margin-top: 16px;">Showing 10 of ${submissions.length} submissions</p>` : ''}
-                `;
-            } catch (error) {
-                document.getElementById('submissions').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-            }
-        }
-        
-        function viewSubmission(id) {
-            window.location.href = `verify.html?id=${id}`;
-        }
-        
-        loadProfile();
-        loadSubmissions();
-    </script>
+  </div>
+</div>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="navbar" id="mainNav" style="display:none;">
+  <div class="nav-container">
+    <a href="/" class="logo">SeekReap</a>
+    <div class="nav-search">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Search works, cert IDs…" oninput="handleSearch(this.value)" onblur="setTimeout(()=>hideSearch(),150)">
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <div class="nav-right">
+      <div class="rep-badge" id="repBadge"><i class="fas fa-star" style="font-size:10px;"></i><span id="repScore">–</span></div>
+      <button class="notif-btn" onclick="openNotifications()">
+        <i class="fas fa-bell"></i>
+        <span id="notifBadge" class="notif-badge">0</span>
+      </button>
+      <a href="profile.html" class="user-pill">
+        <div class="avatar" id="userAvatar">C</div>
+        <span id="userName" style="font-size:12px;">Creator</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<div class="container" id="mainApp" style="display:none;">
+
+  <!-- Welcome -->
+  <div class="welcome-section">
+    <div class="welcome-top">
+      <div class="welcome-text">
+        <h1>Welcome back, <span id="welcomeName">Creator</span> 👋</h1>
+        <p>Manage your creative works, co-owners &amp; certifications</p>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <div class="plan-indicator">
+          <span class="plan-name" id="planLabel">Free</span>
+          <span class="plan-upgrade" onclick="openBilling()">· Upgrade <i class="fas fa-arrow-right" style="font-size:10px;"></i></span>
+        </div>
+        <button class="btn btn-secondary" style="font-size:11px;" onclick="toggleBulkMode()"><i class="fas fa-check-square"></i> <span id="bulkBtnTxt">Select</span></button>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-value" id="stTotal">0</div><div class="stat-label">Total Works</div></div>
+      <div class="stat-card"><div class="stat-value" id="stCert">0</div><div class="stat-label">Certified</div></div>
+      <div class="stat-card"><div class="stat-value" id="stCoOwned">0</div><div class="stat-label">Co-owned</div></div>
+      <div class="stat-card"><div class="stat-value" id="stInvites">0</div><div class="stat-label">Pending Invites</div></div>
+      <div class="stat-card"><div class="stat-value" id="stMatches">0</div><div class="stat-label">Match Alerts</div></div>
+    </div>
+  </div>
+
+  <!-- Analytics Strip -->
+  <div class="analytics-strip">
+    <div class="analytics-card gold-top">
+      <div class="analytics-label">Certifications this month</div>
+      <div class="analytics-value" id="aCertMonth">0</div>
+      <div class="analytics-sub" id="aCertSub">0 pending</div>
+      <div class="mini-bar-row" id="aCertBars"></div>
+    </div>
+    <div class="analytics-card green-top">
+      <div class="analytics-label">Cert verifications (public)</div>
+      <div class="analytics-value" id="aVerifs">—</div>
+      <div class="analytics-sub">External verification views</div>
+    </div>
+    <div class="analytics-card blue-top">
+      <div class="analytics-label">Ownership coverage</div>
+      <div class="analytics-value" id="aOwn">100%</div>
+      <div class="analytics-sub">Avg across all works</div>
+    </div>
+    <div class="analytics-card red-top">
+      <div class="analytics-label">Content matches detected</div>
+      <div class="analytics-value" id="aMatches">0</div>
+      <div class="analytics-sub" id="aMatchSub">No active disputes</div>
+    </div>
+  </div>
+
+  <!-- Command Bar -->
+  <div class="command-bar">
+    <div class="cmd-card action">
+      <div class="cmd-label">⚡ Suggested Action</div>
+      <div class="cmd-text" id="cmdAction">Loading…</div>
+      <button class="cmd-btn" id="cmdActionBtn" onclick="runQuickAction()" style="display:none;">Take Action</button>
+    </div>
+    <div class="cmd-card risk">
+      <div class="cmd-label">⚠️ Ownership Risk</div>
+      <div class="cmd-text" id="cmdRisk">Checking…</div>
+    </div>
+    <div class="cmd-card insight">
+      <div class="cmd-label">📊 Activity Insight</div>
+      <div class="cmd-text" id="cmdInsight">Calculating…</div>
+    </div>
+  </div>
+
+  <!-- Quick Actions + Bulk -->
+  <div class="quick-actions">
+    <button class="btn btn-primary" onclick="openNewWorkModal()"><i class="fas fa-plus"></i> New Work</button>
+    <button class="btn btn-secondary" onclick="openInviteModal()"><i class="fas fa-user-plus"></i> Invite Co-owner</button>
+    <button class="btn btn-secondary" onclick="openBilling()"><i class="fas fa-credit-card"></i> Billing</button>
+    <button class="btn btn-secondary" onclick="refreshDashboard()"><i class="fas fa-sync-alt"></i></button>
+    <div class="bulk-actions" id="bulkActions">
+      <span class="bulk-count" id="bulkCount">0 selected</span>
+      <button class="btn btn-secondary" onclick="bulkCertify()" style="padding:5px 11px;font-size:11px;"><i class="fas fa-certificate"></i> Certify</button>
+      <button class="btn btn-secondary" onclick="bulkShare()" style="padding:5px 11px;font-size:11px;"><i class="fas fa-share-alt"></i> Share</button>
+      <button class="btn btn-danger" onclick="endBulk()" style="padding:5px 11px;font-size:11px;"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-row">
+    <select class="filter-select" id="sortFilter" onchange="applyFilters()">
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+      <option value="alpha">A → Z</option>
+      <option value="risk">Risk score</option>
+    </select>
+    <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+      <option value="all">All statuses</option>
+      <option value="pending">Pending</option>
+      <option value="certified">Certified</option>
+      <option value="processing">Processing</option>
+      <option value="failed">Failed</option>
+    </select>
+    <span style="font-size:11px;color:var(--text-dim);" id="filterCount"></span>
+  </div>
+
+  <!-- Category Tabs -->
+  <div class="category-tabs" id="catTabs"></div>
+
+  <!-- Works Grid -->
+  <div id="worksGrid" class="works-grid"></div>
+
+  <!-- Invitations -->
+  <div class="inv-section" id="invSection">
+    <div class="section-title"><i class="fas fa-envelope"></i> Pending Invitations</div>
+    <div id="invList"></div>
+  </div>
+
+</div>
+
+<!-- ══ MODALS ══ -->
+
+<!-- New Work -->
+<div id="modalNewWork" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3>Register New Work</h3><button class="close-btn" onclick="closeModal('modalNewWork')">×</button></div>
+    <form onsubmit="createWork(event)">
+      <div class="form-group"><label>Title *</label><input type="text" id="nwTitle" required placeholder="Work title"></div>
+      <div class="form-group"><label>Category *</label>
+        <select id="nwCat" required>
+          <option value="audio">🎵 Audio</option><option value="video">🎬 Video</option>
+          <option value="image">🎨 Image</option><option value="code">💻 Code</option>
+          <option value="pdf">📄 PDF</option><option value="epub">📚 EPUB</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Your Ownership (%) *</label><input type="number" id="nwOwn" min="1" max="100" value="100" required></div>
+      <div class="form-group"><label>Description</label><textarea id="nwDesc" rows="2" placeholder="Describe your work…"></textarea></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Create Work →</button>
+    </form>
+  </div>
+</div>
+
+<!-- Invite Co-owner -->
+<div id="modalInvite" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3>Invite Co-owner</h3><button class="close-btn" onclick="closeModal('modalInvite')">×</button></div>
+    <form onsubmit="sendInvitation(event)">
+      <div class="form-group"><label>Select Work *</label><select id="invWorkId" required onchange="updateOwnHint()"></select></div>
+      <div class="form-group"><label>Co-owner Email *</label><input type="email" id="invEmail" required placeholder="coowner@example.com"></div>
+      <div class="form-group"><label>Ownership % *</label><input type="number" id="invPct" min="1" max="99" required oninput="updateOwnHint()"><div class="own-hint" id="ownHint"></div></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Send Invitation</button>
+    </form>
+  </div>
+</div>
+
+<!-- Notifications -->
+<div id="modalNotif" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3><i class="fas fa-bell" style="color:var(--gold-light);margin-right:8px;"></i>Notifications</h3><button class="close-btn" onclick="closeModal('modalNotif')">×</button></div>
+    <div id="notifList" class="notif-list"></div>
+  </div>
+</div>
+
+<!-- Work Detail -->
+<div id="modalDetail" class="modal">
+  <div class="modal-content wide">
+    <div class="modal-header"><h3 id="detailTitle">Work Details</h3><button class="close-btn" onclick="closeModal('modalDetail')">×</button></div>
+    <div id="detailBody"></div>
+  </div>
+</div>
+
+<!-- Share -->
+<div id="modalShare" class="modal">
+  <div class="modal-content" style="max-width:360px;">
+    <div class="modal-header"><h3>Share Work</h3><button class="close-btn" onclick="closeModal('modalShare')">×</button></div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:16px;">Share this certification with others</p>
+    <div id="shareOpts" style="display:flex;flex-direction:column;gap:6px;"></div>
+  </div>
+</div>
+
+<!-- Dispute -->
+<div id="modalDispute" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3><i class="fas fa-gavel" style="color:var(--red);margin-right:8px;"></i>File Dispute</h3><button class="close-btn" onclick="closeModal('modalDispute')">×</button></div>
+    <div id="disputeMatchInfo"></div>
+    <div class="form-group"><label>Dispute Reason *</label>
+      <select id="disputeReason">
+        <option value="false_positive">False positive — my original work</option>
+        <option value="licensed">I hold a valid license for this content</option>
+        <option value="prior_creation">I can prove prior creation date</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Supporting Evidence</label><textarea id="disputeEvidence" rows="3" placeholder="Describe your evidence, links, or supporting details…"></textarea></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-danger" style="flex:1;justify-content:center;" onclick="submitDispute()"><i class="fas fa-gavel"></i> Submit Dispute</button>
+      <button class="btn btn-secondary" onclick="closeModal('modalDispute')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Billing -->
+<div id="modalBilling" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3><i class="fas fa-credit-card" style="color:var(--gold-light);margin-right:8px;"></i>Billing &amp; Plan</h3><button class="close-btn" onclick="closeModal('modalBilling')">×</button></div>
+    <div id="billingBody"></div>
+  </div>
+</div>
+
+<footer class="footer" id="mainFooter" style="display:none;">
+  <p>© 2025 SeekReap — Protecting creativity with blockchain certification · <a href="verification_portal.html" style="color:var(--gold-light);">Verify a Certificate</a></p>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONSTANTS
+// ══════════════════════════════════════════════
+const TIER4 = 'https://seekreap-tier-4-dev.fly.dev';
+const SUPA_URL = 'https://hpbxgcszingxpgogctge.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhwYnhnY3N6aW5neHBnb2djdGdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTEwMzAsImV4cCI6MjA5MDI4NzAzMH0.wzrn2Yvpfcuzrq8JZLBLv927QHM2BpSQVfmaGHrLI6E';
+const PLANS_INFO = {free:{name:'Free',price:'$0',certs:1},payg:{name:'Pay-as-you-go',price:'$1.99/cert',certs:null},creator:{name:'Creator',price:'$9.99/mo',certs:10},studio:{name:'Studio',price:'$29.99/mo',certs:null}};
+const CAT_ICONS = {audio:'fa-headphones',video:'fa-video',image:'fa-image',code:'fa-code',pdf:'fa-file-pdf',epub:'fa-book'};
+const CATS = [{k:'all',i:'fa-layer-group',l:'All'},{k:'audio',i:'fa-headphones',l:'Audio'},{k:'video',i:'fa-video',l:'Video'},{k:'image',i:'fa-image',l:'Image'},{k:'code',i:'fa-code',l:'Code'},{k:'pdf',i:'fa-file-pdf',l:'PDF'},{k:'epub',i:'fa-book',l:'EPUB'}];
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let supaClient = null;
+let currentUser = null;
+let works = [];
+let invitations = [];
+let notifications = [];
+let disputes = [];
+let selectedWorks = new Set();
+let bulkMode = false;
+let currentCat = 'all';
+let activeDisputeWorkId = null;
+let pipelineTimers = {}; // workId -> timeoutIds[] for cancel safety
+
+// ══════════════════════════════════════════════
+//  SUPABASE INIT
+// ══════════════════════════════════════════════
+function initSupabase() {
+  return new Promise(res => {
+    function tryInit() {
+      if (window.supabase && window.supabase.createClient) {
+        supaClient = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+        res(supaClient);
+      } else { setTimeout(tryInit, 60); }
+    }
+    tryInit();
+  });
+}
+
+// ══════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════
+function showAuthErr(msg) {
+  const el = document.getElementById('authErr');
+  el.textContent = msg; el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 4000);
+}
+
+function showLogin()  { document.getElementById('loginForm').style.display='flex';  document.getElementById('signupForm').style.display='none'; }
+function showSignup() { document.getElementById('loginForm').style.display='none';  document.getElementById('signupForm').style.display='flex'; }
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  if (!email || !pass) return showAuthErr('Enter email and password');
+  try {
+    const {data,error} = await supaClient.auth.signInWithPassword({email,password:pass});
+    if (error) throw error;
+    await onAuthSuccess(data.user);
+  } catch(e) { showAuthErr(e.message || 'Login failed'); }
+}
+
+async function doSignup() {
+  const name  = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const pass  = document.getElementById('signupPass').value;
+  if (!name||!email||!pass) return showAuthErr('Fill all fields');
+  if (pass.length < 6) return showAuthErr('Password must be at least 6 characters');
+  try {
+    const {data,error} = await supaClient.auth.signUp({email,password:pass,options:{data:{display_name:name}}});
+    if (error) throw error;
+    showAuthErr(''); showToast('Account created! Check your email to confirm.');
+    showLogin();
+  } catch(e) { showAuthErr(e.message || 'Signup failed'); }
+}
+
+function doDemo() {
+  currentUser = {id:'demo-'+crypto.randomUUID().slice(0,8),email:'demo@seekreap.io',user_metadata:{display_name:'Demo Creator'}};
+  loadDashboard();
+}
+
+async function onAuthSuccess(user) {
+  currentUser = user;
+  await loadDashboard();
+}
+
+async function loadDashboard() {
+  document.getElementById('authGate').style.display = 'none';
+  document.getElementById('mainNav').style.display = 'block';
+  document.getElementById('mainApp').style.display = 'block';
+  document.getElementById('mainFooter').style.display = 'block';
+
+  const displayName = currentUser.user_metadata?.display_name || currentUser.email?.split('@')[0] || 'Creator';
+  document.getElementById('userName').textContent = displayName.slice(0,14);
+  document.getElementById('welcomeName').textContent = displayName.split(' ')[0];
+  document.getElementById('userAvatar').textContent = displayName[0].toUpperCase();
+
+  loadFromStorage();
+  initSampleDataIfEmpty();
+  fullRender();
+}
+
+// ══════════════════════════════════════════════
+//  PERSISTENCE (localStorage)
+// ══════════════════════════════════════════════
+function saveAll() {
+  const uid = currentUser?.id || 'demo';
+  localStorage.setItem(`sr_works_${uid}`, JSON.stringify(works));
+  localStorage.setItem(`sr_invitations_${uid}`, JSON.stringify(invitations));
+  localStorage.setItem(`sr_notifications_${uid}`, JSON.stringify(notifications));
+  localStorage.setItem(`sr_disputes_${uid}`, JSON.stringify(disputes));
+  localStorage.setItem(`sr_plan_${uid}`, JSON.stringify({plan: document.getElementById('planLabel').textContent || 'free'}));
+}
+
+function loadFromStorage() {
+  const uid = currentUser?.id || 'demo';
+  works        = JSON.parse(localStorage.getItem(`sr_works_${uid}`) || 'null') || [];
+  invitations  = JSON.parse(localStorage.getItem(`sr_invitations_${uid}`) || 'null') || [];
+  notifications= JSON.parse(localStorage.getItem(`sr_notifications_${uid}`) || 'null') || [];
+  disputes     = JSON.parse(localStorage.getItem(`sr_disputes_${uid}`) || 'null') || [];
+  const planData = JSON.parse(localStorage.getItem(`sr_plan_${uid}`) || '{"plan":"free"}');
+  document.getElementById('planLabel').textContent = (planData.plan || 'free').toUpperCase();
+}
+
+function initSampleDataIfEmpty() {
+  if (works.length) return;
+  works = [
+    {id:newId('w'),title:'Midnight Dreams',category:'audio',certId:'SR-20250417-AUD001',ownership:75,coOwners:[{id:newId('c'),name:'Jane Smith',email:'jane@example.com',percentage:25,status:'accepted'}],description:'Original ambient composition',status:'certified',createdAt:ago(3),pipeline:null,matches:[],timeline:[{l:'Work registered',t:ago(3),type:'gold'},{l:'Certified ✓',t:ago(2),type:'green'}]},
+    {id:newId('w'),title:'Digital Sunrise',category:'image',certId:null,ownership:100,coOwners:[],description:'Digital artwork series',status:'pending',createdAt:ago(1),pipeline:null,matches:[{matchedTitle:'Sunrise Art Series',score:0.72,severity:'high',matchId:newId('m')}],timeline:[{l:'Work registered',t:ago(1),type:'gold'}]},
+    {id:newId('w'),title:'Code Symphony',category:'code',certId:'SR-20250415-COD003',ownership:60,coOwners:[{id:newId('c'),name:'Mike Johnson',email:'mike@example.com',percentage:40,status:'accepted'}],description:'Open source library',status:'analyzing',createdAt:ago(5),pipeline:{stage:'processing',startedAt:Date.now()},matches:[],timeline:[{l:'Work registered',t:ago(5),type:'gold'},{l:'Processing…',t:ago(0.05),type:'gold'}]},
+  ];
+  invitations = [{id:newId('inv'),workId:works[0].id,workTitle:'Midnight Dreams',fromEmail:'alice@example.com',fromName:'Alice Wonder',percentage:10,status:'pending'}];
+  notifications = [
+    {id:newId('n'),message:'Your work "Midnight Dreams" has been certified!',read:false,timestamp:ago(2),type:'cert'},
+    {id:newId('n'),message:'Match alert: "Digital Sunrise" has a potential similarity detected',read:false,timestamp:ago(0.5),type:'match',workId:works[1].id},
+    {id:newId('n'),message:'Jane Smith accepted your co-owner invitation',read:true,timestamp:ago(3),type:'invite_accepted'},
+  ];
+  saveAll();
+}
+
+// ══════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════
+function newId(prefix='id') { return `${prefix}_${crypto.randomUUID().replace(/-/g,'').slice(0,12)}`; }
+function ago(days) { return new Date(Date.now()-days*86400000).toISOString(); }
+function esc(s) { if(!s)return''; const d=document.createElement('div');d.textContent=s;return d.innerHTML; }
+function getTotalOwnership(w) { return w.ownership + w.coOwners.reduce((s,c)=>s+c.percentage,0); }
+
+function normalizeOwnership(w) {
+  const total = getTotalOwnership(w);
+  if (total > 100) { console.warn(`Ownership overflow in "${w.title}": ${total}%`); return false; }
+  if (w.ownership < 0) w.ownership = 0;
+  return true;
+}
+
+// ══════════════════════════════════════════════
+//  REPUTATION (certified-only weighting)
+// ══════════════════════════════════════════════
+function calcReputation() {
+  const certified = works.filter(w=>w.status==='certified').length;
+  const total     = works.length;
+  const coowned   = works.filter(w=>w.coOwners.length>0&&w.status==='certified').length;
+  if (!total) return 0;
+  return Math.min(100, Math.round((certified/Math.max(total,1))*70 + coowned*6 + Math.min(certified,5)*3));
+}
+
+// ══════════════════════════════════════════════
+//  ANALYTICS
+// ══════════════════════════════════════════════
+function updateAnalytics() {
+  const now = Date.now();
+  const monthMs = 30*86400000;
+  const certMonth = works.filter(w=>w.status==='certified'&&(now-new Date(w.createdAt).getTime())<monthMs).length;
+  const pending   = works.filter(w=>w.status==='pending').length;
+  const allMatches= works.reduce((s,w)=>s+(w.matches?.length||0),0);
+  const avgOwn    = works.length ? Math.round(works.reduce((s,w)=>s+w.ownership,0)/works.length) : 100;
+  const activeDisp= disputes.filter(d=>d.status==='pending').length;
+
+  document.getElementById('aCertMonth').textContent = certMonth;
+  document.getElementById('aCertSub').textContent   = `${pending} pending`;
+  document.getElementById('aVerifs').textContent    = '—';  // would come from DB
+  document.getElementById('aOwn').textContent       = avgOwn+'%';
+  document.getElementById('aMatches').textContent   = allMatches;
+  document.getElementById('aMatchSub').textContent  = activeDisp>0 ? `${activeDisp} active dispute${activeDisp>1?'s':''}` : 'No active disputes';
+
+  // Mini bars (last 7 items certified dates, simulated)
+  const bars = document.getElementById('aCertBars');
+  if (bars) {
+    const data = Array.from({length:7},(_,i)=>Math.random()*100);
+    bars.innerHTML = data.map(h=>`<div class="mini-bar" style="height:${Math.max(3,h*0.2)}px" title="${Math.round(h)}%"></div>`).join('');
+  }
+}
+
+// ══════════════════════════════════════════════
+//  COMMAND BAR (scans ALL, not just first)
+// ══════════════════════════════════════════════
+function updateCommandBar() {
+  // Action: list all uncertified
+  const uncerted = works.filter(w=>w.status==='pending'||w.status==='failed');
+  const processing = works.filter(w=>['queued','processing','analyzing'].includes(w.status));
+  const btn = document.getElementById('cmdActionBtn');
+
+  if (uncerted.length > 1) {
+    document.getElementById('cmdAction').textContent = `${uncerted.length} works need certification`;
+    btn.dataset.action='bulk'; btn.style.display='inline-block';
+  } else if (uncerted.length === 1) {
+    document.getElementById('cmdAction').textContent = `Certify "${uncerted[0].title}" to secure ownership`;
+    btn.dataset.action='certify'; btn.dataset.id=uncerted[0].id; btn.style.display='inline-block';
+  } else if (processing.length) {
+    document.getElementById('cmdAction').textContent = `${processing.length} work${processing.length>1?'s are':' is'} being certified — check status`;
+    btn.dataset.action='detail'; btn.dataset.id=processing[0].id; btn.style.display='inline-block';
+  } else {
+    document.getElementById('cmdAction').textContent = 'All works certified — great work!';
+    btn.style.display='none';
+  }
+
+  // Risk: ownership integrity
+  let riskMsg = 'No ownership issues detected';
+  for (const w of works) {
+    const total = getTotalOwnership(w);
+    if (total > 100) { riskMsg = `"${w.title}" overflow: ${total}% assigned`; break; }
+    if (total < 100 && w.coOwners.length) { riskMsg = `"${w.title}" has ${100-total}% unassigned`; break; }
+    const matchCount = w.matches?.filter(m=>!m.disputed).length||0;
+    if (matchCount) { riskMsg = `"${w.title}" has ${matchCount} unreviewed match${matchCount>1?'es':''}`; break; }
+  }
+  document.getElementById('cmdRisk').textContent = riskMsg;
+
+  // Insight
+  const certThis = works.filter(w=>w.status==='certified'&&(Date.now()-new Date(w.createdAt).getTime())<7*86400000).length;
+  const pendInv  = invitations.filter(i=>i.status==='pending').length;
+  let insight;
+  if (certThis) insight = `${certThis} work${certThis>1?'s':''} certified this week`;
+  else if (pendInv) insight = `${pendInv} invitation${pendInv>1?'s':''} awaiting your response`;
+  else insight = `${works.length} work${works.length!==1?'s':''} in your studio`;
+  document.getElementById('cmdInsight').textContent = insight;
+}
+
+function runQuickAction() {
+  const btn = document.getElementById('cmdActionBtn');
+  const a = btn.dataset.action;
+  if (a==='certify'&&btn.dataset.id) startCertification(btn.dataset.id);
+  else if (a==='bulk') { toggleBulkMode(); works.filter(w=>w.status==='pending').forEach(w=>selectedWorks.add(w.id)); renderWorks(); updateBulkCount(); }
+  else if (a==='detail'&&btn.dataset.id) openWorkDetails(btn.dataset.id);
+}
+
+// ══════════════════════════════════════════════
+//  CERTIFICATION PIPELINE (cancel-safe)
+// ══════════════════════════════════════════════
+function startCertification(workId) {
+  const work = works.find(w=>w.id===workId);
+  if (!work) return;
+
+  // Cancel any existing pipeline for this work
+  if (pipelineTimers[workId]) { pipelineTimers[workId].forEach(clearTimeout); }
+  pipelineTimers[workId] = [];
+
+  const startedAt = Date.now();
+  work.pipeline = {stage:'queued', startedAt};
+  work.status = 'queued';
+  if (!work.timeline) work.timeline=[];
+  work.timeline.push({l:'Submitted for certification',t:new Date().toISOString(),type:'gold'});
+  saveAll(); renderWorks(); updateCommandBar(); updateStats();
+
+  const set = (delay, stageFn) => {
+    const tid = setTimeout(() => {
+      // Cancel-safety: check if pipeline was superseded
+      if (!work.pipeline || work.pipeline.startedAt !== startedAt) return;
+      stageFn();
+    }, delay);
+    pipelineTimers[workId].push(tid);
+  };
+
+  set(1400, ()=>{ work.status='processing'; work.pipeline.stage='processing'; work.timeline.push({l:'Processing started',t:new Date().toISOString(),type:'gold'}); saveAll(); renderWorks(); updateCommandBar(); });
+  set(3200, ()=>{ work.status='analyzed';   work.pipeline.stage='analyzed';   work.timeline.push({l:'Risk analysis complete',t:new Date().toISOString(),type:'green'}); saveAll(); renderWorks(); updateCommandBar(); });
+  set(5200, ()=>{
+    work.status='certified';
+    work.pipeline = null;
+    work.certId = `SR-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${crypto.randomUUID().slice(0,8).toUpperCase()}`;
+    work.timeline.push({l:'Certified ✓',t:new Date().toISOString(),type:'green'});
+    addNotif(`"${work.title}" certified — ${work.certId}`, 'cert');
+    saveAll(); renderWorks(); renderTabs(); updateStats(); updateCommandBar(); updateReputation(); updateAnalytics();
+    showToast(`✓ "${work.title}" certified`);
+  });
+}
+
+// ══════════════════════════════════════════════
+//  SEARCH
+// ══════════════════════════════════════════════
+function handleSearch(q) {
+  const box = document.getElementById('searchResults');
+  if (!q.trim()) { box.style.display='none'; return; }
+  const results = works.filter(w=>
+    w.title.toLowerCase().includes(q.toLowerCase()) ||
+    (w.certId||'').toLowerCase().includes(q.toLowerCase()) ||
+    w.category.toLowerCase().includes(q.toLowerCase())
+  ).slice(0,6);
+  if (!results.length) { box.style.display='none'; return; }
+  box.innerHTML = results.map(w=>`
+    <div class="search-result-item" onclick="openWorkDetails('${w.id}');hideSearch();">
+      <i class="fas ${CAT_ICONS[w.category]||'fa-file'}" style="color:var(--gold-light);width:16px;"></i>
+      <span>${esc(w.title)}</span>
+      <span style="font-size:10px;color:var(--text-dim);margin-left:auto;">${w.category}</span>
+    </div>`).join('');
+  box.style.display='block';
+}
+function hideSearch() { document.getElementById('searchResults').style.display='none'; }
+
+// ══════════════════════════════════════════════
+//  FILTERS + SORT
+// ══════════════════════════════════════════════
+function getFilteredWorks() {
+  const sort   = document.getElementById('sortFilter').value;
+  const status = document.getElementById('statusFilter').value;
+  let list = works.filter(w=> currentCat==='all' || w.category===currentCat);
+  if (status!=='all') list = list.filter(w=>w.status===status);
+  switch(sort) {
+    case 'oldest': list = [...list].sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt)); break;
+    case 'alpha':  list = [...list].sort((a,b)=>a.title.localeCompare(b.title)); break;
+    case 'risk':   list = [...list].sort((a,b)=>(b.matches?.length||0)-(a.matches?.length||0)); break;
+    default:       list = [...list].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  }
+  return list;
+}
+
+function applyFilters() { renderWorks(); }
+
+// ══════════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════════
+function renderTabs() {
+  document.getElementById('catTabs').innerHTML = CATS.map(c=>{
+    const cnt = c.k==='all'?works.length:works.filter(w=>w.category===c.k).length;
+    return `<div class="cat-tab${currentCat===c.k?' active':''}" onclick="setCategory('${c.k}')">
+      <i class="fas ${c.i}"></i>${c.l}<span class="cat-count">${cnt}</span>
+    </div>`;
+  }).join('');
+}
+function setCategory(k) { currentCat=k; renderTabs(); renderWorks(); }
+
+// ══════════════════════════════════════════════
+//  WORKS RENDER
+// ══════════════════════════════════════════════
+function renderLifecycle(work) {
+  const s = work.status;
+  if (s==='pending') return '';
+  const stages=['queued','processing','analyzed','certified'];
+  const stageIdx = stages.indexOf(s==='analyzing'?'processing':s);
+  return `<div class="cert-lifecycle"><div class="lc-steps">
+    ${stages.map((label,i)=>{
+      const cls = s==='failed'&&i===1?'fail-step':i<stageIdx?'done':i===stageIdx?'active':'';
+      return `<div class="lc-step ${cls}"><div class="lc-dot"></div><div class="lc-lbl">${label}</div></div>`;
+    }).join('')}
+  </div></div>`;
+}
+
+function renderWorks() {
+  const grid = document.getElementById('worksGrid');
+  const list = getFilteredWorks();
+  document.getElementById('filterCount').textContent = list.length !== works.length ? `${list.length} of ${works.length} shown` : '';
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🚀</div>
+      <h3>${currentCat==='all'?'No works yet':'No '+currentCat+' works'}</h3>
+      <p>${currentCat==='all'?'Register your first creative work':'Try another category or adjust filters'}</p>
+      <button class="btn btn-primary" onclick="openNewWorkModal()"><i class="fas fa-plus"></i> Create Work</button>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(work=>{
+    const sc = {certified:'s-certified',failed:'s-failed',processing:'s-processing',analyzing:'s-processing',analyzed:'s-analyzed',queued:'s-queued',pending:'s-pending'}[work.status]||'s-pending';
+    const cardCls = work.status==='certified'?'certified':work.status==='failed'?'failed':'';
+    const isSel = selectedWorks.has(work.id);
+    const unrevMatches = work.matches?.filter(m=>!m.disputed).length||0;
+
+    return `<div class="work-card ${cardCls}${isSel?' selected':''}" id="card-${work.id}">
+      <div class="card-select"><input type="checkbox" ${isSel?'checked':''} onchange="toggleSelect('${work.id}',this.checked)"></div>
+      <div class="work-header">
+        <div class="work-title-section" style="flex:1;min-width:0;">
+          <div class="work-title">${esc(work.title)}</div>
+          <div class="work-meta">
+            <span class="work-cat"><i class="fas ${CAT_ICONS[work.category]||'fa-file'}"></i> ${work.category.toUpperCase()}</span>
+            <span class="status-badge ${sc}">${{certified:'✓ Certified',failed:'✗ Failed',processing:'⟳ Processing',analyzing:'⟳ Analyzing',analyzed:'◎ Analyzed',queued:'⧗ Queued',pending:'⏳ Pending'}[work.status]||work.status}</span>
+          </div>
+          ${work.certId?`<div class="cert-id">${esc(work.certId)}</div>`:''}
+        </div>
+      </div>
+      ${renderLifecycle(work)}
+      ${unrevMatches?`<div class="matches-alert" onclick="openDispute('${work.id}')"><span><i class="fas fa-exclamation-triangle" style="margin-right:6px;"></i>${unrevMatches} potential match${unrevMatches>1?'es':''} detected</span><span style="font-size:10px;">Review →</span></div>`:''}
+      <div class="own-section">
+        <div class="own-header"><span>Your ownership</span><span style="font-family:'JetBrains Mono',monospace;color:var(--gold-light);font-size:11px;">${work.ownership}%</span></div>
+        <div class="own-bar"><div class="own-fill" style="width:${work.ownership}%"></div></div>
+        ${work.coOwners.length?`<div class="co-list">${work.coOwners.map(c=>`<div class="co-row"><div class="co-name"><i class="fas fa-user-circle" style="color:var(--gold-dim);"></i>${esc(c.name)}</div><div class="co-pct">${c.percentage}%</div></div>`).join('')}</div>`:'<div style="font-size:10px;color:var(--text-dim);margin-top:5px;">Solo work</div>'}
+      </div>
+      <div class="work-actions">
+        ${work.status==='pending'||work.status==='failed'?`<button class="act-btn cert-btn" onclick="startCertification('${work.id}')"><i class="fas fa-certificate"></i> Certify</button>`:''}
+        <button class="act-btn" onclick="openWorkDetails('${work.id}')"><i class="fas fa-expand-alt"></i></button>
+        <button class="act-btn" onclick="openShareModal('${work.id}')"><i class="fas fa-share-alt"></i> Share</button>
+        ${unrevMatches?`<button class="act-btn dispute-btn" onclick="openDispute('${work.id}')"><i class="fas fa-gavel"></i> Dispute</button>`:''}
+        ${work.certId?`<button class="act-btn" onclick="downloadCert('${work.id}')"><i class="fas fa-download"></i></button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  INVITATIONS
+// ══════════════════════════════════════════════
+function renderInvitations() {
+  const pending = invitations.filter(i=>i.status==='pending');
+  const sec = document.getElementById('invSection');
+  const lst = document.getElementById('invList');
+  sec.style.display = pending.length?'block':'none';
+  lst.innerHTML = pending.map(inv=>`
+    <div class="inv-item">
+      <div class="inv-info"><strong>${esc(inv.fromName||inv.fromEmail)}</strong><p>invited you to co-own <strong>${esc(inv.workTitle)}</strong></p></div>
+      <div class="inv-pct">${inv.percentage}%</div>
+      <div class="inv-actions">
+        <button class="btn-accept" onclick="acceptInv('${inv.id}')"><i class="fas fa-check"></i> Accept</button>
+        <button class="btn-decline" onclick="declineInv('${inv.id}')"><i class="fas fa-times"></i> Decline</button>
+      </div>
+    </div>`).join('');
+}
+
+function acceptInv(invId) {
+  const inv = invitations.find(i=>i.id===invId);
+  if (!inv) return;
+  const work = works.find(w=>w.id===inv.workId);
+  if (work) {
+    const newOwnership = work.ownership - inv.percentage;
+    if (newOwnership < 0) { showToast('Cannot accept — would push your ownership below 0%', true); return; }
+    work.coOwners.push({id:newId('c'),name:inv.fromName,email:inv.fromEmail,percentage:inv.percentage,status:'accepted'});
+    work.ownership = newOwnership;
+    if (!normalizeOwnership(work)) { showToast('Ownership integrity check failed', true); return; }
+    if (!work.timeline) work.timeline=[];
+    work.timeline.push({l:`${inv.fromName} accepted as co-owner (${inv.percentage}%)`,t:new Date().toISOString(),type:'green'});
+  }
+  inv.status='accepted';
+  addNotif(`You accepted co-ownership of "${inv.workTitle}" — ${inv.percentage}% share`,'invite_accepted');
+  saveAll(); renderWorks(); renderInvitations(); updateStats(); updateCommandBar(); updateReputation(); updateAnalytics();
+  showToast(`You're now a co-owner of "${inv.workTitle}"`);
+}
+
+function declineInv(invId) {
+  const inv = invitations.find(i=>i.id===invId);
+  if (inv) inv.status='declined';
+  saveAll(); renderInvitations(); updateStats();
+  showToast('Invitation declined');
+}
+
+// ══════════════════════════════════════════════
+//  CREATE WORK
+// ══════════════════════════════════════════════
+function createWork(e) {
+  e.preventDefault();
+  const title    = document.getElementById('nwTitle').value.trim();
+  const category = document.getElementById('nwCat').value;
+  const ownership= parseInt(document.getElementById('nwOwn').value);
+  const desc     = document.getElementById('nwDesc').value.trim();
+
+  const work = {id:newId('w'),title,category,certId:null,ownership,coOwners:[],description:desc,status:'pending',createdAt:new Date().toISOString(),pipeline:null,matches:[],timeline:[{l:'Work registered',t:new Date().toISOString(),type:'gold'}]};
+  works.unshift(work);
+  closeModal('modalNewWork'); e.target.reset();
+  saveAll(); renderWorks(); renderTabs(); updateStats(); updateCommandBar(); updateReputation(); updateAnalytics();
+  showToast(`"${title}" created`);
+  addNotif(`Work "${title}" registered in your studio`,'create');
+}
+
+// ══════════════════════════════════════════════
+//  SEND INVITATION
+// ══════════════════════════════════════════════
+function sendInvitation(e) {
+  e.preventDefault();
+  const workId = document.getElementById('invWorkId').value;
+  const email  = document.getElementById('invEmail').value.trim();
+  const pct    = parseInt(document.getElementById('invPct').value);
+  const work   = works.find(w=>w.id===workId);
+  if (!work) return;
+  if (getTotalOwnership(work)+pct>100) { showToast('Total ownership would exceed 100%',true); return; }
+
+  invitations.push({id:newId('inv'),workId,workTitle:work.title,fromEmail:currentUser.email||'creator@seekreap.io',fromName:document.getElementById('userName').textContent,toEmail:email,percentage:pct,status:'pending'});
+  closeModal('modalInvite'); e.target.reset();
+  saveAll(); renderInvitations(); updateStats(); updateCommandBar();
+  showToast(`Invitation sent to ${email}`);
+}
+
+function updateOwnHint() {
+  const workId = document.getElementById('invWorkId').value;
+  const work = works.find(w=>w.id===workId);
+  if (!work) return;
+  const avail = 100-getTotalOwnership(work);
+  const input = parseInt(document.getElementById('invPct').value||0);
+  const hint  = document.getElementById('ownHint');
+  if (input>avail) { hint.textContent=`⚠ Exceeds available: only ${avail}% remaining`; hint.style.color='var(--red)'; }
+  else if (input>0) { hint.textContent=`✓ After invite: ${avail-input}% unassigned`; hint.style.color='var(--gold-light)'; }
+  else { hint.textContent=`Available: ${avail}%`; hint.style.color='var(--text-dim)'; }
+}
+
+// ══════════════════════════════════════════════
+//  WORK DETAILS
+// ══════════════════════════════════════════════
+function openWorkDetails(workId) {
+  const work = works.find(w=>w.id===workId);
+  if (!work) return;
+  document.getElementById('detailTitle').textContent = work.title;
+  const unassigned = 100-getTotalOwnership(work);
+  const tl = (work.timeline||[]).slice().reverse();
+
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-section">
+      <div class="detail-lbl">Metadata</div>
+      ${[['Category',work.category.toUpperCase()],['Status',work.status],work.certId?['Cert ID',work.certId]:null,['Registered',new Date(work.createdAt).toLocaleDateString()]].filter(Boolean).map(([k,v])=>`<div class="ledger-row"><span class="ledger-name">${k}</span><span class="ledger-val">${esc(v)}</span></div>`).join('')}
+      ${work.description?`<p style="font-size:12px;color:var(--text-dim);margin-top:9px;line-height:1.5;">${esc(work.description)}</p>`:''}
+    </div>
+    <div class="detail-section">
+      <div class="detail-lbl">Ownership Ledger</div>
+      <div class="ledger-row"><span class="ledger-name"><i class="fas fa-user-circle" style="margin-right:5px;"></i>You (creator)</span><span class="ledger-val">${work.ownership}%</span></div>
+      ${work.coOwners.map(c=>`<div class="ledger-row"><span class="ledger-name"><i class="fas fa-user-circle" style="margin-right:5px;"></i>${esc(c.name)}</span><span class="ledger-val">${c.percentage}%</span></div>`).join('')}
+      ${unassigned>0?`<div class="ledger-row" style="opacity:0.5;"><span class="ledger-name">Unassigned</span><span class="ledger-val">${unassigned}%</span></div>`:''}
+      <div class="own-bar" style="margin-top:10px;height:7px;"><div class="own-fill" style="width:${work.ownership}%"></div></div>
+    </div>
+    ${work.matches?.length?`<div class="detail-section">
+      <div class="detail-lbl" style="color:var(--red);">⚠ Content Matches Detected</div>
+      ${work.matches.map(m=>`<div class="dispute-match-card"${m.disputed?' style="opacity:0.5;"':''}>
+        <div class="dispute-match-title">${esc(m.matchedTitle||'Unknown work')} ${m.disputed?'<span style="color:var(--green);font-size:10px;">(Disputed)</span>':''}</div>
+        <div>Similarity: <span class="dispute-score">${Math.round((m.score||0)*100)}%</span> · Severity: <span style="color:var(--amber);">${esc(m.severity||'medium')}</span></div>
+      </div>`).join('')}
+    </div>`:''}
+    <div class="detail-section">
+      <div class="detail-lbl">Certification Timeline</div>
+      ${tl.length?tl.map(t=>`<div class="tl-item"><div class="tl-dot ${t.type==='green'?'g':t.type==='red'?'r':''}"></div><div><div class="tl-text">${esc(t.l)}</div><div class="tl-time">${new Date(t.t).toLocaleString()}</div></div></div>`).join(''):'<div style="color:var(--text-dim);font-size:12px;">No events yet</div>'}
+    </div>
+    <div style="display:flex;gap:9px;flex-wrap:wrap;">
+      ${work.status==='pending'||work.status==='failed'?`<button class="btn btn-primary" onclick="startCertification('${work.id}');closeModal('modalDetail')"><i class="fas fa-certificate"></i> Certify</button>`:''}
+      <button class="btn btn-secondary" onclick="openShareModal('${work.id}');closeModal('modalDetail')"><i class="fas fa-share-alt"></i> Share</button>
+      ${work.certId?`<button class="btn btn-secondary" onclick="downloadCert('${work.id}')"><i class="fas fa-download"></i> Certificate</button><a href="verification_portal.html?cert=${esc(work.certId)}" target="_blank" class="btn btn-secondary" style="text-decoration:none;"><i class="fas fa-external-link-alt"></i> Verify</a>`:''}
+    </div>`;
+  openModal('modalDetail');
+}
+
+// ══════════════════════════════════════════════
+//  SHARE
+// ══════════════════════════════════════════════
+function openShareModal(workId) {
+  const work = works.find(w=>w.id===workId);
+  if (!work) return;
+  const url  = `${location.origin}/verification_portal.html?cert=${work.certId||work.id}`;
+  const text = `Check out my certified work: "${work.title}" — ${url}`;
+  document.getElementById('shareOpts').innerHTML = [
+    {i:'fa-link',      l:'Copy Link',  fn:`navigator.clipboard.writeText(${JSON.stringify(url)}).then(()=>showToast('Link copied'));closeModal('modalShare')`},
+    {i:'fa-whatsapp fab',l:'WhatsApp', fn:`window.open('https://wa.me/?text='+encodeURIComponent(${JSON.stringify(text)}));closeModal('modalShare')`},
+    {i:'fa-envelope',  l:'Email',      fn:`window.open('mailto:?subject=Certified+Work&body='+encodeURIComponent(${JSON.stringify(text)}));closeModal('modalShare')`},
+    {i:'fa-twitter fab',l:'Twitter/X', fn:`window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(${JSON.stringify(text)}));closeModal('modalShare')`},
+    {i:'fa-external-link-alt',l:'Open Verification Page',fn:`window.open(${JSON.stringify(url)},'_blank');closeModal('modalShare')`},
+  ].map(o=>`<div class="share-opt" onclick="${o.fn}"><i class="fas ${o.i}" style="width:18px;color:var(--gold-light);"></i>${o.l}</div>`).join('');
+  openModal('modalShare');
+}
+
+function downloadCert(workId) {
+  const w = works.find(x=>x.id===workId);
+  if(!w) return;
+  showToast(`Preparing "${w.title}" certificate…`);
+  setTimeout(()=>showToast('Certificate downloaded ✓'),1200);
+}
+
+// ══════════════════════════════════════════════
+//  DISPUTES
+// ══════════════════════════════════════════════
+function openDispute(workId) {
+  const work = works.find(w=>w.id===workId);
+  if (!work) return;
+  activeDisputeWorkId = workId;
+  const unrev = work.matches?.filter(m=>!m.disputed)||[];
+  document.getElementById('disputeMatchInfo').innerHTML = unrev.map(m=>`
+    <div class="dispute-match-card">
+      <div class="dispute-match-title">${esc(m.matchedTitle||'Unknown work')}</div>
+      <div>Similarity: <span class="dispute-score">${Math.round((m.score||0)*100)}%</span> · Severity: <span style="color:var(--amber);">${esc(m.severity||'medium')}</span></div>
+    </div>`).join('') || '<p style="font-size:12px;color:var(--text-dim);margin-bottom:14px;">No specific matches — filing general dispute</p>';
+  openModal('modalDispute');
+}
+
+function submitDispute() {
+  const work = works.find(w=>w.id===activeDisputeWorkId);
+  if (!work) return;
+  const reason   = document.getElementById('disputeReason').value;
+  const evidence = document.getElementById('disputeEvidence').value.trim();
+
+  // Mark all matches as disputed
+  if (work.matches) work.matches.forEach(m=>m.disputed=true);
+
+  const dispute = {id:newId('d'),workId:work.id,workTitle:work.title,reason,evidence,status:'pending',createdAt:new Date().toISOString()};
+  disputes.push(dispute);
+  if (!work.timeline) work.timeline=[];
+  work.timeline.push({l:`Dispute filed: ${reason.replace('_',' ')}`,t:new Date().toISOString(),type:'red'});
+
+  addNotif(`Dispute filed for "${work.title}" — our team will review within 48h`,'dispute');
+  closeModal('modalDispute');
+  saveAll(); renderWorks(); updateStats(); updateCommandBar(); updateAnalytics();
+  showToast('Dispute submitted — we\'ll review within 48 hours');
+  document.getElementById('disputeEvidence').value='';
+}
+
+// ══════════════════════════════════════════════
+//  BILLING
+// ══════════════════════════════════════════════
+function openBilling() {
+  const currentPlan = (document.getElementById('planLabel').textContent||'FREE').toLowerCase().replace(' ','');
+  document.getElementById('billingBody').innerHTML = `
+    <div style="margin-bottom:18px;">
+      ${Object.entries(PLANS_INFO).map(([k,p])=>`
+        <div class="billing-plan${k===currentPlan?' current':''}">
+          <div><div class="billing-plan-name">${p.name}</div><div style="font-size:11px;color:var(--text-dim);">${p.certs?p.certs+' cert/mo':'Unlimited'}</div></div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="billing-plan-price">${p.price}</div>
+            ${k!==currentPlan?`<button class="btn btn-secondary" style="padding:5px 12px;font-size:11px;" onclick="changePlan('${k}')">Select</button>`:'<span style="font-size:11px;color:var(--gold-light);">Current</span>'}
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="billing-history">
+      <div class="detail-lbl">Billing History</div>
+      <div class="billing-row"><span>No billing history available</span><span>—</span></div>
+    </div>
+    <p style="font-size:11px;color:var(--text-dim);margin-top:12px;">Payments processed securely. Certificates issued immediately after payment.</p>`;
+  openModal('modalBilling');
+}
+
+function changePlan(plan) {
+  document.getElementById('planLabel').textContent = plan.toUpperCase();
+  saveAll(); closeModal('modalBilling');
+  showToast(`Plan changed to ${PLANS_INFO[plan]?.name||plan}`);
+  addNotif(`Your plan was updated to ${PLANS_INFO[plan]?.name||plan}`,'plan');
+}
+
+// ══════════════════════════════════════════════
+//  NOTIFICATIONS
+// ══════════════════════════════════════════════
+function updateNotifBadge() {
+  const c = notifications.filter(n=>!n.read).length;
+  const b = document.getElementById('notifBadge');
+  b.textContent=c; b.style.display=c>0?'block':'none';
+}
+
+function addNotif(msg, type='system', extra={}) {
+  notifications.unshift({id:newId('n'),message:msg,read:false,timestamp:new Date().toISOString(),type,...extra});
+  saveAll(); updateNotifBadge();
+}
+
+function openNotifications() {
+  notifications.forEach(n=>n.read=true);
+  saveAll(); updateNotifBadge();
+  const container = document.getElementById('notifList');
+  if (!notifications.length) {
+    container.innerHTML='<div style="text-align:center;padding:36px;color:var(--text-dim);">No notifications</div>';
+  } else {
+    container.innerHTML = notifications.map(n=>{
+      const actions = (n.type==='match'&&n.workId)?`<div class="notif-act"><button class="btn-accept" style="font-size:10px;padding:4px 10px;" onclick="openDispute('${n.workId}');closeModal('modalNotif')">Review Match</button></div>`:'';
+      return `<div class="notif-item${n.read?'':' notif-unread'}">
+        <div class="notif-text">${esc(n.message)}</div>
+        <div class="notif-time">${new Date(n.timestamp).toLocaleString()}</div>
+        ${actions}
+      </div>`;
+    }).join('');
+  }
+  openModal('modalNotif');
+}
+
+// ══════════════════════════════════════════════
+//  BULK OPERATIONS
+// ══════════════════════════════════════════════
+function toggleBulkMode() {
+  bulkMode=!bulkMode; selectedWorks.clear();
+  document.getElementById('bulkBtnTxt').textContent=bulkMode?'Done':'Select';
+  document.getElementById('worksGrid').classList.toggle('bulk-mode',bulkMode);
+  document.getElementById('bulkActions').classList.toggle('visible',bulkMode);
+  renderWorks(); updateBulkCount();
+}
+function endBulk() { bulkMode=false; selectedWorks.clear(); toggleBulkMode(); }
+
+function toggleSelect(id,checked) {
+  if(checked)selectedWorks.add(id);else selectedWorks.delete(id);
+  document.getElementById('card-'+id)?.classList.toggle('selected',checked);
+  updateBulkCount();
+}
+function updateBulkCount() { document.getElementById('bulkCount').textContent=selectedWorks.size+' selected'; }
+
+function bulkCertify() {
+  let count=0;
+  selectedWorks.forEach(id=>{ const w=works.find(x=>x.id===id); if(w&&(w.status==='pending'||w.status==='failed')){startCertification(id);count++;} });
+  showToast(count?`Certifying ${count} works…`:'No eligible works selected');
+  selectedWorks.clear(); updateBulkCount(); renderWorks();
+}
+function bulkShare() {
+  if(!selectedWorks.size)return;
+  const urls=Array.from(selectedWorks).map(id=>{ const w=works.find(x=>x.id===id); return w?`${w.title}: ${location.origin}/verification_portal.html?cert=${w.certId||w.id}`:''; }).filter(Boolean).join('\n');
+  navigator.clipboard.writeText(urls).then(()=>showToast(`Links for ${selectedWorks.size} works copied`));
+}
+
+// ══════════════════════════════════════════════
+//  STATS + REPUTATION
+// ══════════════════════════════════════════════
+function updateStats() {
+  document.getElementById('stTotal').textContent   = works.length;
+  document.getElementById('stCert').textContent    = works.filter(w=>w.status==='certified').length;
+  document.getElementById('stCoOwned').textContent = works.filter(w=>w.coOwners.length>0).length;
+  document.getElementById('stInvites').textContent = invitations.filter(i=>i.status==='pending').length;
+  document.getElementById('stMatches').textContent = works.reduce((s,w)=>s+(w.matches?.filter(m=>!m.disputed).length||0),0);
+}
+
+function updateReputation() {
+  const score = calcReputation();
+  document.getElementById('repScore').textContent = score;
+}
+
+// ══════════════════════════════════════════════
+//  MODALS
+// ══════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openNewWorkModal() { openModal('modalNewWork'); }
+function openInviteModal() {
+  if(!works.length){showToast('Create a work first',true);return;}
+  document.getElementById('invWorkId').innerHTML=works.map(w=>`<option value="${w.id}">${esc(w.title)} (${w.ownership}%)</option>`).join('');
+  updateOwnHint(); openModal('modalInvite');
+}
+window.addEventListener('click',e=>{ document.querySelectorAll('.modal.open').forEach(m=>{if(e.target===m)closeModal(m.id);}); });
+
+// ══════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════
+function showToast(msg,isErr=false) {
+  const t=document.createElement('div');
+  t.className='toast';
+  t.style.borderLeftColor=isErr?'var(--red)':'var(--green)';
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(110%)';t.style.transition='all 0.3s';setTimeout(()=>t.remove(),300);},2800);
+}
+
+// ══════════════════════════════════════════════
+//  REFRESH
+// ══════════════════════════════════════════════
+function refreshDashboard() {
+  renderTabs(); renderWorks(); renderInvitations();
+  updateStats(); updateNotifBadge(); updateCommandBar(); updateReputation(); updateAnalytics();
+  showToast('Dashboard refreshed');
+}
+
+// ══════════════════════════════════════════════
+//  FULL RENDER
+// ══════════════════════════════════════════════
+function fullRender() {
+  renderTabs(); renderWorks(); renderInvitations();
+  updateStats(); updateNotifBadge(); updateCommandBar(); updateReputation(); updateAnalytics();
+}
+
+// ══════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════
+(async()=>{
+  await initSupabase();
+  // Check for existing session
+  if (supaClient) {
+    const {data:{session}} = await supaClient.auth.getSession();
+    if (session?.user) { await onAuthSuccess(session.user); return; }
+    supaClient.auth.onAuthStateChange(async(_,sess)=>{ if(sess?.user&&!currentUser) await onAuthSuccess(sess.user); });
+  }
+  // Stay on auth gate if no session
+})();
+</script>
 </body>
-</html>
+    </html>
