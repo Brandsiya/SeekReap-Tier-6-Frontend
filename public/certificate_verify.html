@@ -205,42 +205,64 @@ h1{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,5vw,2.5rem);fon
     document.getElementById('notFound').classList.remove('show');
   }
 
-  function verifyCert(){
+  var TIER4_URL = 'https://seekreap-tier-4-dev.fly.dev';
+
+  async function verifyCert(){
     var q = document.getElementById('certInput').value.trim();
-    if(!q){ alert('Please enter a Certificate ID or transaction hash.'); return; }
+    if(!q){ alert('Please enter a Certificate ID or submission ID.'); return; }
     document.getElementById('resultCard').classList.remove('show');
     document.getElementById('notFound').classList.remove('show');
     var btn=document.getElementById('verifyBtn');
     btn.disabled=true; btn.textContent='Checking…';
 
-    setStatus('checking','🔍','Verifying on blockchain…','Checking certificate registry and blockchain record');
+    setStatus('checking','🔍','Verifying certificate…','Checking SeekReap registry');
 
-    // Simulate verification (replace with real API call)
-    setTimeout(function(){
+    try {
+      // Try verify-chain by agreement cert ID or direct submission lookup
+      var url = TIER4_URL + '/api/agreements/' + encodeURIComponent(q) + '/verify-chain';
+      var res = await fetch(url);
+
+      // If not found as agreement ID, try searching by cert_id in submissions
+      if (!res.ok) {
+        res = await fetch(TIER4_URL + '/api/verify-certificate?cert_id=' + encodeURIComponent(q));
+      }
+
       btn.disabled=false; btn.textContent='Verify →';
 
-      // Demo: valid for SR- prefixed or 0x prefixed IDs
-      var isValid = q.startsWith('SR-') || q.startsWith('0x') || q.length > 10;
+      if (res.ok) {
+        var data = await res.json();
+        var isValid = data.chain_valid || data.valid || false;
+        var isRevoked = data.status === 'revoked' || false;
 
-      if(isValid){
-        setStatus('valid','✅','Certificate Verified','This certificate is authentic and has not been revoked');
-        showResult({
-          id:      q.startsWith('SR-') ? q : 'SR-2026-DEMO-'+Math.floor(Math.random()*9000+1000),
-          title:   sessionStorage.getItem('freePlanTitle') || 'Certified Creative Work',
-          type:    'Creative Work · Blockchain Certified',
-          date:    new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'}),
-          owner:   (window.currentUser&&window.currentUser.email) || 'Verified Owner',
-          plan:    q.startsWith('SR-FREE') ? 'Free · Watermarked' : 'Certified',
-          txHash:  q.startsWith('0x') ? q : '0x742d35cc6634c0532925a3b844bc9e7595f0bc63e',
-          hash:    Array.from({length:64},function(){ return '0123456789abcdef'[Math.floor(Math.random()*16)]; }).join(''),
-          revoked: false
-        });
+        if (isValid && !isRevoked) {
+          setStatus('valid','✅','Certificate Verified','This certificate is authentic and has not been revoked');
+          showResult({
+            id:      data.agreement_id || data.cert_id || q,
+            title:   data.title || 'Certified Creative Work',
+            type:    'Creative Work · SeekReap Certified',
+            date:    data.activated_at
+                       ? new Date(data.activated_at).toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'})
+                       : new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'}),
+            owner:   data.created_by || 'Verified Owner',
+            plan:    'Certified',
+            txHash:  data.final_hash || data.agreement_hash || '—',
+            hash:    data.final_hash || '—',
+            revoked: isRevoked,
+          });
+        } else {
+          setStatus('invalid','❌','Verification Failed',
+            isRevoked ? 'This certificate has been revoked' : 'Certificate chain could not be verified');
+          document.getElementById('notFound').classList.add('show');
+        }
       } else {
-        setStatus('invalid','❌','Not Found','No certificate matches this ID or hash');
+        setStatus('invalid','❌','Not Found','No certificate found for this ID');
         document.getElementById('notFound').classList.add('show');
-        document.getElementById('resultCard').classList.remove('show');
       }
-    }, 1800);
+    } catch(e) {
+      btn.disabled=false; btn.textContent='Verify →';
+      setStatus('invalid','❌','Error','Could not reach verification service — please try again');
+      console.error('Verify error:', e);
+    }
   }
 
   function openEtherscan(){ if(_lastTx) window.open('https://etherscan.io/tx/'+_lastTx,'_blank'); }
