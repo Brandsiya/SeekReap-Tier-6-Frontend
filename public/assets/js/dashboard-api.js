@@ -3,7 +3,7 @@
  * Wires dashboard to real Tier 4 API.
  */
 
-const TIER4_URL = 'https://seekreap-tier-4-dev.fly.dev';
+const TIER4_URL = 'https://seekreap-tier-4-orchestrator-1.onrender.com';
 
 function _mapStatus(s) {
   return {
