@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeekReap • Agreements</title>
+    <link rel="stylesheet" href="/assets/css/agreements.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <div class="app-shell">
+
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">SR</div>
+                <div>
+                    <h2>SeekReap</h2>
+                    <p>Creator OS</p>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a href="assets.html"><i class="fa-solid fa-folder-tree"></i> Assets</a>
+                <a class="active" href="agreements.html"><i class="fa-solid fa-file-signature"></i> Agreements</a>
+                <a href="earnings.html"><i class="fa-solid fa-chart-line"></i> Earnings</a>
+                <a href="wallet.html"><i class="fa-solid fa-wallet"></i> Wallet</a>
+                <a href="profile.html"><i class="fa-solid fa-user"></i> Profile</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+
+            <section class="page-header">
+                <div>
+                    <h1>Agreements</h1>
+                    <p>Ownership, governance, royalties and revenue allocation across all intellectual property.</p>
+                </div>
+                <div class="header-actions">
+                    <button id="createAgreementBtn" class="btn btn-primary">
+                        <i class="fa-solid fa-plus"></i> New Agreement
+                    </button>
+                </div>
+            </section>
+
+            <section class="summary-grid">
+                <article class="summary-card">
+                    <span>Total Agreements</span>
+                    <h3 id="totalAgreements">0</h3>
+                </article>
+                <article class="summary-card">
+                    <span>Active Participants</span>
+                    <h3 id="totalParticipants">0</h3>
+                </article>
+                <article class="summary-card">
+                    <span>Linked Assets</span>
+                    <h3 id="totalAssets">0</h3>
+                </article>
+                <article class="summary-card">
+                    <span>Total Revenue</span>
+                    <h3 id="totalRevenue">$0.00</h3>
+                </article>
+            </section>
+
+            <section class="agreements-panel">
+                <div class="panel-header">
+                    <h2>Agreements</h2>
+                    <div class="panel-actions">
+                        <input type="search" id="agreementSearch" placeholder="Search agreements...">
+                        <select id="agreementFilter">
+                            <option value="all">All</option>
+                            <option value="active">Active</option>
+                            <option value="pending">Pending</option>
+                            <option value="archived">Archived</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="agreementsGrid" class="agreements-grid"></div>
+            </section>
+
+            <section id="agreementDetail" class="agreement-detail" style="display: none;">
+
+                <div class="detail-header">
+                    <div>
+                        <div class="agreement-meta">
+                            <span id="agreementTypeBadge" class="badge">Collaboration</span>
+                            <span id="agreementStatusBadge" class="badge success">Active</span>
+                        </div>
+                        <h2 id="agreementTitle">Agreement Name</h2>
+                        <p id="agreementDescription">Agreement description</p>
+                    </div>
+                    <div class="detail-actions">
+                        <button class="btn" id="editAgreementBtn">Edit</button>
+                        <button class="btn btn-danger" id="archiveAgreementBtn">Archive</button>
+                    </div>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab active" data-tab="participantsTab">Participants</button>
+                    <button class="tab" data-tab="rightsTab">Rights Matrix</button>
+                    <button class="tab" data-tab="ownershipTab">Ownership</button>
+                    <button class="tab" data-tab="assetsTab">Assets</button>
+                    <button class="tab" data-tab="revenueTab">Revenue</button>
+                    <button class="tab" data-tab="auditTab">Audit</button>
+                </div>
+
+                <section id="participantsTab" class="tab-content active">
+                    <div class="section-header">
+                        <h3>Participants</h3>
+                        <button id="addParticipantBtn" class="btn btn-primary">Add Participant</button>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Name</th><th>Role</th><th>Ownership</th><th>Royalty</th><th>Status</th><th></th></tr></thead>
+                        <tbody id="participantsTableBody"></tbody>
+                    </table>
+                </section>
+
+                <section id="rightsTab" class="tab-content">
+                    <div class="section-header"><h3>Rights Matrix</h3></div>
+                    <table class="data-table">
+                        <thead><tr><th>Participant</th><th>Upload</th><th>Edit</th><th>Revenue</th><th>Governance</th></tr></thead>
+                        <tbody id="rightsMatrixTableBody"></tbody>
+                    </table>
+                </section>
+
+                <section id="ownershipTab" class="tab-content">
+                    <div class="ownership-grid">
+                        <div class="chart-card"><h3>Ownership Split</h3><canvas id="ownershipChart"></canvas></div>
+                        <div class="chart-card"><h3>Royalty Split</h3><canvas id="royaltyChart"></canvas></div>
+                    </div>
+                </section>
+
+                <section id="assetsTab" class="tab-content">
+                    <div class="section-header">
+                        <h3>Linked Assets</h3>
+                        <button id="linkAssetBtn" class="btn btn-primary">Link Asset</button>
+                    </div>
+                    <div id="linkedAssetsGrid" class="assets-grid"></div>
+                </section>
+
+                <section id="revenueTab" class="tab-content">
+                    <div id="revenueLedger" class="ledger"></div>
+                </section>
+
+                <section id="auditTab" class="tab-content">
+                    <div id="auditTimeline" class="audit-timeline"></div>
+                </section>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <div id="createAgreementModal" class="modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Create Agreement</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group"><label>Agreement Name</label><input id="agreementName" type="text" placeholder="e.g., Podcast Series 2026"></div>
+                <div class="form-group"><label>Description</label><textarea id="agreementDescriptionInput" rows="3" placeholder="Describe the collaboration..."></textarea></div>
+                <div class="form-group"><label>Type</label><select id="agreementType"><option value="collaboration">Collaboration</option><option value="solo">Solo Creator</option><option value="studio">Studio</option><option value="enterprise">Enterprise</option></select></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn cancel-modal">Cancel</button>
+                <button id="saveAgreementBtn" class="btn btn-primary">Create Agreement</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addParticipantModal" class="modal">
+        <div class="modal-card">
+            <div class="modal-header"><h3>Add Participant</h3><button class="close-modal">&times;</button></div>
+            <div class="modal-body">
+                <div class="form-group"><label>Name</label><input id="participantName" type="text" placeholder="John Doe"></div>
+                <div class="form-group"><label>Role</label><input id="participantRole" type="text" placeholder="Author, Producer, Editor"></div>
+                <div class="form-group"><label>Ownership %</label><input id="participantOwnership" type="number" min="0" max="100" step="0.1"></div>
+                <div class="form-group"><label>Royalty %</label><input id="participantRoyalty" type="number" min="0" max="100" step="0.1"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn cancel-modal">Cancel</button>
+                <button id="saveParticipantBtn" class="btn btn-primary">Add Participant</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="linkAssetModal" class="modal">
+        <div class="modal-card">
+            <div class="modal-header"><h3>Link Asset</h3><button class="close-modal">&times;</button></div>
+            <div class="modal-body"><div class="form-group"><label>Asset ID</label><input id="assetId" type="text" placeholder="Enter submission ID or asset ID"></div></div>
+            <div class="modal-footer">
+                <button class="btn cancel-modal">Cancel</button>
+                <button id="saveAssetBtn" class="btn btn-primary">Link Asset</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/assets/js/agreements.js"></script>
+
+</body>
+</html>
