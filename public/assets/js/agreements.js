@@ -11,9 +11,20 @@ let _currentDetail = null;
 
 async function _getJwt() {
   if (_jwt) return _jwt;
+  // Wait for supabaseClient if not ready yet
+  let attempts = 0;
+  while (!window.supabaseClient && attempts < 30) {
+    await new Promise(r => setTimeout(r, 100));
+    attempts++;
+  }
   if (window.supabaseClient) {
     const { data: { session } } = await window.supabaseClient.auth.getSession();
     _jwt = session?.access_token || null;
+    if (!_jwt && window.currentUser) {
+      // Re-fetch session
+      const { data: { session: s2 } } = await window.supabaseClient.auth.getSession();
+      _jwt = s2?.access_token || null;
+    }
     window.supabaseClient.auth.onAuthStateChange((_, s) => { _jwt = s?.access_token || null; });
   }
   return _jwt;
@@ -32,15 +43,23 @@ async function _apiFetch(path, opts = {}) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  addParticipantRow();
+  _bindEvents();
+
+  // Wait for auth-guard to expose waitForAuth
+  let attempts = 0;
+  while (typeof window.waitForAuth !== 'function' && attempts < 40) {
+    await new Promise(r => setTimeout(r, 100));
+    attempts++;
+  }
+
   if (typeof window.waitForAuth === 'function') {
-    const user = await window.waitForAuth();
+    const user = await window.waitForAuth(12000);
     if (!user) { window.location.href = '/signup_signin.html'; return; }
     _setUserDisplay(user);
   }
-  // Add first participant row to create modal
-  addParticipantRow();
+
   await loadAgreements();
-  _bindEvents();
 });
 
 function _setUserDisplay(user) {
