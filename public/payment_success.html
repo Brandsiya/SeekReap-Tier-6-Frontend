@@ -462,6 +462,141 @@ function showSuccess(certId, submissionId, plan) {
   btnView.href = 'certificate_loader.html?id=' + encodeURIComponent(submissionId) +
                  '&cert=' + encodeURIComponent(certId || '');
   document.getElementById('btnGroup').style.display = 'flex';
+
+  // ── Inject "Secure Your Rights" agreement section ──────────────────────────
+  if (submissionId) {
+    _showAgreementPrompt(submissionId, certId);
+  }
+}
+
+// ── Agreement creation prompt ─────────────────────────────────────────────────
+function _showAgreementPrompt(submissionId, certId) {
+  const existing = document.getElementById('agreementPrompt');
+  if (existing) return;
+
+  const TIER4 = window.TIER4_URL || 'https://seekreap-tier-4-orchestrator-1.onrender.com';
+
+  const section = document.createElement('div');
+  section.id = 'agreementPrompt';
+  section.style.cssText = [
+    'margin-top:20px',
+    'background:rgba(201,153,58,0.06)',
+    'border:1px solid rgba(201,153,58,0.25)',
+    'border-radius:14px',
+    'padding:20px 22px',
+  ].join(';');
+
+  section.innerHTML = `
+    <div style="display:flex;align-items:flex-start;gap:14px;">
+      <div style="font-size:22px;flex-shrink:0;">🔐</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:700;color:#E8C06A;margin-bottom:4px;">Secure Your Rights</div>
+        <div style="font-size:12px;color:rgba(240,240,240,0.65);margin-bottom:14px;line-height:1.5;">
+          Create a co-ownership agreement to lock in governance rules, rights permissions,
+          and royalty splits for this certified work. You can always do this later from
+          the <a href="/agreements.html" style="color:#C9993A;text-decoration:none;">Agreements</a> page.
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button id="agreeNowBtn" style="
+            background:linear-gradient(135deg,#C9993A,#9B7520);
+            border:none;border-radius:8px;color:#0a0a0f;
+            font-weight:700;font-size:12px;padding:9px 16px;
+            cursor:pointer;font-family:inherit;
+          ">Create Agreement Now</button>
+          <button id="agreeLaterBtn" style="
+            background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+            border-radius:8px;color:rgba(240,240,240,0.5);
+            font-size:12px;padding:9px 16px;cursor:pointer;font-family:inherit;
+          ">Do this later</button>
+        </div>
+        <div id="agreeStatus" style="margin-top:12px;font-size:12px;display:none;"></div>
+      </div>
+    </div>`;
+
+  // Insert after btnGroup
+  const btnGroup = document.getElementById('btnGroup');
+  if (btnGroup && btnGroup.parentNode) {
+    btnGroup.parentNode.insertBefore(section, btnGroup.nextSibling);
+  } else {
+    document.getElementById('certSummary')?.after(section);
+  }
+
+  // Get pendingCert metadata for participants/rights
+  let pendingMeta = null;
+  try { pendingMeta = JSON.parse(sessionStorage.getItem('pendingCert') || 'null'); } catch(e) {}
+
+  document.getElementById('agreeNowBtn').addEventListener('click', async function() {
+    const btn = this;
+    const statusEl = document.getElementById('agreeStatus');
+    btn.disabled = true;
+    btn.textContent = 'Creating…';
+    statusEl.style.display = 'block';
+    statusEl.style.color = '#E8C06A';
+    statusEl.textContent = 'Setting up your agreement…';
+
+    try {
+      // Build participants from pendingCert collaborators or default to solo
+      const collabs = pendingMeta?.collaborators || [];
+      const participants = collabs.length > 0
+        ? collabs.map(function(c) {
+            return {
+              email: c.email,
+              display_name: c.name || c.email,
+              role: c.role || 'co-creator',
+              ownership_pct: c.split || 0
+            };
+          })
+        : [{ email: window.currentUser?.email || '', display_name: 'Primary Creator', role: 'author', ownership_pct: 100 }];
+
+      // Ensure total = 100
+      const total = participants.reduce(function(s,p){ return s + (p.ownership_pct||0); }, 0);
+      if (Math.abs(total - 100) > 0.1) {
+        participants[0].ownership_pct += (100 - total);
+      }
+
+      const headers = await authHeaders();
+      headers['Content-Type'] = 'application/json';
+
+      const res = await fetch(TIER4 + '/api/agreements/create', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({
+          submission_id: submissionId,
+          participants: participants,
+          rights: {
+            commercial_use:       pendingMeta?.plan !== 'free',
+            derivative_works:     false,
+            ai_training_permitted: false,
+            attribution_required:  true,
+            sublicensing:         false,
+          }
+        })
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) throw new Error(result.error || 'Agreement creation failed');
+
+      statusEl.style.color = '#4CAF50';
+      statusEl.innerHTML = '✓ Agreement created — <a href="/agreements.html" style="color:#C9993A;text-decoration:none;">View in Agreements</a>';
+      btn.textContent = 'Agreement Created ✓';
+      btn.style.background = 'rgba(76,175,80,0.15)';
+      btn.style.color = '#4CAF50';
+      btn.style.border = '1px solid rgba(76,175,80,0.3)';
+      document.getElementById('agreeLaterBtn').style.display = 'none';
+      sessionStorage.removeItem('pendingCert');
+
+    } catch (err) {
+      statusEl.style.color = '#F44336';
+      statusEl.textContent = 'Failed: ' + err.message + '. You can create it later from Agreements.';
+      btn.disabled = false;
+      btn.textContent = 'Try Again';
+    }
+  });
+
+  document.getElementById('agreeLaterBtn').addEventListener('click', function() {
+    section.innerHTML = '<div style="font-size:12px;color:rgba(240,240,240,0.4);padding:4px 0;">You can create an agreement anytime from the <a href="/agreements.html" style="color:#C9993A;text-decoration:none;">Agreements</a> page using submission ID: <span style="font-family:monospace;font-size:11px;">' + submissionId + '</span></div>';
+  });
 }
 
 // ── Poll /api/payments/:id ────────────────────────────────────────────────────
