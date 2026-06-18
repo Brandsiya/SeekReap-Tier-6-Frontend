@@ -211,15 +211,24 @@ body{font-family:'DM Sans',sans-serif;background:radial-gradient(circle at 15% 2
   function genTx(){ var h='0x'; for(var i=0;i<40;i++) h+='0123456789abcdef'[Math.floor(Math.random()*16)]; return h; }
   function fmtDate(){ var d=new Date(); return d.toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'})+' · '+d.toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})+' SAST'; }
 
+  // Use real IDs if passed from loader, otherwise generate locally
+  var realCertId = params.get('cert_id') || '';
+  var realSubId  = params.get('sub_id')  || '';
+  var VERIFY_BASE = 'https://seekreap-frontend.onrender.com/certificate_verify.html';
+
   var cert = {
-    id:      genId(),
-    title:   pending.title || titleParam,
-    type:    pending.work_type ? pending.work_type.charAt(0).toUpperCase()+pending.work_type.slice(1) : 'Creative Work',
-    date:    fmtDate(),
-    hash:    genHash(),
-    txHash:  genTx(),
-    owner:   (window.currentUser && window.currentUser.email) || 'Creator',
-    verifyUrl:'https://seekreap.com/verify/'+genId()
+    id:       realCertId || genId(),
+    subId:    realSubId  || '',
+    title:    pending.title || titleParam,
+    type:     pending.work_type ? pending.work_type.charAt(0).toUpperCase()+pending.work_type.slice(1) : 'Creative Work',
+    date:     fmtDate(),
+    hash:     genHash(),
+    txHash:   genTx(),
+    owner:    (window.currentUser && window.currentUser.email) || 'Creator',
+    verifyUrl: realCertId
+      ? VERIFY_BASE + '?id=' + encodeURIComponent(realCertId)
+      : VERIFY_BASE + '?id=' + genId(),
+    isReal:   !!realCertId,
   };
 
   function setText(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
@@ -227,6 +236,18 @@ body{font-family:'DM Sans',sans-serif;background:radial-gradient(circle at 15% 2
   function init(){
     setText('certId',     cert.id);
     setText('certIdSmall',cert.id);
+    // Show real cert indicator if we have a real submission
+    if (cert.isReal) {
+      var note = document.querySelector('.cert-note');
+      if (note) {
+        note.style.borderColor = 'rgba(61,184,122,0.4)';
+        note.style.background  = 'rgba(61,184,122,0.06)';
+        note.querySelector('span') && (note.querySelector('span').textContent =
+          'This is a real certified asset on the SeekReap registry. ' +
+          'Submission ID: ' + cert.subId + '. ' +
+          'Upgrade to Creator or Studio plan for a PDF certificate without watermark.');
+      }
+    }
     setText('workTitle',  cert.title);
     setText('workType',   cert.type);
     setText('certDate',   cert.date);

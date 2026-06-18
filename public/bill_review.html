@@ -131,10 +131,49 @@ document.getElementById('payBtn').addEventListener('click',async function(){
   btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> '+(isFree?'Processing…':'Connecting to gateway…');
   document.getElementById('errorBox').classList.remove('visible');
 
-  // Free plan — no payment needed
+  // Free plan — submit real certification via API
   if(isFree){
     sessionStorage.setItem('freePlanTitle', title);
     sessionStorage.setItem('freePlanPending','1');
+
+    // Attempt real API submission
+    try {
+      var freeUser = null;
+      if (typeof window.waitForAuth === 'function') {
+        freeUser = await window.waitForAuth(8000);
+      }
+      if (freeUser) {
+        var { data: { session: freeSess } } = await window.supabaseClient.auth.getSession();
+        var freeJwt = freeSess ? freeSess.access_token : null;
+        if (freeJwt) {
+          var freeMeta = {};
+          try { var r=sessionStorage.getItem('pendingCert'); if(r) freeMeta=JSON.parse(r); } catch(e){}
+          var freeRes = await fetch(TIER4_URL+'/api/payments/initiate', {
+            method: 'POST',
+            headers: { 'Authorization':'Bearer '+freeJwt, 'Content-Type':'application/json' },
+            body: JSON.stringify({
+              plan:      'free',
+              amount:    0,
+              currency:  'ZAR',
+              title:     title,
+              work_type: freeMeta.work_type || 'audio',
+              email:     freeUser.email,
+              gateway:   'free'
+            })
+          });
+          if (freeRes.ok) {
+            var freeData = await freeRes.json();
+            if (freeData.submission_id || freeData.reference) {
+              sessionStorage.setItem('freePlanSubmissionId', freeData.submission_id || '');
+              sessionStorage.setItem('freePlanReference',    freeData.reference    || '');
+            }
+          }
+        }
+      }
+    } catch(freeErr) {
+      console.warn('Free plan API submission failed, continuing with local cert:', freeErr);
+    }
+
     window.location.href='free_plan_certificate_loader.html?title='+encodeURIComponent(title);
     return;
   }

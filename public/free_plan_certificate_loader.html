@@ -137,7 +137,33 @@ h1{font-family:'Cormorant Garamond',serif;font-size:clamp(1.7rem,5vw,2.3rem);fon
     var iv=setInterval(function(){ n--; if(cd) cd.textContent=n; if(n<=0){clearInterval(iv);viewCert();} },1000);
   }
 
-  function viewCert(){
+  async function viewCert(){
+    var submissionId = sessionStorage.getItem('freePlanSubmissionId') || '';
+    var reference    = sessionStorage.getItem('freePlanReference')    || '';
+
+    // If we have a real submission, try to get the cert_id
+    if (submissionId || reference) {
+      try {
+        var TIER4 = 'https://seekreap-tier-4-orchestrator-1.onrender.com';
+        var lookupId = reference || submissionId;
+        var res = await fetch(TIER4+'/api/payments/'+encodeURIComponent(lookupId));
+        if (res.ok) {
+          var data = await res.json();
+          var certId = data.cert_id || '';
+          var subId  = data.submission_id || submissionId;
+          if (subId) {
+            window.location.href = 'free_plan_certificate.html' +
+              '?title='    + encodeURIComponent(title) +
+              '&cert_id='  + encodeURIComponent(certId) +
+              '&sub_id='   + encodeURIComponent(subId);
+            return;
+          }
+        }
+      } catch(e) {
+        console.warn('Could not fetch real cert, using local:', e);
+      }
+    }
+    // Fallback to local cert generation
     window.location.href='free_plan_certificate.html?title='+encodeURIComponent(title);
   }
 
