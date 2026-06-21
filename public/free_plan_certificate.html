@@ -233,21 +233,63 @@ body{font-family:'DM Sans',sans-serif;background:radial-gradient(circle at 15% 2
 
   function setText(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
 
-  function init(){
+  var TIER4_API = 'https://seekreap-tier-4-orchestrator-1.onrender.com';
+
+  async function fetchRealCertData(certId) {
+    try {
+      var res = await fetch(TIER4_API + '/api/verify-certificate?cert_id=' + encodeURIComponent(certId));
+      if (!res.ok) return null;
+      var data = await res.json();
+      return data.valid ? data : null;
+    } catch(e) {
+      console.warn('Could not fetch real cert data:', e);
+      return null;
+    }
+  }
+
+  async function init(){
     setText('certId',     cert.id);
     setText('certIdSmall',cert.id);
-    // Show real cert indicator if we have a real submission
-    if (cert.isReal) {
+
+    var realData = null;
+    if (cert.isReal && cert.id) {
+      realData = await fetchRealCertData(cert.id);
+    }
+
+    if (realData) {
+      // Override with confirmed real registry data
+      cert.title  = realData.title || cert.title;
+      cert.type   = realData.work_type ? realData.work_type.charAt(0).toUpperCase()+realData.work_type.slice(1) : cert.type;
+      cert.hash   = realData.content_hash || cert.hash;
+      cert.date   = realData.submitted_at ? new Date(realData.submitted_at).toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'})+' · '+new Date(realData.submitted_at).toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})+' SAST' : cert.date;
+
       var note = document.querySelector('.cert-note');
       if (note) {
         note.style.borderColor = 'rgba(61,184,122,0.4)';
         note.style.background  = 'rgba(61,184,122,0.06)';
-        note.querySelector('span') && (note.querySelector('span').textContent =
-          'This is a real certified asset on the SeekReap registry. ' +
-          'Submission ID: ' + cert.subId + '. ' +
-          'Upgrade to Creator or Studio plan for a PDF certificate without watermark.');
+        var noteSpan = note.querySelector('span:last-child');
+        if (noteSpan) {
+          noteSpan.textContent =
+            '✓ Verified on SeekReap Registry. Fingerprint: ' +
+            (realData.has_fingerprint ? 'confirmed' : 'pending') + '. ' +
+            'Submission ID: ' + realData.submission_id.slice(0,8).toUpperCase() + '… ' +
+            'Upgrade to Creator or Studio plan for a PDF certificate without watermark.';
+        }
+      }
+    } else if (cert.isReal) {
+      // We have a real cert_id but couldn't fetch confirmation yet
+      var note2 = document.querySelector('.cert-note');
+      if (note2) {
+        var noteSpan2 = note2.querySelector('span:last-child');
+        if (noteSpan2) {
+          noteSpan2.textContent =
+            'This certificate is registered on SeekReap (ID: ' + cert.id + '). ' +
+            'Verification data may still be processing. ' +
+            'Upgrade to Creator or Studio plan for a PDF certificate without watermark.';
+        }
       }
     }
+
     setText('workTitle',  cert.title);
     setText('workType',   cert.type);
     setText('certDate',   cert.date);
