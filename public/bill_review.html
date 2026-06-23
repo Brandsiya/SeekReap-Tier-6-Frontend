@@ -241,8 +241,11 @@ document.getElementById('payBtn').addEventListener('click',async function(){
       sessionStorage.removeItem('pendingCert');
       var form=document.createElement('form');
       form.method='POST'; form.action=data.action_url;
-      Object.entries(data.fields).forEach(function(kv){
-        var inp=document.createElement('input'); inp.type='hidden'; inp.name=kv[0]; inp.value=kv[1]; form.appendChild(inp);
+      var order = data.field_order || Object.keys(data.fields);
+      order.forEach(function(k){
+        if(data.fields[k]!==undefined){
+          var inp=document.createElement('input'); inp.type='hidden'; inp.name=k; inp.value=data.fields[k]; form.appendChild(inp);
+        }
       });
       document.body.appendChild(form); form.submit(); return;
     }
