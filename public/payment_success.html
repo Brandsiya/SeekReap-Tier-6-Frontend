@@ -459,8 +459,7 @@ function showSuccess(certId, submissionId, plan) {
   document.getElementById('certSummary').classList.add('visible');
 
   const btnView = document.getElementById('btnViewCert');
-  btnView.href = 'certificate_loader.html?id=' + encodeURIComponent(submissionId) +
-                 '&cert=' + encodeURIComponent(certId || '');
+  btnView.href = 'certificate.html?cert_id=' + encodeURIComponent(certId || '') + '&sub_id=' + encodeURIComponent(submissionId);
   document.getElementById('btnGroup').style.display = 'flex';
 
   // ── Inject "Secure Your Rights" agreement section ──────────────────────────
