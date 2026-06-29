@@ -759,6 +759,13 @@ async function loadCert() {
     setText('submissionId',     data.submission_id || subId || '—');
     setText('contentHash',      data.content_hash || data.final_hash || '—');
     setText('fingerprintStatus', data.has_fingerprint ? 'Confirmed ✓' : 'Pending');
+    if (data.fingerprint_type) {
+      setText('fpStatus', data.fingerprint_type);
+    }
+    if (data.fingerprint_value) {
+      var fpEl = document.getElementById('fpStatus');
+      if (fpEl) fpEl.textContent = (data.fingerprint_type || '') + ' · ' + data.fingerprint_value;
+    }
     setText('chainStatus',      data.chain_valid ? 'Valid ✓' : (data.valid ? 'Valid ✓' : 'Pending'));
     setText('agreementId',      data.agreement_id ? data.agreement_id.slice(0,16).toUpperCase() + '…' : 'None');
     setText('qrUrlText',        verifyUrl);
