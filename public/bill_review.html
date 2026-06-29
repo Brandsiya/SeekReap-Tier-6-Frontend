@@ -137,30 +137,25 @@ document.getElementById('payBtn').addEventListener('click',async function(){
     sessionStorage.setItem('freePlanPending','1');
 
     // Attempt real certification via POST /api/certify (plan=free)
-    var _dbg = document.createElement('div');
-    _dbg.id = 'freeCertDebug';
-    _dbg.style.cssText = 'position:fixed;bottom:0;left:0;right:0;max-height:40vh;overflow-y:auto;background:#000;color:#0f0;font-family:monospace;font-size:10px;padding:10px;z-index:99999;white-space:pre-wrap;';
-    document.body.appendChild(_dbg);
-    function _log(msg) { _dbg.textContent += msg + '\n'; console.log(msg); }
-    _log('[FreeCert] Starting real certification attempt...');
+    console.log('[FreeCert] Starting real certification attempt...');
     try {
       var freeUser = null;
       if (typeof window.waitForAuth === 'function') {
-        _log('[FreeCert] Waiting for auth...');
+        console.log('[FreeCert] Waiting for auth...');
         freeUser = await window.waitForAuth(15000);
-        _log('[FreeCert] Auth resolved: ' + (freeUser ? freeUser.email : 'NULL'));
+        console.log('[FreeCert] Auth resolved: ' + (freeUser ? freeUser.email : 'NULL'));
       } else {
-        _log('[FreeCert] ERROR: waitForAuth not available!');
+        console.log('[FreeCert] ERROR: waitForAuth not available!');
       }
       if (freeUser) {
         var sessResult = await window.supabaseClient.auth.getSession();
         var freeSess = sessResult.data.session;
         var freeJwt = freeSess ? freeSess.access_token : null;
-        _log('[FreeCert] JWT obtained: ' + (freeJwt ? 'yes (' + freeJwt.length + ' chars)' : 'NO'));
+        console.log('[FreeCert] JWT obtained: ' + (freeJwt ? 'yes (' + freeJwt.length + ' chars)' : 'NO'));
         if (freeJwt) {
           var freeMeta = {};
           try { var r=sessionStorage.getItem('pendingCert'); if(r) freeMeta=JSON.parse(r); } catch(e){}
-          _log('[FreeCert] Sending request to ' + TIER4_URL+'/api/certify');
+          console.log('[FreeCert] Sending request to ' + TIER4_URL+'/api/certify');
           var freeRes = await fetch(TIER4_URL+'/api/certify', {
             method: 'POST',
             headers: { 'Authorization':'Bearer '+freeJwt, 'Content-Type':'application/json' },
@@ -171,10 +166,10 @@ document.getElementById('payBtn').addEventListener('click',async function(){
               creator_id:  freeUser.id
             })
           });
-          _log('[FreeCert] Response status: ' + freeRes.status);
+          console.log('[FreeCert] Response status: ' + freeRes.status);
           if (freeRes.ok) {
             var freeData = await freeRes.json();
-            _log('[FreeCert] SUCCESS: ' + JSON.stringify(freeData));
+            console.log('[FreeCert] SUCCESS: ' + JSON.stringify(freeData));
             if (freeData.submission_id) {
               sessionStorage.setItem('freePlanSubmissionId', freeData.submission_id);
               sessionStorage.setItem('freePlanReference',    freeData.submission_id);
@@ -182,16 +177,16 @@ document.getElementById('payBtn').addEventListener('click',async function(){
             }
           } else {
             var freeErr2 = await freeRes.json().catch(function(){ return {}; });
-            _log('[FreeCert] API ERROR: ' + freeRes.status + ' ' + (freeErr2.error || JSON.stringify(freeErr2)));
+            console.log('[FreeCert] API ERROR: ' + freeRes.status + ' ' + (freeErr2.error || JSON.stringify(freeErr2)));
           }
         }
       } else {
-        _log('[FreeCert] WARNING: No user — skipping real certification');
+        console.log('[FreeCert] WARNING: No user — skipping real certification');
       }
     } catch(freeErr) {
-      _log('[FreeCert] EXCEPTION: ' + freeErr.message);
+      console.log('[FreeCert] EXCEPTION: ' + freeErr.message);
     }
-    _log('[FreeCert] Done. Proceeding to loader in 4s...'); await new Promise(function(r){setTimeout(r,4000);});
+    console.log('[FreeCert] Done. Proceeding to loader.');
 
     window.location.href='free_plan_certificate_loader.html?title='+encodeURIComponent(title);
     return;
