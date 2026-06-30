@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeekReap · Assets</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/assets.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/dashboard.html" class="logo">SeekReap</a>
+    <div class="nav-links">
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/assets.html" class="active">Assets</a>
+        <a href="/agreements.html">Agreements</a>
+        <a href="/license_generator.html">Licenses</a>
+        <a href="/profile.html">Profile</a>
+    </div>
+    <div class="nav-right">
+        <a href="/profile.html" class="user-pill">
+            <div class="avatar" id="userAvatarNav">C</div>
+            <span id="userNameNav" style="font-size:12px;">Creator</span>
+        </a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1>Assets</h1>
+            <p>Manage registered assets, ownership, rights, agreements and licenses.</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="simulateNewAsset()"><i class="fas fa-plus"></i> Register Asset</button>
+            <button class="btn btn-secondary" onclick="simulateImportAsset()"><i class="fas fa-file-import"></i> Import Asset</button>
+            <button class="btn btn-secondary" onclick="refreshAssets()"><i class="fas fa-sync-alt"></i></button>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="stat-label">Total Assets</div>
+            <div class="stat-value" id="totalAssets">0</div>
+        </div>
+        <div class="summary-card">
+            <div class="stat-label">Active Licenses</div>
+            <div class="stat-value" id="activeLicenses">0</div>
+        </div>
+        <div class="summary-card">
+            <div class="stat-label">Agreements</div>
+            <div class="stat-value" id="totalAgreements">0</div>
+        </div>
+        <div class="summary-card">
+            <div class="stat-label">Revenue YTD</div>
+            <div class="stat-value" id="revenueYTD">$0</div>
+        </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="filter-bar">
+        <div class="search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search assets by name or ID…">
+        </div>
+        <div class="filter-group">
+            <select id="typeFilter">
+                <option value="all">Type: All</option>
+                <option value="music">Music</option>
+                <option value="video">Video</option>
+                <option value="image">Image</option>
+                <option value="document">Document</option>
+                <option value="software">Software</option>
+                <option value="dataset">Dataset</option>
+                <option value="trademark">Trademark</option>
+                <option value="patent">Patent</option>
+                <option value="nft">NFT</option>
+                <option value="other">Other</option>
+            </select>
+            <select id="statusFilter">
+                <option value="all">Status: All</option>
+                <option value="registered">Registered</option>
+                <option value="certified">Certified</option>
+                <option value="licensed">Licensed</option>
+                <option value="delegated">Delegated</option>
+                <option value="pending">Pending Review</option>
+                <option value="disputed">Disputed</option>
+                <option value="archived">Archived</option>
+            </select>
+            <select id="ownershipFilter">
+                <option value="all">Ownership: All</option>
+                <option value="full">Full (100%)</option>
+                <option value="partial">Partial (&lt;100%)</option>
+            </select>
+            <select id="healthFilter">
+                <option value="all">Health: All</option>
+                <option value="excellent">Excellent</option>
+                <option value="healthy">Healthy</option>
+                <option value="atrisk">At Risk</option>
+                <option value="disputed">Disputed</option>
+            </select>
+        </div>
+        <div class="view-toggle">
+            <button class="view-btn active" data-view="grid" onclick="setView('grid')"><i class="fas fa-th"></i></button>
+            <button class="view-btn" data-view="list" onclick="setView('list')"><i class="fas fa-list"></i></button>
+        </div>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div class="bulk-bar" id="bulkBar">
+        <span id="bulkCount">0 selected</span>
+        <button class="btn btn-secondary btn-sm" onclick="bulkAction('agreement')"><i class="fas fa-file-signature"></i> Create Agreement</button>
+        <button class="btn btn-secondary btn-sm" onclick="bulkAction('license')"><i class="fas fa-file-contract"></i> Issue License</button>
+        <button class="btn btn-secondary btn-sm" onclick="bulkAction('delegate')"><i class="fas fa-user-shield"></i> Delegate Rights</button>
+        <button class="btn btn-secondary btn-sm" onclick="bulkAction('export')"><i class="fas fa-file-export"></i> Export</button>
+        <button class="btn btn-danger btn-sm" onclick="clearBulk()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- Asset Grid -->
+    <div id="assetsGrid" class="assets-grid"></div>
+
+</div>
+
+<!-- Asset Detail Modal -->
+<div id="assetModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalAssetTitle">Asset Details</h3>
+            <button class="close-modal" onclick="closeModal('assetModal')">&times;</button>
+        </div>
+        <div class="modal-body" id="modalAssetBody"></div>
+    </div>
+</div>
+
+<!-- Connected Assets Modal -->
+<div id="connectedModal" class="modal">
+    <div class="modal-content modal-sm">
+        <div class="modal-header">
+            <h3 id="connectedModalTitle">Connected Records</h3>
+            <button class="close-modal" onclick="closeModal('connectedModal')">&times;</button>
+        </div>
+        <div class="modal-body" id="connectedModalBody"></div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script src="/assets/js/routes.js"></script>
+<script src="/assets/js/auth-guard.js"></script>
+<script src="/assets/js/assets.js"></script>
+
+</body>
+</html>
