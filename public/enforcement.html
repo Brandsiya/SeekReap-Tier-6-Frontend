@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeekReap · Enforcement</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a href="/dashboard.html" class="logo">SeekReap</a>
+    <div class="nav-links">
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/assets.html">Assets</a>
+        <a href="/agreements.html">Agreements</a>
+        <a href="/license_generator.html">Licenses</a>
+        <a href="/earnings.html">Earnings</a>
+        <a href="/enforcement.html" class="active">Enforcement</a>
+        <a href="/profile.html">Profile</a>
+    </div>
+    <div class="nav-right">
+        <a href="/profile.html" class="user-pill">
+            <div class="avatar" id="userAvatarNav">C</div>
+            <span id="userNameNav" style="font-size:12px;">Creator</span>
+        </a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1>Enforcement</h1>
+            <p>Track and manage infringement cases across your assets.</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-primary" onclick="window.openNewCaseWizard()"><i class="fas fa-plus"></i> New Case</button>
+            <button class="btn btn-secondary" onclick="window.refreshCases()"><i class="fas fa-sync-alt"></i></button>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="stat-label">Open Cases</div>
+            <div class="stat-value danger" id="sumOpen">0</div>
+        </div>
+        <div class="summary-card">
+            <div class="stat-label">Under Review</div>
+            <div class="stat-value warning" id="sumReview">0</div>
+        </div>
+        <div class="summary-card">
+            <div class="stat-label">Resolved</div>
+            <div class="stat-value gold" id="sumResolved">0</div>
+        </div>
+        <div class="summary-card">
+            <div class="stat-label">Closed</div>
+            <div class="stat-value" id="sumClosed">0</div>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="filter-group">
+            <select id="statusFilter" onchange="window.applyFilters()">
+                <option value="all">All Cases</option>
+                <option value="open">Open</option>
+                <option value="review">Under Review</option>
+                <option value="resolved">Resolved</option>
+                <option value="closed">Closed</option>
+            </select>
+            <select id="priorityFilter" onchange="window.applyFilters()">
+                <option value="all">All Priority</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+            </select>
+        </div>
+        <div class="search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search by ID, Asset, Party, Description, Evidence, Notes…" oninput="window.applyFilters()">
+        </div>
+    </div>
+
+    <!-- Cases Table -->
+    <div class="cases-table-container">
+        <table class="cases-table">
+            <thead>
+                <tr>
+                    <th>Case ID</th>
+                    <th>Asset</th>
+                    <th>Reported Against</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Assigned To</th>
+                    <th>Date Reported</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="casesBody">
+                <!-- Rendered by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- ============================================================
+     DETAIL PANEL
+     ============================================================ -->
+<div class="detail-overlay" id="detailOverlay" onclick="window.closeDetail()"></div>
+
+<div class="detail-panel" id="detailPanel">
+    <div class="detail-panel-header">
+        <h2 id="detailTitle">Case Details</h2>
+        <button class="close-btn" onclick="window.closeDetail()">&times;</button>
+    </div>
+    <div class="detail-panel-body" id="detailBody">
+        <!-- Rendered by JavaScript -->
+    </div>
+</div>
+
+<!-- ============================================================
+     NEW CASE WIZARD
+     ============================================================ -->
+<div class="wizard-overlay" id="wizardOverlay">
+    <div class="wizard-modal">
+        <!-- Header -->
+        <div class="wizard-header">
+            <h2>New Enforcement Case</h2>
+            <div class="wizard-step-indicator" id="wizardStepIndicator">Step 1 of 4</div>
+            <div class="wizard-progress" id="wizardProgress">
+                <div class="step-dot active" data-step="1"></div>
+                <div class="step-dot" data-step="2"></div>
+                <div class="step-dot" data-step="3"></div>
+                <div class="step-dot" data-step="4"></div>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="wizard-body" id="wizardBody">
+
+            <!-- Step 1: Case Information -->
+            <div class="wizard-step active" data-step="1">
+                <div class="form-group">
+                    <label for="wizardAsset">Asset</label>
+                    <select id="wizardAsset">
+                        <option value="">Search or select asset…</option>
+                        <option value="Summer Nights|SR-A-000012">Summer Nights (SR-A-000012)</option>
+                        <option value="Photograph Collection 2026|SR-A-000041">Photograph Collection 2026 (SR-A-000041)</option>
+                        <option value="Code Symphony Library|SR-A-000073">Code Symphony Library (SR-A-000073)</option>
+                        <option value="AI Training Dataset v2|SR-A-000089">AI Training Dataset v2 (SR-A-000089)</option>
+                    </select>
+                    <div class="form-hint">Only assets you own or represent will appear here.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="wizardReportedPlatform">Platform</label>
+                    <input type="text" id="wizardReportedPlatform" placeholder="e.g., YouTube, Instagram, GitHub, Kaggle…">
+                </div>
+
+                <div class="form-group">
+                    <label for="wizardReportedName">Reported Party</label>
+                    <input type="text" id="wizardReportedName" placeholder="Username, account name, or organization…">
+                    <div class="form-hint">Example: @musicchannel or Google LLC</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="wizardReportedUrl">URL (optional)</label>
+                    <input type="url" id="wizardReportedUrl" placeholder="https://example.com/infringing-content…">
+                </div>
+
+                <div class="form-group">
+                    <label for="wizardPriority">Priority</label>
+                    <select id="wizardPriority">
+                        <option value="low">Low — Minor infraction</option>
+                        <option value="medium" selected>Medium — Standard case</option>
+                        <option value="high">High — Significant infringement</option>
+                        <option value="critical">Critical — Urgent action required</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="wizardDescription">Description</label>
+                    <textarea id="wizardDescription" placeholder="Describe what happened…"></textarea>
+                </div>
+            </div>
+
+            <!-- Step 2: Evidence -->
+            <div class="wizard-step" data-step="2">
+                <div class="form-group">
+                    <label>Files</label>
+                    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <div>Click to upload files</div>
+                        <div class="upload-hint">Screenshots, PDFs, videos, audio, documents, emails, DMCA notices</div>
+                    </div>
+                    <input type="file" id="fileInput" multiple style="display:none;" onchange="window.handleFiles(this.files)">
+                    <div class="uploaded-files" id="uploadedFiles"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Evidence Links</label>
+                    <div style="display:flex;gap:8px;">
+                        <input type="url" id="linkInput" placeholder="https://example.com/evidence" style="flex:1;">
+                        <button class="btn btn-secondary btn-sm" onclick="window.addLink()">Add Link</button>
+                    </div>
+                    <div class="links-list" id="linksList"></div>
+                </div>
+            </div>
+
+            <!-- Step 3: Review -->
+            <div class="wizard-step" data-step="3">
+                <div style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">Review the case details before creating.</div>
+                <div id="reviewContent">
+                    <div class="review-item"><span class="review-label">Asset</span><span class="review-value" id="reviewAsset">—</span></div>
+                    <div class="review-item"><span class="review-label">Platform</span><span class="review-value" id="reviewPlatform">—</span></div>
+                    <div class="review-item"><span class="review-label">Reported Party</span><span class="review-value" id="reviewReported">—</span></div>
+                    <div class="review-item"><span class="review-label">Priority</span><span class="review-value" id="reviewPriority">—</span></div>
+                    <div class="review-item"><span class="review-label">Description</span><span class="review-value" id="reviewDescription">—</span></div>
+                    <div class="review-item"><span class="review-label">Evidence Files</span><span class="review-value" id="reviewFiles">0 files</span></div>
+                    <div class="review-item"><span class="review-label">Evidence Links</span><span class="review-value" id="reviewLinks">0 links</span></div>
+                </div>
+            </div>
+
+            <!-- Step 4: Success -->
+            <div class="wizard-step" data-step="4">
+                <div class="success-step">
+                    <div class="check-icon"><i class="fas fa-check-circle"></i></div>
+                    <h3>Case Created Successfully</h3>
+                    <p>The enforcement case has been opened and is now active.</p>
+                    <div class="success-details">
+                        <div class="detail-row"><span class="label">Case ID</span><span class="value" id="successCaseId">ENF-0005</span></div>
+                        <div class="detail-row"><span class="label">Status</span><span class="value" style="color:var(--danger);">Open</span></div>
+                        <div class="detail-row"><span class="label">Date Reported</span><span class="value" id="successDate">Today</span></div>
+                        <div class="detail-row"><span class="label">Priority</span><span class="value" id="successPriority">Medium</span></div>
+                    </div>
+                    <div style="margin-top:16px;display:flex;gap:8px;justify-content:center;">
+                        <button class="btn btn-primary" onclick="window.viewNewCase()"><i class="fas fa-eye"></i> View Case</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="wizard-footer">
+            <button class="btn btn-secondary" id="wizardCancel" onclick="window.closeWizard()">Cancel</button>
+            <div class="btn-group">
+                <button class="btn btn-secondary" id="wizardBack" onclick="window.wizardBack()" style="display:none;"><i class="fas fa-arrow-left"></i> Back</button>
+                <button class="btn btn-primary" id="wizardNext" onclick="window.wizardNext()">Next →</button>
+                <button class="btn btn-success" id="wizardCreate" onclick="window.wizardCreate()" style="display:none;">Create Case</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ============================================================
+     CLOSE CASE MODAL
+     ============================================================ -->
+<div class="close-modal-overlay" id="closeModalOverlay">
+    <div class="close-modal">
+        <h3>Close Case</h3>
+        <p class="close-sub">Record how this case was resolved before closing.</p>
+
+        <div class="form-group">
+            <label for="closeOutcome">Case Outcome</label>
+            <select id="closeOutcome">
+                <option value="Removed by infringer">Removed by infringer</option>
+                <option value="License obtained">License obtained</option>
+                <option value="False report">False report</option>
+                <option value="No response">No response</option>
+                <option value="Court order">Court order</option>
+                <option value="Settlement">Settlement</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="closeNotes">Closing Notes (optional)</label>
+            <textarea id="closeNotes" placeholder="Additional details about the resolution…"></textarea>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="window.closeCloseModal()">Cancel</button>
+            <button class="btn btn-danger" onclick="window.confirmCloseCase()">Close Case</button>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script src="/assets/js/routes.js"></script>
+<script src="/assets/js/auth-guard.js"></script>
+
+</body>
+</html>
