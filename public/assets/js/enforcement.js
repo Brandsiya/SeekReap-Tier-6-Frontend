@@ -216,8 +216,20 @@ function _setUserDisplay(user) {
 
 async function loadCases() {
     try {
-        const data = await _apiFetch('/api/enforcement/cases').catch(() => null);
-        _cases = data || JSON.parse(JSON.stringify(SAMPLE_CASES));
+        const data = await _apiFetch('/api/enforcement/list').catch(() => null);
+        const packages = (data && data.packages) || [];
+        _cases = packages.length ? packages.map(function(p) {
+            return {
+                id:          p.package_id || p.id || 'ENF-0000',
+                asset:       p.submission_id || '—',
+                description: p.description || p.infringement_type || '—',
+                status:      p.status || 'open',
+                priority:    p.priority || 'medium',
+                platform:    p.platform || '—',
+                created:     p.created_at || new Date().toISOString(),
+                evidence_hash: p.evidence_hash || '—',
+            };
+        }) : [];
         if (_cases.length) {
             const ids = _cases.map(c => parseInt(c.id.replace('ENF-', '')) || 0);
             _lastCaseId = 'ENF-' + String(Math.max(...ids) + 1).padStart(4, '0');
@@ -647,6 +659,19 @@ window.openNewCaseWizard = function() {
     document.getElementById('uploadedFiles').innerHTML = '';
     document.getElementById('linksList').innerHTML = '';
     document.getElementById('fileInput').value = '';
+    // Load real submissions into asset dropdown
+    _apiFetch('/api/submissions').then(function(data) {
+        const sel = document.getElementById('wizardAsset');
+        if (!sel) return;
+        const subs = data.submissions || data.assets || [];
+        if (subs.length) {
+            sel.innerHTML = '<option value="">Select a certified asset…</option>' +
+                subs.map(function(s) {
+                    return '<option value="' + (s.title||'').replace(/"/g,'') + '|' + (s.submission_id||s.id||'') + '">' +
+                        (s.title || 'Untitled') + ' · ' + (s.submission_id||s.id||'').slice(0,8).toUpperCase() + '</option>';
+                }).join('');
+        }
+    }).catch(function(){});
     document.getElementById('wizardOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
     updateWizard();
@@ -726,6 +751,34 @@ window.wizardBack = function() {
     if (_wizardStep > 1) {
         _wizardStep--;
         updateWizard();
+    }
+};
+
+window.wizardCreate = async function() {
+    const btn = document.getElementById('wizardCreate');
+    if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+    try {
+        const assetParts = (_wizardData.asset || '').split('|');
+        const submissionId = _wizardData.assetId || assetParts[1] || '';
+        const result = await _apiFetch('/api/enforcement/evidence-package', {
+            method: 'POST',
+            body: JSON.stringify({
+                submission_id:    submissionId,
+                infringement_type: _wizardData.platform || 'unknown',
+                platform:          _wizardData.platform || '',
+                infringing_url:    _wizardData.reportedUrl || '',
+                reported_party:    _wizardData.reportedName || '',
+                description:       _wizardData.description || '',
+                priority:          _wizardData.priority || 'medium',
+                evidence_urls:     _wizardData.links || [],
+            })
+        });
+        window.showToast('Enforcement package created: ' + (result.package_id || ''), 'success');
+        window.closeWizard();
+        await loadCases();
+    } catch (e) {
+        window.showToast('Failed: ' + e.message, 'error');
+        if (btn) { btn.disabled = false; btn.textContent = 'Submit Case'; }
     }
 };
 
