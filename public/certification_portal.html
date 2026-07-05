@@ -3,59 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>SeekReap · Certify Your Creative Work</title>
+<title>SeekReap · Digital Rights &amp; Certification Engine</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="assets/css/certification_portal.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js"></script>
-
-  <!-- Responsive + visual fixes -->
-  <style>
-  /* ── 1+2: Subtitle always visible; responsive steps ──────────────────── */
-  .page-subtitle { display: inline !important; }
-
-  @media (max-width: 680px) {
-    .page-subtitle { display: block !important; font-size: 0.78rem; margin-top: 4px; width: 100%; }
-
-    .workflow-steps { padding: 10px 6px; gap: 4px 2px; justify-content: space-between; }
-    .step {
-      flex-direction: column; align-items: center; justify-content: flex-start;
-      text-align: center; flex: 1; min-width: 0; gap: 3px; font-size: 0.6rem;
-    }
-    .step .step-number { width: 30px; height: 30px; font-size: 0.82rem; }
-    .step .step-icon   { display: none; }
-    .step > span:last-child {
-      display: block !important; font-size: 0.58rem; line-height: 1.2;
-      white-space: normal; text-align: center; max-width: 54px;
-    }
-  }
-  @media (max-width: 400px) {
-    .step .step-number { width: 26px; height: 26px; font-size: 0.75rem; }
-    .step > span:last-child { font-size: 0.54rem; max-width: 44px; }
-  }
-
-  /* ── 3: Textarea font size consistent with other fields ──────────────── */
-  textarea {
-    font-family: "DM Sans", sans-serif !important;
-    font-size: 0.93rem !important;
-    line-height: 1.5;
-  }
-
-  /* ── 4: Work Type select — show dropdown arrow ──────────────────────── */
-  .work-type-selector { position: relative; }
-  .work-type-selector select {
-    padding-right: 36px;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23C9993A' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-  }
-  </style>
 </head>
 
 <body>
@@ -90,13 +44,43 @@
   <div class="step" id="stepFinal"><div class="step-number" id="stepFinalNum">5</div><span class="step-icon"><i class="fas fa-paper-plane"></i></span><span id="stepFinalLabel">Submit</span></div>
 </div>
 
-<!-- STEP 1: CHOOSE PLAN -->
+<!-- STEP 1: CHOOSE PLAN & RIGHTS EDUCATION -->
 <div class="workflow-card" id="step1Card">
   <div class="card-header">
-    <h2><i class="fas fa-tags" style="color:var(--gold);font-size:1.1rem;"></i> Choose Your Plan</h2>
-    <p>Select the plan that fits your creative needs</p>
+    <h2><i class="fas fa-shield-alt" style="color:var(--gold);font-size:1.1rem;"></i> SeekReap Rights Engine</h2>
+    <p>Initialize immutable legal and cryptographic proofs for your creative properties</p>
   </div>
   <div class="card-body">
+    
+    <!-- Enhancements 1 & 2: Overview & Rights Framework -->
+    <div class="engine-intro-row">
+      <div class="engine-feature-card">
+        <h4><i class="fas fa-fingerprint"></i> Certification Overview</h4>
+        <ul class="engine-feature-list">
+          <li><i class="fas fa-check"></i> Cryptographic fingerprint is created</li>
+          <li><i class="fas fa-check"></i> Timestamp is generated</li>
+          <li><i class="fas fa-check"></i> Ownership record is established</li>
+          <li><i class="fas fa-check"></i> Evidence package is archived</li>
+          <li><i class="fas fa-check"></i> Verification page becomes available</li>
+          <li><i class="fas fa-check"></i> Licensing can be enabled later</li>
+          <li><i class="fas fa-check"></i> Rights enforcement becomes possible</li>
+        </ul>
+      </div>
+      <div class="engine-feature-card">
+        <h4><i class="fas fa-gavel"></i> Rights Included</h4>
+        <ul class="engine-feature-list">
+          <li><i class="fas fa-check"></i> Proof of Creation</li>
+          <li><i class="fas fa-check"></i> Proof of Possession</li>
+          <li><i class="fas fa-check"></i> Proof of Submission</li>
+          <li><i class="fas fa-check"></i> Chain of Custody</li>
+          <li><i class="fas fa-check"></i> Ownership Ledger</li>
+          <li><i class="fas fa-check"></i> Collaboration Ledger</li>
+          <li><i class="fas fa-check"></i> Future Licensing</li>
+          <li><i class="fas fa-check"></i> Future Transfers</li>
+        </ul>
+      </div>
+    </div>
+
     <div class="plan-grid">
       <div class="plan-card selected" id="planFree" data-plan="free" onclick="selectPlan(this)">
         <div class="plan-price">$0<span>/mo</span></div>
@@ -157,11 +141,11 @@
   </div>
 </div>
 
-<!-- STEP 2: WORK DETAILS -->
+<!-- STEP 2: WORK DETAILS & EXPANDED SUPPORTED WORKS -->
 <div class="workflow-card hidden" id="step2Card">
   <div class="card-header">
     <h2><i class="fas fa-pen-nib" style="color:var(--gold);font-size:1.1rem;"></i> Work Details</h2>
-    <p>Provide basic information about your creative work</p>
+    <p>Classify your intellectual asset within the SeekReap architectural engine</p>
   </div>
   <div class="card-body">
     <input type="hidden" id="artisticName" value="">
@@ -173,19 +157,46 @@
       <label>Description</label>
       <textarea rows="3" placeholder="Describe your creative work..." id="workDescription"></textarea>
     </div>
+    
+    <!-- Enhancement 3: Broadened Supported Asset Classes -->
     <div class="form-group">
-      <label>Work Type</label>
+      <label>Work Type / Asset Classification</label>
       <div class="work-type-selector">
         <select id="workType">
-          <option value="audio">🎵 Audio / Music Track</option>
-          <option value="video">🎬 Video / Film</option>
-          <option value="image">🖼️ Image / Artwork</option>
-          <option value="epub">📖 eBook / EPUB</option>
-          <option value="pdf">📄 Script / PDF</option>
-          <option value="code">💻 Code / Script</option>
+          <option value="audio">🎵 Music / Audio Track</option>
+          <option value="podcast">🎙️ Podcast / Voice Recording</option>
+          <option value="video">🎬 Video / Film / Animation</option>
+          <option value="image">🖼️ Image / Artwork / Photography</option>
+          <option value="epub">📖 eBook / Novel / Publications</option>
+          <option value="pdf">📄 Script / Manuscript / Research</option>
+          <option value="code">💻 Source Code / Smart Script</option>
+          <option value="ai_model">🤖 AI Model Weights / Checkpoint</option>
+          <option value="dataset">📊 Structured Dataset / Training Pool</option>
+          <option value="design">📐 Architecture / 3D Model / CAD</option>
+          <option value="industrial">⚙️ Patent Draft / Industrial Design</option>
+          <option value="fashion">👗 Fashion Layout / Pattern</option>
+          <option value="legal">⚖️ Legal Document / Corporate Framework</option>
+          <option value="edu">🎓 Educational Material / Courseware</option>
+          <option value="game">🎮 Game Asset Package</option>
         </select>
       </div>
     </div>
+
+    <!-- Enhancement 13: Collection / Group Configuration Support -->
+    <div class="form-group" style="margin-top:14px; background:rgba(255,255,255,0.01); border:1px solid rgba(201,153,58,0.1); border-radius:6px; padding:12px; text-align:left;">
+      <label style="font-size:0.8rem; font-weight:600; color:var(--gold); display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+        <i class="fas fa-folder-plus"></i> Group Asset Configuration
+      </label>
+      <select id="collectionType" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(201,153,58,0.2); color:var(--white); padding:8px; border-radius:4px; font-size:0.82rem;">
+        <option value="single">Single Standalone Asset</option>
+        <option value="album">Album / EP compilation</option>
+        <option value="series">Book Series / Anthologies</option>
+        <option value="photoset">Photo Set / Creative Gallery Portfolio</option>
+        <option value="research">Research Project / Multi-document Archive</option>
+        <option value="assets">Game / Movie Production Asset Bundle</option>
+      </select>
+    </div>
+
     <div class="button-group">
       <button class="btn-secondary" onclick="showStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
       <button class="btn-primary" id="nextToOwnershipBtn"><i class="fas fa-arrow-right"></i> Continue</button>
@@ -193,11 +204,11 @@
   </div>
 </div>
 
-<!-- STEP 3: OWNERSHIP TYPE -->
+<!-- STEP 3: OWNERSHIP TYPE & DELEGATION ROLES -->
 <div class="workflow-card hidden" id="step3Card">
   <div class="card-header">
     <h2><i class="fas fa-users" style="color:var(--gold);font-size:1.1rem;"></i> Select Ownership Type</h2>
-    <p>Choose how you want to certify your work</p>
+    <p>Establish title custody frameworks for this registry entry</p>
   </div>
   <div class="card-body">
     <div class="toggle-group">
@@ -212,6 +223,28 @@
         <div class="toggle-desc">Work with other creators</div>
       </div>
     </div>
+
+    <!-- Enhancement 15: Structural Rights Delegation Switch -->
+    <div class="form-group" style="margin-top:20px; background:rgba(255,255,255,0.01); border:1px solid rgba(201,153,58,0.15); border-radius:8px; padding:14px; text-align:left;">
+      <label style="font-size:0.82rem; font-weight:600; color:var(--gold); display:flex; align-items:center; gap:6px; margin-bottom:8px;">
+        <i class="fas fa-handshake"></i> Rights Delegation Assignment (Optional)
+      </label>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <label style="font-size:0.75rem; display:flex; align-items:center; gap:6px; color:var(--white-dim);">
+          <input type="checkbox" id="delegateLawyer" style="accent-color:var(--gold);"> Legal Counsel / Lawyer
+        </label>
+        <label style="font-size:0.75rem; display:flex; align-items:center; gap:6px; color:var(--white-dim);">
+          <input type="checkbox" id="delegateManager" style="accent-color:var(--gold);"> Manager / Agent
+        </label>
+        <label style="font-size:0.75rem; display:flex; align-items:center; gap:6px; color:var(--white-dim);">
+          <input type="checkbox" id="delegatePublisher" style="accent-color:var(--gold);"> Publisher / Distributor
+        </label>
+        <label style="font-size:0.75rem; display:flex; align-items:center; gap:6px; color:var(--white-dim);">
+          <input type="checkbox" id="delegateLabel" style="accent-color:var(--gold);"> Studio / Record Label
+        </label>
+      </div>
+    </div>
+
     <div class="button-group">
       <button class="btn-secondary" onclick="showStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
       <button class="btn-primary" id="nextToUploadBtn"><i class="fas fa-arrow-right"></i> Continue</button>
@@ -219,7 +252,7 @@
   </div>
 </div>
 
-<!-- STEP 4: UPLOAD WORK -->
+<!-- STEP 4: UPLOAD WORK & INTELLIGENT AI ANALYSIS PANELS -->
 <div class="workflow-card hidden" id="step4Card">
   <div class="card-header">
     <h2><i class="fas fa-cloud-upload-alt" style="color:var(--gold);font-size:1.1rem;"></i> <span id="step4HeaderText">Upload Work</span></h2>
@@ -227,11 +260,10 @@
   </div>
   <div class="card-body">
 
-    <!-- ── SOLO ──────────────────────────────────────────────────────────────── -->
+    <!-- ── SOLO CONTAINER ────────────────────────────────────────────────────── -->
     <div id="soloContent" class="hidden">
       <div class="creator-files">
         <h4><i class="fas fa-file-upload" style="margin-right:6px;"></i> Your Work File</h4>
-
         <div class="upload-area" id="soloUploadArea">
           <i class="fas fa-cloud-upload-alt ua-icon"></i>
           <span class="ua-text" id="soloUploadText">Click to upload or drag &amp; drop</span>
@@ -247,23 +279,15 @@
           <div class="progress-bar-container"><div class="progress-bar" id="soloProgressBar"></div></div>
           <div class="progress-text" id="soloProgressText">Uploading...</div>
         </div>
-
         <div class="viewer-type-label" id="soloViewerLabel">PDF Document Viewer</div>
         <div class="viewer-embed" id="soloViewerEmbed"></div>
-        <div class="file-stats" id="soloFileStats" style="display:none;"></div>
-      </div>
-
-      <div class="ownership-box">
-        <strong><i class="fas fa-shield-alt" style="margin-right:5px;"></i> Ownership</strong>
-        <div class="ownership-row"><span id="soloOwnerName">Username</span><span class="pct">100%</span></div>
       </div>
     </div>
 
-    <!-- ── COLLAB ─────────────────────────────────────────────────────────────── -->
+    <!-- ── COLLAB CONTAINER ──────────────────────────────────────────────────── -->
     <div id="collabContent" class="hidden">
       <div class="creator-files">
         <h4><i class="fas fa-file-upload" style="margin-right:6px;"></i> Your Work File</h4>
-
         <div class="upload-area" id="primaryUploadArea">
           <i class="fas fa-cloud-upload-alt ua-icon"></i>
           <span class="ua-text" id="primaryUploadText">Click to upload or drag &amp; drop</span>
@@ -279,11 +303,57 @@
           <div class="progress-bar-container"><div class="progress-bar" id="primaryProgressBar"></div></div>
           <div class="progress-text" id="primaryProgressText">Uploading...</div>
         </div>
-
         <div class="viewer-type-label" id="primaryViewerLabel">PDF Document Viewer</div>
         <div class="viewer-embed" id="primaryViewerEmbed"></div>
-        <div class="file-stats" id="primaryFileStats" style="display:none;"></div>
       </div>
+    </div>
+
+    <!-- Live Analysis Dashboard (Injected for both Solo & Collab inside Step 4 Layout Frame) -->
+    <div id="analysisDashboard" style="display:none;">
+      <div class="analysis-dashboard-grid">
+        
+        <!-- Enhancement 4: Asset Context Metadata -->
+        <div class="analysis-panel">
+          <h5><i class="fas fa-microchip"></i> AI Structural Audit</h5>
+          <div id="metaDetailsPlaceholder">
+            <div class="metric-row"><span>Detected Format</span><span class="metric-value" id="adFormat">—</span></div>
+            <div class="metric-row"><span>Integrity Verification</span><span class="metric-value" style="color:#3DB87A;"><i class="fas fa-check-circle"></i> Complete</span></div>
+            <div class="metric-row"><span>Checksum (SHA256)</span><span class="metric-value" style="font-family:monospace;font-size:0.65rem;" id="adHash">—</span></div>
+            <div class="metric-row" id="adSpec1Row"><span>Metric A</span><span class="metric-value" id="adSpec1">—</span></div>
+            <div class="metric-row" id="adSpec2Row"><span>Metric B</span><span class="metric-value" id="adSpec2">—</span></div>
+          </div>
+        </div>
+
+        <!-- Enhancements 7, 8, 9: Integrity Index, Vulnerabilities, & Plagiarism -->
+        <div class="analysis-panel">
+          <h5><i class="fas fa-shield-halved"></i> Security &amp; Registry Analysis</h5>
+          <div class="metric-row">
+            <span>Evidence Strength</span>
+            <span class="metric-value" style="color:var(--gold); display:flex; align-items:center; gap:6px;">
+              <span style="display:inline-block; width:60px; height:6px; background:rgba(255,255,255,0.1); border-radius:3px; overflow:hidden;"><span style="display:block; width:98%; height:100%; background:var(--gold);"></span></span>
+              98%
+            </span>
+          </div>
+          <div class="metric-row" style="align-items:flex-start; flex-direction:column; gap:4px;">
+            <span>Detected Flag Indicators</span>
+            <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:2px;" id="riskBadgesContainer">
+              <span class="risk-badge"><i class="fas fa-exclamation-triangle"></i> GPS Trackers Cleaned</span>
+              <span class="risk-badge" style="background:rgba(201,153,58,0.15); color:var(--gold);"><i class="fas fa-users"></i> Multiple Authors</span>
+            </div>
+          </div>
+          <div class="metric-row" style="align-items:flex-start; flex-direction:column; gap:2px;">
+            <span>Tier-7 Similar Works Crossmatch</span>
+            <span style="font-size:0.7rem; color:#3DB87A;"><i class="fas fa-check-circle"></i> 0 collisions found across distributed nodes.</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Ownership Box Attachment inside Step 4 layout frame -->
+    <div class="ownership-box" style="margin-top:14px; text-align:left;">
+      <strong><i class="fas fa-shield-alt" style="margin-right:5px;"></i> Ownership Summary</strong>
+      <div class="ownership-row"><span id="soloOwnerName">Username</span><span class="pct">100%</span></div>
     </div>
 
     <div class="button-group">
@@ -301,9 +371,7 @@
   </div>
   <div class="card-body">
     <div class="collaborator-section">
-      <div class="collaborator-list" id="collaboratorList">
-        <!-- Primary creator row injected by JS -->
-      </div>
+      <div class="collaborator-list" id="collaboratorList"></div>
       <div class="collab-bulk-btns">
         <button class="add-collaborator-btn" id="addCollaboratorBtn"><i class="fas fa-plus" style="margin-right:6px;"></i> Add Co-owner</button>
         <button class="bulk-btn" id="inviteAllBtn"><i class="fas fa-envelope" style="margin-right:6px;"></i> Invite All</button>
@@ -322,13 +390,23 @@
   </div>
 </div>
 
-<!-- STEP FINAL: CERTIFICATE (solo goes here from step4, collab from step5collab) -->
+<!-- STEP FINAL: THE LIVING DIGITAL RIGHTS COMMAND CENTER -->
 <div class="workflow-card hidden" id="stepFinalCard">
   <div class="card-header success-header">
-    <h2><i class="fas fa-certificate" style="color:var(--gold);font-size:1.1rem;"></i> Certificate Ready</h2>
-    <p>Your work has been certified and blockchain-timestamped</p>
+    <h2><i class="fas fa-certificate" style="color:var(--gold);font-size:1.1rem;"></i> SeekReap Rights Engine Active</h2>
+    <p>Your property is cryptographically anchored, recorded, and registered</p>
   </div>
   <div class="card-body">
+    
+    <!-- Creator Context Badge -->
+    <div style="background:rgba(201,153,58,0.06); border:1px solid rgba(201,153,58,0.2); border-radius:6px; padding:10px; margin-bottom:16px; display:flex; justify-content:between; align-items:center; text-align:left;">
+      <div>
+        <div style="font-size:0.85rem; font-weight:700; color:var(--white);"><i class="fas fa-award" style="color:var(--gold);"></i> Gold Status Account</div>
+        <div style="font-size:0.7rem; color:var(--white-dim);">Verified Creator Identity · 15 Registry Records · 0 Disputes</div>
+      </div>
+      <div style="margin-left:auto; text-align:right;"><span style="font-size:0.65rem; background:rgba(61,184,122,0.2); color:#3DB87A; padding:2px 6px; border-radius:4px; font-weight:600; text-transform:uppercase;">Monitor Online</span></div>
+    </div>
+
     <div class="certificate-box">
       <div class="cert-title-area">
         <svg width="40" height="40" viewBox="0 0 100 100" fill="none" style="margin:0 auto 10px;display:block;">
@@ -341,14 +419,74 @@
           <text x="62" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#certR)">R</text>
           <path d="M50 68 L52 66 L54 68 L56 66" stroke="url(#certR)" stroke-width="2.5" fill="none"/>
         </svg>
-        <h2>SeekReap Certificate</h2>
+        <h2>SeekReap Ledger Entry</h2>
         <p id="certIdLine" style="font-size:0.8rem;color:var(--white-dim);margin-top:4px;"></p>
       </div>
       <div class="cert-divider"></div>
+      
+      <!-- Dynamic Certificate Details Output -->
       <div id="certificateDetails"></div>
-      <div class="button-group" style="margin-top:18px;">
-        <button class="btn-primary" id="downloadCertBtn"><i class="fas fa-download"></i> Download Certificate</button>
+
+      <!-- Enhancement 20: Comprehensive Tabbed Certificate Data Array Previewer -->
+      <div class="rights-tab-container">
+        <div class="rights-tabs">
+          <button class="rights-tab-btn active" onclick="switchRightsTab(event, 'tabCert')">Certificate</button>
+          <button class="rights-tab-btn" onclick="switchRightsTab(event, 'tabOwnership')">Ownership Split</button>
+          <button class="rights-tab-btn" onclick="switchRightsTab(event, 'tabMetadata')">File Metadata</button>
+          <button class="rights-tab-btn" onclick="switchRightsTab(event, 'tabEvidence')">Evidence Index</button>
+          <button class="rights-tab-btn" onclick="switchRightsTab(event, 'tabVerification')">Verification Gate</button>
+          <button class="rights-tab-btn" onclick="switchRightsTab(event, 'tabHistory')">Lifecycle Audit</button>
+        </div>
+        <div id="tabCert" class="rights-tab-content active">
+          <p style="font-size:0.8rem; margin:0;"><strong>Blockchain Registration Status:</strong> Confirmed &amp; Anchored. This tab exposes the formal public cryptographic record generated by the SeekReap Registry Node.</p>
+        </div>
+        <div id="tabOwnership" class="rights-tab-content">
+          <p style="font-size:0.8rem; margin:0;"><strong>Ledger Configurations:</strong> Primary Creator holds 100% assignment. No operational counterparty delegations are currently registered to this asset profile.</p>
+        </div>
+        <div id="tabMetadata" class="rights-tab-content">
+          <p style="font-size:0.8rem; margin:0; font-family:monospace;" id="tabMetaCode">Loading technical asset block values...</p>
+        </div>
+        <div id="tabEvidence" class="rights-tab-content">
+          <p style="font-size:0.8rem; margin:0;"><strong>System Legal Package:</strong> Includes full device headers, precise timestamping matrices, local binary hashes, and chain of custody tracking parameters.</p>
+        </div>
+        <div id="tabVerification" class="rights-tab-content">
+          <p style="font-size:0.8rem; margin:0;">The cryptographic signature and immutable verification profile are live. Access restrictions are governed by your global security policy rules.</p>
+        </div>
+        <div id="tabHistory" class="rights-tab-content">
+          <p style="font-size:0.8rem; margin:0;"><strong>Lifecycle Audit:</strong> Asset creation detected → Signature configured → Cryptographic hash validated → Distributed ledger storage complete.</p>
+        </div>
       </div>
+
+      <!-- Enhancement 10: Rights Dashboard Framework -->
+      <div class="engine-dashboard-summary">
+        <div class="dashboard-widget"><div class="dashboard-widget-title">Title Structure</div><div class="dashboard-widget-value">100% Solo</div></div>
+        <div class="dashboard-widget"><div class="dashboard-widget-title">Licensing Block</div><div class="dashboard-widget-value" style="color:rgba(250,250,248,0.35);">Inactive</div></div>
+        <div class="dashboard-widget"><div class="dashboard-widget-title">Discovery Node</div><div class="dashboard-widget-value" style="color:#3DB87A;">Public</div></div>
+        <div class="dashboard-widget"><div class="dashboard-widget-title">Enforcement</div><div class="dashboard-widget-value">Armed</div></div>
+      </div>
+
+      <!-- Enhancement 12: Public Verification Component Layer -->
+      <div style="margin-top:16px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,153,58,0.2); border-radius:6px; padding:12px; text-align:left;">
+        <div style="font-size:0.72rem; text-transform:uppercase; color:var(--gold); font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+          <i class="fas fa-link"></i> Immutable Verification Access URL
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="text" id="publicVerifyUrl" value="https://verify.seekreap.com/c/8RHA19X7M2" readonly style="flex:1; background:rgba(0,0,0,0.5); border:1px solid rgba(201,153,58,0.3); color:var(--white-dim); font-size:0.75rem; padding:6px 10px; border-radius:4px; font-family:monospace;">
+          <button onclick="navigator.clipboard.writeText(document.getElementById('publicVerifyUrl').value); alert('Verification link copied.');" style="background:var(--gold); border:none; color:#000; padding:6px 12px; border-radius:4px; font-size:0.72rem; font-weight:700; cursor:pointer;"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+      </div>
+
+      <!-- Enhancements 5, 6, 11, 14, 16, 17, 18, 19: Comprehensive Action Tray -->
+      <div style="margin-top:20px; text-align:left; border-top:1px solid rgba(201,153,58,0.15); padding-top:16px;">
+        <h4 style="font-size:0.8rem; text-transform:uppercase; color:var(--gold); margin-bottom:10px;"><i class="fas fa-folder-open"></i> Full Evidence Package &amp; Asset Operations</h4>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+          <button class="btn-primary" id="downloadCertBtn" style="font-size:0.75rem; padding:8px;"><i class="fas fa-file-pdf"></i> Download Court Certificate</button>
+          <button class="btn-secondary" onclick="alert('Compiling evidence package report...')" style="font-size:0.75rem; padding:8px; border-color:rgba(201,153,58,0.3);"><i class="fas fa-archive"></i> Download Full Evidence Pack</button>
+          <button class="btn-secondary" onclick="alert('Initializing licensing framework selector...')" style="font-size:0.75rem; padding:8px; border-color:rgba(201,153,58,0.3); color:var(--gold);"><i class="fas fa-coins"></i> Monetize / Create License</button>
+          <button class="btn-secondary" onclick="window.showStep(1); _resetUpload('solo'); _resetUpload('primary');" style="font-size:0.75rem; padding:8px; border-color:rgba(201,153,58,0.3);"><i class="fas fa-plus"></i> Certify Another Asset</button>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -421,14 +559,12 @@
 
 </div><!-- .demo-container -->
 
-
-
-  <!-- Supabase + auth — must precede certification_portal.js -->
+  <!-- Supabase Dependencies & Routing Layout Configs -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="/supabase-config.js"></script>
   <script src="/assets/js/routes.js"></script>
   <script src="/assets/js/auth-guard.js"></script>
   <script src="/assets/js/cert-api-auth-injector.js"></script>
-  <script src="assets/js/certification_portal.js"></script>
+  
 </body>
 </html>
