@@ -555,7 +555,7 @@ select option{background:var(--bg2);}
 </div>
 
 <footer class="footer" id="mainFooter" style="display:none;">
-  <p>© 2025 SeekReap — Protecting creativity with blockchain certification · <a href="verification_portal.html" style="color:var(--gold-light);">Verify a Certificate</a></p>
+  <p>© 2025 SeekReap — Protecting creativity with blockchain certification · <a href="certificate_verify.html" style="color:var(--gold-light);">Verify a Certificate</a></p>
 </footer>
 
 <script>
@@ -1095,7 +1095,7 @@ function openWorkDetails(workId) {
     <div style="display:flex;gap:9px;flex-wrap:wrap;">
       ${work.status==='pending'||work.status==='failed'?`<button class="btn btn-primary" onclick="startCertification('${work.id}');closeModal('modalDetail')"><i class="fas fa-certificate"></i> Certify</button>`:''}
       <button class="btn btn-secondary" onclick="openShareModal('${work.id}');closeModal('modalDetail')"><i class="fas fa-share-alt"></i> Share</button>
-      ${work.certId?`<button class="btn btn-secondary" onclick="downloadCert('${work.id}')"><i class="fas fa-download"></i> Certificate</button><a href="verification_portal.html?cert=${esc(work.certId)}" target="_blank" class="btn btn-secondary" style="text-decoration:none;"><i class="fas fa-external-link-alt"></i> Verify</a>`:''}
+      ${work.certId?`<button class="btn btn-secondary" onclick="downloadCert('${work.id}')"><i class="fas fa-download"></i> Certificate</button><a href="certificate_verify.html?id=${esc(work.certId)}" target="_blank" class="btn btn-secondary" style="text-decoration:none;"><i class="fas fa-external-link-alt"></i> Verify</a>`:''}
     </div>`;
   openModal('modalDetail');
 }
@@ -1106,7 +1106,7 @@ function openWorkDetails(workId) {
 function openShareModal(workId) {
   const work = works.find(w=>w.id===workId);
   if (!work) return;
-  const url  = `${location.origin}/verification_portal.html?cert=${work.certId||work.id}`;
+  const url  = `${location.origin}/certificate_verify.html?id=${work.certId||work.id}`;
   const text = `Check out my certified work: "${work.title}" — ${url}`;
   document.getElementById('shareOpts').innerHTML = [
     {i:'fa-link',      l:'Copy Link',  fn:`navigator.clipboard.writeText(${JSON.stringify(url)}).then(()=>showToast('Link copied'));closeModal('modalShare')`},
@@ -1253,7 +1253,7 @@ function bulkCertify() {
 }
 function bulkShare() {
   if(!selectedWorks.size)return;
-  const urls=Array.from(selectedWorks).map(id=>{ const w=works.find(x=>x.id===id); return w?`${w.title}: ${location.origin}/verification_portal.html?cert=${w.certId||w.id}`:''; }).filter(Boolean).join('\n');
+  const urls=Array.from(selectedWorks).map(id=>{ const w=works.find(x=>x.id===id); return w?`${w.title}: ${location.origin}/certificate_verify.html?id=${w.certId||w.id}`:''; }).filter(Boolean).join('\n');
   navigator.clipboard.writeText(urls).then(()=>showToast(`Links for ${selectedWorks.size} works copied`));
 }
 

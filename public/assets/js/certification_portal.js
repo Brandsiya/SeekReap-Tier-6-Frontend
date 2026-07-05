@@ -387,9 +387,19 @@
   };
 
   var _uploadedFile = null;
+  window._contentHash = null;
+  window._contentUrl  = null;
 
-  function _handleFile(file, prefix) {
+  async function _sha256Hex(file) {
+    var buf = await file.arrayBuffer();
+    var digest = await crypto.subtle.digest('SHA-256', buf);
+    return Array.from(new Uint8Array(digest)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+  }
+
+  async function _handleFile(file, prefix) {
     _uploadedFile = file;
+    window._contentHash = null;
+    window._contentUrl  = null;
     var n=document.getElementById(prefix+'FileName');
     var s=document.getElementById(prefix+'FileSz');
     var i=document.getElementById(prefix+'FileIcon');
@@ -403,21 +413,69 @@
     if(area) area.classList.add('uploaded');
     if(next) next.disabled=true;
     window._showPreview(file, prefix);
+
     var bar=document.getElementById(prefix+'ProgressBar');
     var txt=document.getElementById(prefix+'ProgressText');
     var prg=document.getElementById(prefix+'Progress');
     if(prg) prg.style.display='block';
-    var pct=0;
-    var iv=setInterval(function(){
-      pct+=Math.random()*18+8;
-      if(pct>=100){pct=100;clearInterval(iv);if(next)next.disabled=false;if(txt)txt.textContent='Ready ✓';}
-      if(bar) bar.style.width=pct+'%';
-      if(txt&&pct<100) txt.textContent='Processing… '+Math.floor(pct)+'%';
-    },100);
+    if(bar) bar.style.width='15%';
+    if(txt) txt.textContent='Computing content fingerprint…';
+
+    var MAX_BYTES = 200 * 1024 * 1024; // 200MB — keep in sync with Tier 3's download cap
+    if (file.size > MAX_BYTES) {
+      if(txt) txt.textContent='File too large (max 200MB)';
+      if(bar) bar.style.width='0%';
+      if(next) next.disabled=true;
+      return;
+    }
+
+    try {
+      var hash = await _sha256Hex(file);
+      window._contentHash = hash;
+      if(bar) bar.style.width='45%';
+      if(txt) txt.textContent='Uploading…';
+
+      var user = (typeof window.waitForAuth === 'function') ? await window.waitForAuth(12000) : window.currentUser;
+      if (!user) throw new Error('Please sign in before uploading a file.');
+
+      var client = window.supabaseClient;
+      if (!client) throw new Error('Storage connection not ready — please retry.');
+
+      var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      var path = user.id + '/' + Date.now() + '-' + safeName;
+
+      var { error: upErr } = await client.storage.from('submissions').upload(path, file, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: file.type || 'application/octet-stream',
+      });
+      if (upErr) throw upErr;
+      if(bar) bar.style.width='80%';
+      if(txt) txt.textContent='Finalizing…';
+
+      // 7-day signed URL — long enough for the certification pipeline
+      // (payment + queued fingerprinting job) to consume it.
+      var { data: signedData, error: signErr } = await client.storage
+        .from('submissions')
+        .createSignedUrl(path, 60 * 60 * 24 * 7);
+      if (signErr) throw signErr;
+
+      window._contentUrl = signedData.signedUrl;
+      if(bar) bar.style.width='100%';
+      if(txt) txt.textContent='Ready ✓';
+      if(next) next.disabled=false;
+    } catch (e) {
+      console.error('Upload failed:', e);
+      if(txt) txt.textContent='Upload failed — ' + (e.message || 'please try again');
+      if(bar) bar.style.width='0%';
+      if(next) next.disabled=true;
+    }
   }
 
   function _resetUpload(prefix){
     _uploadedFile=null;
+    window._contentHash=null;
+    window._contentUrl=null;
     var ids={FileName:'—',FileSz:'—',FileIcon:'📄',ProgressText:'Uploading...'};
     Object.keys(ids).forEach(function(k){ var el=document.getElementById(prefix+k); if(el) el.textContent=ids[k]; });
     var hide=['FileInfo','Progress'];
@@ -513,6 +571,8 @@
     try {
       sessionStorage.setItem('pendingCert', JSON.stringify({
         title:title, work_type:wtype, plan:plan,
+        content_hash: window._contentHash || '',
+        content_url:  window._contentUrl  || '',
         collaborators:_collabs.filter(function(c){ return !c.isPrimary; }),
         ownership_split:_collabs.reduce(function(o,c){ o[c.email||c.name]=c.split; return o; },{})
       }));
@@ -534,6 +594,7 @@
       step4Next.addEventListener('click',function(e){
         e.preventDefault();
         if(!_uploadedFile){ alert('Please upload your work file before continuing.'); return; }
+        if(!window._contentHash || !window._contentUrl){ alert('Please wait for the upload to finish before continuing.'); return; }
         var collabOn = document.getElementById('collabModeBtn') && document.getElementById('collabModeBtn').classList.contains('active');
         if(collabOn && window.selectedPlan!=='free') window.showStep(5);
         else _routeToPayment();

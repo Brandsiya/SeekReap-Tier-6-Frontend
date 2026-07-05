@@ -10,10 +10,11 @@ RUN echo 'server { \
     root /usr/share/nginx/html; \
     index index.html; \
     location / { \
-        try_files $uri $uri/ /index.html; \
+        try_files $uri $uri/ =404; \
     } \
+    error_page 404 /404.html; \
     location /api/ { \
-        proxy_pass https://seekreap-tier-4-dev.fly.dev/api/; \
+        proxy_pass https://seekreap-tier-4-orchestrator-1.onrender.com/api/; \
         proxy_set_header Host $host; \
         proxy_set_header X-Real-IP $remote_addr; \
     } \

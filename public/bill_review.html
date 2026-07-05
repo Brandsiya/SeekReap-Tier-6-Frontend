@@ -163,7 +163,9 @@ document.getElementById('payBtn').addEventListener('click',async function(){
               plan:        'free',
               title:       title,
               work_type:   freeMeta.work_type || 'audio',
-              creator_id:  freeUser.id
+              creator_id:  freeUser.id,
+              content_hash: freeMeta.content_hash || '',
+              content_url:  freeMeta.content_url  || ''
             })
           });
           console.log('[FreeCert] Response status: ' + freeRes.status);
@@ -178,13 +180,23 @@ document.getElementById('payBtn').addEventListener('click',async function(){
           } else {
             var freeErr2 = await freeRes.json().catch(function(){ return {}; });
             console.log('[FreeCert] API ERROR: ' + freeRes.status + ' ' + (freeErr2.error || JSON.stringify(freeErr2)));
+            if (freeErr2.code === 'FREE_QUOTA_EXCEEDED') {
+              showError(freeErr2.error || 'You\'ve used your free certification. Choose a paid plan below to continue.');
+            } else {
+              showError(freeErr2.error || 'Certification failed. Please try again.');
+            }
+            return;
           }
         }
       } else {
         console.log('[FreeCert] WARNING: No user — skipping real certification');
+        showError('Session expired. Please sign in again.');
+        return;
       }
     } catch(freeErr) {
       console.log('[FreeCert] EXCEPTION: ' + freeErr.message);
+      showError('Something went wrong. Please try again.');
+      return;
     }
     console.log('[FreeCert] Done. Proceeding to loader.');
 
@@ -216,6 +228,7 @@ document.getElementById('payBtn').addEventListener('click',async function(){
     title:          pendingMeta.title||title,
     work_type:      pendingMeta.work_type||'other',
     content_hash:   pendingMeta.content_hash||'',
+    content_url:    pendingMeta.content_url||'',
     collaborators:  pendingMeta.collaborators||[],
     ownership_split:pendingMeta.ownership_split||{},
     artistic_name:  pendingMeta.artistic_name||'',
