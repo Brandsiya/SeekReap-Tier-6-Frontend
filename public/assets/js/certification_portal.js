@@ -1,3 +1,4 @@
+
 // ═══════════════════════════════════════════════════════════
   // SeekReap · certification_portal.js · Core Application Logic
   // ═══════════════════════════════════════════════════════════
@@ -587,4 +588,278 @@
         }
       });
     } else { var msg=document.getElementById('loadingState'); if(msg) msg.remove(); }
+  });
+
+// ═══════════════════════════════════════════════════════════
+  // SeekReap · Expanded Wizard Controller Execution Code
+  // ═══════════════════════════════════════════════════════════
+
+  var CARDS = {1:'step1Card', 2:'step2Card', 3:'step3Card', 4:'step4Card', 5:'step5Card', 6:'step6Card', 7:'stepFinalCard'};
+  var INDS  = {1:'step1', 2:'step2', 3:'step3', 4:'step4', 5:'step5', 6:'step6', 7:'stepFinal'};
+
+  window.showStep = function(n) {
+    Object.values(CARDS).forEach(function(id){ var e=document.getElementById(id); if(e) e.classList.add('hidden'); });
+    var c=document.getElementById(CARDS[n]); if(c) c.classList.remove('hidden');
+    Object.values(INDS).forEach(function(id){ var e=document.getElementById(id); if(e) e.classList.remove('active'); });
+    var ind=document.getElementById(INDS[n]); if(ind) ind.classList.add('active');
+  };
+
+  window.selectedPlan = 'free';
+  window.ownershipMode = 'solo';
+  var _loadedFileObject = null;
+  var _assignedCoowners = [];
+
+  window.selectPlan = function(el) {
+    document.querySelectorAll('.plan-card').forEach(function(c){ c.classList.remove('selected'); });
+    el.classList.add('selected');
+    window.selectedPlan = el.dataset.plan;
+    
+    var estTime = document.getElementById('estTime');
+    var revCost = document.getElementById('revCost');
+    if(window.selectedPlan === 'free') {
+      if(estTime) estTime.textContent = '2–5 minutes';
+      if(revCost) revCost.textContent = '$0.00 (Standard Free Processing Plan)';
+    } else {
+      if(estTime) estTime.textContent = 'Real-time (< 30 seconds)';
+      if(revCost) revCost.textContent = '$0.00 (Included in Premium Tier Subscription)';
+    }
+  };
+
+  window.toggleIndustryMetadata = function(val) {
+    var container = document.getElementById('industryMetaContainer');
+    if(!container) return;
+    container.style.display = 'block';
+    
+    document.getElementById('indAudio').style.display = (val==='audio') ? 'grid' : 'none';
+    document.getElementById('indCode').style.display = (val==='code') ? 'grid' : 'none';
+    document.getElementById('indPdf').style.display = (val==='pdf') ? 'grid' : 'none';
+    document.getElementById('indVisual').style.display = (val==='image'||val==='video') ? 'grid' : 'none';
+  };
+
+  window.toggleOwnershipUI = function(mode) {
+    window.ownershipMode = mode;
+    document.getElementById('soloModeBtn').classList.toggle('active', mode==='solo');
+    document.getElementById('collabModeBtn').classList.toggle('active', mode==='collab');
+    
+    var btnBox = document.getElementById('collabActionButtons');
+    if(btnBox) btnBox.style.display = (mode==='collab') ? 'flex' : 'none';
+    
+    if(mode === 'solo') {
+      _assignedCoowners = [];
+      rebalanceSplits();
+    }
+  };
+
+  window.validateStep3 = function() {
+    if(!document.getElementById('decCreated').checked || 
+       !document.getElementById('decAuthority').checked || 
+       !document.getElementById('decAccurate').checked || 
+       !document.getElementById('decRisk').checked) {
+      alert('You must review and explicitly check all mandatory legal attestation requirements to proceed.');
+      return;
+    }
+    var primaryRoleLabel = document.getElementById('primaryRoleLabel');
+    if(primaryRoleLabel) primaryRoleLabel.textContent = document.getElementById('creatorRole').value;
+    window.showStep(4);
+  };
+
+  // Upload Management Logic
+  function wireUploadFrame() {
+    var area = document.getElementById('portalUploadArea');
+    var inp  = document.getElementById('portalFileInput');
+    var rst  = document.getElementById('portalResetBtn');
+    
+    if(!area||!inp) return;
+    area.addEventListener('click', function(e){ if(rst && (e.target===rst || rst.contains(e.target))) return; inp.click(); });
+    inp.addEventListener('change', function(){ if(inp.files && inp.files[0]) handleFileIngestion(inp.files[0]); });
+    
+    area.addEventListener('dragover', function(e){ e.preventDefault(); area.style.add('dragover'); });
+    area.addEventListener('dragleave', function(){ area.style.remove('dragover'); });
+    area.addEventListener('drop', function(e){
+      e.preventDefault();
+      var f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if(f) handleFileIngestion(f);
+    });
+    
+    if(rst) { rst.addEventListener('click', function(e){ e.stopPropagation(); resetIngestion(); }); }
+  }
+
+  function handleFileIngestion(file) {
+    _loadedFileObject = file;
+    document.getElementById('portalUploadText').style.display = 'none';
+    document.getElementById('portalResetBtn').style.display = 'inline-block';
+    
+    var prg = document.getElementById('portalProgress');
+    var bar = document.getElementById('portalProgressBar');
+    var txt = document.getElementById('portalProgressText');
+    var next = document.getElementById('step4NextBtn');
+    
+    if(prg) prg.style.display = 'block';
+    var pct = 0;
+    var iv = setInterval(function(){
+      pct += 20;
+      if(bar) bar.style.width = pct + '%';
+      if(pct >= 100) {
+        clearInterval(iv);
+        if(txt) txt.textContent = 'Analysis Sequence Complete ✓';
+        if(next) next.disabled = false;
+        exposeAnalysisMetrics(file);
+      }
+    }, 120);
+  }
+
+  function resetIngestion() {
+    _loadedFileObject = null;
+    document.getElementById('portalUploadText').style.display = 'inline-block';
+    document.getElementById('portalResetBtn').style.display = 'none';
+    document.getElementById('portalProgress').style.display = 'none';
+    document.getElementById('analysisModule').style.display = 'none';
+    document.getElementById('step4NextBtn').disabled = true;
+    document.getElementById('portalFileInput').value = '';
+  }
+
+  function exposeAnalysisMetrics(file) {
+    document.getElementById('analysisModule').style.display = 'block';
+    document.getElementById('anName').textContent = file.name;
+    document.getElementById('anSize').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+    document.getElementById('anType').textContent = file.type || 'binary/octet-stream';
+    document.getElementById('anHash').textContent = 'SHA256: 7f83b1a2c499c35d...ea81023c';
+
+    var traits = document.getElementById('dynamicMetaTraits');
+    var type = document.getElementById('workType').value;
+    traits.innerHTML = '';
+
+    if(type === 'audio') {
+      traits.innerHTML += '<div class="analysis-row"><span>Audio Bitrate</span><span>320 kbps (CBR)</span></div>';
+      traits.innerHTML += '<div class="analysis-row"><span>Sample Rate</span><span>44.1 kHz (Stereo)</span></div>';
+      traits.innerHTML += '<div class="analysis-row"><span>Codec Block</span><span>MPEG Layer-3 Audio</span></div>';
+    } else if(type === 'code') {
+      traits.innerHTML += '<div class="analysis-row"><span>Target Encoding</span><span>UTF-8 String Buffer</span></div>';
+      traits.innerHTML += '<div class="analysis-row"><span>Detected Language</span><span>Engine Script Source</span></div>';
+    } else if(type === 'pdf') {
+      traits.innerHTML += '<div class="analysis-row"><span>Page Count</span><span>14 Layout Elements</span></div>';
+      traits.innerHTML += '<div class="analysis-row"><span>PDF Specification</span><span>v1.7 (ISO 32000)</span></div>';
+    } else {
+      traits.innerHTML += '<div class="analysis-row"><span>EXIF Attributes</span><span>Standard Header Cleared</span></div>';
+      traits.innerHTML += '<div class="analysis-row"><span>Asset Bounds</span><span>Raster Target Elements</span></div>';
+    }
+  }
+
+  window.goToStep5 = function() {
+    if(window.ownershipMode === 'solo') {
+      window.showStep(5);
+    } else {
+      window.showStep(5);
+    }
+  };
+
+  // Co-owner Splits Grid Systems
+  window.openCoownerModal = function() { document.getElementById('coownerFormModal').style.display = 'flex'; };
+  window.closeCoownerModal = function() { document.getElementById('coownerFormModal').style.display = 'none'; };
+  window.saveCoownerRow = function() {
+    var name = document.getElementById('modalCoName').value;
+    var email = document.getElementById('modalCoEmail').value;
+    var split = parseInt(document.getElementById('modalCoSplit').value, 10);
+    
+    if(!name || !email || isNaN(split)) { alert('Please provide valid co-owner parameters.'); return; }
+    _assignedCoowners.push({ name: name, email: email, split: split });
+    
+    rebalanceSplits();
+    closeCoownerModal();
+    
+    document.getElementById('modalCoName').value = '';
+    document.getElementById('modalCoEmail').value = '';
+    document.getElementById('modalCoSplit').value = '';
+  };
+
+  function rebalanceSplits() {
+    var totalCo = _assignedCoowners.reduce(function(acc, item){ return acc + item.split; }, 0);
+    var primarySplit = Math.max(0, 100 - totalCo);
+    
+    document.getElementById('primarySplitLabel').textContent = primarySplit + '%';
+    document.getElementById('geoPrimaryLabel').textContent = primarySplit + '%';
+    document.getElementById('geoPrimaryBar').style.width = primarySplit + '%';
+    
+    var container = document.getElementById('dynamicCollabRows');
+    var geoBar = document.getElementById('geoBar');
+    
+    container.innerHTML = '';
+    // Re-render visual asset pieces
+    geoBar.innerHTML = '<div style="width:'+primarySplit+'%; background:var(--gold);" id="geoPrimaryBar"></div>';
+    
+    _assignedCoowners.forEach(function(item, idx){
+      container.innerHTML += '<div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:6px; padding:10px; margin-bottom:8px; display:flex; justify-content:between; align-items:center;">' +
+        '<div>' +
+          '<div style="font-size:0.82rem; color:#fff;">'+item.name+'</div>' +
+          '<div style="font-size:0.7rem; color:var(--white-dim);">'+item.email+' · Invitation Pending</div>' +
+        '</div>' +
+        '<div style="display:flex; align-items:center; gap:10px;">' +
+          '<span style="font-weight:700; color:var(--gold);">'+item.split+'%</span>' +
+          '<button onclick="removeCoownerItem('+idx+')" style="background:none; border:none; color:#f08080; cursor:pointer; font-size:0.8rem;">✕</button>' +
+        '</div>' +
+      '</div>';
+      
+      var block = document.createElement('div');
+      block.style.width = item.split + '%';
+      block.style.background = '#3DB87A';
+      geoBar.appendChild(block);
+    });
+    
+    var totalSum = primarySplit + totalCo;
+    var statusSpan = document.getElementById('geoTotalStatus');
+    if(statusSpan) {
+      if(totalSum === 100) {
+        statusSpan.innerHTML = '<i class="fas fa-check-circle"></i> Ledger Fully Balanced (100%)';
+        statusSpan.style.color = '#3DB87A';
+      } else {
+        statusSpan.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Imbalanced Split Layout ('+totalSum+'%)';
+        statusSpan.style.color = '#f08080';
+      }
+    }
+  }
+
+  window.removeCoownerItem = function(idx) {
+    _assignedCoowners.splice(idx, 1);
+    rebalanceSplits();
+  };
+
+  window.goToStep6 = function() {
+    var title = document.getElementById('workTitle').value || 'Untitled Ledger Asset';
+    document.getElementById('revPlan').textContent = window.selectedPlan.toUpperCase() + ' ARCHITECTURE PROFILE';
+    document.getElementById('revTitle').textContent = title;
+    document.getElementById('revType').textContent = document.getElementById('workType').value.toUpperCase();
+    document.getElementById('revOwnership').textContent = window.ownershipMode.toUpperCase() + ' CONFIGURATION';
+    
+    if(_loadedFileObject) {
+      document.getElementById('revFileName').textContent = _loadedFileObject.name;
+      document.getElementById('revFileSize').textContent = (_loadedFileObject.size / 1024 / 1024).toFixed(2) + ' MB';
+      document.getElementById('revHash').textContent = 'SHA256: 7f83b1a2c499c35d21b79f83...ea81023c';
+    }
+    window.showStep(6);
+  };
+
+  window.executeCertification = function() {
+    var targetNum = 'SR-20260705-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    document.getElementById('outCertificateNum').textContent = targetNum;
+    document.getElementById('outUrl').textContent = 'verify.seekreap.com/c/' + targetNum.substring(12);
+    
+    var ownBlock = document.getElementById('outOwnershipBlock');
+    ownBlock.innerHTML = '';
+    
+    var primaryRole = document.getElementById('creatorRole').value;
+    var totalCo = _assignedCoowners.reduce(function(acc, item){ return acc + item.split; }, 0);
+    var primarySplit = 100 - totalCo;
+    
+    ownBlock.innerHTML += '<div class="review-row"><div class="review-label">Primary Account ('+primaryRole+')</div><div class="review-val">'+primarySplit+'% Assured Title</div></div>';
+    
+    _assignedCoowners.forEach(function(item){
+      ownBlock.innerHTML += '<div class="review-row"><div class="review-label">Co-Owner ('+item.email+')</div><div class="review-val">'+item.split+'% Attributed (Pending Validation)</div></div>';
+    });
+    
+    window.showStep(7);
+  };
+
+  document.addEventListener('DOMContentLoaded', function(){
+    wireUploadFrame();
+    toggleIndustryMetadata('audio');
   });

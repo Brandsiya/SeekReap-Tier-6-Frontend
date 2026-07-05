@@ -3,568 +3,429 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>SeekReap · Digital Rights &amp; Certification Engine</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<title>SeekReap · Creative Rights Engine &amp; Certification Wizard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght=0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="assets/css/certification_portal.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js"></script>
 </head>
 
 <body>
 <div class="demo-container">
 
-<!-- PAGE HEADER -->
 <div class="page-header">
   <a href="#" class="page-logo">
     <svg class="page-logo-icon" viewBox="0 0 100 100" fill="none">
       <defs>
-        <linearGradient id="phS" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FAFAF8"/><stop offset="100%" stop-color="#E8C06A"/></linearGradient>
-        <linearGradient id="phR" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C9993A"/><stop offset="100%" stop-color="#9B7520"/></linearGradient>
+        <linearGradient id="gS" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FAFAF8"/><stop offset="100%" stop-color="#E8C06A"/></linearGradient>
+        <linearGradient id="gR" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C9993A"/><stop offset="100%" stop-color="#9B7520"/></linearGradient>
       </defs>
-      <path d="M50 20 L50 24 M48 22 L52 26 M46 24 L54 30 M44 28 L56 34 M42 34 L58 38 M42 42 L58 42 M44 48 L56 48 M46 54 L54 54 M48 58 L52 58 M50 62 L50 66" stroke="url(#phR)" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.8"/>
-      <text x="38" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#phS)">S</text>
-      <text x="62" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#phR)">R</text>
-      <path d="M50 68 L52 66 L54 68 L56 66" stroke="url(#phR)" stroke-width="2.5" fill="none"/>
+      <path d="M50 20 L50 24 M48 22 L52 26 M46 24 L54 30 M44 28 L56 34 M42 34 L58 38 M42 42 L58 42 M44 48 L56 48 M46 54 L54 54 M48 58 L52 58 M50 62 L50 66" stroke="url(#gR)" stroke-width="2" fill="none" opacity="0.8"/>
+      <text x="38" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#gS)">S</text>
+      <text x="62" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#gR)">R</text>
     </svg>
     <span class="page-logo-text">SeekReap</span>
   </a>
   <span class="page-title-sep">|</span>
-  <span class="page-subtitle">Certify Your Creative Work</span>
+  <span class="page-subtitle">Rights Engine Framework</span>
 </div>
 
-<!-- WORKFLOW STEPS -->
 <div class="workflow-steps" id="workflowSteps">
-  <div class="step active" id="step1"><div class="step-number">1</div><span class="step-icon"><i class="fas fa-tags"></i></span><span>Choose Plan</span></div>
-  <div class="step" id="step2"><div class="step-number">2</div><span class="step-icon"><i class="fas fa-pen-nib"></i></span><span>Work Details</span></div>
-  <div class="step" id="step3"><div class="step-number">3</div><span class="step-icon"><i class="fas fa-users"></i></span><span>Ownership</span></div>
-  <div class="step" id="step4"><div class="step-number">4</div><span class="step-icon" id="step4Icon"><i class="fas fa-cloud-upload-alt"></i></span><span id="step4Label">Upload</span></div>
-  <div class="step" id="step5c" style="display:none;"><div class="step-number">5</div><span class="step-icon"><i class="fas fa-percentage"></i></span><span>Splits</span></div>
-  <div class="step" id="stepFinal"><div class="step-number" id="stepFinalNum">5</div><span class="step-icon"><i class="fas fa-paper-plane"></i></span><span id="stepFinalLabel">Submit</span></div>
+  <div class="step active" id="step1"><div class="step-number">1</div><span>Plan</span></div>
+  <div class="step" id="step2"><div class="step-number">2</div><span>Work Details</span></div>
+  <div class="step" id="step3"><div class="step-number">3</div><span>Ownership</span></div>
+  <div class="step" id="step4"><div class="step-number">4</div><span>Upload</span></div>
+  <div class="step" id="step5"><div class="step-number">5</div><span>Splits</span></div>
+  <div class="step" id="step6"><div class="step-number">6</div><span>Review</span></div>
 </div>
 
-<!-- STEP 1: CHOOSE PLAN & RIGHTS EDUCATION -->
 <div class="workflow-card" id="step1Card">
   <div class="card-header">
-    <h2><i class="fas fa-shield-alt" style="color:var(--gold);font-size:1.1rem;"></i> SeekReap Rights Engine</h2>
-    <p>Initialize immutable legal and cryptographic proofs for your creative properties</p>
+    <h2>Select Registry Tier</h2>
+    <p>Choose the validation matrix and performance parameters for your asset certification</p>
   </div>
   <div class="card-body">
-    
-    <!-- Enhancements 1 & 2: Overview & Rights Framework -->
-    <div class="engine-intro-row">
-      <div class="engine-feature-card">
-        <h4><i class="fas fa-fingerprint"></i> Certification Overview</h4>
-        <ul class="engine-feature-list">
-          <li><i class="fas fa-check"></i> Cryptographic fingerprint is created</li>
-          <li><i class="fas fa-check"></i> Timestamp is generated</li>
-          <li><i class="fas fa-check"></i> Ownership record is established</li>
-          <li><i class="fas fa-check"></i> Evidence package is archived</li>
-          <li><i class="fas fa-check"></i> Verification page becomes available</li>
-          <li><i class="fas fa-check"></i> Licensing can be enabled later</li>
-          <li><i class="fas fa-check"></i> Rights enforcement becomes possible</li>
-        </ul>
-      </div>
-      <div class="engine-feature-card">
-        <h4><i class="fas fa-gavel"></i> Rights Included</h4>
-        <ul class="engine-feature-list">
-          <li><i class="fas fa-check"></i> Proof of Creation</li>
-          <li><i class="fas fa-check"></i> Proof of Possession</li>
-          <li><i class="fas fa-check"></i> Proof of Submission</li>
-          <li><i class="fas fa-check"></i> Chain of Custody</li>
-          <li><i class="fas fa-check"></i> Ownership Ledger</li>
-          <li><i class="fas fa-check"></i> Collaboration Ledger</li>
-          <li><i class="fas fa-check"></i> Future Licensing</li>
-          <li><i class="fas fa-check"></i> Future Transfers</li>
-        </ul>
-      </div>
-    </div>
-
     <div class="plan-grid">
       <div class="plan-card selected" id="planFree" data-plan="free" onclick="selectPlan(this)">
         <div class="plan-price">$0<span>/mo</span></div>
-        <div class="plan-period">Always free</div>
+        <div class="plan-period">Standard Entry</div>
         <ul class="plan-features">
           <li><i class="fas fa-check"></i> 1 certification / month</li>
-          <li><i class="fas fa-check"></i> QR code included</li>
-          <li><i class="fas fa-check"></i> Watermarked certificate</li>
-          <li class="off"><i class="fas fa-times"></i> PDF certificate</li>
-          <li class="off"><i class="fas fa-times"></i> Co-ownership</li>
-          <li class="off"><i class="fas fa-times"></i> Priority processing</li>
+          <li><i class="fas fa-check"></i> Public QR verification</li>
+          <li class="off"><i class="fas fa-times"></i> Multi-owner splits</li>
         </ul>
-        <div style="margin-top:10px;font-size:0.72rem;color:var(--gold);font-weight:600;letter-spacing:0.06em;">FREE</div>
-      </div>
-      <div class="plan-card" id="planPayg" data-plan="payg" onclick="selectPlan(this)">
-        <div class="plan-price">$1.99<span>/cert</span></div>
-        <div class="plan-period">No subscription</div>
-        <ul class="plan-features">
-          <li><i class="fas fa-check"></i> Per-certification pricing</li>
-          <li><i class="fas fa-check"></i> QR code included</li>
-          <li><i class="fas fa-check"></i> PDF certificate</li>
-          <li><i class="fas fa-check"></i> No watermark</li>
-          <li class="off"><i class="fas fa-times"></i> Co-ownership</li>
-          <li class="off"><i class="fas fa-times"></i> Priority processing</li>
-        </ul>
-        <div style="margin-top:10px;font-size:0.72rem;color:var(--gold);font-weight:600;letter-spacing:0.06em;">PAY AS YOU GO</div>
       </div>
       <div class="plan-card featured" id="planCreator" data-plan="creator" onclick="selectPlan(this)">
         <div class="plan-price">$9.99<span>/mo</span></div>
-        <div class="plan-period">Billed monthly</div>
+        <div class="plan-period">Creator Tier</div>
         <ul class="plan-features">
           <li><i class="fas fa-check"></i> 10 certifications / month</li>
-          <li><i class="fas fa-check"></i> QR code included</li>
-          <li><i class="fas fa-check"></i> PDF certificate</li>
-          <li><i class="fas fa-check"></i> No watermark</li>
-          <li class="off"><i class="fas fa-times"></i> Co-ownership</li>
-          <li class="off"><i class="fas fa-times"></i> Priority processing</li>
+          <li><i class="fas fa-check"></i> Clean PDF certificates</li>
+          <li><i class="fas fa-check"></i> Co-ownership infrastructure</li>
         </ul>
-        <div style="margin-top:10px;font-size:0.72rem;color:var(--gold);font-weight:600;letter-spacing:0.06em;">CREATOR</div>
-      </div>
-      <div class="plan-card" id="planStudio" data-plan="studio" onclick="selectPlan(this)">
-        <div class="plan-price">$29.99<span>/mo</span></div>
-        <div class="plan-period">Billed monthly</div>
-        <ul class="plan-features">
-          <li><i class="fas fa-check"></i> Unlimited certifications</li>
-          <li><i class="fas fa-check"></i> QR code included</li>
-          <li><i class="fas fa-check"></i> PDF certificate</li>
-          <li><i class="fas fa-check"></i> No watermark</li>
-          <li><i class="fas fa-check"></i> Co-ownership support</li>
-          <li><i class="fas fa-check"></i> Priority processing</li>
-        </ul>
-        <div style="margin-top:10px;font-size:0.72rem;color:var(--gold);font-weight:600;letter-spacing:0.06em;">STUDIO</div>
       </div>
     </div>
-    <div class="button-group">
-      <button class="btn-primary" id="nextToDetailsBtn"><i class="fas fa-arrow-right"></i> Continue</button>
+
+    <table class="plan-metrics-table">
+      <thead>
+        <tr><th>Technical Property</th><th>Standard Free</th><th>Creator Premium</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Processing Priority</td><td>Standard Queue</td><td>High Priority Real-time</td></tr>
+        <tr><td>Storage Guarantee</td><td>Permanent Ledger</td><td>Permanent + Redundant Backups</td></tr>
+        <tr><td>Evidence Archive Retention</td><td>Basic Signature</td><td>Full System Context Payload</td></tr>
+        <tr><td>Max Input File Size</td><td>50 MB limit</td><td>2 GB limit</td></tr>
+        <tr><td>Verification Security Matrix</td><td>Public Web Gateway</td><td>Cryptographic Fingerprint Anchor</td></tr>
+      </tbody>
+    </table>
+
+    <div class="estimated-time-box">
+      <div class="time-metric"><strong>Processing Time</strong><span id="estTime">2–5 minutes</span></div>
+      <div class="time-metric"><strong>Storage Class</strong><span>Immutable Registry</span></div>
+      <div class="time-metric"><strong>Verification Mode</strong><span>Public Web QR Link</span></div>
+    </div>
+
+    <div class="button-group" style="margin-top:20px;">
+      <button class="btn-primary" onclick="window.showStep(2)"><i class="fas fa-arrow-right"></i> Continue to Details</button>
     </div>
   </div>
 </div>
 
-<!-- STEP 2: WORK DETAILS & EXPANDED SUPPORTED WORKS -->
 <div class="workflow-card hidden" id="step2Card">
   <div class="card-header">
-    <h2><i class="fas fa-pen-nib" style="color:var(--gold);font-size:1.1rem;"></i> Work Details</h2>
-    <p>Classify your intellectual asset within the SeekReap architectural engine</p>
+    <h2>Asset Characterization</h2>
+    <p>Provide comprehensive parameters required for legal cross-examination and title verification</p>
   </div>
   <div class="card-body">
-    <input type="hidden" id="artisticName" value="">
-    <div class="form-group">
-      <label>Work Title <span class="required">*</span></label>
-      <input type="text" placeholder="e.g., Summer Vibes" id="workTitle">
-    </div>
-    <div class="form-group">
-      <label>Description</label>
-      <textarea rows="3" placeholder="Describe your creative work..." id="workDescription"></textarea>
-    </div>
     
-    <!-- Enhancement 3: Broadened Supported Asset Classes -->
+    <div class="form-section-title"><i class="fas fa-info-circle"></i> Basic Identification</div>
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label>Work Title <span class="required">*</span></label>
+        <input type="text" placeholder="e.g., Midnight Melodies" id="workTitle">
+      </div>
+      <div class="form-group">
+        <label>Subtitle / Project Phase</label>
+        <input type="text" placeholder="e.g., Radio Edit / Draft Version" id="workSubtitle">
+      </div>
+    </div>
     <div class="form-group">
-      <label>Work Type / Asset Classification</label>
-      <div class="work-type-selector">
-        <select id="workType">
-          <option value="audio">🎵 Music / Audio Track</option>
-          <option value="podcast">🎙️ Podcast / Voice Recording</option>
-          <option value="video">🎬 Video / Film / Animation</option>
-          <option value="image">🖼️ Image / Artwork / Photography</option>
-          <option value="epub">📖 eBook / Novel / Publications</option>
-          <option value="pdf">📄 Script / Manuscript / Research</option>
-          <option value="code">💻 Source Code / Smart Script</option>
-          <option value="ai_model">🤖 AI Model Weights / Checkpoint</option>
-          <option value="dataset">📊 Structured Dataset / Training Pool</option>
-          <option value="design">📐 Architecture / 3D Model / CAD</option>
-          <option value="industrial">⚙️ Patent Draft / Industrial Design</option>
-          <option value="fashion">👗 Fashion Layout / Pattern</option>
-          <option value="legal">⚖️ Legal Document / Corporate Framework</option>
-          <option value="edu">🎓 Educational Material / Courseware</option>
-          <option value="game">🎮 Game Asset Package</option>
+      <label>Description &amp; Creative Context</label>
+      <textarea rows="2" placeholder="Detail components, systems, themes, or production logs..." id="workDescription"></textarea>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-group work-type-selector">
+        <label>Asset Classification <span class="required">*</span></label>
+        <select id="workType" onchange="toggleIndustryMetadata(this.value)">
+          <option value="audio">🎵 Music / Audio Property</option>
+          <option value="code">💻 Software / Source Code Repository</option>
+          <option value="pdf">📄 Text / Manuscript / Legal Document</option>
+          <option value="image">🖼️ Image / Fine Art / Photography</option>
+          <option value="video">🎬 Film / Motion Picture / Animation</option>
         </select>
+      </div>
+      <div class="form-group">
+        <label>Genre / Field Class</label>
+        <input type="text" placeholder="e.g., Amapiano, Classical, Systems Architecture" id="workGenre">
+      </div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label>Language</label>
+        <input type="text" placeholder="e.g., English, isiZulu, Python 3.11" id="workLanguage">
+      </div>
+      <div class="form-group">
+        <label>Version / Ledger Revision</label>
+        <input type="text" placeholder="e.g., v1.0.4" id="workVersion">
       </div>
     </div>
 
-    <!-- Enhancement 13: Collection / Group Configuration Support -->
-    <div class="form-group" style="margin-top:14px; background:rgba(255,255,255,0.01); border:1px solid rgba(201,153,58,0.1); border-radius:6px; padding:12px; text-align:left;">
-      <label style="font-size:0.8rem; font-weight:600; color:var(--gold); display:flex; align-items:center; gap:6px; margin-bottom:6px;">
-        <i class="fas fa-folder-plus"></i> Group Asset Configuration
-      </label>
-      <select id="collectionType" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(201,153,58,0.2); color:var(--white); padding:8px; border-radius:4px; font-size:0.82rem;">
-        <option value="single">Single Standalone Asset</option>
-        <option value="album">Album / EP compilation</option>
-        <option value="series">Book Series / Anthologies</option>
-        <option value="photoset">Photo Set / Creative Gallery Portfolio</option>
-        <option value="research">Research Project / Multi-document Archive</option>
-        <option value="assets">Game / Movie Production Asset Bundle</option>
-      </select>
+    <div class="form-section-title"><i class="fas fa-calendar-alt"></i> Temporal &amp; Provenance Logs</div>
+    <div class="form-grid-2">
+      <div class="form-group"><label>Creation Initiation Date</label><input type="date" id="dateCreated"></div>
+      <div class="form-group"><label>Completion/Export Date</label><input type="date" id="dateCompleted"></div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-group"><label>First Public Release (If any)</label><input type="date" id="datePublished"></div>
+      <div class="form-group"><label>Country of Origin</label><input type="text" placeholder="South Africa" id="countryOrigin"></div>
     </div>
 
-    <div class="button-group">
-      <button class="btn-secondary" onclick="showStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
-      <button class="btn-primary" id="nextToOwnershipBtn"><i class="fas fa-arrow-right"></i> Continue</button>
+    <div id="industryMetaContainer" style="display:none;">
+      <div class="form-section-title"><i class="fas fa-tags"></i> Domain-Specific Structural Metadata</div>
+      
+      <div id="indAudio" class="form-grid-2" style="display:none;">
+        <div class="form-group"><label>International Standard Recording Code (ISRC)</label><input type="text" placeholder="ZA-A01-26-00000" id="metaISRC"></div>
+        <div class="form-group"><label>Parent Project / Album Context</label><input type="text" placeholder="Bula Vibe EP" id="metaAlbum"></div>
+      </div>
+
+      <div id="indCode" class="form-grid-2" style="display:none;">
+        <div class="form-group"><label>Target Repository URI</label><input type="text" placeholder="github.com/user/repo" id="metaRepo"></div>
+        <div class="form-group"><label>License Architecture Blueprint</label><input type="text" placeholder="MIT, Apache-2.0, Proprietary" id="metaCodeLicense"></div>
+      </div>
+
+      <div id="indPdf" class="form-grid-2" style="display:none;">
+        <div class="form-group"><label>International Standard Book Number (ISBN)</label><input type="text" placeholder="978-3-16-148410-0" id="metaISBN"></div>
+        <div class="form-group"><label>Legal Classification / Document Authority</label><input type="text" placeholder="Affidavit / Standard Agreement" id="metaDocClass"></div>
+      </div>
+
+      <div id="indVisual" class="form-grid-2" style="display:none;">
+        <div class="form-group"><label>Hardware Matrix (Camera / Lens)</label><input type="text" placeholder="Sony α7IV / 35mm F1.4" id="metaCamera"></div>
+        <div class="form-group"><label>Render Engine or Target Resolution</label><input type="text" placeholder="Blender Cycles / 4K Matte" id="metaVisualTech"></div>
+      </div>
+    </div>
+
+    <div class="button-group" style="margin-top:24px;">
+      <button class="btn-secondary" onclick="window.showStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
+      <button class="btn-primary" onclick="window.showStep(3)"><i class="fas fa-arrow-right"></i> Continue to Custody</button>
     </div>
   </div>
 </div>
 
-<!-- STEP 3: OWNERSHIP TYPE & DELEGATION ROLES -->
 <div class="workflow-card hidden" id="step3Card">
   <div class="card-header">
-    <h2><i class="fas fa-users" style="color:var(--gold);font-size:1.1rem;"></i> Select Ownership Type</h2>
-    <p>Establish title custody frameworks for this registry entry</p>
+    <h2>Title &amp; Custody Framework</h2>
+    <p>Define your relationship to this entry and confirm the mandatory legal declarations</p>
   </div>
   <div class="card-body">
     <div class="toggle-group">
-      <div class="toggle-btn" id="soloModeBtn">
+      <div class="toggle-btn active" id="soloModeBtn" onclick="toggleOwnershipUI('solo')">
         <div class="toggle-icon"><i class="fas fa-user"></i></div>
-        <div class="toggle-title">Sole Ownership</div>
-        <div class="toggle-desc">You are the only creator</div>
+        <div class="toggle-title">Solo Creator Profile</div>
+        <div class="toggle-desc">100% of title assets reside with you</div>
       </div>
-      <div class="toggle-btn" id="collabModeBtn">
+      <div class="toggle-btn" id="collabModeBtn" onclick="toggleOwnershipUI('collab')">
         <div class="toggle-icon"><i class="fas fa-users"></i></div>
-        <div class="toggle-title">Co-ownership</div>
-        <div class="toggle-desc">Work with other creators</div>
+        <div class="toggle-title">Co-Ownership Structure</div>
+        <div class="toggle-desc">Requires shared title distribution mapping</div>
       </div>
     </div>
 
-    <!-- Enhancement 15: Structural Rights Delegation Switch -->
-    <div class="form-group" style="margin-top:20px; background:rgba(255,255,255,0.01); border:1px solid rgba(201,153,58,0.15); border-radius:8px; padding:14px; text-align:left;">
-      <label style="font-size:0.82rem; font-weight:600; color:var(--gold); display:flex; align-items:center; gap:6px; margin-bottom:8px;">
-        <i class="fas fa-handshake"></i> Rights Delegation Assignment (Optional)
+    <div class="form-group" style="margin-top:20px; text-align:left;">
+      <label>Your Title Classification / Role in the Work</label>
+      <div class="work-type-selector">
+        <select id="creatorRole">
+          <option value="Author">Author / Primary Writer</option>
+          <option value="Composer">Composer / Producer / Arranger</option>
+          <option value="Developer">Systems Architect / Developer</option>
+          <option value="Photographer">Photographer / Visual Artist</option>
+          <option value="Director">Director / Media Producer</option>
+          <option value="Publisher">Corporate Rights Holder / Publisher</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-section-title"><i class="fas fa-gavel"></i> Mandatory Attestation and Title Assurances</div>
+    <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(201,153,58,0.15); border-radius:6px; padding:14px; text-align:left; display:flex; flex-direction:column; gap:10px;">
+      <label style="font-size:0.78rem; display:flex; align-items:flex-start; gap:8px; color:var(--white-dim); cursor:pointer;">
+        <input type="checkbox" id="decCreated" style="margin-top:2px; accent-color:var(--gold);">
+        <span>I explicitly declare that I am the genuine original creator or authorized legal custodian of this work.</span>
       </label>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-        <label style="font-size:0.75rem; display:flex; align-items:center; gap:6px; color:var(--white-dim);">
-          <input type="checkbox" id="delegateLawyer" style="accent-color:var(--gold);"> Legal Counsel / Lawyer
-        </label>
-        <label style="font-size:0.75rem; display:flex; align-items:center; gap:6px; color:var(--white-dim);">
-          <input type="checkbox" id="delegateManager" style="accent-color:var(--gold);"> Manager / Agent
-        </label>
-        <label style="font-size:0.75rem; display:flex; align-items:center; gap:6px; color:var(--white-dim);">
-          <input type="checkbox" id="delegatePublisher" style="accent-color:var(--gold);"> Publisher / Distributor
-        </label>
-        <label style="font-size:0.75rem; display:flex; align-items:center; gap:6px; color:var(--white-dim);">
-          <input type="checkbox" id="delegateLabel" style="accent-color:var(--gold);"> Studio / Record Label
-        </label>
-      </div>
+      <label style="font-size:0.78rem; display:flex; align-items:flex-start; gap:8px; color:var(--white-dim); cursor:pointer;">
+        <input type="checkbox" id="decAuthority" style="margin-top:2px; accent-color:var(--gold);">
+        <span>I possess uncompromised authority to anchor this asset to the SeekReap distributed digital rights engine.</span>
+      </label>
+      <label style="font-size:0.78rem; display:flex; align-items:flex-start; gap:8px; color:var(--white-dim); cursor:pointer;">
+        <input type="checkbox" id="decAccurate" style="margin-top:2px; accent-color:var(--gold);">
+        <span>All statements, metadata attributes, timestamps, and parameters provided in this document are true and accurate.</span>
+      </label>
+      <label style="font-size:0.78rem; display:flex; align-items:flex-start; gap:8px; color:var(--white-dim); cursor:pointer;">
+        <input type="checkbox" id="decRisk" style="margin-top:2px; accent-color:var(--gold);">
+        <span>I understand that any fraudulent or false filing may void this entry and invalidate the downstream evidence chain.</span>
+      </label>
     </div>
 
-    <div class="button-group">
-      <button class="btn-secondary" onclick="showStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
-      <button class="btn-primary" id="nextToUploadBtn"><i class="fas fa-arrow-right"></i> Continue</button>
+    <div class="button-group" style="margin-top:24px;">
+      <button class="btn-secondary" onclick="window.showStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
+      <button class="btn-primary" id="validateStep3Btn" onclick="validateStep3()"><i class="fas fa-arrow-right"></i> Continue to Upload</button>
     </div>
   </div>
 </div>
 
-<!-- STEP 4: UPLOAD WORK & INTELLIGENT AI ANALYSIS PANELS -->
 <div class="workflow-card hidden" id="step4Card">
   <div class="card-header">
-    <h2><i class="fas fa-cloud-upload-alt" style="color:var(--gold);font-size:1.1rem;"></i> <span id="step4HeaderText">Upload Work</span></h2>
-    <p id="step4SubText">Upload your work for blockchain certification</p>
+    <h2>Cryptographic Ingestion Engine</h2>
+    <p>Upload the raw target binary file. The system will perform an analytical structural breakdown automatically.</p>
   </div>
   <div class="card-body">
-
-    <!-- ── SOLO CONTAINER ────────────────────────────────────────────────────── -->
-    <div id="soloContent" class="hidden">
-      <div class="creator-files">
-        <h4><i class="fas fa-file-upload" style="margin-right:6px;"></i> Your Work File</h4>
-        <div class="upload-area" id="soloUploadArea">
-          <i class="fas fa-cloud-upload-alt ua-icon"></i>
-          <span class="ua-text" id="soloUploadText">Click to upload or drag &amp; drop</span>
-          <button class="ua-reset" id="soloResetBtn" title="Reset upload"><i class="fas fa-times"></i></button>
-        </div>
-        <input type="file" id="soloFileInput">
-        <div class="upload-file-info" id="soloFileInfo">
-          <span class="ufi-icon" id="soloFileIcon">📄</span>
-          <span class="ufi-name" id="soloFileName">—</span>
-          <span class="ufi-size" id="soloFileSz">—</span>
-        </div>
-        <div class="upload-progress" id="soloProgress">
-          <div class="progress-bar-container"><div class="progress-bar" id="soloProgressBar"></div></div>
-          <div class="progress-text" id="soloProgressText">Uploading...</div>
-        </div>
-        <div class="viewer-type-label" id="soloViewerLabel">PDF Document Viewer</div>
-        <div class="viewer-embed" id="soloViewerEmbed"></div>
+    <div class="creator-files" style="text-align:left;">
+      <div class="upload-area" id="portalUploadArea">
+        <i class="fas fa-cloud-upload-alt ua-icon"></i>
+        <span class="ua-text" id="portalUploadText">Click to select file or drag &amp; drop directly into canvas</span>
+        <button class="ua-reset" id="portalResetBtn" style="display:none;" title="Clear asset file selection"><i class="fas fa-times"></i></button>
       </div>
-    </div>
-
-    <!-- ── COLLAB CONTAINER ──────────────────────────────────────────────────── -->
-    <div id="collabContent" class="hidden">
-      <div class="creator-files">
-        <h4><i class="fas fa-file-upload" style="margin-right:6px;"></i> Your Work File</h4>
-        <div class="upload-area" id="primaryUploadArea">
-          <i class="fas fa-cloud-upload-alt ua-icon"></i>
-          <span class="ua-text" id="primaryUploadText">Click to upload or drag &amp; drop</span>
-          <button class="ua-reset" id="primaryResetBtn" title="Reset upload"><i class="fas fa-times"></i></button>
-        </div>
-        <input type="file" id="primaryFileInput">
-        <div class="upload-file-info" id="primaryFileInfo">
-          <span class="ufi-icon" id="primaryFileIcon">📄</span>
-          <span class="ufi-name" id="primaryFileName">—</span>
-          <span class="ufi-size" id="primaryFileSz">—</span>
-        </div>
-        <div class="upload-progress" id="primaryProgress">
-          <div class="progress-bar-container"><div class="progress-bar" id="primaryProgressBar"></div></div>
-          <div class="progress-text" id="primaryProgressText">Uploading...</div>
-        </div>
-        <div class="viewer-type-label" id="primaryViewerLabel">PDF Document Viewer</div>
-        <div class="viewer-embed" id="primaryViewerEmbed"></div>
+      <input type="file" id="portalFileInput" style="display:none;">
+      
+      <div class="upload-progress" id="portalProgress" style="display:none; margin-top:12px;">
+        <div class="progress-bar-container"><div class="progress-bar" id="portalProgressBar"></div></div>
+        <div class="progress-text" id="portalProgressText">Processing file binary...</div>
       </div>
-    </div>
 
-    <!-- Live Analysis Dashboard (Injected for both Solo & Collab inside Step 4 Layout Frame) -->
-    <div id="analysisDashboard" style="display:none;">
-      <div class="analysis-dashboard-grid">
-        
-        <!-- Enhancement 4: Asset Context Metadata -->
-        <div class="analysis-panel">
-          <h5><i class="fas fa-microchip"></i> AI Structural Audit</h5>
-          <div id="metaDetailsPlaceholder">
-            <div class="metric-row"><span>Detected Format</span><span class="metric-value" id="adFormat">—</span></div>
-            <div class="metric-row"><span>Integrity Verification</span><span class="metric-value" style="color:#3DB87A;"><i class="fas fa-check-circle"></i> Complete</span></div>
-            <div class="metric-row"><span>Checksum (SHA256)</span><span class="metric-value" style="font-family:monospace;font-size:0.65rem;" id="adHash">—</span></div>
-            <div class="metric-row" id="adSpec1Row"><span>Metric A</span><span class="metric-value" id="adSpec1">—</span></div>
-            <div class="metric-row" id="adSpec2Row"><span>Metric B</span><span class="metric-value" id="adSpec2">—</span></div>
+      <div class="intelligent-analysis-panel" id="analysisModule" style="display:none;">
+        <div class="analysis-grid">
+          <div class="analysis-block">
+            <h5><i class="fas fa-file-invoice"></i> Structural Characterization</h5>
+            <div class="analysis-row"><span>File Name</span><span id="anName">—</span></div>
+            <div class="analysis-row"><span>Storage Allocation</span><span id="anSize">—</span></div>
+            <div class="analysis-row"><span>Binary MIME Type</span><span id="anType">—</span></div>
+            <div class="analysis-row"><span>Cryptographic Signature</span><span id="anHash" style="font-size:0.6rem; color:var(--gold);">—</span></div>
           </div>
-        </div>
-
-        <!-- Enhancements 7, 8, 9: Integrity Index, Vulnerabilities, & Plagiarism -->
-        <div class="analysis-panel">
-          <h5><i class="fas fa-shield-halved"></i> Security &amp; Registry Analysis</h5>
-          <div class="metric-row">
-            <span>Evidence Strength</span>
-            <span class="metric-value" style="color:var(--gold); display:flex; align-items:center; gap:6px;">
-              <span style="display:inline-block; width:60px; height:6px; background:rgba(255,255,255,0.1); border-radius:3px; overflow:hidden;"><span style="display:block; width:98%; height:100%; background:var(--gold);"></span></span>
-              98%
-            </span>
-          </div>
-          <div class="metric-row" style="align-items:flex-start; flex-direction:column; gap:4px;">
-            <span>Detected Flag Indicators</span>
-            <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:2px;" id="riskBadgesContainer">
-              <span class="risk-badge"><i class="fas fa-exclamation-triangle"></i> GPS Trackers Cleaned</span>
-              <span class="risk-badge" style="background:rgba(201,153,58,0.15); color:var(--gold);"><i class="fas fa-users"></i> Multiple Authors</span>
+          <div class="analysis-block">
+            <h5><i class="fas fa-microchip"></i> Extracted Metadata Parameters</h5>
+            <div id="dynamicMetaTraits">
+              <div class="analysis-row"><span>No traits extracted yet</span><span>—</span></div>
+            </div>
+            <h5 style="margin-top:12px;"><i class="fas fa-shield-alt"></i> Authentication Verification</h5>
+            <div class="status-pill-group">
+              <span class="status-pill"><i class="fas fa-check-circle"></i> Integrity Verified</span>
+              <span class="status-pill"><i class="fas fa-lock"></i> Hash Anchored</span>
+              <span class="status-pill"><i class="fas fa-stream"></i> Layout Cleared</span>
             </div>
           </div>
-          <div class="metric-row" style="align-items:flex-start; flex-direction:column; gap:2px;">
-            <span>Tier-7 Similar Works Crossmatch</span>
-            <span style="font-size:0.7rem; color:#3DB87A;"><i class="fas fa-check-circle"></i> 0 collisions found across distributed nodes.</span>
-          </div>
         </div>
-
       </div>
     </div>
 
-    <!-- Ownership Box Attachment inside Step 4 layout frame -->
-    <div class="ownership-box" style="margin-top:14px; text-align:left;">
-      <strong><i class="fas fa-shield-alt" style="margin-right:5px;"></i> Ownership Summary</strong>
-      <div class="ownership-row"><span id="soloOwnerName">Username</span><span class="pct">100%</span></div>
-    </div>
-
-    <div class="button-group">
-      <button class="btn-secondary" onclick="showStep(3)"><i class="fas fa-arrow-left"></i> Back</button>
-      <button class="btn-primary" id="step4NextBtn"><i class="fas fa-arrow-right"></i> Continue</button>
+    <div class="button-group" style="margin-top:24px;">
+      <button class="btn-secondary" onclick="window.showStep(3)"><i class="fas fa-arrow-left"></i> Back</button>
+      <button class="btn-primary" id="step4NextBtn" onclick="goToStep5()" disabled><i class="fas fa-arrow-right"></i> Continue to Allocation</button>
     </div>
   </div>
 </div>
 
-<!-- STEP 5 (COLLAB ONLY): SPLITS & CO-OWNERS -->
-<div class="workflow-card hidden" id="step5collabCard">
+<div class="workflow-card hidden" id="step5Card">
   <div class="card-header">
-    <h2><i class="fas fa-percentage" style="color:var(--gold);font-size:1.1rem;"></i> Splits &amp; Co-Owners</h2>
-    <p>Define ownership split and invite co-creators</p>
+    <h2>Title Distribution Allocation</h2>
+    <p>Map the precise percentage division among co-owners and track live invitation registries</p>
   </div>
   <div class="card-body">
-    <div class="collaborator-section">
-      <div class="collaborator-list" id="collaboratorList"></div>
-      <div class="collab-bulk-btns">
-        <button class="add-collaborator-btn" id="addCollaboratorBtn"><i class="fas fa-plus" style="margin-right:6px;"></i> Add Co-owner</button>
-        <button class="bulk-btn" id="inviteAllBtn"><i class="fas fa-envelope" style="margin-right:6px;"></i> Invite All</button>
-        <button class="bulk-btn danger" id="removeAllBtn"><i class="fas fa-trash-alt" style="margin-right:6px;"></i> Remove All</button>
+    <div class="collaborator-section" style="text-align:left;">
+      
+      <div style="background:rgba(255,255,255,0.01); border:1px solid rgba(201,153,58,0.2); border-radius:8px; padding:14px; margin-bottom:16px;">
+        <div style="font-size:0.75rem; font-weight:600; color:var(--gold); text-transform:uppercase; margin-bottom:8px;"><i class="fas fa-chart-pie"></i> Geometric Title Distribution</div>
+        <div style="display:flex; height:12px; background:rgba(255,255,255,0.05); border-radius:6px; overflow:hidden;" id="geoBar">
+          <div style="width:100%; background:var(--gold);" id="geoPrimaryBar"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-top:6px; color:var(--white-dim);">
+          <span>Your Allocation: <strong id="geoPrimaryLabel" style="color:var(--white);">100%</strong></span>
+          <span id="geoTotalStatus" style="color:#3DB87A;"><i class="fas fa-check-circle"></i> Ledger Fully Balanced (100%)</span>
+        </div>
       </div>
-      <div class="split-summary" id="splitSummary">
-        <strong><i class="fas fa-chart-pie" style="margin-right:5px;"></i> Ownership Distribution</strong>
-        <div class="split-visual" id="splitVisual"></div>
-        <div id="splitWarning" class="warning-msg"></div>
+
+      <div class="collaborator-list" id="collabCardContainer">
+        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(201,153,58,0.15); border-radius:6px; padding:12px; margin-bottom:10px; display:flex; justify-content:between; align-items:center;">
+          <div>
+            <div style="font-size:0.85rem; font-weight:600; color:var(--white);">Primary Creator Account (You)</div>
+            <div style="font-size:0.72rem; color:var(--white-dim);" id="primaryRoleLabel">Author</div>
+          </div>
+          <div style="font-size:1.1rem; font-weight:700; color:var(--gold);" id="primarySplitLabel">100%</div>
+        </div>
+        <div id="dynamicCollabRows"></div>
+      </div>
+
+      <div id="collabActionButtons" style="display:none; margin-top:12px; gap:8px;">
+        <button class="add-collaborator-btn" style="margin:0; font-size:0.78rem;" onclick="openCoownerModal()"><i class="fas fa-user-plus"></i> Add Co-owner</button>
       </div>
     </div>
-    <div class="button-group">
-      <button class="btn-secondary" onclick="showStep(4)"><i class="fas fa-arrow-left"></i> Back</button>
-      <button class="btn-primary" id="finalizeBtn"><i class="fas fa-paper-plane"></i> Submit</button>
+
+    <div class="button-group" style="margin-top:24px;">
+      <button class="btn-secondary" onclick="window.showStep(4)"><i class="fas fa-arrow-left"></i> Back</button>
+      <button class="btn-primary" id="step5NextBtn" onclick="goToStep6()"><i class="fas fa-arrow-right"></i> Review Registry Packet</button>
     </div>
   </div>
 </div>
 
-<!-- STEP FINAL: THE LIVING DIGITAL RIGHTS COMMAND CENTER -->
+<div class="workflow-card hidden" id="step6Card">
+  <div class="card-header" style="border-bottom:1px solid rgba(201,153,58,0.2); padding-bottom:14px;">
+    <h2>Registry Manifest Validation</h2>
+    <p>Carefully audit all parameters below. Committing this file to the engine creates an unalterable, permanent record.</p>
+  </div>
+  <div class="card-body">
+    <div class="review-manifest">
+      <div class="review-row"><div class="review-label">Registry Tier</div><div class="review-val" id="revPlan">Creator Tier</div></div>
+      <div class="review-row"><div class="review-label">Work Title</div><div class="review-val" id="revTitle">—</div></div>
+      <div class="review-row"><div class="review-label">Classification</div><div class="review-val" id="revType">—</div></div>
+      <div class="review-row"><div class="review-label">Title Framework</div><div class="review-val" id="revOwnership">—</div></div>
+      <div class="review-row"><div class="review-label">Ingested File</div><div class="review-val" id="revFileName">—</div></div>
+      <div class="review-row"><div class="review-label">Binary Size</div><div class="review-val" id="revFileSize">—</div></div>
+      <div class="review-row"><div class="review-label">Target Hash</div><div class="review-val" id="revHash" style="font-family:monospace; font-size:0.72rem; color:var(--gold);">—</div></div>
+      <div class="review-row"><div class="review-label">Filing Charge</div><div class="review-val" style="color:#3DB87A; font-weight:600;" id="revCost">$0.00 (Included in Tier Subscription)</div></div>
+    </div>
+
+    <div style="background:rgba(224,85,85,0.06); border:1px solid rgba(224,85,85,0.2); border-radius:6px; padding:12px; font-size:0.75rem; text-align:left; color:rgba(250,250,248,0.7); display:flex; gap:10px; align-items:center; margin-bottom:20px;">
+      <i class="fas fa-exclamation-circle" style="color:#f08080; font-size:1.1rem; flex-shrink:0;"></i>
+      <span>By confirming execution, you launch the SeekReap cryptographic pipeline. The generated parameters cannot be modified or purged post-anchoring.</span>
+    </div>
+
+    <div class="button-group">
+      <button class="btn-secondary" onclick="window.showStep(5)"><i class="fas fa-arrow-left"></i> Edit Parameters</button>
+      <button class="btn-primary" onclick="executeCertification()" style="background:linear-gradient(135deg, #C9993A, #E8C06A); color:#000; font-weight:700;"><i class="fas fa-lock"></i> Confirm &amp; Execute Anchoring</button>
+    </div>
+  </div>
+</div>
+
 <div class="workflow-card hidden" id="stepFinalCard">
   <div class="card-header success-header">
-    <h2><i class="fas fa-certificate" style="color:var(--gold);font-size:1.1rem;"></i> SeekReap Rights Engine Active</h2>
-    <p>Your property is cryptographically anchored, recorded, and registered</p>
+    <h2><i class="fas fa-check-circle" style="color:#3DB87A;"></i> Cryptographic Anchor Active</h2>
+    <p>The asset structure has been successfully written to the distributed ledger registry.</p>
   </div>
   <div class="card-body">
     
-    <!-- Creator Context Badge -->
-    <div style="background:rgba(201,153,58,0.06); border:1px solid rgba(201,153,58,0.2); border-radius:6px; padding:10px; margin-bottom:16px; display:flex; justify-content:between; align-items:center; text-align:left;">
-      <div>
-        <div style="font-size:0.85rem; font-weight:700; color:var(--white);"><i class="fas fa-award" style="color:var(--gold);"></i> Gold Status Account</div>
-        <div style="font-size:0.7rem; color:var(--white-dim);">Verified Creator Identity · 15 Registry Records · 0 Disputes</div>
+    <div class="certificate-box" style="text-align:left;">
+      <div style="text-align:center; margin-bottom:16px;">
+        <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--gold); font-weight:600; margin-bottom:4px;">SeekReap Legal Receipt Record</div>
+        <h3 id="outCertificateNum" style="font-family:monospace; font-size:1.1rem; color:var(--white);">SR-20260705-XXXXXXXX</h3>
       </div>
-      <div style="margin-left:auto; text-align:right;"><span style="font-size:0.65rem; background:rgba(61,184,122,0.2); color:#3DB87A; padding:2px 6px; border-radius:4px; font-weight:600; text-transform:uppercase;">Monitor Online</span></div>
-    </div>
-
-    <div class="certificate-box">
-      <div class="cert-title-area">
-        <svg width="40" height="40" viewBox="0 0 100 100" fill="none" style="margin:0 auto 10px;display:block;">
-          <defs>
-            <linearGradient id="certS" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FAFAF8"/><stop offset="100%" stop-color="#E8C06A"/></linearGradient>
-            <linearGradient id="certR" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C9993A"/><stop offset="100%" stop-color="#9B7520"/></linearGradient>
-          </defs>
-          <path d="M50 20 L50 24 M48 22 L52 26 M46 24 L54 30 M44 28 L56 34 M42 34 L58 38 M42 42 L58 42 M44 48 L56 48 M46 54 L54 54 M48 58 L52 58 M50 62 L50 66" stroke="url(#certR)" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.8"/>
-          <text x="38" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#certS)">S</text>
-          <text x="62" y="68" font-family="Cormorant Garamond, serif" font-size="44" font-weight="700" fill="url(#certR)">R</text>
-          <path d="M50 68 L52 66 L54 68 L56 66" stroke="url(#certR)" stroke-width="2.5" fill="none"/>
-        </svg>
-        <h2>SeekReap Ledger Entry</h2>
-        <p id="certIdLine" style="font-size:0.8rem;color:var(--white-dim);margin-top:4px;"></p>
-      </div>
-      <div class="cert-divider"></div>
       
-      <!-- Dynamic Certificate Details Output -->
-      <div id="certificateDetails"></div>
-
-      <!-- Enhancement 20: Comprehensive Tabbed Certificate Data Array Previewer -->
-      <div class="rights-tab-container">
-        <div class="rights-tabs">
-          <button class="rights-tab-btn active" onclick="switchRightsTab(event, 'tabCert')">Certificate</button>
-          <button class="rights-tab-btn" onclick="switchRightsTab(event, 'tabOwnership')">Ownership Split</button>
-          <button class="rights-tab-btn" onclick="switchRightsTab(event, 'tabMetadata')">File Metadata</button>
-          <button class="rights-tab-btn" onclick="switchRightsTab(event, 'tabEvidence')">Evidence Index</button>
-          <button class="rights-tab-btn" onclick="switchRightsTab(event, 'tabVerification')">Verification Gate</button>
-          <button class="rights-tab-btn" onclick="switchRightsTab(event, 'tabHistory')">Lifecycle Audit</button>
-        </div>
-        <div id="tabCert" class="rights-tab-content active">
-          <p style="font-size:0.8rem; margin:0;"><strong>Blockchain Registration Status:</strong> Confirmed &amp; Anchored. This tab exposes the formal public cryptographic record generated by the SeekReap Registry Node.</p>
-        </div>
-        <div id="tabOwnership" class="rights-tab-content">
-          <p style="font-size:0.8rem; margin:0;"><strong>Ledger Configurations:</strong> Primary Creator holds 100% assignment. No operational counterparty delegations are currently registered to this asset profile.</p>
-        </div>
-        <div id="tabMetadata" class="rights-tab-content">
-          <p style="font-size:0.8rem; margin:0; font-family:monospace;" id="tabMetaCode">Loading technical asset block values...</p>
-        </div>
-        <div id="tabEvidence" class="rights-tab-content">
-          <p style="font-size:0.8rem; margin:0;"><strong>System Legal Package:</strong> Includes full device headers, precise timestamping matrices, local binary hashes, and chain of custody tracking parameters.</p>
-        </div>
-        <div id="tabVerification" class="rights-tab-content">
-          <p style="font-size:0.8rem; margin:0;">The cryptographic signature and immutable verification profile are live. Access restrictions are governed by your global security policy rules.</p>
-        </div>
-        <div id="tabHistory" class="rights-tab-content">
-          <p style="font-size:0.8rem; margin:0;"><strong>Lifecycle Audit:</strong> Asset creation detected → Signature configured → Cryptographic hash validated → Distributed ledger storage complete.</p>
-        </div>
+      <div class="form-section-title" style="margin-top:0;"><i class="fas fa-shield-halved"></i> Registry Tracking Matrix</div>
+      <div class="review-manifest" style="margin-bottom:14px; background:rgba(0,0,0,0.15);">
+        <div class="review-row"><div class="review-label">Filing Date</div><div class="review-val" id="outDate">July 5, 2026</div></div>
+        <div class="review-row"><div class="review-label">Verification URI</div><div class="review-val" style="color:var(--gold); font-family:monospace; font-size:0.75rem;" id="outUrl">verify.seekreap.com/c/...</div></div>
+        <div class="review-row"><div class="review-label">Ledger Engine</div><div class="review-val"><span class="status-pill" style="font-size:0.65rem;"><i class="fas fa-check-circle"></i> SECURE &amp; ANCHORED</span></div></div>
       </div>
 
-      <!-- Enhancement 10: Rights Dashboard Framework -->
-      <div class="engine-dashboard-summary">
-        <div class="dashboard-widget"><div class="dashboard-widget-title">Title Structure</div><div class="dashboard-widget-value">100% Solo</div></div>
-        <div class="dashboard-widget"><div class="dashboard-widget-title">Licensing Block</div><div class="dashboard-widget-value" style="color:rgba(250,250,248,0.35);">Inactive</div></div>
-        <div class="dashboard-widget"><div class="dashboard-widget-title">Discovery Node</div><div class="dashboard-widget-value" style="color:#3DB87A;">Public</div></div>
-        <div class="dashboard-widget"><div class="dashboard-widget-title">Enforcement</div><div class="dashboard-widget-value">Armed</div></div>
+      <div class="form-section-title"><i class="fas fa-gavel"></i> Certified Title Mapping</div>
+      <div class="review-manifest" style="margin-bottom:14px; background:rgba(0,0,0,0.15);" id="outOwnershipBlock">
+        </div>
+
+      <div class="form-section-title"><i class="fas fa-info-circle"></i> Verification Roadmap Summary</div>
+      <div style="font-size:0.78rem; color:var(--white-dim); line-height:1.5; padding:4px 6px;">
+        <div style="margin-bottom:6px;"><i class="fas fa-check" style="color:#3DB87A; margin-right:6px;"></i> Work permanently timestamped against unalterable network blocks.</div>
+        <div style="margin-bottom:6px;"><i class="fas fa-check" style="color:#3DB87A; margin-right:6px;"></i> Unique binary signature archived securely within core evidence arrays.</div>
+        <div style="margin-bottom:6px;"><i class="fas fa-check" style="color:#3DB87A; margin-right:6px;"></i> Public validation page mapped; immediately available for court-admissible review.</div>
       </div>
 
-      <!-- Enhancement 12: Public Verification Component Layer -->
-      <div style="margin-top:16px; background:rgba(0,0,0,0.3); border:1px solid rgba(201,153,58,0.2); border-radius:6px; padding:12px; text-align:left;">
-        <div style="font-size:0.72rem; text-transform:uppercase; color:var(--gold); font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
-          <i class="fas fa-link"></i> Immutable Verification Access URL
-        </div>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <input type="text" id="publicVerifyUrl" value="https://verify.seekreap.com/c/8RHA19X7M2" readonly style="flex:1; background:rgba(0,0,0,0.5); border:1px solid rgba(201,153,58,0.3); color:var(--white-dim); font-size:0.75rem; padding:6px 10px; border-radius:4px; font-family:monospace;">
-          <button onclick="navigator.clipboard.writeText(document.getElementById('publicVerifyUrl').value); alert('Verification link copied.');" style="background:var(--gold); border:none; color:#000; padding:6px 12px; border-radius:4px; font-size:0.72rem; font-weight:700; cursor:pointer;"><i class="fas fa-copy"></i> Copy</button>
-        </div>
+      <div class="form-section-title"><i class="fas fa-download"></i> Output Generation Tray</div>
+      <div class="action-grid-buttons">
+        <button class="action-item-btn" onclick="alert('Compiling high resolution secure vector certificate PDF...')"><i class="fas fa-file-pdf" style="color:#f08080;"></i> Download PDF</button>
+        <button class="action-item-btn" onclick="alert('Exporting complete device headers, local binary signatures, and validation logs...')"><i class="fas fa-box-open" style="color:var(--gold);"></i> Download Evidence Pack</button>
+        <button class="action-item-btn" onclick="navigator.clipboard.writeText(document.getElementById('outUrl').textContent); alert('Verification link copied to clipboard.');"><i class="fas fa-link"></i> Copy Access Link</button>
+        <button class="action-item-btn" onclick="alert('Generating verification target QR block PNG...')"><i class="fas fa-qrcode"></i> Download QR Block</button>
       </div>
 
-      <!-- Enhancements 5, 6, 11, 14, 16, 17, 18, 19: Comprehensive Action Tray -->
-      <div style="margin-top:20px; text-align:left; border-top:1px solid rgba(201,153,58,0.15); padding-top:16px;">
-        <h4 style="font-size:0.8rem; text-transform:uppercase; color:var(--gold); margin-bottom:10px;"><i class="fas fa-folder-open"></i> Full Evidence Package &amp; Asset Operations</h4>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-          <button class="btn-primary" id="downloadCertBtn" style="font-size:0.75rem; padding:8px;"><i class="fas fa-file-pdf"></i> Download Court Certificate</button>
-          <button class="btn-secondary" onclick="alert('Compiling evidence package report...')" style="font-size:0.75rem; padding:8px; border-color:rgba(201,153,58,0.3);"><i class="fas fa-archive"></i> Download Full Evidence Pack</button>
-          <button class="btn-secondary" onclick="alert('Initializing licensing framework selector...')" style="font-size:0.75rem; padding:8px; border-color:rgba(201,153,58,0.3); color:var(--gold);"><i class="fas fa-coins"></i> Monetize / Create License</button>
-          <button class="btn-secondary" onclick="window.showStep(1); _resetUpload('solo'); _resetUpload('primary');" style="font-size:0.75rem; padding:8px; border-color:rgba(201,153,58,0.3);"><i class="fas fa-plus"></i> Certify Another Asset</button>
-        </div>
-      </div>
+    </div>
 
+  </div>
+</div>
+
+<div class="coowner-modal" id="coownerFormModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); align-items:center; justify-content:center; z-index:10000; padding:16px;">
+  <div class="coowner-modal-box" style="background:#141414; border:1px solid var(--gold); border-radius:8px; width:100%; max-width:480px; padding:20px; box-sizing:border-box;">
+    <div class="coowner-modal-title" style="font-family:'Cormorant Garamond',serif; font-size:1.3rem; color:var(--gold); margin-bottom:14px;"><i class="fas fa-user-plus"></i> Allocate Co-Owner Profile</div>
+    <div style="display:flex; flex-direction:column; gap:12px; text-align:left;">
+      <div class="form-group"><label style="font-size:0.75rem; color:var(--white-dim);">Full Name</label><input type="text" id="modalCoName" placeholder="Jane Smith" style="width:100%; background:#222; border:1px solid #44; padding:8px; border-radius:4px; color:#fff;"></div>
+      <div class="form-group"><label style="font-size:0.75rem; color:var(--white-dim);">Email Identifier</label><input type="email" id="modalCoEmail" placeholder="jane@domain.com" style="width:100%; background:#222; border:1px solid #44; padding:8px; border-radius:4px; color:#fff;"></div>
+      <div class="form-group"><label style="font-size:0.75rem; color:var(--white-dim);">Target Allocation %</label><input type="number" id="modalCoSplit" min="1" max="99" placeholder="25" style="width:100%; background:#222; border:1px solid #44; padding:8px; border-radius:4px; color:#fff;"></div>
+    </div>
+    <div class="modal-form-actions" style="margin-top:18px; display:flex; justify-content:flex-end; gap:10px;">
+      <button class="btn-secondary" style="padding:6px 14px; font-size:0.8rem;" onclick="closeCoownerModal()">Cancel</button>
+      <button class="btn-primary" style="padding:6px 14px; font-size:0.8rem;" onclick="saveCoownerRow()">Add Co-Owner</button>
     </div>
   </div>
 </div>
 
-<!-- INVITE MODAL -->
-<div class="modal" id="inviteModal">
-  <div class="modal-content">
-    <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--white);margin-bottom:16px;"><i class="fas fa-envelope" style="color:var(--gold);margin-right:8px;"></i> Invitations Sent</h3>
-    <div id="inviteList"></div>
-    <div class="invite-link">
-      <input type="text" id="shareLink" readonly>
-      <button class="copy-btn" onclick="copyLink()"><i class="fas fa-copy"></i> Copy</button>
-    </div>
-    <div class="button-group">
-      <button class="btn-primary" id="closeModalBtn"><i class="fas fa-paper-plane"></i> Submit</button>
-    </div>
-  </div>
-</div>
-
-<!-- CO-OWNER FORM MODAL -->
-<div class="coowner-modal" id="coownerModal">
-  <div class="coowner-modal-box">
-    <div class="coowner-modal-title"><i class="fas fa-user-plus"></i> Add Co-owner</div>
-    <div class="modal-form-grid">
-      <div>
-        <label class="modal-form-label">Full Name (as on ID) <span style="color:var(--gold);">*</span></label>
-        <input class="modal-form-input" type="text" id="coFullName" placeholder="e.g., Jane Smith">
-      </div>
-      <div>
-        <label class="modal-form-label">Gender</label>
-        <select class="modal-form-input" id="coGender">
-          <option value="">— Select —</option>
-          <option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option>
-        </select>
-      </div>
-      <div>
-        <label class="modal-form-label">Title</label>
-        <select class="modal-form-input" id="coTitle">
-          <option value="">— Select —</option>
-          <option>Mr</option><option>Ms</option><option>Mrs</option><option>Dr</option><option>Prof</option><option>Mx</option>
-        </select>
-      </div>
-      <div>
-        <label class="modal-form-label">Artistic Name</label>
-        <input class="modal-form-input" type="text" id="coArtisticName" placeholder="e.g., Nova">
-      </div>
-      <div>
-        <label class="modal-form-label">Country</label>
-        <input class="modal-form-input" type="text" id="coCountry" placeholder="e.g., South Africa">
-      </div>
-      <div>
-        <label class="modal-form-label">Ownership Title</label>
-        <input class="modal-form-input" type="text" id="coOwnershipTitle" placeholder="e.g., Co-Writer">
-      </div>
-      <div>
-        <label class="modal-form-label">Ownership % <span style="color:var(--gold);">*</span></label>
-        <input class="modal-form-input" type="number" id="coSplit" min="1" max="99" placeholder="e.g., 25">
-      </div>
-      <div>
-        <label class="modal-form-label">Email Address <span style="color:var(--gold);">*</span></label>
-        <input class="modal-form-input" type="email" id="coEmail" placeholder="co-owner@email.com">
-      </div>
-    </div>
-    <div class="modal-form-actions">
-      <button class="btn-secondary" id="coownerCancelBtn"><i class="fas fa-times"></i> Cancel</button>
-      <button class="btn-primary" id="coownerSaveBtn"><i class="fas fa-check"></i> Add Co-owner</button>
-    </div>
-  </div>
-</div>
-
-</div><!-- .demo-container -->
-
-  <!-- Supabase Dependencies & Routing Layout Configs -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</div><script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="/supabase-config.js"></script>
   <script src="/assets/js/routes.js"></script>
   <script src="/assets/js/auth-guard.js"></script>
-  <script src="/assets/js/cert-api-auth-injector.js"></script>
-  
 </body>
 </html>
