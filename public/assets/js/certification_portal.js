@@ -221,7 +221,7 @@
         '</div>';
       embed.appendChild(wrap);
 
-    } else if (t===‘application/pdf’||ext===‘pdf’) {
+    } else if (t==='application/pdf'||ext==='pdf') {
       if(label){label.textContent='📄 PDF Viewer';label.style.display='block';}
       var wrap=document.createElement('div');
       wrap.style.cssText=PREVIEW_STYLE;
@@ -270,7 +270,7 @@
         wrap.querySelector('[style*="overflow:auto"]').innerHTML='<iframe src="'+url+'" style="width:100%;height:480px;border:none;background:#fff;"></iframe>';
       }
 
-    } else if (ext===‘epub’) {
+    } else if (ext==='epub') {
       if(label){label.textContent='📖 eBook / EPUB';label.style.display='block';}
       var wrap=document.createElement('div');
       wrap.style.cssText=PREVIEW_STYLE;
