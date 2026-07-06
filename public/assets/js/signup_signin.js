@@ -44,34 +44,18 @@ function getRedirectTarget(defaultPath) {
 
 // ── signup field validation ───────────────────────────────────────────────────
 function validateSignupFields() {
-  const fullName       = trim('signup-fullname');
-  const title          = trim('signup-title');
-  const gender         = trim('signup-gender');
-  const artisticName   = trim('signup-artisticname');
-  const ownershipTitle = trim('signup-ownershiptitle');
-  const ownershipPct   = trim('signup-ownershippct');
-  const country        = trim('signup-country');
   const email          = trim('signup-email');
   const password       = raw('signup-password');
   const confirm        = raw('signup-confirm');
   const terms          = document.getElementById('accept-terms')?.checked;
 
-  if (!fullName)       return { valid: false, msg: 'Please enter your full name as on ID.' };
-  if (!title)          return { valid: false, msg: 'Please select your title.' };
-  if (!gender)         return { valid: false, msg: 'Please select your gender.' };
-  if (!artisticName)   return { valid: false, msg: 'Please enter your artistic name.' };
-  if (!ownershipTitle) return { valid: false, msg: 'Please enter your ownership title.' };
-  if (!ownershipPct)   return { valid: false, msg: 'Please enter your ownership percentage.' };
-  const pctNum = parseInt(ownershipPct);
-  if (isNaN(pctNum) || pctNum < 0 || pctNum > 100) return { valid: false, msg: 'Ownership % must be 0–100.' };
-  if (!country) return { valid: false, msg: 'Please select your country.' };
   if (!email)   return { valid: false, msg: 'Please enter your email address.' };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { valid: false, msg: 'Please enter a valid email.' };
   if (password.length < 8) return { valid: false, msg: 'Password must be at least 8 characters.' };
   if (password !== confirm) return { valid: false, msg: 'Passwords do not match.' };
   if (!terms) return { valid: false, msg: 'Please accept the Terms of Service and Privacy Policy.' };
 
-  return { valid: true, data: { fullName, title, gender, artisticName, ownershipTitle, ownershipPct: pctNum, country, email, password } };
+  return { valid: true, data: { email, password } };
 }
 
 // ── sign in → certification_portal.html ──────────────────────────────────────
@@ -112,7 +96,7 @@ async function handleSignUp() {
   const validation = validateSignupFields();
   if (!validation.valid) return showMsg(validation.msg);
 
-  const { fullName, title, gender, artisticName, ownershipTitle, ownershipPct, country, email, password } = validation.data;
+  const { email, password } = validation.data;
 
   setBusy('signup-btn', true);
   try {
@@ -121,15 +105,6 @@ async function handleSignUp() {
       email,
       password,
       options: {
-        data: {
-          full_name:            fullName,
-          title:                title,
-          gender:               gender,
-          artistic_name:        artisticName,
-          ownership_title:      ownershipTitle,
-          ownership_percentage: ownershipPct,
-          country:              country,
-        },
         // After email confirmation link click, land on dashboard
         emailRedirectTo: 'https://seekreap-frontend.onrender.com/certification_portal.html',
       },
@@ -137,9 +112,6 @@ async function handleSignUp() {
     if (error) throw error;
 
     sessionStorage.setItem('pendingVerifyEmail', email);
-    sessionStorage.setItem('pendingUserProfile', JSON.stringify({
-      fullName, title, gender, artisticName, ownershipTitle, ownershipPct, country
-    }));
 
     // If Supabase auto-confirmed (email confirmation disabled in project settings)
     if (data.user?.email_confirmed_at) {
