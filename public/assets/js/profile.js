@@ -17,10 +17,87 @@ function toggleSearch() {
     }
 }
 
+function toggleMoreMenu(event) {
+    if (event) event.stopPropagation();
+    const box = document.getElementById('morePopupBox');
+    if (box) box.classList.toggle('active');
+}
+
+function handleMenuClick(action) {
+    showToast('Opening: ' + action, 'info');
+    document.getElementById('morePopupBox').classList.remove('active');
+}
+
+document.addEventListener('click', function(e) {
+    const box = document.getElementById('morePopupBox');
+    if (box && !box.contains(e.target)) {
+        box.classList.remove('active');
+    }
+});
+
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const container = document.getElementById('searchContainer');
         if (container.classList.contains('active')) { toggleSearch(); }
+        const box = document.getElementById('morePopupBox');
+        if (box) box.classList.remove('active');
+        closePortfolioModal();
+    }
+});
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+window.addEventListener('scroll', function() {
+    const btn = document.getElementById('scrollTopBtn');
+    if (window.scrollY > 300) {
+        btn.classList.add('visible');
+    } else {
+        btn.classList.remove('visible');
+    }
+});
+
+function toggleSectionTab(btn, sectionId) {
+    const allTabs = document.querySelectorAll('.section-tab');
+    const allSections = document.querySelectorAll('.section-content');
+    const isActive = btn.classList.contains('active');
+    allTabs.forEach(t => t.classList.remove('active'));
+    allSections.forEach(s => s.style.display = 'none');
+    if (isActive) { return; }
+    btn.classList.add('active');
+    const section = document.getElementById('section-' + sectionId);
+    if (section) { section.style.display = 'block'; }
+}
+
+const portfolioVideos = [
+    { title: 'Nova Dawn - Official Music Video', duration: '4:32' },
+    { title: 'Behind the Scenes - Studio Session', duration: '6:15' },
+    { title: 'Electronic Explorations (Live Set)', duration: '8:42' },
+    { title: 'African Rhythms - Documentary', duration: '12:20' },
+    { title: 'Cinematic Soundscapes - Trailer', duration: '2:18' },
+    { title: 'NovaKai - Artist Interview', duration: '5:47' }
+];
+
+function openPortfolioModal() {
+    const modal = document.getElementById('portfolioModal');
+    const grid = document.getElementById('portfolioGrid');
+    grid.innerHTML = portfolioVideos.map(function(video, index) {
+        return '<div class="portfolio-item"><video controls preload="metadata" poster=""><source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">Your browser does not support the video tag.</video><div class="portfolio-item-info"><div class="portfolio-item-title">' + video.title + '</div><div class="portfolio-item-meta"><i class="far fa-clock"></i> ' + video.duration + '</div></div></div>';
+    }).join('');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closePortfolioModal() {
+    const modal = document.getElementById('portfolioModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+document.getElementById('portfolioModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closePortfolioModal();
     }
 });
 
@@ -35,13 +112,15 @@ async function _getJwt() {
     return null;
 }
 
-async function apiFetch(path, opts = {}) {
+async function apiFetch(path, opts) {
+    opts = opts || {};
     const jwt = await _getJwt();
-    const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+    const headers = { 'Content-Type': 'application/json' };
+    if (opts.headers) { Object.assign(headers, opts.headers); }
     if (jwt) headers['Authorization'] = 'Bearer ' + jwt;
-    const res = await fetch(TIER4 + path, { ...opts, headers });
+    const res = await fetch(TIER4 + path, { method: opts.method || 'GET', headers: headers, body: opts.body || null });
     if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
+        const err = await res.json().catch(function() { return {}; });
         throw new Error(err.error || err.detail || 'HTTP ' + res.status);
     }
     return res.json();
@@ -49,10 +128,7 @@ async function apiFetch(path, opts = {}) {
 
 async function updateProfile(field, value) {
     try {
-        const result = await apiFetch('/api/creators/me', {
-            method: 'PATCH',
-            body: JSON.stringify({ [field]: value })
-        });
+        const result = await apiFetch('/api/creators/me', { method: 'PATCH', body: JSON.stringify({ [field]: value }) });
         showToast('Profile updated successfully', 'success');
         await loadProfile();
         return result;
@@ -158,37 +234,42 @@ function getFallbackEmployment() {
 }
 
 function highlightConnectedRoles(idType) {
-    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('highlighted'));
-    document.querySelectorAll('.passport-card').forEach(c => c.classList.remove('highlighted'));
-    const roles = _profileData.profile_roles || [];
-    roles.forEach(r => {
-        if (r.id_link && r.id_link.includes(idType)) {
-            const card = document.getElementById(`role-card-${r.title.toLowerCase()}`);
+    document.querySelectorAll('.role-card').forEach(function(c) { c.classList.remove('highlighted'); });
+    document.querySelectorAll('.passport-card').forEach(function(c) { c.classList.remove('highlighted'); });
+    var roles = _profileData.profile_roles || [];
+    roles.forEach(function(r) {
+        if (r.id_link && r.id_link.indexOf(idType) !== -1) {
+            var card = document.getElementById('role-card-' + r.title.toLowerCase());
             if (card) card.classList.add('highlighted');
         }
     });
 }
 
 function highlightConnectedIdentifiers(roleTitle) {
-    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('highlighted'));
-    document.querySelectorAll('.passport-card').forEach(c => c.classList.remove('highlighted'));
-    const role = (_profileData.profile_roles || []).find(r => r.title === roleTitle);
+    document.querySelectorAll('.role-card').forEach(function(c) { c.classList.remove('highlighted'); });
+    document.querySelectorAll('.passport-card').forEach(function(c) { c.classList.remove('highlighted'); });
+    var role = (_profileData.profile_roles || []).find(function(r) { return r.title === roleTitle; });
     if (role && role.id_link) {
-        role.id_link.forEach(idType => {
-            const card = document.getElementById(`passport-card-${idType.toLowerCase()}`);
+        role.id_link.forEach(function(idType) {
+            var card = document.getElementById('passport-card-' + idType.toLowerCase());
             if (card) card.classList.add('highlighted');
         });
     }
 }
 
 function renderProfile() {
-    const p = _profileData || getFallbackData();
-    const initial = (p.display_name || 'S')[0].toUpperCase();
-    document.getElementById('profileAvatar').innerHTML = initial + '<div class="avatar-overlay"><i class="fas fa-camera"></i></div>';
+    var p = _profileData || getFallbackData();
     document.getElementById('profileDisplayName').textContent = p.display_name || '—';
     document.getElementById('profileArtisticName').textContent = p.artistic_name || '—';
+    document.getElementById('profileSeekReapID').textContent = p.seekreap_id || '—';
     document.getElementById('profilePronouns').textContent = p.pronouns || '';
-    const verifyMap = {
+    
+    var country = p.country_of_residence || '—';
+    var province = p.province || '—';
+    var city = p.city || '—';
+    document.getElementById('profileLocationText').textContent = country + ' • ' + province + ' • ' + city;
+    
+    var verifyMap = {
         'none': { class: 'badge-unverified', label: 'Unverified', icon: 'fa-circle' },
         'email': { class: 'badge-verified', label: 'Email Verified', icon: 'fa-envelope' },
         'phone': { class: 'badge-verified', label: 'Phone Verified', icon: 'fa-phone' },
@@ -196,36 +277,29 @@ function renderProfile() {
         'organization': { class: 'badge-verified', label: 'Organization Verified', icon: 'fa-building' },
         'verified_creator': { class: 'badge-verified', label: 'Verified Creator', icon: 'fa-star' }
     };
-    const v = verifyMap[p.verification_status] || verifyMap['none'];
-    document.getElementById('verifyBadge').className = `badge-pill ${v.class}`;
-    document.getElementById('verifyBadge').innerHTML = `<i class="fas ${v.icon}"></i> ${v.label}`;
-    const typeMap = { creator: { class: 'badge-creator', label: 'Creator' }, member: { class: 'badge-member', label: 'Member' } };
-    const t = typeMap[p.user_type] || typeMap.member;
-    document.getElementById('typeBadge').className = `badge-pill ${t.class}`;
-    document.getElementById('typeBadge').innerHTML = `<i class="fas fa-user"></i> ${t.label}`;
+    var v = verifyMap[p.verification_status] || verifyMap['none'];
+    document.getElementById('verifyBadge').className = 'badge-pill ' + v.class;
+    document.getElementById('verifyBadge').innerHTML = '<i class="fas ' + v.icon + '"></i> ' + v.label;
+    var typeMap = { creator: { class: 'badge-creator', label: 'Creator' }, member: { class: 'badge-member', label: 'Member' } };
+    var t = typeMap[p.user_type] || typeMap.member;
+    document.getElementById('typeBadge').className = 'badge-pill ' + t.class;
+    document.getElementById('typeBadge').innerHTML = '<i class="fas fa-user"></i> ' + t.label;
     document.getElementById('profileBioText').textContent = p.biography || '—';
     
-    const achievements = [
+    var achievements = [
         { icon: 'fa-trophy', title: '2x South African Music Award Winner', category: 'Award', date: '2023, 2025' },
         { icon: 'fa-globe-africa', title: 'Featured artist at Afropunk Festival 2025', category: 'Festival', date: '2025' },
         { icon: 'fa-compact-disc', title: 'Album "Nova Dawn" — 5M+ streams', category: 'Release', date: '2024' },
         { icon: 'fa-star', title: 'Collaborated with 15+ international artists', category: 'Collaboration', date: '2016—Present' },
         { icon: 'fa-certificate', title: '311+ verified certificates issued', category: 'Credentials', date: '2020—Present' }
     ];
-    document.getElementById('achievementsList').innerHTML = achievements.map(a => `
-        <div class="achievement-card">
-            <div class="ach-icon"><i class="fas ${a.icon}"></i></div>
-            <div class="ach-details">
-                <div class="ach-category">${a.category}</div>
-                <div class="ach-title">${a.title}</div>
-            </div>
-            <div class="ach-date">${a.date}</div>
-        </div>
-    `).join('');
+    document.getElementById('achievementsList').innerHTML = achievements.map(function(a) {
+        return '<div class="achievement-card"><div class="ach-icon"><i class="fas ' + a.icon + '"></i></div><div class="ach-details"><div class="ach-category">' + a.category + '</div><div class="ach-title">' + a.title + '</div></div><div class="ach-date">' + a.date + '</div></div>';
+    }).join('');
 
-    const identityContainer = document.getElementById('identityContainer');
+    var identityContainer = document.getElementById('identityContainer');
     if (identityContainer) {
-        const categories = {
+        var categories = {
             'Personal Details': [
                 { label: 'SeekReap ID', value: p.seekreap_id || '—', mono: true },
                 { label: 'Legal Full Name', value: p.legal_full_name || '—' },
@@ -249,145 +323,142 @@ function renderProfile() {
                 { label: 'Profile Version', value: p.profile_version || '—' }
             ],
             'Contact Details': [
-                { label: 'Recovery Email', value: p.recovery_email ? `<a href="mailto:${p.recovery_email}">${p.recovery_email}</a>` : '—', html: true },
-                { label: 'Primary Phone', value: p.primary_phone ? `<a href="tel:${p.primary_phone.replace(/\s/g, '')}">${p.primary_phone}</a>` : '—', html: true },
+                { label: 'Recovery Email', value: p.recovery_email ? '<a href="mailto:' + p.recovery_email + '">' + p.recovery_email + '</a>' : '—', html: true },
+                { label: 'Primary Phone', value: p.primary_phone ? '<a href="tel:' + p.primary_phone.replace(/\s/g, '') + '">' + p.primary_phone + '</a>' : '—', html: true },
                 { label: 'Secondary Phone', value: p.secondary_phone || '—' },
                 { label: 'Contact Preference', value: p.contact_preference || '—' },
                 { label: 'Preferred Language', value: p.preferred_language || '—' },
                 { label: 'Preferred Timezone', value: p.preferred_timezone || '—' }
             ]
         };
-        let html = '';
-        for (const [catName, fields] of Object.entries(categories)) {
+        var html = '';
+        for (var catName in categories) {
+            var fields = categories[catName];
             if (fields.length === 0) continue;
-            const iconMap = { 'Personal Details': 'fa-user-shield', 'Creative Details': 'fa-paint-brush', 'Contact Details': 'fa-envelope-open-text' };
-            html += `<div class="identity-category"><div class="cat-title"><i class="fas ${iconMap[catName] || 'fa-tag'}"></i> ${catName}</div>`;
-            for (const f of fields) {
-                html += `<div class="identity-field"><span class="ilabel">${f.label}</span><span class="ivalue ${f.mono ? 'mono' : ''}" ${_isEditMode ? `onclick="editField('${f.label}', '${(f.value || '').replace(/'/g, "\\'")}')" style="cursor:pointer;"` : ''}>${f.html ? f.value : f.value}</span></div>`;
+            var iconMap = { 'Personal Details': 'fa-user-shield', 'Creative Details': 'fa-paint-brush', 'Contact Details': 'fa-envelope-open-text' };
+            html += '<div class="identity-category"><div class="cat-title"><i class="fas ' + (iconMap[catName] || 'fa-tag') + '"></i> ' + catName + '</div>';
+            for (var fi = 0; fi < fields.length; fi++) {
+                var f = fields[fi];
+                var editAttr = _isEditMode ? ' onclick="editField(\'' + f.label + '\', \'' + (f.value || '').replace(/'/g, "\\'") + '\')" style="cursor:pointer;"' : '';
+                html += '<div class="identity-field"><span class="ilabel">' + f.label + '</span><span class="ivalue ' + (f.mono ? 'mono' : '') + '"' + editAttr + '>' + (f.html ? f.value : f.value) + '</span></div>';
             }
-            html += `</div>`;
+            html += '</div>';
         }
         identityContainer.innerHTML = html;
     }
 
-    const identifiersContainer = document.getElementById('identifiersContainer');
+    var identifiersContainer = document.getElementById('identifiersContainer');
     if (identifiersContainer) {
-        const domains = [...new Set((p.identifiers || []).map(id => id.domain))];
-        let domainsHtml = '<div class="identifiers-layout">';
-        domains.forEach(domain => {
-            const list = (p.identifiers || []).filter(id => id.domain === domain);
-            domainsHtml += `<div class="identifier-group"><div class="identifier-group-name">${domain}</div><div class="identifier-cards">`;
-            list.forEach(id => {
-                domainsHtml += `<div class="passport-card" id="passport-card-${id.type.toLowerCase()}" onclick="highlightConnectedRoles('${id.type}')">
-                    <div class="passport-header"><div class="passport-meta"><span class="passport-type">${id.type}</span><span class="passport-full-name">${id.fullName}</span></div>
-                    <span class="passport-status ${id.status === 'Active' ? 'status-verified' : 'status-allocated'}"><i class="fas ${id.status === 'Active' ? 'fa-check-circle' : 'fa-clock'}"></i> ${id.status}</span></div>
-                    <div class="passport-value-container"><span class="passport-value">${id.value}</span><button class="passport-copy-btn" onclick="event.stopPropagation(); copyToClipboard('${id.value}')"><i class="far fa-copy"></i></button></div>
-                    <div class="passport-details"><div class="passport-detail-item"><span class="p-label">Purpose</span><span class="p-val">${id.purpose}</span></div>
-                    <div class="passport-detail-item"><span class="p-label">Issued By</span><span class="p-val">${id.issuer}</span></div>
-                    <div class="passport-detail-item"><span class="p-label">Issued Date</span><span class="p-val">${id.date}</span></div></div>
-                    <div class="passport-ecosystem"><span class="ecosystem-label">Verified Uses</span><div class="ecosystem-tags">${(id.uses || []).map(u => `<span class="eco-tag">✓ ${u}</span>`).join('')}</div></div>
-                    <div class="passport-actions"><a class="passport-btn p-btn-secondary" onclick="event.stopPropagation(); copyToClipboard('${id.value}')">Copy Code</a><a href="${id.registry_link}" target="_blank" class="passport-btn p-btn-primary" onclick="event.stopPropagation();">View Registry <i class="fas fa-external-link-alt"></i></a></div>
-                </div>`;
+        var domains = [];
+        (p.identifiers || []).forEach(function(id) {
+            if (domains.indexOf(id.domain) === -1) domains.push(id.domain);
+        });
+        var domainsHtml = '<div class="identifiers-layout">';
+        domains.forEach(function(domain) {
+            var list = (p.identifiers || []).filter(function(id) { return id.domain === domain; });
+            domainsHtml += '<div class="identifier-group"><div class="identifier-group-name">' + domain + '</div><div class="identifier-cards">';
+            list.forEach(function(id) {
+                domainsHtml += '<div class="passport-card" id="passport-card-' + id.type.toLowerCase() + '" onclick="highlightConnectedRoles(\'' + id.type + '\')">' +
+                    '<div class="passport-header"><div class="passport-meta"><span class="passport-type">' + id.type + '</span><span class="passport-full-name">' + id.fullName + '</span></div>' +
+                    '<span class="passport-status ' + (id.status === 'Active' ? 'status-verified' : 'status-allocated') + '"><i class="fas ' + (id.status === 'Active' ? 'fa-check-circle' : 'fa-clock') + '"></i> ' + id.status + '</span></div>' +
+                    '<div class="passport-value-container"><span class="passport-value">' + id.value + '</span><button class="passport-copy-btn" onclick="event.stopPropagation(); copyToClipboard(\'' + id.value + '\')"><i class="far fa-copy"></i></button></div>' +
+                    '<div class="passport-details"><div class="passport-detail-item"><span class="p-label">Purpose</span><span class="p-val">' + id.purpose + '</span></div>' +
+                    '<div class="passport-detail-item"><span class="p-label">Issued By</span><span class="p-val">' + id.issuer + '</span></div>' +
+                    '<div class="passport-detail-item"><span class="p-label">Issued Date</span><span class="p-val">' + id.date + '</span></div></div>' +
+                    '<div class="passport-ecosystem"><span class="ecosystem-label">Verified Uses</span><div class="ecosystem-tags">' + (id.uses || []).map(function(u) { return '<span class="eco-tag">✓ ' + u + '</span>'; }).join('') + '</div></div>' +
+                    '<div class="passport-actions"><a class="passport-btn p-btn-secondary" onclick="event.stopPropagation(); copyToClipboard(\'' + id.value + '\')">Copy Code</a><a href="' + id.registry_link + '" target="_blank" class="passport-btn p-btn-primary" onclick="event.stopPropagation();">View Registry <i class="fas fa-external-link-alt"></i></a></div>' +
+                    '</div>';
             });
-            domainsHtml += `</div></div>`;
+            domainsHtml += '</div></div>';
         });
         domainsHtml += '</div>';
         identifiersContainer.innerHTML = domainsHtml;
     }
 
-    const rolesContainer = document.getElementById('rolesContainer');
+    var rolesContainer = document.getElementById('rolesContainer');
     if (rolesContainer) {
-        rolesContainer.innerHTML = (p.profile_roles || []).map(role => {
-            const stars = '★'.repeat(role.rating) + '☆'.repeat(5 - role.rating);
-            const badgeClass = role.tier === 'Primary Role' ? 'role-primary' : role.tier === 'Secondary Role' ? 'role-secondary' : 'role-mentor';
-            return `<div class="role-card" id="role-card-${role.title.toLowerCase()}" onclick="highlightConnectedIdentifiers('${role.title}')">
-                <div class="role-header"><div><span class="role-title">${role.title}</span><div class="role-proficiency"><span class="role-stars">${stars}</span><span>Level ${role.rating}/5</span></div></div>
-                <span class="role-badge ${badgeClass}">${role.tier}</span></div>
-                <div class="role-stats-grid"><div class="role-stat"><div class="role-stat-val">${role.works}</div><div class="role-stat-lbl">Works</div></div>
-                <div class="role-stat"><div class="role-stat-val">${role.collabs}</div><div class="role-stat-lbl">Collabs</div></div>
-                <div class="role-stat"><div class="role-stat-val">${role.active}</div><div class="role-stat-lbl">Active</div></div></div>
-                <div class="role-details-list"><div class="role-detail-row"><span class="r-lbl">Years Active:</span><span class="r-val">${role.period}</span></div>
-                <div class="role-detail-row"><span class="r-lbl">Key Expertise:</span><span class="r-val">${(role.expertise || []).join(', ')}</span></div>
-                <div class="role-detail-row"><span class="r-lbl">Industries:</span><span class="r-val">${(role.industries || []).join(', ')}</span></div></div>
-            </div>`;
+        rolesContainer.innerHTML = (p.profile_roles || []).map(function(role) {
+            var stars = '★'.repeat(role.rating) + '☆'.repeat(5 - role.rating);
+            var badgeClass = role.tier === 'Primary Role' ? 'role-primary' : role.tier === 'Secondary Role' ? 'role-secondary' : 'role-mentor';
+            return '<div class="role-card" id="role-card-' + role.title.toLowerCase() + '" onclick="highlightConnectedIdentifiers(\'' + role.title + '\')">' +
+                '<div class="role-header"><div><span class="role-title">' + role.title + '</span><div class="role-proficiency"><span class="role-stars">' + stars + '</span><span>Level ' + role.rating + '/5</span></div></div>' +
+                '<span class="role-badge ' + badgeClass + '">' + role.tier + '</span></div>' +
+                '<div class="role-stats-grid"><div class="role-stat"><div class="role-stat-val">' + role.works + '</div><div class="role-stat-lbl">Works</div></div>' +
+                '<div class="role-stat"><div class="role-stat-val">' + role.collabs + '</div><div class="role-stat-lbl">Collabs</div></div>' +
+                '<div class="role-stat"><div class="role-stat-val">' + role.active + '</div><div class="role-stat-lbl">Active</div></div></div>' +
+                '<div class="role-details-list"><div class="role-detail-row"><span class="r-lbl">Years Active:</span><span class="r-val">' + role.period + '</span></div>' +
+                '<div class="role-detail-row"><span class="r-lbl">Key Expertise:</span><span class="r-val">' + (role.expertise || []).join(', ') + '</span></div>' +
+                '<div class="role-detail-row"><span class="r-lbl">Industries:</span><span class="r-val">' + (role.industries || []).join(', ') + '</span></div></div></div>';
         }).join('');
     }
 
-    const timelineContainer = document.getElementById('timelineContainer');
+    var timelineContainer = document.getElementById('timelineContainer');
     if (timelineContainer) {
-        timelineContainer.innerHTML = (p.timeline || []).map(t => `
-            <div class="timeline-item"><div class="timeline-dot"></div>
-            <div class="timeline-year">${t.year}</div>
-            <div class="timeline-content">${t.role}</div>
-            <div class="timeline-desc">${t.desc}</div></div>
-        `).join('');
+        timelineContainer.innerHTML = (p.timeline || []).map(function(t) {
+            return '<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-year">' + t.year + '</div><div class="timeline-content">' + t.role + '</div><div class="timeline-desc">' + t.desc + '</div></div>';
+        }).join('');
     }
 
     renderNetworks(p.social_links, p.website_urls);
-    const identifiers = p.identifiers || [];
-    document.getElementById('verifiedIdsCount').textContent = identifiers.filter(id => id.status === 'Active').length;
-    const confidence = Math.min(98, 70 + (identifiers.length * 3));
-    document.getElementById('completenessScore').textContent = confidence + '%';
-    document.getElementById('completenessBar').style.width = confidence + '%';
-    document.getElementById('healthLinked').textContent = identifiers.length;
-    document.getElementById('healthVerified').textContent = identifiers.filter(id => id.status === 'Active').length;
-    document.getElementById('healthPending').textContent = identifiers.filter(id => id.status === 'Allocated').length;
-    document.getElementById('healthExpired').textContent = identifiers.filter(id => id.status === 'Expired').length;
 }
 
 function renderNetworks(socials, websites) {
-    const networksContainer = document.getElementById('networksContainer');
+    var networksContainer = document.getElementById('networksContainer');
     if (!networksContainer) return;
-    let html = '<div class="social-links">';
+    var html = '<div class="social-links">';
     if (websites && websites.length > 0) {
-        html += `<a href="${websites[0].url}" target="_blank" class="social-link"><span><i class="fas fa-globe" style="margin-right:8px;color:var(--primary);"></i> Official Website</span><i class="fas fa-external-link-alt"></i></a>`;
+        html += '<a href="' + websites[0].url + '" target="_blank" class="social-link"><span><i class="fas fa-globe" style="margin-right:8px;color:var(--primary);"></i> Official Website</span><i class="fas fa-external-link-alt"></i></a>';
     }
     if (socials) {
-        const icons = { github: 'fa-github', instagram: 'fa-instagram', x: 'fa-x-twitter', youtube: 'fa-youtube', linkedin: 'fa-linkedin' };
-        const labels = { github: 'GitHub', instagram: 'Instagram', x: 'X', youtube: 'YouTube', linkedin: 'LinkedIn' };
-        Object.entries(socials).forEach(([key, url]) => {
-            html += `<a href="${url}" target="_blank" class="social-link"><span><i class="fab ${icons[key] || 'fa-link'}" style="margin-right:8px;color:var(--text-dim);"></i> ${labels[key] || key}</span><i class="fas fa-external-link-alt"></i></a>`;
-        });
+        var icons = { github: 'fa-github', instagram: 'fa-instagram', x: 'fa-x-twitter', youtube: 'fa-youtube', linkedin: 'fa-linkedin' };
+        var labels = { github: 'GitHub', instagram: 'Instagram', x: 'X', youtube: 'YouTube', linkedin: 'LinkedIn' };
+        for (var key in socials) {
+            if (socials.hasOwnProperty(key)) {
+                var url = socials[key];
+                html += '<a href="' + url + '" target="_blank" class="social-link"><span><i class="fab ' + (icons[key] || 'fa-link') + '" style="margin-right:8px;color:var(--text-dim);"></i> ' + (labels[key] || key) + '</span><i class="fas fa-external-link-alt"></i></a>';
+            }
+        }
     }
     html += '</div>';
     networksContainer.innerHTML = html;
 }
 
 function renderEmployment() {
-    const container = document.getElementById('employmentContainer');
-    const employment = _employmentData || [];
+    var container = document.getElementById('employmentContainer');
+    var employment = _employmentData || [];
     if (!employment || employment.length === 0) {
-        container.innerHTML = `<div class="employment-empty"><i class="fas fa-briefcase"></i>No employment history added yet<div style="margin-top:12px;"><button class="btn btn-primary btn-sm" onclick="addEmployment()"><i class="fas fa-plus"></i> Add Employment</button></div></div>`;
+        container.innerHTML = '<div class="employment-empty"><i class="fas fa-briefcase"></i>No employment history added yet<div style="margin-top:12px;"><button class="btn btn-primary btn-sm" onclick="addEmployment()"><i class="fas fa-plus"></i> Add Employment</button></div></div>';
         return;
     }
-    const sorted = [...employment].sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
-    const orgTypeIcons = { 'production_house': 'fa-building', 'record_label': 'fa-music', 'educational': 'fa-graduation-cap', 'publishing': 'fa-book', 'management': 'fa-users', 'studio': 'fa-microphone', 'freelance': 'fa-user-tie', 'other': 'fa-briefcase' };
-    const employmentTypeLabels = { 'full_time': 'Full-time', 'part_time': 'Part-time', 'contract': 'Contract', 'freelance': 'Freelance', 'internship': 'Internship', 'volunteer': 'Volunteer' };
-    const relationshipLabels = { 'founder': 'Founder', 'co_founder': 'Co-Founder', 'employee': 'Employee', 'freelancer': 'Freelancer', 'contractor': 'Contractor', 'consultant': 'Consultant', 'board_member': 'Board Member', 'advisor': 'Advisor' };
-    container.innerHTML = `<div class="employment-list">` + sorted.map(emp => {
-        const icon = orgTypeIcons[emp.organization_type] || 'fa-building';
-        const dateStr = (start, end) => {
-            const startDate = start ? new Date(start).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—';
-            const endDate = end ? new Date(end).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Present';
-            return `${startDate} — ${endDate}`;
-        };
-        const empTypeLabel = employmentTypeLabels[emp.employment_type] || emp.employment_type || '';
-        const relLabel = relationshipLabels[emp.relationship_type] || emp.relationship_type || '';
-        return `<div class="employment-item"><div class="org-icon ${emp.logo_url ? 'has-logo' : ''}">${emp.logo_url ? `<img src="${emp.logo_url}" alt="${emp.organization_name}" onerror="this.style.display='none';this.parentElement.classList.remove('has-logo');this.parentElement.innerHTML='<i class=\\'fas ${icon}\\'></i>';">` : `<i class="fas ${icon}"></i>`}</div>
-            <div class="org-details"><div class="org-name">${emp.organization_name}</div><div class="job-title">${emp.job_title || '—'}</div>
-            <div class="org-meta"><span><i class="far fa-calendar"></i> ${dateStr(emp.start_date, emp.end_date)}</span>${emp.is_current ? '<span class="current-badge"><i class="fas fa-check-circle"></i> Current</span>' : ''}${emp.employment_type ? `<span><i class="fas fa-clock"></i> ${empTypeLabel}</span>` : ''}${emp.relationship_type ? `<span><i class="fas fa-user-tag"></i> ${relLabel}</span>` : ''}${emp.organization_type ? `<span><i class="fas fa-tag"></i> ${emp.organization_type.replace('_', ' ').toUpperCase()}</span>` : ''}</div>
-            ${emp.description ? `<div class="org-description">${emp.description}</div>` : ''}${emp.website ? `<div class="org-website"><a href="${emp.website}" target="_blank"><i class="fas fa-globe"></i> ${emp.website.replace(/^https?:\/\//, '')}</a></div>` : ''}
-            ${_isEditMode ? `<div class="employment-actions"><button class="btn btn-secondary btn-sm" onclick="editEmployment('${emp.id}')"><i class="fas fa-edit"></i> Edit</button> <button class="btn btn-secondary btn-sm" onclick="deleteEmployment('${emp.id}')" style="color:var(--danger);"><i class="fas fa-trash"></i></button></div>` : ''}</div></div>`;
-    }).join('') + `</div>`;
+    var sorted = employment.slice().sort(function(a, b) { return (a.display_order || 0) - (b.display_order || 0); });
+    var orgTypeIcons = { 'production_house': 'fa-building', 'record_label': 'fa-music', 'educational': 'fa-graduation-cap', 'publishing': 'fa-book', 'management': 'fa-users', 'studio': 'fa-microphone', 'freelance': 'fa-user-tie', 'other': 'fa-briefcase' };
+    var employmentTypeLabels = { 'full_time': 'Full-time', 'part_time': 'Part-time', 'contract': 'Contract', 'freelance': 'Freelance', 'internship': 'Internship', 'volunteer': 'Volunteer' };
+    var relationshipLabels = { 'founder': 'Founder', 'co_founder': 'Co-Founder', 'employee': 'Employee', 'freelancer': 'Freelancer', 'contractor': 'Contractor', 'consultant': 'Consultant', 'board_member': 'Board Member', 'advisor': 'Advisor' };
+    var html = '<div class="employment-list">';
+    sorted.forEach(function(emp) {
+        var icon = orgTypeIcons[emp.organization_type] || 'fa-building';
+        var startDate = emp.start_date ? new Date(emp.start_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—';
+        var endDate = emp.end_date ? new Date(emp.end_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Present';
+        var dateStr = startDate + ' — ' + endDate;
+        var empTypeLabel = employmentTypeLabels[emp.employment_type] || emp.employment_type || '';
+        var relLabel = relationshipLabels[emp.relationship_type] || emp.relationship_type || '';
+        html += '<div class="employment-item"><div class="org-icon ' + (emp.logo_url ? 'has-logo' : '') + '">' + (emp.logo_url ? '<img src="' + emp.logo_url + '" alt="' + emp.organization_name + '" onerror="this.style.display=\'none\';this.parentElement.classList.remove(\'has-logo\');this.parentElement.innerHTML=\'<i class=\\\'fas ' + icon + '\\\'></i>\';">' : '<i class="fas ' + icon + '"></i>') + '</div>' +
+            '<div class="org-details"><div class="org-name">' + emp.organization_name + '</div><div class="job-title">' + (emp.job_title || '—') + '</div>' +
+            '<div class="org-meta"><span><i class="far fa-calendar"></i> ' + dateStr + '</span>' + (emp.is_current ? '<span class="current-badge"><i class="fas fa-check-circle"></i> Current</span>' : '') + (emp.employment_type ? '<span><i class="fas fa-clock"></i> ' + empTypeLabel + '</span>' : '') + (emp.relationship_type ? '<span><i class="fas fa-user-tag"></i> ' + relLabel + '</span>' : '') + (emp.organization_type ? '<span><i class="fas fa-tag"></i> ' + emp.organization_type.replace('_', ' ').toUpperCase() + '</span>' : '') + '</div>' +
+            (emp.description ? '<div class="org-description">' + emp.description + '</div>' : '') + (emp.website ? '<div class="org-website"><a href="' + emp.website + '" target="_blank"><i class="fas fa-globe"></i> ' + emp.website.replace(/^https?:\/\//, '') + '</a></div>' : '') +
+            (_isEditMode ? '<div class="employment-actions"><button class="btn btn-secondary btn-sm" onclick="editEmployment(\'' + emp.id + '\')"><i class="fas fa-edit"></i> Edit</button> <button class="btn btn-secondary btn-sm" onclick="deleteEmployment(\'' + emp.id + '\')" style="color:var(--danger);"><i class="fas fa-trash"></i></button></div>' : '') + '</div></div>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
 }
 
 function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => { showToast(`Copied: "${text}"`, 'success'); }).catch(() => { showToast('Unable to copy', 'error'); });
+    navigator.clipboard.writeText(text).then(function() { showToast('Copied: "' + text + '"', 'success'); }).catch(function() { showToast('Unable to copy', 'error'); });
 }
 
 function syncAllRegistries() {
     showToast('Registry sync triggered...', 'info');
-    setTimeout(() => { showToast('Sync complete. All records validated.', 'success'); }, 1500);
+    setTimeout(function() { showToast('Sync complete. All records validated.', 'success'); }, 1500);
 }
 
 function refreshAchievements() { showToast('Achievements refreshed', 'success'); }
@@ -397,7 +468,7 @@ function editEmployment(id) { showToast('Edit employment form coming soon', 'inf
 async function deleteEmployment(id) {
     if (!confirm('Are you sure you want to delete this employment record?')) return;
     try {
-        await apiFetch(`/api/creators/me/employment/${id}`, { method: 'DELETE' });
+        await apiFetch('/api/creators/me/employment/' + id, { method: 'DELETE' });
         showToast('Employment record deleted', 'success');
         await loadProfile();
     } catch (e) {
@@ -422,9 +493,9 @@ function refreshSimulation() {
 
 async function editField(label, currentValue) {
     if (!_isEditMode) return;
-    const newValue = prompt(`Edit ${label}:`, currentValue);
+    var newValue = prompt('Edit ' + label + ':', currentValue);
     if (newValue !== null && newValue !== currentValue) {
-        const fieldMap = {
+        var fieldMap = {
             'Display Name': 'display_name',
             'Artistic Name': 'artistic_name',
             'Legal Full Name': 'legal_full_name',
@@ -449,31 +520,32 @@ async function editField(label, currentValue) {
             'Profile Version': 'profile_version',
             'Pronouns': 'pronouns'
         };
-        const field = fieldMap[label];
+        var field = fieldMap[label];
         if (field) {
             await updateProfile(field, newValue);
         } else {
-            showToast(`Updated ${label} to "${newValue}" (simulated)`, 'success');
+            showToast('Updated ' + label + ' to "' + newValue + '" (simulated)', 'success');
             renderProfile();
         }
     }
 }
 
-function showToast(msg, type = 'success') {
-    const existing = document.querySelector('.toast');
+function showToast(msg, type) {
+    type = type || 'success';
+    var existing = document.querySelector('.toast');
     if (existing) existing.remove();
-    const t = document.createElement('div');
+    var t = document.createElement('div');
     t.className = 'toast';
-    const icon = type === 'success' ? 'fa-check-circle' : type === 'info' ? 'fa-info-circle' : 'fa-exclamation-circle';
-    const color = type === 'success' ? 'var(--primary)' : type === 'info' ? 'var(--info)' : 'var(--danger)';
-    t.innerHTML = `<i class="fas ${icon}" style="margin-right:8px;color:${color};"></i> ${msg}`;
+    var icon = type === 'success' ? 'fa-check-circle' : type === 'info' ? 'fa-info-circle' : 'fa-exclamation-circle';
+    var color = type === 'success' ? 'var(--primary)' : type === 'info' ? 'var(--info)' : 'var(--danger)';
+    t.innerHTML = '<i class="fas ' + icon + '" style="margin-right:8px;color:' + color + ';"></i> ' + msg;
     document.body.appendChild(t);
-    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => { if (t.parentNode) t.remove(); }, 300); }, 2800);
+    setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { if (t.parentNode) t.remove(); }, 300); }, 2800);
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
     if (typeof window.waitForAuth === 'function') {
-        const user = await window.waitForAuth();
+        var user = await window.waitForAuth();
         if (!user) { window.location.href = '/signup_signin.html'; return; }
     }
     await loadProfile();
@@ -501,3 +573,9 @@ window.syncAllRegistries = syncAllRegistries;
 window.refreshAchievements = refreshAchievements;
 window.highlightConnectedRoles = highlightConnectedRoles;
 window.highlightConnectedIdentifiers = highlightConnectedIdentifiers;
+window.toggleMoreMenu = toggleMoreMenu;
+window.handleMenuClick = handleMenuClick;
+window.scrollToTop = scrollToTop;
+window.toggleSectionTab = toggleSectionTab;
+window.openPortfolioModal = openPortfolioModal;
+window.closePortfolioModal = closePortfolioModal;

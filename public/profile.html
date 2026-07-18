@@ -32,41 +32,131 @@
     <div class="profile-container">
         <div class="hero-assembly">
             <div class="cover-photo-container">
-                <div class="cover-image">
-                    <i class="fas fa-music"></i>
-                </div>
+                <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1200&auto=format&fit=crop" class="cover-image" alt="Cover Banner">
                 <div class="cover-overlay"></div>
             </div>
             <div class="hero-details-container">
                 <div class="profile-avatar-large" id="profileAvatar">
-                    S
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop" alt="Avatar">
                     <div class="avatar-overlay"><i class="fas fa-camera"></i></div>
                 </div>
-                <div class="profile-header-info">
-                    <div class="display-name" id="profileDisplayName">—</div>
-                    <div class="artist-name" id="profileArtisticName">—</div>
-                    <div class="pronouns" id="profilePronouns">He/Him</div>
-                    <div class="profile-badges" id="profileBadges">
-                        <span class="badge-pill badge-verified" id="verifyBadge"><i class="fas fa-check-circle"></i> Verified</span>
-                        <span class="badge-pill badge-creator" id="typeBadge"><i class="fas fa-user-astronaut"></i> Creator</span>
+                <div class="profile-header-content">
+                    <div class="profile-header-info">
+                        <div class="display-name" id="profileDisplayName">—</div>
+                        <div class="artist-meta-line">
+                            <span class="artist-name" id="profileArtisticName">—</span>
+                            <span class="meta-separator">•</span>
+                            <span class="seekreap-id-inline" id="profileSeekReapID">—</span>
+                        </div>
+                        <div class="pronouns" id="profilePronouns">He/Him</div>
+                        <div class="profile-badges" id="profileBadges">
+                            <span class="badge-pill badge-verified" id="verifyBadge"><i class="fas fa-check-circle"></i> Verified</span>
+                            <span class="badge-pill badge-creator" id="typeBadge"><i class="fas fa-user-astronaut"></i> Creator</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-metrics-actions-bar">
+                <div class="profile-stats-line">
+                    <i class="fas fa-handshake" style="color:var(--primary);margin-right:4px;"></i> Trusted by <strong>3,467</strong> creators &bull; <i class="fas fa-users" style="color:var(--primary);margin-right:4px;"></i> Trusts <strong>5,846</strong> creators &bull; <i class="fas fa-eye" style="color:var(--primary);margin-right:4px;"></i> <strong>23M</strong> Profile Views &bull; <i class="fas fa-share-alt" style="color:var(--primary);margin-right:4px;"></i> <strong>14K</strong> Profile Link Shares
+                </div>
+                <div class="profile-action-buttons">
+                    <button class="btn btn-primary" onclick="showToast('You now trust this creator', 'success')"><i class="fas fa-shield-alt"></i> Trust</button>
+                    <button class="btn btn-secondary" onclick="showToast('Link copied to clipboard', 'success')"><i class="fas fa-share-alt"></i> Share</button>
+                    <button class="btn btn-secondary" onclick="showToast('Profile saved', 'success')"><i class="fas fa-bookmark"></i> Save</button>
+                    <div class="more-dropdown-wrapper">
+                        <button class="btn btn-secondary btn-icon more-btn" onclick="toggleMoreMenu(event)" aria-label="More options">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div class="more-popup-box" id="morePopupBox">
+                            <div class="more-menu-group">
+                                <div class="menu-group-header"><i class="fas fa-id-card" style="margin-right:6px;"></i> Identity</div>
+                                <button class="menu-item" onclick="handleMenuClick('View Credentials')"><i class="fas fa-id-card" style="width:18px;"></i> View Credentials</button>
+                                <button class="menu-item" onclick="handleMenuClick('View Certificates')"><i class="fas fa-certificate" style="width:18px;"></i> View Certificates</button>
+                                <button class="menu-item" onclick="handleMenuClick('View Reputation')"><i class="fas fa-star" style="width:18px;"></i> View Reputation</button>
+                            </div>
+                            <div class="more-menu-group">
+                                <div class="menu-group-header"><i class="fas fa-gavel" style="margin-right:6px;"></i> Rights</div>
+                                <button class="menu-item" onclick="handleMenuClick('View Solo Ownership Rights')"><i class="fas fa-user" style="width:18px;"></i> View Solo Ownership Rights</button>
+                                <button class="menu-item" onclick="handleMenuClick('View Co-ownership Rights')"><i class="fas fa-users" style="width:18px;"></i> View Co-ownership Rights</button>
+                            </div>
+                            <div class="more-menu-group">
+                                <div class="menu-group-header"><i class="fas fa-compass" style="margin-right:6px;"></i> Discovery</div>
+                                <button class="menu-item" onclick="handleMenuClick('Search Profile')"><i class="fas fa-search" style="width:18px;"></i> Search Profile</button>
+                                <button class="menu-item" onclick="handleMenuClick('Copy Profile Link')"><i class="fas fa-link" style="width:18px;"></i> Copy Profile Link</button>
+                            </div>
+                            <div class="more-menu-group">
+                                <div class="menu-group-header"><i class="fas fa-handshake" style="margin-right:6px;"></i> Community</div>
+                                <button class="menu-item" onclick="handleMenuClick('Recommend Creator')"><i class="fas fa-thumbs-up" style="width:18px;"></i> Recommend Creator</button>
+                            </div>
+                            <div class="more-menu-group">
+                                <div class="menu-group-header"><i class="fas fa-shield-alt" style="margin-right:6px;"></i> Safety</div>
+                                <button class="menu-item text-danger" onclick="handleMenuClick('Report Profile')"><i class="fas fa-flag" style="width:18px;"></i> Report Profile</button>
+                                <button class="menu-item text-danger" onclick="handleMenuClick('Block User')"><i class="fas fa-ban" style="width:18px;"></i> Block User</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="section-nav-tabs">
+            <button class="section-tab active" data-section="biography" onclick="toggleSectionTab(this, 'biography')">
+                <i class="fas fa-align-left"></i> Biography
+            </button>
+            <button class="section-tab" data-section="identity-record" onclick="toggleSectionTab(this, 'identity-record')">
+                <i class="fas fa-id-card"></i> Identity Record
+            </button>
+            <button class="section-tab" data-section="accomplishments" onclick="toggleSectionTab(this, 'accomplishments')">
+                <i class="fas fa-trophy"></i> Accomplishments
+            </button>
+            <button class="section-tab" data-section="professional-history" onclick="toggleSectionTab(this, 'professional-history')">
+                <i class="fas fa-briefcase"></i> History
+            </button>
+            <button class="section-tab" data-section="passports" onclick="toggleSectionTab(this, 'passports')">
+                <i class="fas fa-fingerprint"></i> Passports
+            </button>
+            <button class="section-tab" data-section="roles" onclick="toggleSectionTab(this, 'roles')">
+                <i class="fas fa-user-tag"></i> Roles
+            </button>
+            <button class="section-tab" data-section="evolution" onclick="toggleSectionTab(this, 'evolution')">
+                <i class="fas fa-history"></i> Evolution
+            </button>
+            <button class="section-tab" data-section="networks" onclick="toggleSectionTab(this, 'networks')">
+                <i class="fas fa-share-alt"></i> Networks
+            </button>
+            <button class="section-tab view-portfolio-btn" onclick="openPortfolioModal()">
+                <i class="fas fa-eye"></i> View Public Portfolio
+            </button>
+        </div>
+
         <div class="profile-layout-grid">
             <div class="main-lane">
-                <div class="profile-card">
+                <div class="profile-card section-content" id="section-biography">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-align-left" style="color:var(--text-dim);"></i> Biography</h3>
                         <span class="card-action" onclick="toggleEditMode()">Edit →</span>
                     </div>
                     <div class="profile-card-body">
+                        <div class="bio-location-line">
+                            <i class="fas fa-map-pin" style="color:var(--primary);margin-right:8px;"></i>
+                            Lives in <span id="profileLocationText">— • — • —</span>
+                        </div>
                         <div class="bio-text" id="profileBioText">
                             Award-winning music producer and composer with 10+ years of experience creating genre-defying electronic music. Collaborated with artists across Africa, Europe, and the Americas.
                         </div>
                     </div>
                 </div>
-                <div class="profile-card">
+
+                <div class="profile-card section-content" id="section-identity-record" style="display:none;">
+                    <div class="profile-card-header">
+                        <h3><i class="fas fa-id-card" style="color:var(--text-dim);"></i> Identity Record</h3>
+                        <span class="card-action" onclick="toggleEditMode()">Edit →</span>
+                    </div>
+                    <div class="profile-card-body" id="identityContainer"></div>
+                </div>
+
+                <div class="profile-card section-content" id="section-accomplishments" style="display:none;">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-trophy" style="color:var(--gold);"></i> Career Accomplishments</h3>
                         <span class="card-action" onclick="refreshAchievements()">Refresh →</span>
@@ -75,14 +165,8 @@
                         <div class="achievements-grid" id="achievementsList"></div>
                     </div>
                 </div>
-                <div class="profile-card">
-                    <div class="profile-card-header">
-                        <h3><i class="fas fa-id-card" style="color:var(--text-dim);"></i> Identity Record</h3>
-                        <span class="card-action" onclick="toggleEditMode()">Edit →</span>
-                    </div>
-                    <div class="profile-card-body" id="identityContainer"></div>
-                </div>
-                <div class="profile-card">
+
+                <div class="profile-card section-content" id="section-professional-history" style="display:none;">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-briefcase" style="color:var(--text-dim);"></i> Professional History</h3>
                         <span class="card-action" onclick="addEmployment()">Add →</span>
@@ -90,68 +174,16 @@
                     <div class="profile-card-body" id="employmentContainer"></div>
                 </div>
             </div>
+
             <div class="side-lane">
-                <div class="profile-card">
-                    <div class="profile-card-header">
-                        <h3><i class="fas fa-chart-line" style="color:var(--primary);"></i> Professional Identity</h3>
-                    </div>
-                    <div class="profile-card-body">
-                        <div class="score-row">
-                            <span class="text-dim" style="font-weight:600;">Completeness & Verification</span>
-                            <span style="font-weight:700; color:var(--primary);" id="completenessScore">98%</span>
-                        </div>
-                        <div class="score-bar-container">
-                            <div class="score-bar-fill" id="completenessBar" style="width: 98%;"></div>
-                        </div>
-                        <div class="score-stats-summary">
-                            <div class="score-stat-box">
-                                <div style="font-size:18px; font-weight:700; color:var(--gold);" id="verifiedIdsCount">18</div>
-                                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Verified IDs</div>
-                            </div>
-                            <div class="score-stat-box">
-                                <div style="font-size:18px; font-weight:700; color:var(--primary);" id="confidenceRating">Excellent</div>
-                                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Confidence Rating</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="profile-card">
-                    <div class="profile-card-header">
-                        <h3><i class="fas fa-heartbeat" style="color:var(--primary);"></i> Registry Health</h3>
-                        <span class="card-action" onclick="syncAllRegistries()">Sync All <i class="fas fa-sync-alt"></i></span>
-                    </div>
-                    <div class="profile-card-body">
-                        <div class="health-grid" id="healthGrid">
-                            <div class="health-stat-card">
-                                <div class="health-stat-num" id="healthLinked">5</div>
-                                <div class="health-stat-label">Linked</div>
-                            </div>
-                            <div class="health-stat-card">
-                                <div class="health-stat-num" style="color: var(--primary);" id="healthVerified">5</div>
-                                <div class="health-stat-label">Verified</div>
-                            </div>
-                            <div class="health-stat-card">
-                                <div class="health-stat-num" style="color: var(--warning);" id="healthPending">0</div>
-                                <div class="health-stat-label">Pending</div>
-                            </div>
-                            <div class="health-stat-card">
-                                <div class="health-stat-num" style="color: var(--danger);" id="healthExpired">0</div>
-                                <div class="health-stat-label">Expired</div>
-                            </div>
-                        </div>
-                        <div class="health-sync-footer">
-                            <span>Last Synchronized:</span>
-                            <span style="font-weight:600; color:var(--text);" id="lastSyncTime"><i class="far fa-clock"></i> 2 days ago</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="profile-card">
+                <div class="profile-card section-content" id="section-passports" style="display:none;">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-fingerprint" style="color:var(--primary);"></i> Identity Passports</h3>
                     </div>
                     <div class="profile-card-body" id="identifiersContainer"></div>
                 </div>
-                <div class="profile-card">
+
+                <div class="profile-card section-content" id="section-roles" style="display:none;">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-user-tag" style="color:var(--primary);"></i> Artistic Footprint & Roles</h3>
                     </div>
@@ -159,7 +191,8 @@
                         <div class="roles-ecosystem" id="rolesContainer"></div>
                     </div>
                 </div>
-                <div class="profile-card">
+
+                <div class="profile-card section-content" id="section-evolution" style="display:none;">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-history" style="color:var(--primary);"></i> Professional Evolution</h3>
                     </div>
@@ -167,7 +200,8 @@
                         <div class="timeline-container" id="timelineContainer"></div>
                     </div>
                 </div>
-                <div class="profile-card">
+
+                <div class="profile-card section-content" id="section-networks" style="display:none;">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-share-alt" style="color:var(--info);"></i> Linked Networks</h3>
                     </div>
@@ -177,6 +211,27 @@
         </div>
     </div>
 </div>
+
+<button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()" aria-label="Scroll to top">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+<div class="portfolio-modal" id="portfolioModal">
+    <div class="portfolio-modal-content">
+        <div class="portfolio-modal-header">
+            <h2><i class="fas fa-cubes" style="color:var(--primary);"></i> Public Portfolio</h2>
+            <button class="portfolio-modal-close" onclick="closePortfolioModal()">&times;</button>
+        </div>
+        <div class="portfolio-modal-body">
+            <div class="portfolio-grid" id="portfolioGrid"></div>
+        </div>
+        <div class="portfolio-modal-footer">
+            <span class="portfolio-info"><i class="fas fa-info-circle"></i> 6 works displayed</span>
+            <button class="btn btn-primary" onclick="closePortfolioModal()">Close</button>
+        </div>
+    </div>
+</div>
+
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="/supabase-config.js"></script>
 <script src="/assets/js/routes.js"></script>
