@@ -1,425 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>SeekReap · Account Settings</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="/supabase-config.js"></script>
-<style>
-:root{
-  --gold:#C9993A;--gold-light:#E8C06A;--gold-dark:#9B7520;
-  --gold-dim:rgba(201,153,58,0.12);--gold-border:rgba(201,153,58,0.25);
-  --bg:#08080E;--bg2:#0F0F18;--bg3:#161622;--bg4:#1E1E2A;
-  --surface:rgba(255,255,255,0.03);--surface2:rgba(255,255,255,0.06);
-  --text:#F0F0F0;--text-dim:#808098;--text-mid:#B0B0C8;
-  --green:#4CAF50;--red:#F44336;--amber:#FF9800;--blue:#2196F3;
-  --radius:16px;--radius-sm:10px;--t:0.2s cubic-bezier(0.4,0,0.2,1);
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
-
-#authGate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;}
-.auth-card{background:var(--bg2);border:1px solid var(--gold-border);border-radius:22px;padding:40px;max-width:420px;width:100%;text-align:center;}
-.auth-logo{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;background:linear-gradient(135deg,#FAFAF8,#E8C06A);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:8px;}
-.auth-sub{color:var(--text-dim);font-size:14px;margin-bottom:20px;}
-.auth-err{background:rgba(244,67,54,0.1);border:1px solid rgba(244,67,54,0.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);display:none;margin-bottom:14px;}
-
-.navbar{background:rgba(8,8,14,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--gold-border);padding:13px 32px;position:sticky;top:0;z-index:200;}
-.nav-container{max-width:960px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px;}
-.logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;background:linear-gradient(135deg,#FAFAF8,#E8C06A);-webkit-background-clip:text;background-clip:text;color:transparent;text-decoration:none;}
-.nav-back{color:var(--text-dim);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;transition:var(--t);}
-.nav-back:hover{color:var(--gold-light);}
-
-.container{max-width:960px;margin:0 auto;padding:32px;position:relative;z-index:1;}
-.page-head{margin-bottom:26px;}
-.page-head h1{font-family:'Cormorant Garamond',serif;font-size:32px;margin-bottom:6px;}
-.page-head p{color:var(--text-dim);font-size:13px;}
-
-.card{background:var(--bg2);border:1px solid var(--gold-border);border-radius:var(--radius);padding:26px;margin-bottom:20px;}
-.card h2{font-size:16px;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
-.card h2 i{color:var(--gold-light);font-size:14px;}
-.card-sub{color:var(--text-dim);font-size:12px;margin-bottom:18px;}
-
-.field{margin-bottom:14px;}
-.field label{display:block;font-size:12px;color:var(--text-mid);margin-bottom:6px;font-weight:600;}
-.field input,.field select{width:100%;padding:11px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;transition:var(--t);}
-.field input:focus,.field select:focus{outline:none;border-color:var(--gold-border);background:rgba(201,153,58,0.04);}
-.field input:disabled{opacity:0.5;cursor:not-allowed;}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-@media(max-width:600px){.field-row{grid-template-columns:1fr;}}
-
-.btn{padding:11px 20px;border-radius:var(--radius-sm);font-weight:600;font-size:13px;cursor:pointer;border:none;transition:var(--t);display:inline-flex;align-items:center;gap:8px;}
-.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#0a0a0f;}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(201,153,58,0.25);}
-.btn-secondary{background:var(--surface);border:1px solid rgba(255,255,255,0.1);color:var(--text);}
-.btn-secondary:hover{border-color:var(--gold-border);}
-.btn-danger{background:rgba(244,67,54,0.1);border:1px solid rgba(244,67,54,0.3);color:var(--red);}
-.btn-danger:hover{background:rgba(244,67,54,0.18);}
-.btn[disabled]{opacity:0.6;cursor:not-allowed;transform:none!important;}
-
-.plan-box{display:flex;justify-content:space-between;align-items:center;background:rgba(201,153,58,0.06);border:1px solid var(--gold-border);border-radius:var(--radius-sm);padding:16px 18px;margin-bottom:14px;flex-wrap:wrap;gap:12px;}
-.plan-box .plan-name{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--gold-light);}
-.plan-box .plan-detail{color:var(--text-dim);font-size:12px;margin-top:2px;}
-
-.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);}
-.toggle-row:last-child{border-bottom:none;}
-.toggle-row .t-label{font-size:13px;}
-.toggle-row .t-sub{font-size:11px;color:var(--text-dim);margin-top:2px;}
-.switch{position:relative;width:42px;height:24px;flex-shrink:0;}
-.switch input{opacity:0;width:0;height:0;}
-.slider{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,0.15);border-radius:24px;transition:var(--t);}
-.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:var(--t);}
-input:checked + .slider{background:linear-gradient(135deg,var(--gold),var(--gold-dark));}
-input:checked + .slider:before{transform:translateX(18px);}
-
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg4);border:1px solid var(--gold-border);border-radius:12px;padding:12px 22px;font-size:13px;opacity:0;transition:var(--t);z-index:9999;pointer-events:none;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-.danger-card{border-color:rgba(244,67,54,0.25);}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeekReap · Identity Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/profile.css">
 </head>
 <body>
-
-<div id="authGate">
-  <div class="auth-card">
-    <div class="auth-logo">SeekReap</div>
-    <div class="auth-sub">Sign in to manage your account</div>
-    <div id="authErr" class="auth-err"></div>
-    <div style="display:flex;flex-direction:column;gap:14px;">
-      <input class="field-inline" id="loginEmail" type="email" placeholder="Email address" style="padding:12px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--text);font-size:14px;">
-      <input id="loginPass" type="password" placeholder="Password" style="padding:12px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--text);font-size:14px;">
-      <button class="btn btn-primary" style="justify-content:center;" onclick="doLogin()">Sign In</button>
-      <div style="font-size:12px;color:var(--text-dim);text-align:center;">Don't have an account? <a href="signup_signin.html" style="color:var(--gold-light);">Sign up</a></div>
+<div class="main-content">
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="back-btn" onclick="goBack()" aria-label="Go back">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+        <div class="topbar-right">
+            <div class="search-container" id="searchContainer">
+                <i class="fas fa-search search-icon-inline"></i>
+                <input type="text" placeholder="Search your profile..." id="headerSearch">
+                <button class="search-close-btn" onclick="toggleSearch()" aria-label="Close search">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <button class="search-toggle-btn" onclick="toggleSearch()" aria-label="Toggle search">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </header>
+    <div class="profile-container">
+        <div class="hero-assembly">
+            <div class="cover-photo-container">
+                <div class="cover-image">
+                    <i class="fas fa-music"></i>
+                </div>
+                <div class="cover-overlay"></div>
+            </div>
+            <div class="hero-details-container">
+                <div class="profile-avatar-large" id="profileAvatar">
+                    S
+                    <div class="avatar-overlay"><i class="fas fa-camera"></i></div>
+                </div>
+                <div class="profile-header-info">
+                    <div class="display-name" id="profileDisplayName">—</div>
+                    <div class="artist-name" id="profileArtisticName">—</div>
+                    <div class="pronouns" id="profilePronouns">He/Him</div>
+                    <div class="profile-badges" id="profileBadges">
+                        <span class="badge-pill badge-verified" id="verifyBadge"><i class="fas fa-check-circle"></i> Verified</span>
+                        <span class="badge-pill badge-creator" id="typeBadge"><i class="fas fa-user-astronaut"></i> Creator</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="profile-layout-grid">
+            <div class="main-lane">
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="fas fa-align-left" style="color:var(--text-dim);"></i> Biography</h3>
+                        <span class="card-action" onclick="toggleEditMode()">Edit →</span>
+                    </div>
+                    <div class="profile-card-body">
+                        <div class="bio-text" id="profileBioText">
+                            Award-winning music producer and composer with 10+ years of experience creating genre-defying electronic music. Collaborated with artists across Africa, Europe, and the Americas.
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="fas fa-trophy" style="color:var(--gold);"></i> Career Accomplishments</h3>
+                        <span class="card-action" onclick="refreshAchievements()">Refresh →</span>
+                    </div>
+                    <div class="profile-card-body">
+                        <div class="achievements-grid" id="achievementsList"></div>
+                    </div>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="fas fa-id-card" style="color:var(--text-dim);"></i> Identity Record</h3>
+                        <span class="card-action" onclick="toggleEditMode()">Edit →</span>
+                    </div>
+                    <div class="profile-card-body" id="identityContainer"></div>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="fas fa-briefcase" style="color:var(--text-dim);"></i> Professional History</h3>
+                        <span class="card-action" onclick="addEmployment()">Add →</span>
+                    </div>
+                    <div class="profile-card-body" id="employmentContainer"></div>
+                </div>
+            </div>
+            <div class="side-lane">
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="fas fa-chart-line" style="color:var(--primary);"></i> Professional Identity</h3>
+                    </div>
+                    <div class="profile-card-body">
+                        <div class="score-row">
+                            <span class="text-dim" style="font-weight:600;">Completeness & Verification</span>
+                            <span style="font-weight:700; color:var(--primary);" id="completenessScore">98%</span>
+                        </div>
+                        <div class="score-bar-container">
+                            <div class="score-bar-fill" id="completenessBar" style="width: 98%;"></div>
+                        </div>
+                        <div class="score-stats-summary">
+                            <div class="score-stat-box">
+                                <div style="font-size:18px; font-weight:700; color:var(--gold);" id="verifiedIdsCount">18</div>
+                                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Verified IDs</div>
+                            </div>
+                            <div class="score-stat-box">
+                                <div style="font-size:18px; font-weight:700; color:var(--primary);" id="confidenceRating">Excellent</div>
+                                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase;">Confidence Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="fas fa-heartbeat" style="color:var(--primary);"></i> Registry Health</h3>
+                        <span class="card-action" onclick="syncAllRegistries()">Sync All <i class="fas fa-sync-alt"></i></span>
+                    </div>
+                    <div class="profile-card-body">
+                        <div class="health-grid" id="healthGrid">
+                            <div class="health-stat-card">
+                                <div class="health-stat-num" id="healthLinked">5</div>
+                                <div class="health-stat-label">Linked</div>
+                            </div>
+                            <div class="health-stat-card">
+                                <div class="health-stat-num" style="color: var(--primary);" id="healthVerified">5</div>
+                                <div class="health-stat-label">Verified</div>
+                            </div>
+                            <div class="health-stat-card">
+                                <div class="health-stat-num" style="color: var(--warning);" id="healthPending">0</div>
+                                <div class="health-stat-label">Pending</div>
+                            </div>
+                            <div class="health-stat-card">
+                                <div class="health-stat-num" style="color: var(--danger);" id="healthExpired">0</div>
+                                <div class="health-stat-label">Expired</div>
+                            </div>
+                        </div>
+                        <div class="health-sync-footer">
+                            <span>Last Synchronized:</span>
+                            <span style="font-weight:600; color:var(--text);" id="lastSyncTime"><i class="far fa-clock"></i> 2 days ago</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="fas fa-fingerprint" style="color:var(--primary);"></i> Identity Passports</h3>
+                    </div>
+                    <div class="profile-card-body" id="identifiersContainer"></div>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="fas fa-user-tag" style="color:var(--primary);"></i> Artistic Footprint & Roles</h3>
+                    </div>
+                    <div class="profile-card-body">
+                        <div class="roles-ecosystem" id="rolesContainer"></div>
+                    </div>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="fas fa-history" style="color:var(--primary);"></i> Professional Evolution</h3>
+                    </div>
+                    <div class="profile-card-body">
+                        <div class="timeline-container" id="timelineContainer"></div>
+                    </div>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="fas fa-share-alt" style="color:var(--info);"></i> Linked Networks</h3>
+                    </div>
+                    <div class="profile-card-body" id="networksContainer"></div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
-
-<nav class="navbar" id="mainNav" style="display:none;">
-  <div class="nav-container">
-    <a href="/" class="logo">SeekReap</a>
-    <a href="dashboard.html" class="nav-back"><i class="fas fa-arrow-left"></i> Back to Studio</a>
-  </div>
-</nav>
-
-<div class="container" id="mainApp" style="display:none;">
-  <div class="page-head">
-    <h1>Account Settings</h1>
-    <p>Manage your profile, plan, security and notification preferences</p>
-  </div>
-
-  <!-- Profile -->
-  <div class="card">
-    <h2><i class="fas fa-user"></i> Profile</h2>
-    <div class="card-sub">Your name and account email. The rest is optional — fill in what's useful for your certificates.</div>
-    <div class="field-row">
-      <div class="field">
-        <label>Display Name</label>
-        <input id="displayName" type="text" placeholder="Your name or artist name">
-      </div>
-      <div class="field">
-        <label>Email Address</label>
-        <input id="accountEmail" type="email" disabled>
-      </div>
-    </div>
-    <div class="field-row">
-      <div class="field">
-        <label>Full Legal Name <span style="color:var(--text-dim);font-weight:400;">(optional)</span></label>
-        <input id="fullName" type="text" placeholder="As it should appear on certificates">
-      </div>
-      <div class="field">
-        <label>Artistic / Stage Name <span style="color:var(--text-dim);font-weight:400;">(optional)</span></label>
-        <input id="artisticName" type="text" placeholder="e.g., NovaKai, DJ Spark">
-      </div>
-    </div>
-    <div class="field-row">
-      <div class="field">
-        <label>Title <span style="color:var(--text-dim);font-weight:400;">(optional)</span></label>
-        <select id="profileTitle">
-          <option value="">—</option>
-          <option value="Mr">Mr.</option>
-          <option value="Mrs">Mrs.</option>
-          <option value="Ms">Ms.</option>
-          <option value="Mx">Mx.</option>
-          <option value="Dr">Dr.</option>
-          <option value="Prof">Prof.</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Country <span style="color:var(--text-dim);font-weight:400;">(optional)</span></label>
-        <select id="profileCountry">
-          <option value="">—</option>
-          <option value="US">United States</option>
-          <option value="UK">United Kingdom</option>
-          <option value="CA">Canada</option>
-          <option value="AU">Australia</option>
-          <option value="DE">Germany</option>
-          <option value="FR">France</option>
-          <option value="JP">Japan</option>
-          <option value="BR">Brazil</option>
-          <option value="IN">India</option>
-          <option value="ZA">South Africa</option>
-          <option value="NG">Nigeria</option>
-          <option value="KE">Kenya</option>
-          <option value="EG">Egypt</option>
-          <option value="AE">UAE</option>
-          <option value="SG">Singapore</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn btn-primary" onclick="saveProfile()"><i class="fas fa-check"></i> Save Changes</button>
-  </div>
-
-  <!-- Security -->
-  <div class="card">
-    <h2><i class="fas fa-lock"></i> Security</h2>
-    <div class="card-sub">Change your password or manage two-factor authentication</div>
-    <div class="field-row">
-      <div class="field">
-        <label>New Password</label>
-        <input id="newPass" type="password" placeholder="Min 6 characters">
-      </div>
-      <div class="field">
-        <label>Confirm New Password</label>
-        <input id="confirmPass" type="password" placeholder="Repeat password">
-      </div>
-    </div>
-    <button class="btn btn-secondary" onclick="changePassword()"><i class="fas fa-key"></i> Update Password</button>
-    <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-      <div>
-        <div style="font-size:13px;">Two-Factor Authentication (TOTP)</div>
-        <div style="font-size:11px;color:var(--text-dim);margin-top:2px;" id="mfaStatus">Checking status…</div>
-      </div>
-      <button class="btn btn-secondary" onclick="location.href='dashboard.html'"><i class="fas fa-shield-halved"></i> Manage in Dashboard</button>
-    </div>
-  </div>
-
-  <!-- Plan & Billing -->
-  <div class="card">
-    <h2><i class="fas fa-crown"></i> Plan &amp; Billing</h2>
-    <div class="card-sub">Your current subscription and billing history</div>
-    <div class="plan-box">
-      <div>
-        <div class="plan-name" id="planName">Free</div>
-        <div class="plan-detail" id="planDetail">1 certification included</div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <a href="bill_review.html" class="btn btn-secondary"><i class="fas fa-receipt"></i> Billing History</a>
-        <a href="pricing.html" class="btn btn-primary"><i class="fas fa-arrow-up"></i> Upgrade Plan</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Notifications -->
-  <div class="card">
-    <h2><i class="fas fa-bell"></i> Notifications</h2>
-    <div class="card-sub">Choose what you want to be notified about</div>
-    <div class="toggle-row">
-      <div><div class="t-label">Certification updates</div><div class="t-sub">Status changes on your submitted works</div></div>
-      <label class="switch"><input type="checkbox" id="notifCert" checked onchange="saveNotifPrefs()"><span class="slider"></span></label>
-    </div>
-    <div class="toggle-row">
-      <div><div class="t-label">Content match alerts</div><div class="t-sub">Potential rights infringement detected</div></div>
-      <label class="switch"><input type="checkbox" id="notifMatch" checked onchange="saveNotifPrefs()"><span class="slider"></span></label>
-    </div>
-    <div class="toggle-row">
-      <div><div class="t-label">Co-owner invitations</div><div class="t-sub">Someone invites you to a shared work</div></div>
-      <label class="switch"><input type="checkbox" id="notifInvite" checked onchange="saveNotifPrefs()"><span class="slider"></span></label>
-    </div>
-    <div class="toggle-row">
-      <div><div class="t-label">Billing &amp; receipts</div><div class="t-sub">Payment confirmations and invoices</div></div>
-      <label class="switch"><input type="checkbox" id="notifBilling" checked onchange="saveNotifPrefs()"><span class="slider"></span></label>
-    </div>
-    <div class="toggle-row">
-      <div><div class="t-label">Product updates</div><div class="t-sub">Occasional news about new SeekReap features</div></div>
-      <label class="switch"><input type="checkbox" id="notifProduct" onchange="saveNotifPrefs()"><span class="slider"></span></label>
-    </div>
-  </div>
-
-  <!-- Session -->
-  <div class="card">
-    <h2><i class="fas fa-right-from-bracket"></i> Session</h2>
-    <div class="card-sub">Signed in as <span id="sessionEmail">—</span></div>
-    <a href="logout_confirm.html" class="btn btn-secondary"><i class="fas fa-power-off"></i> Sign Out</a>
-  </div>
-
-  <!-- Danger Zone -->
-  <div class="card danger-card">
-    <h2 style="color:var(--red);"><i class="fas fa-triangle-exclamation"></i> Danger Zone</h2>
-    <div class="card-sub">Deleting your account permanently removes your works, certificates, and licensing history. This does not revoke certificates already issued to third parties.</div>
-    <button class="btn btn-danger" onclick="requestDeletion()"><i class="fas fa-trash"></i> Request Account Deletion</button>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-const SUPA_URL = 'https://hpbxgcszingxpgogctge.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhwYnhnY3N6aW5neHBnb2djdGdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MTEwMzAsImV4cCI6MjA5MDI4NzAzMH0.wzrn2Yvpfcuzrq8JZLBLv927QHM2BpSQVfmaGHrLI6E';
-const TIER4_URL = 'https://seekreap-tier-4-orchestrator-1.onrender.com';
-const PLANS_INFO = {free:{name:'Free',detail:'1 certification included'},payg:{name:'Pay-as-you-go',detail:'$1.99 per certification'},creator:{name:'Creator',detail:'10 certifications / month'},studio:{name:'Studio',detail:'Unlimited certifications'}};
-
-let supaClient = null;
-let currentUser = null;
-
-function toast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2600);
-}
-
-function showAuthErr(msg){
-  const el = document.getElementById('authErr');
-  el.textContent = msg; el.style.display = 'block';
-  setTimeout(()=>el.style.display='none', 4000);
-}
-
-function initSupabase(){
-  return new Promise(res=>{
-    (function tryInit(){
-      if (window.supabase && window.supabase.createClient){
-        supaClient = window.supabase.createClient(SUPA_URL, SUPA_KEY);
-        res(supaClient);
-      } else setTimeout(tryInit, 60);
-    })();
-  });
-}
-
-async function authHeaders(){
-  const { data } = await supaClient.auth.getSession();
-  const token = data?.session?.access_token;
-  return token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
-               : { 'Content-Type': 'application/json' };
-}
-
-async function doLogin(){
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass  = document.getElementById('loginPass').value;
-  if (!email || !pass) return showAuthErr('Enter email and password');
-  try{
-    const {data,error} = await supaClient.auth.signInWithPassword({email,password:pass});
-    if (error) throw error;
-    currentUser = data.user;
-    await loadAccount();
-  }catch(e){ showAuthErr(e.message || 'Login failed'); }
-}
-
-async function loadAccount(){
-  document.getElementById('authGate').style.display='none';
-  document.getElementById('mainNav').style.display='block';
-  document.getElementById('mainApp').style.display='block';
-
-  // Immediate fallback from the session, replaced below once /api/creators/me responds
-  document.getElementById('displayName').value = currentUser.email?.split('@')[0] || 'Creator';
-  document.getElementById('accountEmail').value = currentUser.email || '';
-  document.getElementById('sessionEmail').textContent = currentUser.email || '';
-
-  const uid = currentUser.id || 'demo';
-  const planData = JSON.parse(localStorage.getItem(`sr_plan_${uid}`) || '{"plan":"free"}');
-  const plan = PLANS_INFO[planData.plan] || PLANS_INFO.free;
-  document.getElementById('planName').textContent = plan.name;
-  document.getElementById('planDetail').textContent = plan.detail;
-
-  try{
-    const headers = await authHeaders();
-    const res = await fetch(TIER4_URL + '/api/creators/me', { headers });
-    if (res.ok){
-      const p = await res.json();
-      document.getElementById('displayName').value   = p.name || currentUser.email?.split('@')[0] || 'Creator';
-      document.getElementById('fullName').value       = p.full_name || '';
-      document.getElementById('artisticName').value   = p.artistic_name || '';
-      document.getElementById('profileTitle').value   = p.title || '';
-      document.getElementById('profileCountry').value = p.country || '';
-
-      const prefs = Object.keys(p.preferences || {}).length ? p.preferences
-        : {cert:true,match:true,invite:true,billing:true,product:false};
-      document.getElementById('notifCert').checked    = prefs.cert    ?? true;
-      document.getElementById('notifMatch').checked   = prefs.match   ?? true;
-      document.getElementById('notifInvite').checked  = prefs.invite  ?? true;
-      document.getElementById('notifBilling').checked = prefs.billing ?? true;
-      document.getElementById('notifProduct').checked = prefs.product ?? false;
-    }
-  }catch(e){
-    console.error('Could not load profile from Tier 4:', e);
-  }
-
-  try{
-    const { data: factors } = await supaClient.auth.mfa.listFactors();
-    const verified = (factors?.totp || []).some(f => f.status === 'verified');
-    document.getElementById('mfaStatus').textContent = verified ? 'Enabled' : 'Not enabled — set this up from the Dashboard for extra account security';
-  }catch(e){
-    document.getElementById('mfaStatus').textContent = 'Status unavailable';
-  }
-}
-
-async function saveProfile(){
-  const name = document.getElementById('displayName').value.trim();
-  if (!name) return toast('Display name cannot be empty');
-  const body = {
-    name,
-    full_name:     document.getElementById('fullName').value.trim(),
-    artistic_name: document.getElementById('artisticName').value.trim(),
-    title:         document.getElementById('profileTitle').value,
-    country:       document.getElementById('profileCountry').value,
-  };
-  try{
-    const headers = await authHeaders();
-    const res = await fetch(TIER4_URL + '/api/creators/me', {
-      method: 'PATCH', headers, body: JSON.stringify(body)
-    });
-    if (!res.ok) throw new Error((await res.json().catch(()=>({}))).error || 'Save failed');
-    toast('Profile updated');
-  }catch(e){ toast(e.message || 'Could not update profile'); }
-}
-
-async function changePassword(){
-  const p1 = document.getElementById('newPass').value;
-  const p2 = document.getElementById('confirmPass').value;
-  if (!p1 || p1.length < 6) return toast('Password must be at least 6 characters');
-  if (p1 !== p2) return toast('Passwords do not match');
-  try{
-    const {error} = await supaClient.auth.updateUser({password:p1});
-    if (error) throw error;
-    document.getElementById('newPass').value='';
-    document.getElementById('confirmPass').value='';
-    toast('Password updated');
-  }catch(e){ toast(e.message || 'Could not update password'); }
-}
-
-async function saveNotifPrefs(){
-  const preferences = {
-    cert: document.getElementById('notifCert').checked,
-    match: document.getElementById('notifMatch').checked,
-    invite: document.getElementById('notifInvite').checked,
-    billing: document.getElementById('notifBilling').checked,
-    product: document.getElementById('notifProduct').checked,
-  };
-  try{
-    const headers = await authHeaders();
-    const res = await fetch(TIER4_URL + '/api/creators/me', {
-      method: 'PATCH', headers, body: JSON.stringify({ preferences })
-    });
-    if (!res.ok) throw new Error('Save failed');
-    toast('Preferences saved');
-  }catch(e){ toast('Could not save preferences — please retry'); }
-}
-
-function requestDeletion(){
-  if (!confirm('This will submit a request to permanently delete your SeekReap account. Continue?')) return;
-  toast('Deletion request submitted — our team will confirm by email within 5 business days');
-}
-
-(async function init(){
-  await initSupabase();
-  const { data } = await supaClient.auth.getSession();
-  if (data?.session?.user){
-    currentUser = data.session.user;
-    await loadAccount();
-  }
-})();
-</script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script src="/assets/js/routes.js"></script>
+<script src="/assets/js/auth-guard.js"></script>
+<script src="/assets/js/profile.js"></script>
 </body>
 </html>
