@@ -7,11 +7,11 @@ let _isEditMode = false;
 function goBack() { window.history.back(); }
 
 function toggleSearch() {
-    const container = document.getElementById('searchContainer');
-    const input = document.getElementById('headerSearch');
+    var container = document.getElementById('searchContainer');
+    var input = document.getElementById('headerSearch');
     container.classList.toggle('active');
     if (container.classList.contains('active')) {
-        setTimeout(() => input.focus(), 100);
+        setTimeout(function() { input.focus(); }, 100);
     } else {
         input.value = '';
     }
@@ -19,7 +19,7 @@ function toggleSearch() {
 
 function toggleMoreMenu(event) {
     if (event) event.stopPropagation();
-    const box = document.getElementById('morePopupBox');
+    var box = document.getElementById('morePopupBox');
     if (box) box.classList.toggle('active');
 }
 
@@ -29,7 +29,7 @@ function handleMenuClick(action) {
 }
 
 document.addEventListener('click', function(e) {
-    const box = document.getElementById('morePopupBox');
+    var box = document.getElementById('morePopupBox');
     if (box && !box.contains(e.target)) {
         box.classList.remove('active');
     }
@@ -37,11 +37,11 @@ document.addEventListener('click', function(e) {
 
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        const container = document.getElementById('searchContainer');
+        var container = document.getElementById('searchContainer');
         if (container.classList.contains('active')) { toggleSearch(); }
-        const box = document.getElementById('morePopupBox');
+        var box = document.getElementById('morePopupBox');
         if (box) box.classList.remove('active');
-        closePortfolioModal();
+        closePlayer();
     }
 });
 
@@ -50,7 +50,7 @@ function scrollToTop() {
 }
 
 window.addEventListener('scroll', function() {
-    const btn = document.getElementById('scrollTopBtn');
+    var btn = document.getElementById('scrollTopBtn');
     if (window.scrollY > 300) {
         btn.classList.add('visible');
     } else {
@@ -59,54 +59,170 @@ window.addEventListener('scroll', function() {
 });
 
 function toggleSectionTab(btn, sectionId) {
-    const allTabs = document.querySelectorAll('.section-tab');
-    const allSections = document.querySelectorAll('.section-content');
-    const isActive = btn.classList.contains('active');
-    allTabs.forEach(t => t.classList.remove('active'));
-    allSections.forEach(s => s.style.display = 'none');
+    var allTabs = document.querySelectorAll('.section-tab');
+    var allSections = document.querySelectorAll('.section-content');
+    var isActive = btn.classList.contains('active');
+    allTabs.forEach(function(t) { t.classList.remove('active'); });
+    allSections.forEach(function(s) { s.style.display = 'none'; });
     if (isActive) { return; }
     btn.classList.add('active');
-    const section = document.getElementById('section-' + sectionId);
+    var section = document.getElementById('section-' + sectionId);
     if (section) { section.style.display = 'block'; }
 }
 
-const portfolioVideos = [
-    { title: 'Nova Dawn - Official Music Video', duration: '4:32' },
-    { title: 'Behind the Scenes - Studio Session', duration: '6:15' },
-    { title: 'Electronic Explorations (Live Set)', duration: '8:42' },
-    { title: 'African Rhythms - Documentary', duration: '12:20' },
-    { title: 'Cinematic Soundscapes - Trailer', duration: '2:18' },
-    { title: 'NovaKai - Artist Interview', duration: '5:47' }
+var portfolioItems = [
+    { title: 'Nova Dawn', type: 'songs', duration: '4:32', icon: 'fa-music' },
+    { title: 'African Skies', type: 'songs', duration: '3:48', icon: 'fa-music' },
+    { title: 'Electronic Dreams', type: 'songs', duration: '5:12', icon: 'fa-music' },
+    { title: 'Rhythm of the Night', type: 'songs', duration: '4:05', icon: 'fa-music' },
+    { title: 'Soul Searching', type: 'songs', duration: '6:20', icon: 'fa-music' },
+    { title: 'Beyond the Horizon', type: 'songs', duration: '4:55', icon: 'fa-music' },
+    { title: 'Studio Session', type: 'photos', duration: 'Photo', icon: 'fa-image' },
+    { title: 'Live Performance', type: 'photos', duration: 'Photo', icon: 'fa-image' },
+    { title: 'Album Cover Art', type: 'photos', duration: 'Photo', icon: 'fa-image' },
+    { title: 'Behind the Scenes', type: 'photos', duration: 'Photo', icon: 'fa-image' },
+    { title: 'Soundcheck', type: 'photos', duration: 'Photo', icon: 'fa-image' },
+    { title: 'Recording Studio', type: 'photos', duration: 'Photo', icon: 'fa-image' },
+    { title: 'Studio Vlog', type: 'video', duration: '2:15', icon: 'fa-play-circle' },
+    { title: 'Performance Reel', type: 'video', duration: '3:30', icon: 'fa-play-circle' },
+    { title: 'Production Tips', type: 'video', duration: '4:20', icon: 'fa-play-circle' },
+    { title: 'Artist Interview', type: 'video', duration: '5:45', icon: 'fa-play-circle' },
+    { title: 'Live Jam Session', type: 'video', duration: '6:10', icon: 'fa-play-circle' },
+    { title: 'Behind the Track', type: 'video', duration: '3:55', icon: 'fa-play-circle' },
+    { title: 'Nova Dawn (Lyrics)', type: 'lyrics', duration: 'Lyrics', icon: 'fa-file-alt' },
+    { title: 'African Skies (Lyrics)', type: 'lyrics', duration: 'Lyrics', icon: 'fa-file-alt' },
+    { title: 'Electronic Dreams (Lyrics)', type: 'lyrics', duration: 'Lyrics', icon: 'fa-file-alt' },
+    { title: 'Rhythm of the Night (Lyrics)', type: 'lyrics', duration: 'Lyrics', icon: 'fa-file-alt' },
+    { title: 'Soul Searching (Lyrics)', type: 'lyrics', duration: 'Lyrics', icon: 'fa-file-alt' },
+    { title: 'Beyond the Horizon (Lyrics)', type: 'lyrics', duration: 'Lyrics', icon: 'fa-file-alt' }
 ];
 
-function openPortfolioModal() {
-    const modal = document.getElementById('portfolioModal');
-    const grid = document.getElementById('portfolioGrid');
-    grid.innerHTML = portfolioVideos.map(function(video, index) {
-        return '<div class="portfolio-item"><video controls preload="metadata" poster=""><source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">Your browser does not support the video tag.</video><div class="portfolio-item-info"><div class="portfolio-item-title">' + video.title + '</div><div class="portfolio-item-meta"><i class="far fa-clock"></i> ' + video.duration + '</div></div></div>';
+var currentPlayerIndex = 0;
+var filteredItems = portfolioItems.slice();
+var isPlaying = false;
+var playerInterval = null;
+
+function getTypeLabel(type) {
+    var labels = { songs: 'Song', photos: 'Photo', video: 'Video', lyrics: 'Lyrics' };
+    return labels[type] || type;
+}
+
+function renderPortfolio(filter) {
+    filter = filter || 'all';
+    var grid = document.getElementById('portfolioGrid');
+    if (!grid) return;
+    filteredItems = portfolioItems.filter(function(item) {
+        return filter === 'all' || item.type === filter;
+    });
+    grid.innerHTML = filteredItems.map(function(item, index) {
+        var typeLabel = getTypeLabel(item.type);
+        var icon = item.icon || 'fa-file';
+        return '<div class="portfolio-item" onclick="openPlayer(' + index + ')">' +
+            '<div class="portfolio-thumb">' +
+            '<i class="fas ' + icon + '"></i>' +
+            '<div class="play-overlay"><i class="fas fa-play-circle"></i></div>' +
+            '</div>' +
+            '<div class="portfolio-item-info">' +
+            '<div class="portfolio-item-title">' + item.title + '</div>' +
+            '<div class="portfolio-item-meta">' +
+            '<span>' + item.duration + '</span>' +
+            '<span class="portfolio-item-type">' + typeLabel + '</span>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
     }).join('');
+}
+
+function filterPortfolio(value) { renderPortfolio(value); }
+
+function openPlayer(index) {
+    currentPlayerIndex = index;
+    var item = filteredItems[index];
+    if (!item) return;
+    var modal = document.getElementById('playerModal');
+    var title = document.getElementById('playerTitle');
+    var meta = document.getElementById('playerMeta');
+    var artwork = document.getElementById('playerArtwork');
+    var duration = document.getElementById('playerDuration');
+    title.textContent = item.title;
+    meta.textContent = getTypeLabel(item.type) + ' • ' + item.duration;
+    artwork.innerHTML = '<i class="fas ' + (item.icon || 'fa-music') + '"></i>';
+    duration.textContent = item.duration;
+    document.getElementById('progressFill').style.width = '0%';
+    document.getElementById('playerCurrentTime').textContent = '0:00';
+    document.getElementById('playIcon').className = 'fas fa-play';
+    isPlaying = false;
+    if (playerInterval) { clearInterval(playerInterval); playerInterval = null; }
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 
-function closePortfolioModal() {
-    const modal = document.getElementById('portfolioModal');
+function closePlayer() {
+    var modal = document.getElementById('playerModal');
     modal.classList.remove('active');
     document.body.style.overflow = '';
+    if (playerInterval) { clearInterval(playerInterval); playerInterval = null; }
+    document.getElementById('playIcon').className = 'fas fa-play';
+    isPlaying = false;
 }
 
-document.getElementById('portfolioModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closePortfolioModal();
+function togglePlay() {
+    var icon = document.getElementById('playIcon');
+    if (isPlaying) {
+        icon.className = 'fas fa-play';
+        isPlaying = false;
+        if (playerInterval) { clearInterval(playerInterval); playerInterval = null; }
+    } else {
+        icon.className = 'fas fa-pause';
+        isPlaying = true;
+        var progress = 0;
+        if (playerInterval) { clearInterval(playerInterval); playerInterval = null; }
+        playerInterval = setInterval(function() {
+            progress += 0.5;
+            if (progress > 100) {
+                progress = 0;
+                playNext();
+            }
+            document.getElementById('progressFill').style.width = progress + '%';
+            var secs = Math.floor((progress / 100) * 180);
+            var mins = Math.floor(secs / 60);
+            secs = secs % 60;
+            document.getElementById('playerCurrentTime').textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }, 100);
     }
+}
+
+function playNext() {
+    if (filteredItems.length === 0) return;
+    var nextIndex = (currentPlayerIndex + 1) % filteredItems.length;
+    openPlayer(nextIndex);
+    if (isPlaying) {
+        document.getElementById('playIcon').className = 'fas fa-pause';
+    }
+}
+
+function playPrev() {
+    if (filteredItems.length === 0) return;
+    var prevIndex = (currentPlayerIndex - 1 + filteredItems.length) % filteredItems.length;
+    openPlayer(prevIndex);
+    if (isPlaying) {
+        document.getElementById('playIcon').className = 'fas fa-pause';
+    }
+}
+
+document.getElementById('playerModal').addEventListener('click', function(e) {
+    if (e.target === this) { closePlayer(); }
 });
 
 async function _getJwt() {
     if (_cachedJwt) return _cachedJwt;
     if (window.supabaseClient) {
         try {
-            const { data: { session }, error } = await window.supabaseClient.auth.getSession();
-            if (!error && session) { _cachedJwt = session.access_token; return _cachedJwt; }
+            var sessionData = await window.supabaseClient.auth.getSession();
+            if (!sessionData.error && sessionData.data.session) {
+                _cachedJwt = sessionData.data.session.access_token;
+                return _cachedJwt;
+            }
         } catch (e) { console.error('[Auth]', e); }
     }
     return null;
@@ -114,13 +230,17 @@ async function _getJwt() {
 
 async function apiFetch(path, opts) {
     opts = opts || {};
-    const jwt = await _getJwt();
-    const headers = { 'Content-Type': 'application/json' };
+    var jwt = await _getJwt();
+    var headers = { 'Content-Type': 'application/json' };
     if (opts.headers) { Object.assign(headers, opts.headers); }
-    if (jwt) headers['Authorization'] = 'Bearer ' + jwt;
-    const res = await fetch(TIER4 + path, { method: opts.method || 'GET', headers: headers, body: opts.body || null });
+    if (jwt) { headers['Authorization'] = 'Bearer ' + jwt; }
+    var res = await fetch(TIER4 + path, {
+        method: opts.method || 'GET',
+        headers: headers,
+        body: opts.body || null
+    });
     if (!res.ok) {
-        const err = await res.json().catch(function() { return {}; });
+        var err = await res.json().catch(function() { return {}; });
         throw new Error(err.error || err.detail || 'HTTP ' + res.status);
     }
     return res.json();
@@ -128,7 +248,10 @@ async function apiFetch(path, opts) {
 
 async function updateProfile(field, value) {
     try {
-        const result = await apiFetch('/api/creators/me', { method: 'PATCH', body: JSON.stringify({ [field]: value }) });
+        var result = await apiFetch('/api/creators/me', {
+            method: 'PATCH',
+            body: JSON.stringify({ [field]: value })
+        });
         showToast('Profile updated successfully', 'success');
         await loadProfile();
         return result;
@@ -140,14 +263,14 @@ async function updateProfile(field, value) {
 
 async function loadProfile() {
     try {
-        const data = await apiFetch('/api/creators/me');
+        var data = await apiFetch('/api/creators/me');
         _profileData = data;
     } catch (e) {
         console.warn('Using fallback profile data:', e);
         _profileData = getFallbackData();
     }
     try {
-        const employment = await apiFetch('/api/creators/me/employment');
+        var employment = await apiFetch('/api/creators/me/employment');
         _employmentData = employment;
     } catch (e) {
         console.warn('Using fallback employment data:', e);
@@ -155,6 +278,7 @@ async function loadProfile() {
     }
     renderProfile();
     renderEmployment();
+    renderPortfolio('all');
 }
 
 function getFallbackData() {
@@ -195,6 +319,7 @@ function getFallbackData() {
             { title: 'Composer', tier: 'Secondary Role', period: '2014—Present', works: 89, collabs: 21, active: 4, rating: 4, expertise: ['Orchestral Arranging', 'Film Scoring'], industries: ['Film', 'Theatre'], id_link: ['ISWC', 'ISNI'] },
             { title: 'Educator', tier: 'Mentor', period: '2022—Present', works: 12, collabs: 18, active: 2, rating: 3, expertise: ['Cape Town Music Institute', 'Masterclasses'], industries: ['Education'], id_link: ['ORCID', 'ISNI'] }
         ],
+        roles_inline: ['Musician', 'Photographer', 'Videographer', 'Lyricist'],
         timeline: [
             { year: '2014', role: 'Musician', desc: 'Began professional stage operations' },
             { year: '2016', role: 'Producer', desc: 'Established Nova Studios' },
@@ -263,6 +388,12 @@ function renderProfile() {
     document.getElementById('profileArtisticName').textContent = p.artistic_name || '—';
     document.getElementById('profileSeekReapID').textContent = p.seekreap_id || '—';
     document.getElementById('profilePronouns').textContent = p.pronouns || '';
+    
+    var rolesInline = p.roles_inline || ['Musician', 'Photographer', 'Videographer', 'Lyricist'];
+    var rolesHtml = rolesInline.map(function(role) {
+        return '<span class="role-clickable" onclick="showToast(\'Viewing ' + role + ' works\', \'info\')">' + role + '</span>';
+    }).join(' • ');
+    document.getElementById('profileRolesInline').innerHTML = rolesHtml;
     
     var country = p.country_of_residence || '—';
     var province = p.province || '—';
@@ -488,6 +619,7 @@ function refreshSimulation() {
     _employmentData = getFallbackEmployment();
     renderProfile();
     renderEmployment();
+    renderPortfolio('all');
     showToast('Profile refreshed with simulation records', 'success');
 }
 
@@ -577,5 +709,10 @@ window.toggleMoreMenu = toggleMoreMenu;
 window.handleMenuClick = handleMenuClick;
 window.scrollToTop = scrollToTop;
 window.toggleSectionTab = toggleSectionTab;
-window.openPortfolioModal = openPortfolioModal;
-window.closePortfolioModal = closePortfolioModal;
+window.renderPortfolio = renderPortfolio;
+window.filterPortfolio = filterPortfolio;
+window.openPlayer = openPlayer;
+window.closePlayer = closePlayer;
+window.togglePlay = togglePlay;
+window.playNext = playNext;
+window.playPrev = playPrev;
