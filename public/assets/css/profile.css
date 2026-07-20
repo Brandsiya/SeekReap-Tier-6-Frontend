@@ -1299,6 +1299,7 @@ body {
     .search-container { width: 180px; }
     .search-container input { font-size: 12px; }
 
+    /* Enforce Hero Assembly Pattern On Tablets */
     .cover-photo-container { height: 220px; }
     .hero-details-container {
         flex-direction: row;
@@ -1353,6 +1354,7 @@ body {
 }
 
 @media (max-width: 480px) {
+    /* Enforce Precise Hero Assembly Pattern Scale On Mobile Devices */
     .cover-photo-container { height: 150px; }
     .hero-details-container {
         flex-direction: row;

@@ -4,41 +4,50 @@ let _profileData = null;
 let _employmentData = null;
 let _isEditMode = false;
 
+// Expanded 24-Item Dataset for the Integrated Pipeline
 const portfolioAssets = [
+    // 6 Videos
     { id: 'v1', type: 'short-video', title: 'Nova Dawn - Official Music Video', meta: 'Duration: 4:32', source: 'https://www.w3schools.com/html/mov_bbb.mp4', poster: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop' },
     { id: 'v2', type: 'short-video', title: 'Behind the Scenes - Studio Session', meta: 'Duration: 6:15', source: 'https://www.w3schools.com/html/movie.mp4', poster: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=400&auto=format&fit=crop' },
     { id: 'v3', type: 'short-video', title: 'Electronic Explorations (Live Set)', meta: 'Duration: 8:42', source: 'https://www.w3schools.com/html/mov_bbb.mp4', poster: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop' },
     { id: 'v4', type: 'short-video', title: 'African Rhythms - Documentary Short', meta: 'Duration: 12:20', source: 'https://www.w3schools.com/html/movie.mp4', poster: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop' },
     { id: 'v5', type: 'short-video', title: 'Cinematic Soundscapes - Trailer', meta: 'Duration: 2:18', source: 'https://www.w3schools.com/html/mov_bbb.mp4', poster: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=400&auto=format&fit=crop' },
     { id: 'v6', type: 'short-video', title: 'NovaKai - Artist Masterclass Intro', meta: 'Duration: 5:47', source: 'https://www.w3schools.com/html/movie.mp4', poster: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=400&auto=format&fit=crop' },
+    
+    // 6 Songs/Beats
     { id: 's1', type: 'songs', title: 'Amapiano Sunset Horizon', meta: 'BPM 113 • Mastered WAV', source: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', poster: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=400&auto=format&fit=crop' },
     { id: 's2', type: 'songs', title: 'Midnight Deep House Pulse', meta: 'BPM 122 • Club Edit', source: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', poster: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=400&auto=format&fit=crop' },
     { id: 's3', type: 'songs', title: 'Sub-Saharan Sub Bass Kick', meta: 'BPM 112 • Raw Instrumental', source: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', poster: 'https://images.unsplash.com/photo-1487180142328-0c4e37023af5?q=80&w=400&auto=format&fit=crop' },
     { id: 's4', type: 'songs', title: 'Tribal Tech Resonance', meta: 'BPM 124 • STEM Audio Mix', source: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', poster: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop' },
     { id: 's5', type: 'songs', title: 'Urban Poly-Rhythm Drive', meta: 'BPM 115 • Percussion Stem', source: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3', poster: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=400&auto=format&fit=crop' },
     { id: 's6', type: 'songs', title: 'Cape Coast Low-Fi Ambience', meta: 'BPM 98 • Chill Chill Track', source: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3', poster: 'https://images.unsplash.com/photo-1446057032654-9d8885b76c2a?q=80&w=400&auto=format&fit=crop' },
+
+    // 6 Photos
     { id: 'p1', type: 'photos', title: 'Studio Console Geometry', meta: 'RAW • 45MP Depth Frame', source: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=800&auto=format&fit=crop', poster: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=400&auto=format&fit=crop' },
     { id: 'p2', type: 'photos', title: 'Stage Flare Exposure', meta: 'ISO 800 • Live Concert Macro', source: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=800&auto=format&fit=crop', poster: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=400&auto=format&fit=crop' },
     { id: 'p3', type: 'photos', title: 'Vocal Isolation Profile', meta: 'Monochrome Texture Edition', source: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=800&auto=format&fit=crop', poster: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=400&auto=format&fit=crop' },
     { id: 'p4', type: 'photos', title: 'Modular Synthesizer Grid', meta: 'Macro Lens Architectural Capture', source: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=800&auto=format&fit=crop', poster: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=400&auto=format&fit=crop' },
     { id: 'p5', type: 'photos', title: 'Backstage Silhouette Study', meta: 'Ambient Production Workspace', source: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=800&auto=format&fit=crop', poster: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop' },
     { id: 'p6', type: 'photos', title: 'Acoustic Diffuser Shadows', meta: 'Minimalist Interior Reference', source: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800&auto=format&fit=crop', poster: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=400&auto=format&fit=crop' },
-    { id: 'l1', type: 'lyrics', title: 'Nova Dawn - Complete Verse System', meta: 'isiZulu & English Cryptographic Lyrical Set', source: '[Chorus]\nLanga lami liphumile, execution bright.\nWe cross the verification line tonight.\nSeek and reap, database state complete.\n\n[Verse 1]\nStatic nodes running clean inside the core environment.\nWe pull up local terminal variables with pure compliance.\nWatch the flow state trigger across the production tier.\nNo system interference, the architectural pipeline is clear.', poster: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=400&auto=format&fit=crop' },
-    { id: 'l2', type: 'lyrics', title: 'Deep Horizon - Structural Prose', meta: 'isiXhosa Poetic Arrangement', source: '[Intro]\nNdiyabona umphandle, broken infrastructure signs.\nWe realign definitions inside our custom designs.\n\n[Verse 1]\nFrom Tier-3 tracking layers up to the gateway hub.\nWe capture operational metrics right above the operational club.\nKeep the sync running baseline, verify the data line,\nWe are locking metadata arrays beautifully in time.', poster: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=400&auto=format&fit=crop' },
-    { id: 'l3', type: 'lyrics', title: 'Polyphonic Echoes - Text Blueprint', meta: 'Electronic Sync Script Format', source: '[Movement I]\nOscillators rising up against the dark grid parameters.\nCalibrate the local parameters on the spatial system monitors.\n\n[Chorus]\nEchoes in the workspace queue.\nEverything verified, true to you.\nReaping records, harvesting keys.\nWe balance the cryptographic scale down to its knees.', poster: 'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?q=80&w=400&auto=format&fit=crop' },
-    { id: 'l4', type: 'lyrics', title: 'Sub-Saharan Pulse - Anthem Manifest', meta: 'Bilingual Rhythm Guide Document', source: '[Chorus]\nVuka ukhanye, the production system calls your name.\nThis is not a simulation, it is an open ledger game.\n\n[Verse 2]\nHandshakes verified across five separate server regions.\nWe stand unified with the core deployment legions.\nTrack the signature validation back down to its base,\nLeave no trailing connections inside the secure space.', poster: 'https://images.unsplash.com/photo-1474366521946-c3d4b507abf2?q=80&w=400&auto=format&fit=crop' },
-    { id: 'l5', type: 'lyrics', title: 'Cape Coast Transient - Session Notes', meta: 'Amapiano Micro-Vocal Loops Text', source: '[Loop A]\nPhakama. Realign.\nZonke izinto zolunga in due time.\n\n[Loop B]\nFilter the frequency sweep, capture the localized tone.\nWe broadcast the telemetry data directly from our zone.\nNo broken endpoints found, the routing engine is steady,\nEvery operational layer is active and ready.', poster: 'https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=400&auto=format&fit=crop' },
-    { id: 'l6', type: 'lyrics', title: 'Modular Mind State - Verse Layout', meta: 'Full System Operational Track Verse', source: '[Verse 1]\nVoltage controlled statements processing in sequence blocks.\nWe monitor the network signals using accurate atomic clocks.\n\n[Outro]\nSignal pathways fading down into the systemic background hum.\nThe verification page is frozen, the structural work is done.\nSeek. Reap. Terminate session wire.\nKeep the functional integration burning like fire.', poster: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=400&auto=format&fit=crop' }
+
+    // 6 Lyrics Documents
+    { id: 'l1', type: 'lyrics', title: 'Nova Dawn - Complete Verse System', meta: 'isiZulu & English Cryptographic Lyrical Set', source: `[Chorus]\nLanga lami liphumile, execution bright.\nWe cross the verification line tonight.\nSeek and reap, database state complete.\n\n[Verse 1]\nStatic nodes running clean inside the core environment.\nWe pull up local terminal variables with pure compliance.\nWatch the flow state trigger across the production tier.\nNo system interference, the architectural pipeline is clear.`, poster: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=400&auto=format&fit=crop' },
+    { id: 'l2', type: 'lyrics', title: 'Deep Horizon - Structural Prose', meta: 'isiXhosa Poetic Arrangement', source: `[Intro]\nNdiyabona umphandle, broken infrastructure signs.\nWe realign definitions inside our custom designs.\n\n[Verse 1]\nFrom Tier-3 tracking layers up to the gateway hub.\nWe capture operational metrics right above the operational club.\nKeep the sync running baseline, verify the data line,\nWe are locking metadata arrays beautifully in time.`, poster: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=400&auto=format&fit=crop' },
+    { id: 'l3', type: 'lyrics', title: 'Polyphonic Echoes - Text Blueprint', meta: 'Electronic Sync Script Format', source: `[Movement I]\nOscillators rising up against the dark grid parameters.\nCalibrate the local parameters on the spatial system monitors.\n\n[Chorus]\nEchoes in the workspace queue.\nEverything verified, true to you.\nReaping records, harvesting keys.\nWe balance the cryptographic scale down to its knees.`, poster: 'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?q=80&w=400&auto=format&fit=crop' },
+    { id: 'l4', type: 'lyrics', title: 'Sub-Saharan Pulse - Anthem Manifest', meta: 'Bilingual Rhythm Guide Document', source: `[Chorus]\nVuka ukhanye, the production system calls your name.\nThis is not a simulation, it is an open ledger game.\n\n[Verse 2]\nHandshakes verified across five separate server regions.\nWe stand unified with the core deployment legions.\nTrack the signature validation back down to its base,\nLeave no trailing connections inside the secure space.`, poster: 'https://images.unsplash.com/photo-1474366521946-c3d4b507abf2?q=80&w=400&auto=format&fit=crop' },
+    { id: 'l5', type: 'lyrics', title: 'Cape Coast Transient - Session Notes', meta: 'Amapiano Micro-Vocal Loops Text', source: `[Loop A]\nPhakama. Realign.\nZonke izinto zolunga in due time.\n\n[Loop B]\nFilter the frequency sweep, capture the localized tone.\nWe broadcast the telemetry data directly from our zone.\nNo broken endpoints found, the routing engine is steady,\nEvery operational layer is active and ready.`, poster: 'https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=400&auto=format&fit=crop' },
+    { id: 'l6', type: 'lyrics', title: 'Modular Mind State - Verse Layout', meta: 'Full System Operational Track Verse', source: `[Verse 1]\nVoltage controlled statements processing in sequence blocks.\nWe monitor the network signals using accurate atomic clocks.\n\n[Outro]\nSignal pathways fading down into the systemic background hum.\nThe verification page is frozen, the structural work is done.\nSeek. Reap. Terminate session wire.\nKeep the functional integration burning like fire.`, poster: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=400&auto=format&fit=crop' }
 ];
 
+// ─── HEADER FUNCTIONS ────────────────────────────────────────────────────────
 function goBack() { window.history.back(); }
 
 function toggleSearch() {
-    var container = document.getElementById('searchContainer');
-    var input = document.getElementById('headerSearch');
+    const container = document.getElementById('searchContainer');
+    const input = document.getElementById('headerSearch');
     container.classList.toggle('active');
     if (container.classList.contains('active')) {
-        setTimeout(function() { input.focus(); }, 100);
+        setTimeout(() => input.focus(), 100);
     } else {
         input.value = '';
     }
@@ -46,17 +55,17 @@ function toggleSearch() {
 
 function toggleMoreMenu(event) {
     if (event) event.stopPropagation();
-    var box = document.getElementById('morePopupBox');
+    const box = document.getElementById('morePopupBox');
     if (box) box.classList.toggle('active');
 }
 
 function handleMenuClick(action) {
-    showToast('Opening: ' + action, 'info');
+    showToast(`Opening: ${action}`, 'info');
     document.getElementById('morePopupBox').classList.remove('active');
 }
 
 document.addEventListener('click', function(e) {
-    var box = document.getElementById('morePopupBox');
+    const box = document.getElementById('morePopupBox');
     if (box && !box.contains(e.target)) {
         box.classList.remove('active');
     }
@@ -64,20 +73,21 @@ document.addEventListener('click', function(e) {
 
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        var container = document.getElementById('searchContainer');
+        const container = document.getElementById('searchContainer');
         if (container.classList.contains('active')) { toggleSearch(); }
-        var box = document.getElementById('morePopupBox');
+        const box = document.getElementById('morePopupBox');
         if (box) box.classList.remove('active');
         closePortfolioStage();
     }
 });
 
+// ─── SCROLL TO TOP ──────────────────────────────────────────────────────────
 function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 window.addEventListener('scroll', function() {
-    var btn = document.getElementById('scrollTopBtn');
+    const btn = document.getElementById('scrollTopBtn');
     if (window.scrollY > 300) {
         btn.classList.add('visible');
     } else {
@@ -85,21 +95,32 @@ window.addEventListener('scroll', function() {
     }
 });
 
+// ─── SECTION TABS ────────────────────────────────────────────────────────────
 function toggleSectionTab(btn, sectionId) {
-    var allTabs = document.querySelectorAll('.section-tab');
-    var allSections = document.querySelectorAll('.section-content');
-    var isActive = btn.classList.contains('active');
-    allTabs.forEach(function(t) { t.classList.remove('active'); });
-    allSections.forEach(function(s) { s.style.display = 'none'; });
+    const allTabs = document.querySelectorAll('.section-tab');
+    const allSections = document.querySelectorAll('.section-content');
+    
+    // Check if the clicked section is already active
+    const isActive = btn.classList.contains('active');
+    
+    // Remove active class from all tabs and hide all sections
+    allTabs.forEach(t => t.classList.remove('active'));
+    allSections.forEach(s => s.style.display = 'none');
+    
     if (isActive) {
-        var bioTab = document.querySelector('[data-section="biography"]');
+        // Fallback to biography if toggled off
+        const bioTab = document.querySelector('[data-section="biography"]');
         if (bioTab) bioTab.classList.add('active');
-        var bioSec = document.getElementById('section-biography');
+        const bioSec = document.getElementById('section-biography');
         if (bioSec) bioSec.style.display = 'block';
         return;
     }
+    
+    // Activate the clicked tab
     btn.classList.add('active');
-    var section = document.getElementById('section-' + sectionId);
+    
+    // Show corresponding section
+    const section = document.getElementById(`section-${sectionId}`);
     if (section) {
         section.style.display = 'block';
         if (sectionId === 'portfolio') {
@@ -108,86 +129,125 @@ function toggleSectionTab(btn, sectionId) {
     }
 }
 
-function renderPortfolioGrid(filterValue) {
-    filterValue = filterValue || 'all';
-    var grid = document.getElementById('portfolioGrid');
+// ─── INLINE PUBLIC PORTFOLIO ENGINE ──────────────────────────────────────────
+function renderPortfolioGrid(filterValue = 'all') {
+    const grid = document.getElementById('portfolioGrid');
     if (!grid) return;
-    var filtered = filterValue === 'all' ? portfolioAssets : portfolioAssets.filter(function(item) { return item.type === filterValue; });
-    var iconMap = { 'songs': 'fa-music', 'photos': 'fa-camera', 'short-video': 'fa-play', 'lyrics': 'fa-file-alt' };
-    grid.innerHTML = filtered.map(function(item) {
-        return '<div class="portfolio-item" id="asset-item-' + item.id + '" onclick="loadAssetToStage(\'' + item.id + '\')">' +
-            '<div class="portfolio-thumbnail-placeholder">' +
-            '<img src="' + item.poster + '" alt="' + item.title + '">' +
-            '<div class="thumbnail-dark-overlay"></div>' +
-            '<div class="thumbnail-icon-center"><i class="fas ' + (iconMap[item.type] || 'fa-file') + '"></i></div>' +
-            '</div>' +
-            '<div class="portfolio-item-info">' +
-            '<div class="portfolio-item-title">' + item.title + '</div>' +
-            '<div class="portfolio-item-meta"><span>' + item.meta + '</span><span class="asset-tag ' + item.type + '">' + item.type.replace('-', ' ') + '</span></div>' +
-            '</div>' +
-            '</div>';
-    }).join('');
+    
+    const filtered = filterValue === 'all' 
+        ? portfolioAssets 
+        : portfolioAssets.filter(item => item.type === filterValue);
+        
+    const iconMap = {
+        'songs': 'fa-music',
+        'photos': 'fa-camera',
+        'short-video': 'fa-play',
+        'lyrics': 'fa-file-alt'
+    };
+
+    grid.innerHTML = filtered.map(item => `
+        <div class="portfolio-item" id="asset-item-${item.id}" onclick="loadAssetToStage('${item.id}')">
+            <div class="portfolio-thumbnail-placeholder">
+                <img src="${item.poster}" alt="${item.title}">
+                <div class="thumbnail-dark-overlay"></div>
+                <div class="thumbnail-icon-center">
+                    <i class="fas ${iconMap[item.type]}"></i>
+                </div>
+            </div>
+            <div class="portfolio-item-info">
+                <div class="portfolio-item-title">${item.title}</div>
+                <div class="portfolio-item-meta">
+                    <span>${item.meta}</span>
+                    <span class="asset-tag ${item.type}">${item.type.replace('-', ' ')}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
 }
 
-function filterPortfolio(filterValue) { renderPortfolioGrid(filterValue); }
+function filterPortfolio(filterValue) {
+    renderPortfolioGrid(filterValue);
+}
 
 function loadAssetToStage(assetId) {
-    var stage = document.getElementById('portfolioStage');
-    var displayWindow = document.getElementById('stageDisplayWindow');
-    var infoFooter = document.getElementById('stageInfoFooter');
-    var asset = null;
-    for (var i = 0; i < portfolioAssets.length; i++) {
-        if (portfolioAssets[i].id === assetId) { asset = portfolioAssets[i]; break; }
-    }
+    const stage = document.getElementById('portfolioStage');
+    const displayWindow = document.getElementById('stageDisplayWindow');
+    const infoFooter = document.getElementById('stageInfoFooter');
+    
+    const asset = portfolioAssets.find(a => a.id === assetId);
     if (!asset || !stage || !displayWindow || !infoFooter) return;
-    document.querySelectorAll('.portfolio-item').forEach(function(item) { item.classList.remove('playing-active'); });
-    var targetedCard = document.getElementById('asset-item-' + assetId);
+    
+    // De-activate older selections
+    document.querySelectorAll('.portfolio-item').forEach(i => i.classList.remove('playing-active'));
+    const targetedCard = document.getElementById(`asset-item-${assetId}`);
     if (targetedCard) targetedCard.classList.add('playing-active');
+    
+    // Render proper contextual pipeline player
     if (asset.type === 'short-video') {
-        displayWindow.innerHTML = '<video class="stage-media-video" controls autoplay src="' + asset.source + '">Your browser does not support the video tag.</video>';
+        displayWindow.innerHTML = `
+            <video class="stage-media-video" controls autoplay src="${asset.source}">
+                Your browser does not support the video tag.
+            </video>
+        `;
     } else if (asset.type === 'songs') {
-        displayWindow.innerHTML = '<div class="stage-media-audio-wrapper"><div class="audio-visualization"><div class="audio-bar"></div><div class="audio-bar"></div><div class="audio-bar"></div><div class="audio-bar"></div><div class="audio-bar"></div></div><audio class="stage-media-audio" controls autoplay src="' + asset.source + '"></audio></div>';
+        displayWindow.innerHTML = `
+            <div class="stage-media-audio-wrapper">
+                <div class="audio-visualization">
+                    <div class="audio-bar"></div><div class="audio-bar"></div>
+                    <div class="audio-bar"></div><div class="audio-bar"></div>
+                    <div class="audio-bar"></div>
+                </div>
+                <audio class="stage-media-audio" controls autoplay src="${asset.source}"></audio>
+            </div>
+        `;
     } else if (asset.type === 'photos') {
-        displayWindow.innerHTML = '<img class="stage-media-photo" src="' + asset.source + '" alt="' + asset.title + '">';
+        displayWindow.innerHTML = `
+            <img class="stage-media-photo" src="${asset.source}" alt="${asset.title}">
+        `;
     } else if (asset.type === 'lyrics') {
-        displayWindow.innerHTML = '<div class="stage-media-lyrics-doc">' + asset.source + '</div>';
+        displayWindow.innerHTML = `
+            <div class="stage-media-lyrics-doc">${asset.source}</div>
+        `;
     }
-    infoFooter.innerHTML = '<div class="stage-info-title">' + asset.title + '</div><div class="stage-info-meta">' + asset.meta + ' &bull; Type: <span style="text-transform: capitalize;">' + asset.type.replace('-', ' ') + '</span></div>';
+    
+    infoFooter.innerHTML = `
+        <div class="stage-info-title">${asset.title}</div>
+        <div class="stage-info-meta">${asset.meta} &bull; Type: <span style="text-transform: capitalize;">${asset.type.replace('-', ' ')}</span></div>
+    `;
+    
     stage.style.display = 'block';
+    
+    // Auto scroll view safely down to focus player seamlessly
     stage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function closePortfolioStage() {
-    var stage = document.getElementById('portfolioStage');
-    var displayWindow = document.getElementById('stageDisplayWindow');
+    const stage = document.getElementById('portfolioStage');
+    const displayWindow = document.getElementById('stageDisplayWindow');
     if (stage) stage.style.display = 'none';
     if (displayWindow) displayWindow.innerHTML = '';
-    document.querySelectorAll('.portfolio-item').forEach(function(item) { item.classList.remove('playing-active'); });
+    document.querySelectorAll('.portfolio-item').forEach(i => i.classList.remove('playing-active'));
 }
 
+// ─── API ──────────────────────────────────────────────────────────────────────
 async function _getJwt() {
     if (_cachedJwt) return _cachedJwt;
     if (window.supabaseClient) {
         try {
-            var sessionData = await window.supabaseClient.auth.getSession();
-            if (!sessionData.error && sessionData.data.session) {
-                _cachedJwt = sessionData.data.session.access_token;
-                return _cachedJwt;
-            }
+            const { data: { session }, error } = await window.supabaseClient.auth.getSession();
+            if (!error && session) { _cachedJwt = session.access_token; return _cachedJwt; }
         } catch (e) { console.error('[Auth]', e); }
     }
     return null;
 }
 
-async function apiFetch(path, opts) {
-    opts = opts || {};
-    var jwt = await _getJwt();
-    var headers = { 'Content-Type': 'application/json' };
-    if (opts.headers) { Object.assign(headers, opts.headers); }
-    if (jwt) { headers['Authorization'] = 'Bearer ' + jwt; }
-    var res = await fetch(TIER4 + path, { method: opts.method || 'GET', headers: headers, body: opts.body || null });
+async function apiFetch(path, opts = {}) {
+    const jwt = await _getJwt();
+    const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+    if (jwt) headers['Authorization'] = 'Bearer ' + jwt;
+    const res = await fetch(TIER4 + path, { ...opts, headers });
     if (!res.ok) {
-        var err = await res.json().catch(function() { return {}; });
+        const err = await res.json().catch(() => ({}));
         throw new Error(err.error || err.detail || 'HTTP ' + res.status);
     }
     return res.json();
@@ -195,7 +255,10 @@ async function apiFetch(path, opts) {
 
 async function updateProfile(field, value) {
     try {
-        var result = await apiFetch('/api/creators/me', { method: 'PATCH', body: JSON.stringify({ [field]: value }) });
+        const result = await apiFetch('/api/creators/me', {
+            method: 'PATCH',
+            body: JSON.stringify({ [field]: value })
+        });
         showToast('Profile updated successfully', 'success');
         await loadProfile();
         return result;
@@ -205,16 +268,17 @@ async function updateProfile(field, value) {
     }
 }
 
+// ─── LOAD DATA ────────────────────────────────────────────────────────────────
 async function loadProfile() {
     try {
-        var data = await apiFetch('/api/creators/me');
+        const data = await apiFetch('/api/creators/me');
         _profileData = data;
     } catch (e) {
         console.warn('Using fallback profile data:', e);
         _profileData = getFallbackData();
     }
     try {
-        var employment = await apiFetch('/api/creators/me/employment');
+        const employment = await apiFetch('/api/creators/me/employment');
         _employmentData = employment;
     } catch (e) {
         console.warn('Using fallback employment data:', e);
@@ -250,7 +314,13 @@ function getFallbackData() {
         artistic_name: 'NovaKai',
         biography: 'Award-winning music producer and composer with 10+ years of experience creating genre-defying electronic music.',
         website_urls: [{ label: 'Official', url: 'https://novakai.com' }],
-        social_links: { github: 'https://github.com/novakai', instagram: 'https://instagram.com/novakai', x: 'https://x.com/novakai', youtube: 'https://youtube.com/@novakai', linkedin: 'https://linkedin.com/in/novakai' },
+        social_links: {
+            github: 'https://github.com/novakai',
+            instagram: 'https://instagram.com/novakai',
+            x: 'https://x.com/novakai',
+            youtube: 'https://youtube.com/@novakai',
+            linkedin: 'https://linkedin.com/in/novakai'
+        },
         profile_roles: [
             { title: 'Producer', tier: 'Primary Role', period: '2016—Present', works: 143, collabs: 52, active: 18, rating: 5, expertise: ['Music Production', 'Mixing', 'Mastering'], industries: ['Music', 'Film', 'Gaming'], id_link: ['IPI', 'ISRC', 'ISWC'] },
             { title: 'Composer', tier: 'Secondary Role', period: '2014—Present', works: 89, collabs: 21, active: 4, rating: 4, expertise: ['Orchestral Arranging', 'Film Scoring'], industries: ['Film', 'Theatre'], id_link: ['ISWC', 'ISNI'] },
@@ -295,40 +365,42 @@ function getFallbackEmployment() {
 }
 
 function highlightConnectedRoles(idType) {
-    document.querySelectorAll('.role-card').forEach(function(c) { c.classList.remove('highlighted'); });
-    document.querySelectorAll('.passport-card').forEach(function(c) { c.classList.remove('highlighted'); });
-    var roles = _profileData.profile_roles || [];
-    roles.forEach(function(r) {
-        if (r.id_link && r.id_link.indexOf(idType) !== -1) {
-            var card = document.getElementById('role-card-' + r.title.toLowerCase());
+    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('highlighted'));
+    document.querySelectorAll('.passport-card').forEach(c => c.classList.remove('highlighted'));
+    const roles = _profileData.profile_roles || [];
+    roles.forEach(r => {
+        if (r.id_link && r.id_link.includes(idType)) {
+            const card = document.getElementById(`role-card-${r.title.toLowerCase()}`);
             if (card) card.classList.add('highlighted');
         }
     });
 }
 
 function highlightConnectedIdentifiers(roleTitle) {
-    document.querySelectorAll('.role-card').forEach(function(c) { c.classList.remove('highlighted'); });
-    document.querySelectorAll('.passport-card').forEach(function(c) { c.classList.remove('highlighted'); });
-    var role = (_profileData.profile_roles || []).find(function(r) { return r.title === roleTitle; });
+    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('highlighted'));
+    document.querySelectorAll('.passport-card').forEach(c => c.classList.remove('highlighted'));
+    const role = (_profileData.profile_roles || []).find(r => r.title === roleTitle);
     if (role && role.id_link) {
-        role.id_link.forEach(function(idType) {
-            var card = document.getElementById('passport-card-' + idType.toLowerCase());
+        role.id_link.forEach(idType => {
+            const card = document.getElementById(`passport-card-${idType.toLowerCase()}`);
             if (card) card.classList.add('highlighted');
         });
     }
 }
 
 function renderProfile() {
-    var p = _profileData || getFallbackData();
+    const p = _profileData || getFallbackData();
     document.getElementById('profileDisplayName').textContent = p.display_name || '—';
     document.getElementById('profileArtisticName').textContent = p.artistic_name || '—';
     document.getElementById('profileSeekReapID').textContent = p.seekreap_id || '—';
     document.getElementById('profilePronouns').textContent = p.pronouns || 'He/Him';
-    var country = p.country_of_residence || '—';
-    var province = p.province || '—';
-    var city = p.city || '—';
-    document.getElementById('profileLocationText').textContent = country + ' • ' + province + ' • ' + city;
-    var verifyMap = {
+    
+    const country = p.country_of_residence || '—';
+    const province = p.province || '—';
+    const city = p.city || '—';
+    document.getElementById('profileLocationText').textContent = `${country} • ${province} • ${city}`;
+    
+    const verifyMap = {
         'none': { class: 'badge-unverified', label: 'Unverified', icon: 'fa-circle' },
         'email': { class: 'badge-verified', label: 'Email Verified', icon: 'fa-envelope' },
         'phone': { class: 'badge-verified', label: 'Phone Verified', icon: 'fa-phone' },
@@ -336,28 +408,36 @@ function renderProfile() {
         'organization': { class: 'badge-verified', label: 'Organization Verified', icon: 'fa-building' },
         'verified_creator': { class: 'badge-verified', label: 'Verified Creator', icon: 'fa-star' }
     };
-    var v = verifyMap[p.verification_status] || verifyMap['none'];
-    document.getElementById('verifyBadge').className = 'badge-pill ' + v.class;
-    document.getElementById('verifyBadge').innerHTML = '<i class="fas ' + v.icon + '"></i> ' + v.label;
-    var typeMap = { creator: { class: 'badge-creator', label: 'Creator' }, member: { class: 'badge-member', label: 'Member' } };
-    var t = typeMap[p.user_type] || typeMap.member;
-    document.getElementById('typeBadge').className = 'badge-pill ' + t.class;
-    document.getElementById('typeBadge').innerHTML = '<i class="fas fa-user"></i> ' + t.label;
+    const v = verifyMap[p.verification_status] || verifyMap['none'];
+    document.getElementById('verifyBadge').className = `badge-pill ${v.class}`;
+    document.getElementById('verifyBadge').innerHTML = `<i class="fas ${v.icon}"></i> ${v.label}`;
+    const typeMap = { creator: { class: 'badge-creator', label: 'Creator' }, member: { class: 'badge-member', label: 'Member' } };
+    const t = typeMap[p.user_type] || typeMap.member;
+    document.getElementById('typeBadge').className = `badge-pill ${t.class}`;
+    document.getElementById('typeBadge').innerHTML = `<i class="fas fa-user"></i> ${t.label}`;
     document.getElementById('profileBioText').textContent = p.biography || '—';
-    var achievements = [
+    
+    const achievements = [
         { icon: 'fa-trophy', title: '2x South African Music Award Winner', category: 'Award', date: '2023, 2025' },
         { icon: 'fa-globe-africa', title: 'Featured artist at Afropunk Festival 2025', category: 'Festival', date: '2025' },
         { icon: 'fa-compact-disc', title: 'Album "Nova Dawn" — 5M+ streams', category: 'Release', date: '2024' },
         { icon: 'fa-star', title: 'Collaborated with 15+ international artists', category: 'Collaboration', date: '2016—Present' },
         { icon: 'fa-certificate', title: '311+ verified certificates issued', category: 'Credentials', date: '2020—Present' }
     ];
-    document.getElementById('achievementsList').innerHTML = achievements.map(function(a) {
-        return '<div class="achievement-card"><div class="ach-icon"><i class="fas ' + a.icon + '"></i></div><div class="ach-details"><div class="ach-category">' + a.category + '</div><div class="ach-title">' + a.title + '</div></div><div class="ach-date">' + a.date + '</div></div>';
-    }).join('');
+    document.getElementById('achievementsList').innerHTML = achievements.map(a => `
+        <div class="achievement-card">
+            <div class="ach-icon"><i class="fas ${a.icon}"></i></div>
+            <div class="ach-details">
+                <div class="ach-category">${a.category}</div>
+                <div class="ach-title">${a.title}</div>
+            </div>
+            <div class="ach-date">${a.date}</div>
+        </div>
+    `).join('');
 
-    var identityContainer = document.getElementById('identityContainer');
+    const identityContainer = document.getElementById('identityContainer');
     if (identityContainer) {
-        var categories = {
+        const categories = {
             'Personal Details': [
                 { label: 'SeekReap ID', value: p.seekreap_id || '—', mono: true },
                 { label: 'Legal Full Name', value: p.legal_full_name || '—' },
@@ -381,142 +461,136 @@ function renderProfile() {
                 { label: 'Profile Version', value: p.profile_version || '—' }
             ],
             'Contact Details': [
-                { label: 'Recovery Email', value: p.recovery_email ? '<a href="mailto:' + p.recovery_email + '">' + p.recovery_email + '</a>' : '—', html: true },
-                { label: 'Primary Phone', value: p.primary_phone ? '<a href="tel:' + p.primary_phone.replace(/\s/g, '') + '">' + p.primary_phone + '</a>' : '—', html: true },
+                { label: 'Recovery Email', value: p.recovery_email ? `<a href="mailto:${p.recovery_email}">${p.recovery_email}</a>` : '—', html: true },
+                { label: 'Primary Phone', value: p.primary_phone ? `<a href="tel:${p.primary_phone.replace(/\s/g, '')}">${p.primary_phone}</a>` : '—', html: true },
                 { label: 'Secondary Phone', value: p.secondary_phone || '—' },
                 { label: 'Contact Preference', value: p.contact_preference || '—' },
                 { label: 'Preferred Language', value: p.preferred_language || '—' },
                 { label: 'Preferred Timezone', value: p.preferred_timezone || '—' }
             ]
         };
-        var html = '';
-        for (var catName in categories) {
-            var fields = categories[catName];
+        let html = '';
+        for (const [catName, fields] of Object.entries(categories)) {
             if (fields.length === 0) continue;
-            var iconMap = { 'Personal Details': 'fa-user-shield', 'Creative Details': 'fa-paint-brush', 'Contact Details': 'fa-envelope-open-text' };
-            html += '<div class="identity-category"><div class="cat-title"><i class="fas ' + (iconMap[catName] || 'fa-tag') + '"></i> ' + catName + '</div>';
-            for (var fi = 0; fi < fields.length; fi++) {
-                var f = fields[fi];
-                var editAttr = _isEditMode ? ' onclick="editField(\'' + f.label + '\', \'' + (f.value || '').replace(/'/g, "\\'") + '\')" style="cursor:pointer;"' : '';
-                html += '<div class="identity-field"><span class="ilabel">' + f.label + '</span><span class="ivalue ' + (f.mono ? 'mono' : '') + '"' + editAttr + '>' + (f.html ? f.value : f.value) + '</span></div>';
+            const iconMap = { 'Personal Details': 'fa-user-shield', 'Creative Details': 'fa-paint-brush', 'Contact Details': 'fa-envelope-open-text' };
+            html += `<div class="identity-category"><div class="cat-title"><i class="fas ${iconMap[catName] || 'fa-tag'}"></i> ${catName}</div>`;
+            for (const f of fields) {
+                html += `<div class="identity-field"><span class="ilabel">${f.label}</span><span class="ivalue ${f.mono ? 'mono' : ''}" ${_isEditMode ? `onclick="editField('${f.label}', '${(f.value || '').replace(/'/g, "\\'")}')" style="cursor:pointer;"` : ''}>${f.html ? f.value : f.value}</span></div>`;
             }
-            html += '</div>';
+            html += `</div>`;
         }
         identityContainer.innerHTML = html;
     }
 
-    var identifiersContainer = document.getElementById('identifiersContainer');
+    const identifiersContainer = document.getElementById('identifiersContainer');
     if (identifiersContainer) {
-        var domains = [];
-        (p.identifiers || []).forEach(function(id) {
-            if (domains.indexOf(id.domain) === -1) domains.push(id.domain);
-        });
-        var domainsHtml = '<div class="identifiers-layout">';
-        domains.forEach(function(domain) {
-            var list = (p.identifiers || []).filter(function(id) { return id.domain === domain; });
-            domainsHtml += '<div class="identifier-group"><div class="identifier-group-name">' + domain + '</div><div class="identifier-cards">';
-            list.forEach(function(id) {
-                domainsHtml += '<div class="passport-card" id="passport-card-' + id.type.toLowerCase() + '" onclick="highlightConnectedRoles(\'' + id.type + '\')">' +
-                    '<div class="passport-header"><div class="passport-meta"><span class="passport-type">' + id.type + '</span><span class="passport-full-name">' + id.fullName + '</span></div>' +
-                    '<span class="passport-status ' + (id.status === 'Active' ? 'status-verified' : 'status-allocated') + '"><i class="fas ' + (id.status === 'Active' ? 'fa-check-circle' : 'fa-clock') + '"></i> ' + id.status + '</span></div>' +
-                    '<div class="passport-value-container"><span class="passport-value">' + id.value + '</span><button class="passport-copy-btn" onclick="event.stopPropagation(); copyToClipboard(\'' + id.value + '\')"><i class="far fa-copy"></i></button></div>' +
-                    '<div class="passport-details"><div class="passport-detail-item"><span class="p-label">Purpose</span><span class="p-val">' + id.purpose + '</span></div>' +
-                    '<div class="passport-detail-item"><span class="p-label">Issued By</span><span class="p-val">' + id.issuer + '</span></div>' +
-                    '<div class="passport-detail-item"><span class="p-label">Issued Date</span><span class="p-val">' + id.date + '</span></div></div>' +
-                    '<div class="passport-ecosystem"><span class="ecosystem-label">Verified Uses</span><div class="ecosystem-tags">' + (id.uses || []).map(function(u) { return '<span class="eco-tag">✓ ' + u + '</span>'; }).join('') + '</div></div>' +
-                    '<div class="passport-actions"><a class="passport-btn p-btn-secondary" onclick="event.stopPropagation(); copyToClipboard(\'' + id.value + '\')">Copy Code</a><a href="' + id.registry_link + '" target="_blank" class="passport-btn p-btn-primary" onclick="event.stopPropagation();">View Registry <i class="fas fa-external-link-alt"></i></a></div>' +
-                    '</div>';
+        const domains = [...new Set((p.identifiers || []).map(id => id.domain))];
+        let domainsHtml = '<div class="identifiers-layout">';
+        domains.forEach(domain => {
+            const list = (p.identifiers || []).filter(id => id.domain === domain);
+            domainsHtml += `<div class="identifier-group"><div class="identifier-group-name">${domain}</div><div class="identifier-cards">`;
+            list.forEach(id => {
+                domainsHtml += `<div class="passport-card" id="passport-card-${id.type.toLowerCase()}" onclick="highlightConnectedRoles('${id.type}')">
+                    <div class="passport-header"><div class="passport-meta"><span class="passport-type">${id.type}</span><span class="passport-full-name">${id.fullName}</span></div>
+                    <span class="passport-status ${id.status === 'Active' ? 'status-verified' : 'status-allocated'}"><i class="fas ${id.status === 'Active' ? 'fa-check-circle' : 'fa-clock'}"></i> ${id.status}</span></div>
+                    <div class="passport-value-container"><span class="passport-value">${id.value}</span><button class="passport-copy-btn" onclick="event.stopPropagation(); copyToClipboard('${id.value}')"><i class="far fa-copy"></i></button></div>
+                    <div class="passport-details"><div class="passport-detail-item"><span class="p-label">Purpose</span><span class="p-val">${id.purpose}</span></div>
+                    <div class="passport-detail-item"><span class="p-label">Issued By</span><span class="p-val">${id.issuer}</span></div>
+                    <div class="passport-detail-item"><span class="p-label">Issued Date</span><span class="p-val">${id.date}</span></div></div>
+                    <div class="passport-ecosystem"><span class="ecosystem-label">Verified Uses</span><div class="ecosystem-tags">${(id.uses || []).map(u => `<span class="eco-tag">✓ ${u}</span>`).join('')}</div></div>
+                    <div class="passport-actions"><a class="passport-btn p-btn-secondary" onclick="event.stopPropagation(); copyToClipboard('${id.value}')">Copy Code</a><a href="${id.registry_link}" target="_blank" class="passport-btn p-btn-primary" onclick="event.stopPropagation();">View Registry <i class="fas fa-external-link-alt"></i></a></div>
+                </div>`;
             });
-            domainsHtml += '</div></div>';
+            domainsHtml += `</div></div>`;
         });
         domainsHtml += '</div>';
         identifiersContainer.innerHTML = domainsHtml;
     }
 
-    var rolesContainer = document.getElementById('rolesContainer');
+    const rolesContainer = document.getElementById('rolesContainer');
     if (rolesContainer) {
-        rolesContainer.innerHTML = (p.profile_roles || []).map(function(role) {
-            var stars = '★'.repeat(role.rating) + '☆'.repeat(5 - role.rating);
-            var badgeClass = role.tier === 'Primary Role' ? 'role-primary' : role.tier === 'Secondary Role' ? 'role-secondary' : 'role-mentor';
-            return '<div class="role-card" id="role-card-' + role.title.toLowerCase() + '" onclick="highlightConnectedIdentifiers(\'' + role.title + '\')">' +
-                '<div class="role-header"><div><span class="role-title">' + role.title + '</span><div class="role-proficiency"><span class="role-stars">' + stars + '</span><span>Level ' + role.rating + '/5</span></div></div>' +
-                '<span class="role-badge ' + badgeClass + '">' + role.tier + '</span></div>' +
-                '<div class="role-stats-grid"><div class="role-stat"><div class="role-stat-val">' + role.works + '</div><div class="role-stat-lbl">Works</div></div>' +
-                '<div class="role-stat"><div class="role-stat-val">' + role.collabs + '</div><div class="role-stat-lbl">Collabs</div></div>' +
-                '<div class="role-stat"><div class="role-stat-val">' + role.active + '</div><div class="role-stat-lbl">Active</div></div></div>' +
-                '<div class="role-details-list"><div class="role-detail-row"><span class="r-lbl">Years Active:</span><span class="r-val">' + role.period + '</span></div>' +
-                '<div class="role-detail-row"><span class="r-lbl">Key Expertise:</span><span class="r-val">' + (role.expertise || []).join(', ') + '</span></div>' +
-                '<div class="role-detail-row"><span class="r-lbl">Industries:</span><span class="r-val">' + (role.industries || []).join(', ') + '</span></div></div></div>';
+        rolesContainer.innerHTML = (p.profile_roles || []).map(role => {
+            const stars = '★'.repeat(role.rating) + '☆'.repeat(5 - role.rating);
+            const badgeClass = role.tier === 'Primary Role' ? 'role-primary' : role.tier === 'Secondary Role' ? 'role-secondary' : 'role-mentor';
+            return `<div class="role-card" id="role-card-${role.title.toLowerCase()}" onclick="highlightConnectedIdentifiers('${role.title}')">
+                <div class="role-header"><div><span class="role-title">${role.title}</span><div class="role-proficiency"><span class="role-stars">${stars}</span><span>Level ${role.rating}/5</span></div></div>
+                <span class="role-badge ${badgeClass}">${role.tier}</span></div>
+                <div class="role-stats-grid"><div class="role-stat"><div class="role-stat-val">${role.works}</div><div class="role-stat-lbl">Works</div></div>
+                <div class="role-stat"><div class="role-stat-val">${role.collabs}</div><div class="role-stat-lbl">Collabs</div></div>
+                <div class="role-stat"><div class="role-stat-val">${role.active}</div><div class="role-stat-lbl">Active</div></div></div>
+                <div class="role-details-list"><div class="role-detail-row"><span class="r-lbl">Years Active:</span><span class="r-val">${role.period}</span></div>
+                <div class="role-detail-row"><span class="r-lbl">Key Expertise:</span><span class="r-val">${(role.expertise || []).join(', ')}</span></div>
+                <div class="role-detail-row"><span class="r-lbl">Industries:</span><span class="r-val">${(role.industries || []).join(', ')}</span></div></div>
+            </div>`;
         }).join('');
     }
 
-    var timelineContainer = document.getElementById('timelineContainer');
+    const timelineContainer = document.getElementById('timelineContainer');
     if (timelineContainer) {
-        timelineContainer.innerHTML = (p.timeline || []).map(function(t) {
-            return '<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-year">' + t.year + '</div><div class="timeline-content">' + t.role + '</div><div class="timeline-desc">' + t.desc + '</div></div>';
-        }).join('');
+        timelineContainer.innerHTML = (p.timeline || []).map(t => `
+            <div class="timeline-item"><div class="timeline-dot"></div>
+            <div class="timeline-year">${t.year}</div>
+            <div class="timeline-content">${t.role}</div>
+            <div class="timeline-desc">${t.desc}</div></div>
+        `).join('');
     }
 
     renderNetworks(p.social_links, p.website_urls);
 }
 
 function renderNetworks(socials, websites) {
-    var networksContainer = document.getElementById('networksContainer');
+    const networksContainer = document.getElementById('networksContainer');
     if (!networksContainer) return;
-    var html = '<div class="social-links">';
+    let html = '<div class="social-links">';
     if (websites && websites.length > 0) {
-        html += '<a href="' + websites[0].url + '" target="_blank" class="social-link"><span><i class="fas fa-globe" style="margin-right:8px;color:var(--primary);"></i> Official Website</span><i class="fas fa-external-link-alt"></i></a>';
+        html += `<a href="${websites[0].url}" target="_blank" class="social-link"><span><i class="fas fa-globe" style="margin-right:8px;color:var(--primary);"></i> Official Website</span><i class="fas fa-external-link-alt"></i></a>`;
     }
     if (socials) {
-        var icons = { github: 'fa-github', instagram: 'fa-instagram', x: 'fa-x-twitter', youtube: 'fa-youtube', linkedin: 'fa-linkedin' };
-        var labels = { github: 'GitHub', instagram: 'Instagram', x: 'X', youtube: 'YouTube', linkedin: 'LinkedIn' };
-        for (var key in socials) {
-            if (socials.hasOwnProperty(key)) {
-                var url = socials[key];
-                html += '<a href="' + url + '" target="_blank" class="social-link"><span><i class="fab ' + (icons[key] || 'fa-link') + '" style="margin-right:8px;color:var(--text-dim);"></i> ' + (labels[key] || key) + '</span><i class="fas fa-external-link-alt"></i></a>';
-            }
-        }
+        const icons = { github: 'fa-github', instagram: 'fa-instagram', x: 'fa-x-twitter', youtube: 'fa-youtube', linkedin: 'fa-linkedin' };
+        const labels = { github: 'GitHub', instagram: 'Instagram', x: 'X', youtube: 'YouTube', linkedin: 'LinkedIn' };
+        Object.entries(socials).forEach(([key, url]) => {
+            html += `<a href="${url}" target="_blank" class="social-link"><span><i class="fab ${icons[key] || 'fa-link'}" style="margin-right:8px;color:var(--text-dim);"></i> ${labels[key] || key}</span><i class="fas fa-external-link-alt"></i></a>`;
+        });
     }
     html += '</div>';
     networksContainer.innerHTML = html;
 }
 
 function renderEmployment() {
-    var container = document.getElementById('employmentContainer');
-    var employment = _employmentData || [];
+    const container = document.getElementById('employmentContainer');
+    const employment = _employmentData || [];
     if (!employment || employment.length === 0) {
-        container.innerHTML = '<div class="employment-empty"><i class="fas fa-briefcase"></i>No employment history added yet<div style="margin-top:12px;"><button class="btn btn-primary btn-sm" onclick="addEmployment()"><i class="fas fa-plus"></i> Add Employment</button></div></div>';
+        container.innerHTML = `<div class="employment-empty"><i class="fas fa-briefcase"></i>No employment history added yet<div style="margin-top:12px;"><button class="btn btn-primary btn-sm" onclick="addEmployment()"><i class="fas fa-plus"></i> Add Employment</button></div></div>`;
         return;
     }
-    var sorted = employment.slice().sort(function(a, b) { return (a.display_order || 0) - (b.display_order || 0); });
-    var orgTypeIcons = { 'production_house': 'fa-building', 'record_label': 'fa-music', 'educational': 'fa-graduation-cap', 'publishing': 'fa-book', 'management': 'fa-users', 'studio': 'fa-microphone', 'freelance': 'fa-user-tie', 'other': 'fa-briefcase' };
-    var employmentTypeLabels = { 'full_time': 'Full-time', 'part_time': 'Part-time', 'contract': 'Contract', 'freelance': 'Freelance', 'internship': 'Internship', 'volunteer': 'Volunteer' };
-    var relationshipLabels = { 'founder': 'Founder', 'co_founder': 'Co-Founder', 'employee': 'Employee', 'freelancer': 'Freelancer', 'contractor': 'Contractor', 'consultant': 'Consultant', 'board_member': 'Board Member', 'advisor': 'Advisor' };
-    var html = '<div class="employment-list">';
-    sorted.forEach(function(emp) {
-        var icon = orgTypeIcons[emp.organization_type] || 'fa-building';
-        var startDate = emp.start_date ? new Date(emp.start_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—';
-        var endDate = emp.end_date ? new Date(emp.end_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Present';
-        var dateStr = startDate + ' — ' + endDate;
-        var empTypeLabel = employmentTypeLabels[emp.employment_type] || emp.employment_type || '';
-        var relLabel = relationshipLabels[emp.relationship_type] || emp.relationship_type || '';
-        html += '<div class="employment-item"><div class="org-icon ' + (emp.logo_url ? 'has-logo' : '') + '">' + (emp.logo_url ? '<img src="' + emp.logo_url + '" alt="' + emp.organization_name + '" onerror="this.style.display=\'none\';this.parentElement.classList.remove(\'has-logo\');this.parentElement.innerHTML=\'<i class=\\\'fas ' + icon + '\\\'></i>\';">' : '<i class="fas ' + icon + '"></i>') + '</div>' +
-            '<div class="org-details"><div class="org-name">' + emp.organization_name + '</div><div class="job-title">' + (emp.job_title || '—') + '</div>' +
-            '<div class="org-meta"><span><i class="far fa-calendar"></i> ' + dateStr + '</span>' + (emp.is_current ? '<span class="current-badge"><i class="fas fa-check-circle"></i> Current</span>' : '') + (emp.employment_type ? '<span><i class="fas fa-clock"></i> ' + empTypeLabel + '</span>' : '') + (emp.relationship_type ? '<span><i class="fas fa-user-tag"></i> ' + relLabel + '</span>' : '') + (emp.organization_type ? '<span><i class="fas fa-tag"></i> ' + emp.organization_type.replace('_', ' ').toUpperCase() + '</span>' : '') + '</div>' +
-            (emp.description ? '<div class="org-description">' + emp.description + '</div>' : '') + (emp.website ? '<div class="org-website"><a href="' + emp.website + '" target="_blank"><i class="fas fa-globe"></i> ' + emp.website.replace(/^https?:\/\//, '') + '</a></div>' : '') +
-            (_isEditMode ? '<div class="employment-actions"><button class="btn btn-secondary btn-sm" onclick="editEmployment(\'' + emp.id + '\')"><i class="fas fa-edit"></i> Edit</button> <button class="btn btn-secondary btn-sm" onclick="deleteEmployment(\'' + emp.id + '\')" style="color:var(--danger);"><i class="fas fa-trash"></i></button></div>' : '') + '</div></div>';
-    });
-    html += '</div>';
-    container.innerHTML = html;
+    const sorted = [...employment].sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+    const orgTypeIcons = { 'production_house': 'fa-building', 'record_label': 'fa-music', 'educational': 'fa-graduation-cap', 'publishing': 'fa-book', 'management': 'fa-users', 'studio': 'fa-microphone', 'freelance': 'fa-user-tie', 'other': 'fa-briefcase' };
+    const employmentTypeLabels = { 'full_time': 'Full-time', 'part_time': 'Part-time', 'contract': 'Contract', 'freelance': 'Freelance', 'internship': 'Internship', 'volunteer': 'Volunteer' };
+    const relationshipLabels = { 'founder': 'Founder', 'co_founder': 'Co-Founder', 'employee': 'Employee', 'freelancer': 'Freelancer', 'contractor': 'Contractor', 'consultant': 'Consultant', 'board_member': 'Board Member', 'advisor': 'Advisor' };
+    container.innerHTML = `<div class="employment-list">` + sorted.map(emp => {
+        const icon = orgTypeIcons[emp.organization_type] || 'fa-building';
+        const dateStr = (start, end) => {
+            const startDate = start ? new Date(start).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—';
+            const endDate = end ? new Date(end).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Present';
+            return `${startDate} — ${endDate}`;
+        };
+        const empTypeLabel = employmentTypeLabels[emp.employment_type] || emp.employment_type || '';
+        const relLabel = relationshipLabels[emp.relationship_type] || emp.relationship_type || '';
+        return `<div class="employment-item"><div class="org-icon ${emp.logo_url ? 'has-logo' : ''}">${emp.logo_url ? `<img src="${emp.logo_url}" alt="${emp.organization_name}" onerror="this.style.display='none';this.parentElement.classList.remove('has-logo');this.parentElement.innerHTML='<i class=\\'fas ${icon}\\'></i>';">` : `<i class="fas ${icon}"></i>`}</div>
+            <div class="org-details"><div class="org-name">${emp.organization_name}</div><div class="job-title">${emp.job_title || '—'}</div>
+            <div class="org-meta"><span><i class="far fa-calendar"></i> ${dateStr(emp.start_date, emp.end_date)}</span>${emp.is_current ? '<span class="current-badge"><i class="fas fa-check-circle"></i> Current</span>' : ''}${emp.employment_type ? `<span><i class="fas fa-clock"></i> ${empTypeLabel}</span>` : ''}${emp.relationship_type ? `<span><i class="fas fa-user-tag"></i> ${relLabel}</span>` : ''}${emp.organization_type ? `<span><i class="fas fa-tag"></i> ${emp.organization_type.replace('_', ' ').toUpperCase()}</span>` : ''}</div>
+            ${emp.description ? `<div class="org-description">${emp.description}</div>` : ''}${emp.website ? `<div class="org-website"><a href="${emp.website}" target="_blank"><i class="fas fa-globe"></i> ${emp.website.replace(/^https?:\/\//, '')}</a></div>` : ''}
+            ${_isEditMode ? `<div class="employment-actions"><button class="btn btn-secondary btn-sm" onclick="editEmployment('${emp.id}')"><i class="fas fa-edit"></i> Edit</button> <button class="btn btn-secondary btn-sm" onclick="deleteEmployment('${emp.id}')" style="color:var(--danger);"><i class="fas fa-trash"></i></button></div>` : ''}</div></div>`;
+    }).join('') + `</div>`;
 }
 
 function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(function() { showToast('Copied: "' + text + '"', 'success'); }).catch(function() { showToast('Unable to copy', 'error'); });
+    navigator.clipboard.writeText(text).then(() => { showToast(`Copied: "${text}"`, 'success'); }).catch(() => { showToast('Unable to copy', 'error'); });
 }
 
 function syncAllRegistries() {
     showToast('Registry sync triggered...', 'info');
-    setTimeout(function() { showToast('Sync complete. All records validated.', 'success'); }, 1500);
+    setTimeout(() => { showToast('Sync complete. All records validated.', 'success'); }, 1500);
 }
 
 function refreshAchievements() { showToast('Achievements refreshed', 'success'); }
@@ -526,7 +600,7 @@ function editEmployment(id) { showToast('Edit employment form coming soon', 'inf
 async function deleteEmployment(id) {
     if (!confirm('Are you sure you want to delete this employment record?')) return;
     try {
-        await apiFetch('/api/creators/me/employment/' + id, { method: 'DELETE' });
+        await apiFetch(`/api/creators/me/employment/${id}`, { method: 'DELETE' });
         showToast('Employment record deleted', 'success');
         await loadProfile();
     } catch (e) {
@@ -551,9 +625,9 @@ function refreshSimulation() {
 
 async function editField(label, currentValue) {
     if (!_isEditMode) return;
-    var newValue = prompt('Edit ' + label + ':', currentValue);
+    const newValue = prompt(`Edit ${label}:`, currentValue);
     if (newValue !== null && newValue !== currentValue) {
-        var fieldMap = {
+        const fieldMap = {
             'Display Name': 'display_name',
             'Artistic Name': 'artistic_name',
             'Legal Full Name': 'legal_full_name',
@@ -578,32 +652,31 @@ async function editField(label, currentValue) {
             'Profile Version': 'profile_version',
             'Pronouns': 'pronouns'
         };
-        var field = fieldMap[label];
+        const field = fieldMap[label];
         if (field) {
             await updateProfile(field, newValue);
         } else {
-            showToast('Updated ' + label + ' to "' + newValue + '" (simulated)', 'success');
+            showToast(`Updated ${label} to "${newValue}" (simulated)`, 'success');
             renderProfile();
         }
     }
 }
 
-function showToast(msg, type) {
-    type = type || 'success';
-    var existing = document.querySelector('.toast');
+function showToast(msg, type = 'success') {
+    const existing = document.querySelector('.toast');
     if (existing) existing.remove();
-    var t = document.createElement('div');
+    const t = document.createElement('div');
     t.className = 'toast';
-    var icon = type === 'success' ? 'fa-check-circle' : type === 'info' ? 'fa-info-circle' : 'fa-exclamation-circle';
-    var color = type === 'success' ? 'var(--primary)' : type === 'info' ? 'var(--info)' : 'var(--danger)';
-    t.innerHTML = '<i class="fas ' + icon + '" style="margin-right:8px;color:' + color + ';"></i> ' + msg;
+    const icon = type === 'success' ? 'fa-check-circle' : type === 'info' ? 'fa-info-circle' : 'fa-exclamation-circle';
+    const color = type === 'success' ? 'var(--primary)' : type === 'info' ? 'var(--info)' : 'var(--danger)';
+    t.innerHTML = `<i class="fas ${icon}" style="margin-right:8px;color:${color};"></i> ${msg}`;
     document.body.appendChild(t);
-    setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { if (t.parentNode) t.remove(); }, 300); }, 2800);
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => { if (t.parentNode) t.remove(); }, 300); }, 2800);
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
     if (typeof window.waitForAuth === 'function') {
-        var user = await window.waitForAuth();
+        const user = await window.waitForAuth();
         if (!user) { window.location.href = '/signup_signin.html'; return; }
     }
     await loadProfile();
@@ -638,3 +711,4 @@ window.toggleSectionTab = toggleSectionTab;
 window.filterPortfolio = filterPortfolio;
 window.loadAssetToStage = loadAssetToStage;
 window.closePortfolioStage = closePortfolioStage;
+window.portfolioAssets = portfolioAssets;
