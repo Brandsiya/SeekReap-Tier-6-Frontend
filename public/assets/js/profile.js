@@ -4,6 +4,33 @@ let _profileData = null;
 let _employmentData = null;
 let _isEditMode = false;
 
+const portfolioAssets = [
+    { id: 'v1', type: 'short-video', title: 'Nova Dawn - Official Music Video', meta: 'Duration: 4:32', source: 'https://www.w3schools.com/html/mov_bbb.mp4', poster: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop' },
+    { id: 'v2', type: 'short-video', title: 'Behind the Scenes - Studio Session', meta: 'Duration: 6:15', source: 'https://www.w3schools.com/html/movie.mp4', poster: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=400&auto=format&fit=crop' },
+    { id: 'v3', type: 'short-video', title: 'Electronic Explorations (Live Set)', meta: 'Duration: 8:42', source: 'https://www.w3schools.com/html/mov_bbb.mp4', poster: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop' },
+    { id: 'v4', type: 'short-video', title: 'African Rhythms - Documentary Short', meta: 'Duration: 12:20', source: 'https://www.w3schools.com/html/movie.mp4', poster: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop' },
+    { id: 'v5', type: 'short-video', title: 'Cinematic Soundscapes - Trailer', meta: 'Duration: 2:18', source: 'https://www.w3schools.com/html/mov_bbb.mp4', poster: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=400&auto=format&fit=crop' },
+    { id: 'v6', type: 'short-video', title: 'NovaKai - Artist Masterclass Intro', meta: 'Duration: 5:47', source: 'https://www.w3schools.com/html/movie.mp4', poster: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=400&auto=format&fit=crop' },
+    { id: 's1', type: 'songs', title: 'Amapiano Sunset Horizon', meta: 'BPM 113 • Mastered WAV', source: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', poster: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=400&auto=format&fit=crop' },
+    { id: 's2', type: 'songs', title: 'Midnight Deep House Pulse', meta: 'BPM 122 • Club Edit', source: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', poster: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=400&auto=format&fit=crop' },
+    { id: 's3', type: 'songs', title: 'Sub-Saharan Sub Bass Kick', meta: 'BPM 112 • Raw Instrumental', source: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', poster: 'https://images.unsplash.com/photo-1487180142328-0c4e37023af5?q=80&w=400&auto=format&fit=crop' },
+    { id: 's4', type: 'songs', title: 'Tribal Tech Resonance', meta: 'BPM 124 • STEM Audio Mix', source: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', poster: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop' },
+    { id: 's5', type: 'songs', title: 'Urban Poly-Rhythm Drive', meta: 'BPM 115 • Percussion Stem', source: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3', poster: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=400&auto=format&fit=crop' },
+    { id: 's6', type: 'songs', title: 'Cape Coast Low-Fi Ambience', meta: 'BPM 98 • Chill Chill Track', source: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3', poster: 'https://images.unsplash.com/photo-1446057032654-9d8885b76c2a?q=80&w=400&auto=format&fit=crop' },
+    { id: 'p1', type: 'photos', title: 'Studio Console Geometry', meta: 'RAW • 45MP Depth Frame', source: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=800&auto=format&fit=crop', poster: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=400&auto=format&fit=crop' },
+    { id: 'p2', type: 'photos', title: 'Stage Flare Exposure', meta: 'ISO 800 • Live Concert Macro', source: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=800&auto=format&fit=crop', poster: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=400&auto=format&fit=crop' },
+    { id: 'p3', type: 'photos', title: 'Vocal Isolation Profile', meta: 'Monochrome Texture Edition', source: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=800&auto=format&fit=crop', poster: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=400&auto=format&fit=crop' },
+    { id: 'p4', type: 'photos', title: 'Modular Synthesizer Grid', meta: 'Macro Lens Architectural Capture', source: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=800&auto=format&fit=crop', poster: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=400&auto=format&fit=crop' },
+    { id: 'p5', type: 'photos', title: 'Backstage Silhouette Study', meta: 'Ambient Production Workspace', source: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=800&auto=format&fit=crop', poster: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop' },
+    { id: 'p6', type: 'photos', title: 'Acoustic Diffuser Shadows', meta: 'Minimalist Interior Reference', source: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800&auto=format&fit=crop', poster: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=400&auto=format&fit=crop' },
+    { id: 'l1', type: 'lyrics', title: 'Nova Dawn - Complete Verse System', meta: 'isiZulu & English Cryptographic Lyrical Set', source: '[Chorus]\nLanga lami liphumile, execution bright.\nWe cross the verification line tonight.\nSeek and reap, database state complete.\n\n[Verse 1]\nStatic nodes running clean inside the core environment.\nWe pull up local terminal variables with pure compliance.\nWatch the flow state trigger across the production tier.\nNo system interference, the architectural pipeline is clear.', poster: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=400&auto=format&fit=crop' },
+    { id: 'l2', type: 'lyrics', title: 'Deep Horizon - Structural Prose', meta: 'isiXhosa Poetic Arrangement', source: '[Intro]\nNdiyabona umphandle, broken infrastructure signs.\nWe realign definitions inside our custom designs.\n\n[Verse 1]\nFrom Tier-3 tracking layers up to the gateway hub.\nWe capture operational metrics right above the operational club.\nKeep the sync running baseline, verify the data line,\nWe are locking metadata arrays beautifully in time.', poster: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=400&auto=format&fit=crop' },
+    { id: 'l3', type: 'lyrics', title: 'Polyphonic Echoes - Text Blueprint', meta: 'Electronic Sync Script Format', source: '[Movement I]\nOscillators rising up against the dark grid parameters.\nCalibrate the local parameters on the spatial system monitors.\n\n[Chorus]\nEchoes in the workspace queue.\nEverything verified, true to you.\nReaping records, harvesting keys.\nWe balance the cryptographic scale down to its knees.', poster: 'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?q=80&w=400&auto=format&fit=crop' },
+    { id: 'l4', type: 'lyrics', title: 'Sub-Saharan Pulse - Anthem Manifest', meta: 'Bilingual Rhythm Guide Document', source: '[Chorus]\nVuka ukhanye, the production system calls your name.\nThis is not a simulation, it is an open ledger game.\n\n[Verse 2]\nHandshakes verified across five separate server regions.\nWe stand unified with the core deployment legions.\nTrack the signature validation back down to its base,\nLeave no trailing connections inside the secure space.', poster: 'https://images.unsplash.com/photo-1474366521946-c3d4b507abf2?q=80&w=400&auto=format&fit=crop' },
+    { id: 'l5', type: 'lyrics', title: 'Cape Coast Transient - Session Notes', meta: 'Amapiano Micro-Vocal Loops Text', source: '[Loop A]\nPhakama. Realign.\nZonke izinto zolunga in due time.\n\n[Loop B]\nFilter the frequency sweep, capture the localized tone.\nWe broadcast the telemetry data directly from our zone.\nNo broken endpoints found, the routing engine is steady,\nEvery operational layer is active and ready.', poster: 'https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=400&auto=format&fit=crop' },
+    { id: 'l6', type: 'lyrics', title: 'Modular Mind State - Verse Layout', meta: 'Full System Operational Track Verse', source: '[Verse 1]\nVoltage controlled statements processing in sequence blocks.\nWe monitor the network signals using accurate atomic clocks.\n\n[Outro]\nSignal pathways fading down into the systemic background hum.\nThe verification page is frozen, the structural work is done.\nSeek. Reap. Terminate session wire.\nKeep the functional integration burning like fire.', poster: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=400&auto=format&fit=crop' }
+];
+
 function goBack() { window.history.back(); }
 
 function toggleSearch() {
@@ -41,7 +68,7 @@ document.addEventListener('keydown', function(e) {
         if (container.classList.contains('active')) { toggleSearch(); }
         var box = document.getElementById('morePopupBox');
         if (box) box.classList.remove('active');
-        closePlayer();
+        closePortfolioStage();
     }
 });
 
@@ -64,155 +91,79 @@ function toggleSectionTab(btn, sectionId) {
     var isActive = btn.classList.contains('active');
     allTabs.forEach(function(t) { t.classList.remove('active'); });
     allSections.forEach(function(s) { s.style.display = 'none'; });
-    if (isActive) { return; }
+    if (isActive) {
+        var bioTab = document.querySelector('[data-section="biography"]');
+        if (bioTab) bioTab.classList.add('active');
+        var bioSec = document.getElementById('section-biography');
+        if (bioSec) bioSec.style.display = 'block';
+        return;
+    }
     btn.classList.add('active');
     var section = document.getElementById('section-' + sectionId);
-    if (section) { section.style.display = 'block'; }
+    if (section) {
+        section.style.display = 'block';
+        if (sectionId === 'portfolio') {
+            renderPortfolioGrid('all');
+        }
+    }
 }
 
-var portfolioItems = [
-    { title: 'Nova Dawn', type: 'songs', duration: '4:32', icon: 'fa-music' },
-    { title: 'African Skies', type: 'songs', duration: '3:48', icon: 'fa-music' },
-    { title: 'Electronic Dreams', type: 'songs', duration: '5:12', icon: 'fa-music' },
-    { title: 'Rhythm of the Night', type: 'songs', duration: '4:05', icon: 'fa-music' },
-    { title: 'Soul Searching', type: 'songs', duration: '6:20', icon: 'fa-music' },
-    { title: 'Beyond the Horizon', type: 'songs', duration: '4:55', icon: 'fa-music' },
-    { title: 'Studio Session', type: 'photos', duration: 'Photo', icon: 'fa-image' },
-    { title: 'Live Performance', type: 'photos', duration: 'Photo', icon: 'fa-image' },
-    { title: 'Album Cover Art', type: 'photos', duration: 'Photo', icon: 'fa-image' },
-    { title: 'Behind the Scenes', type: 'photos', duration: 'Photo', icon: 'fa-image' },
-    { title: 'Soundcheck', type: 'photos', duration: 'Photo', icon: 'fa-image' },
-    { title: 'Recording Studio', type: 'photos', duration: 'Photo', icon: 'fa-image' },
-    { title: 'Studio Vlog', type: 'video', duration: '2:15', icon: 'fa-play-circle' },
-    { title: 'Performance Reel', type: 'video', duration: '3:30', icon: 'fa-play-circle' },
-    { title: 'Production Tips', type: 'video', duration: '4:20', icon: 'fa-play-circle' },
-    { title: 'Artist Interview', type: 'video', duration: '5:45', icon: 'fa-play-circle' },
-    { title: 'Live Jam Session', type: 'video', duration: '6:10', icon: 'fa-play-circle' },
-    { title: 'Behind the Track', type: 'video', duration: '3:55', icon: 'fa-play-circle' },
-    { title: 'Nova Dawn (Lyrics)', type: 'lyrics', duration: 'Lyrics', icon: 'fa-file-alt' },
-    { title: 'African Skies (Lyrics)', type: 'lyrics', duration: 'Lyrics', icon: 'fa-file-alt' },
-    { title: 'Electronic Dreams (Lyrics)', type: 'lyrics', duration: 'Lyrics', icon: 'fa-file-alt' },
-    { title: 'Rhythm of the Night (Lyrics)', type: 'lyrics', duration: 'Lyrics', icon: 'fa-file-alt' },
-    { title: 'Soul Searching (Lyrics)', type: 'lyrics', duration: 'Lyrics', icon: 'fa-file-alt' },
-    { title: 'Beyond the Horizon (Lyrics)', type: 'lyrics', duration: 'Lyrics', icon: 'fa-file-alt' }
-];
-
-var currentPlayerIndex = 0;
-var filteredItems = portfolioItems.slice();
-var isPlaying = false;
-var playerInterval = null;
-
-function getTypeLabel(type) {
-    var labels = { songs: 'Song', photos: 'Photo', video: 'Video', lyrics: 'Lyrics' };
-    return labels[type] || type;
-}
-
-function renderPortfolio(filter) {
-    filter = filter || 'all';
+function renderPortfolioGrid(filterValue) {
+    filterValue = filterValue || 'all';
     var grid = document.getElementById('portfolioGrid');
     if (!grid) return;
-    filteredItems = portfolioItems.filter(function(item) {
-        return filter === 'all' || item.type === filter;
-    });
-    grid.innerHTML = filteredItems.map(function(item, index) {
-        var typeLabel = getTypeLabel(item.type);
-        var icon = item.icon || 'fa-file';
-        return '<div class="portfolio-item" onclick="openPlayer(' + index + ')">' +
-            '<div class="portfolio-thumb">' +
-            '<i class="fas ' + icon + '"></i>' +
-            '<div class="play-overlay"><i class="fas fa-play-circle"></i></div>' +
+    var filtered = filterValue === 'all' ? portfolioAssets : portfolioAssets.filter(function(item) { return item.type === filterValue; });
+    var iconMap = { 'songs': 'fa-music', 'photos': 'fa-camera', 'short-video': 'fa-play', 'lyrics': 'fa-file-alt' };
+    grid.innerHTML = filtered.map(function(item) {
+        return '<div class="portfolio-item" id="asset-item-' + item.id + '" onclick="loadAssetToStage(\'' + item.id + '\')">' +
+            '<div class="portfolio-thumbnail-placeholder">' +
+            '<img src="' + item.poster + '" alt="' + item.title + '">' +
+            '<div class="thumbnail-dark-overlay"></div>' +
+            '<div class="thumbnail-icon-center"><i class="fas ' + (iconMap[item.type] || 'fa-file') + '"></i></div>' +
             '</div>' +
             '<div class="portfolio-item-info">' +
             '<div class="portfolio-item-title">' + item.title + '</div>' +
-            '<div class="portfolio-item-meta">' +
-            '<span>' + item.duration + '</span>' +
-            '<span class="portfolio-item-type">' + typeLabel + '</span>' +
-            '</div>' +
+            '<div class="portfolio-item-meta"><span>' + item.meta + '</span><span class="asset-tag ' + item.type + '">' + item.type.replace('-', ' ') + '</span></div>' +
             '</div>' +
             '</div>';
     }).join('');
 }
 
-function filterPortfolio(value) { renderPortfolio(value); }
+function filterPortfolio(filterValue) { renderPortfolioGrid(filterValue); }
 
-function openPlayer(index) {
-    currentPlayerIndex = index;
-    var item = filteredItems[index];
-    if (!item) return;
-    var modal = document.getElementById('playerModal');
-    var title = document.getElementById('playerTitle');
-    var meta = document.getElementById('playerMeta');
-    var artwork = document.getElementById('playerArtwork');
-    var duration = document.getElementById('playerDuration');
-    title.textContent = item.title;
-    meta.textContent = getTypeLabel(item.type) + ' • ' + item.duration;
-    artwork.innerHTML = '<i class="fas ' + (item.icon || 'fa-music') + '"></i>';
-    duration.textContent = item.duration;
-    document.getElementById('progressFill').style.width = '0%';
-    document.getElementById('playerCurrentTime').textContent = '0:00';
-    document.getElementById('playIcon').className = 'fas fa-play';
-    isPlaying = false;
-    if (playerInterval) { clearInterval(playerInterval); playerInterval = null; }
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-
-function closePlayer() {
-    var modal = document.getElementById('playerModal');
-    modal.classList.remove('active');
-    document.body.style.overflow = '';
-    if (playerInterval) { clearInterval(playerInterval); playerInterval = null; }
-    document.getElementById('playIcon').className = 'fas fa-play';
-    isPlaying = false;
-}
-
-function togglePlay() {
-    var icon = document.getElementById('playIcon');
-    if (isPlaying) {
-        icon.className = 'fas fa-play';
-        isPlaying = false;
-        if (playerInterval) { clearInterval(playerInterval); playerInterval = null; }
-    } else {
-        icon.className = 'fas fa-pause';
-        isPlaying = true;
-        var progress = 0;
-        if (playerInterval) { clearInterval(playerInterval); playerInterval = null; }
-        playerInterval = setInterval(function() {
-            progress += 0.5;
-            if (progress > 100) {
-                progress = 0;
-                playNext();
-            }
-            document.getElementById('progressFill').style.width = progress + '%';
-            var secs = Math.floor((progress / 100) * 180);
-            var mins = Math.floor(secs / 60);
-            secs = secs % 60;
-            document.getElementById('playerCurrentTime').textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
-        }, 100);
+function loadAssetToStage(assetId) {
+    var stage = document.getElementById('portfolioStage');
+    var displayWindow = document.getElementById('stageDisplayWindow');
+    var infoFooter = document.getElementById('stageInfoFooter');
+    var asset = null;
+    for (var i = 0; i < portfolioAssets.length; i++) {
+        if (portfolioAssets[i].id === assetId) { asset = portfolioAssets[i]; break; }
     }
-}
-
-function playNext() {
-    if (filteredItems.length === 0) return;
-    var nextIndex = (currentPlayerIndex + 1) % filteredItems.length;
-    openPlayer(nextIndex);
-    if (isPlaying) {
-        document.getElementById('playIcon').className = 'fas fa-pause';
+    if (!asset || !stage || !displayWindow || !infoFooter) return;
+    document.querySelectorAll('.portfolio-item').forEach(function(item) { item.classList.remove('playing-active'); });
+    var targetedCard = document.getElementById('asset-item-' + assetId);
+    if (targetedCard) targetedCard.classList.add('playing-active');
+    if (asset.type === 'short-video') {
+        displayWindow.innerHTML = '<video class="stage-media-video" controls autoplay src="' + asset.source + '">Your browser does not support the video tag.</video>';
+    } else if (asset.type === 'songs') {
+        displayWindow.innerHTML = '<div class="stage-media-audio-wrapper"><div class="audio-visualization"><div class="audio-bar"></div><div class="audio-bar"></div><div class="audio-bar"></div><div class="audio-bar"></div><div class="audio-bar"></div></div><audio class="stage-media-audio" controls autoplay src="' + asset.source + '"></audio></div>';
+    } else if (asset.type === 'photos') {
+        displayWindow.innerHTML = '<img class="stage-media-photo" src="' + asset.source + '" alt="' + asset.title + '">';
+    } else if (asset.type === 'lyrics') {
+        displayWindow.innerHTML = '<div class="stage-media-lyrics-doc">' + asset.source + '</div>';
     }
+    infoFooter.innerHTML = '<div class="stage-info-title">' + asset.title + '</div><div class="stage-info-meta">' + asset.meta + ' &bull; Type: <span style="text-transform: capitalize;">' + asset.type.replace('-', ' ') + '</span></div>';
+    stage.style.display = 'block';
+    stage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-function playPrev() {
-    if (filteredItems.length === 0) return;
-    var prevIndex = (currentPlayerIndex - 1 + filteredItems.length) % filteredItems.length;
-    openPlayer(prevIndex);
-    if (isPlaying) {
-        document.getElementById('playIcon').className = 'fas fa-pause';
-    }
+function closePortfolioStage() {
+    var stage = document.getElementById('portfolioStage');
+    var displayWindow = document.getElementById('stageDisplayWindow');
+    if (stage) stage.style.display = 'none';
+    if (displayWindow) displayWindow.innerHTML = '';
+    document.querySelectorAll('.portfolio-item').forEach(function(item) { item.classList.remove('playing-active'); });
 }
-
-document.getElementById('playerModal').addEventListener('click', function(e) {
-    if (e.target === this) { closePlayer(); }
-});
 
 async function _getJwt() {
     if (_cachedJwt) return _cachedJwt;
@@ -234,11 +185,7 @@ async function apiFetch(path, opts) {
     var headers = { 'Content-Type': 'application/json' };
     if (opts.headers) { Object.assign(headers, opts.headers); }
     if (jwt) { headers['Authorization'] = 'Bearer ' + jwt; }
-    var res = await fetch(TIER4 + path, {
-        method: opts.method || 'GET',
-        headers: headers,
-        body: opts.body || null
-    });
+    var res = await fetch(TIER4 + path, { method: opts.method || 'GET', headers: headers, body: opts.body || null });
     if (!res.ok) {
         var err = await res.json().catch(function() { return {}; });
         throw new Error(err.error || err.detail || 'HTTP ' + res.status);
@@ -248,10 +195,7 @@ async function apiFetch(path, opts) {
 
 async function updateProfile(field, value) {
     try {
-        var result = await apiFetch('/api/creators/me', {
-            method: 'PATCH',
-            body: JSON.stringify({ [field]: value })
-        });
+        var result = await apiFetch('/api/creators/me', { method: 'PATCH', body: JSON.stringify({ [field]: value }) });
         showToast('Profile updated successfully', 'success');
         await loadProfile();
         return result;
@@ -278,7 +222,6 @@ async function loadProfile() {
     }
     renderProfile();
     renderEmployment();
-    renderPortfolio('all');
 }
 
 function getFallbackData() {
@@ -307,19 +250,12 @@ function getFallbackData() {
         artistic_name: 'NovaKai',
         biography: 'Award-winning music producer and composer with 10+ years of experience creating genre-defying electronic music.',
         website_urls: [{ label: 'Official', url: 'https://novakai.com' }],
-        social_links: {
-            github: 'https://github.com/novakai',
-            instagram: 'https://instagram.com/novakai',
-            x: 'https://x.com/novakai',
-            youtube: 'https://youtube.com/@novakai',
-            linkedin: 'https://linkedin.com/in/novakai'
-        },
+        social_links: { github: 'https://github.com/novakai', instagram: 'https://instagram.com/novakai', x: 'https://x.com/novakai', youtube: 'https://youtube.com/@novakai', linkedin: 'https://linkedin.com/in/novakai' },
         profile_roles: [
             { title: 'Producer', tier: 'Primary Role', period: '2016—Present', works: 143, collabs: 52, active: 18, rating: 5, expertise: ['Music Production', 'Mixing', 'Mastering'], industries: ['Music', 'Film', 'Gaming'], id_link: ['IPI', 'ISRC', 'ISWC'] },
             { title: 'Composer', tier: 'Secondary Role', period: '2014—Present', works: 89, collabs: 21, active: 4, rating: 4, expertise: ['Orchestral Arranging', 'Film Scoring'], industries: ['Film', 'Theatre'], id_link: ['ISWC', 'ISNI'] },
             { title: 'Educator', tier: 'Mentor', period: '2022—Present', works: 12, collabs: 18, active: 2, rating: 3, expertise: ['Cape Town Music Institute', 'Masterclasses'], industries: ['Education'], id_link: ['ORCID', 'ISNI'] }
         ],
-        roles_inline: ['Musician', 'Photographer', 'Videographer', 'Lyricist'],
         timeline: [
             { year: '2014', role: 'Musician', desc: 'Began professional stage operations' },
             { year: '2016', role: 'Producer', desc: 'Established Nova Studios' },
@@ -387,19 +323,11 @@ function renderProfile() {
     document.getElementById('profileDisplayName').textContent = p.display_name || '—';
     document.getElementById('profileArtisticName').textContent = p.artistic_name || '—';
     document.getElementById('profileSeekReapID').textContent = p.seekreap_id || '—';
-    document.getElementById('profilePronouns').textContent = p.pronouns || '';
-    
-    var rolesInline = p.roles_inline || ['Musician', 'Photographer', 'Videographer', 'Lyricist'];
-    var rolesHtml = rolesInline.map(function(role) {
-        return '<span class="role-clickable" onclick="showToast(\'Viewing ' + role + ' works\', \'info\')">' + role + '</span>';
-    }).join(' • ');
-    document.getElementById('profileRolesInline').innerHTML = rolesHtml;
-    
+    document.getElementById('profilePronouns').textContent = p.pronouns || 'He/Him';
     var country = p.country_of_residence || '—';
     var province = p.province || '—';
     var city = p.city || '—';
     document.getElementById('profileLocationText').textContent = country + ' • ' + province + ' • ' + city;
-    
     var verifyMap = {
         'none': { class: 'badge-unverified', label: 'Unverified', icon: 'fa-circle' },
         'email': { class: 'badge-verified', label: 'Email Verified', icon: 'fa-envelope' },
@@ -416,7 +344,6 @@ function renderProfile() {
     document.getElementById('typeBadge').className = 'badge-pill ' + t.class;
     document.getElementById('typeBadge').innerHTML = '<i class="fas fa-user"></i> ' + t.label;
     document.getElementById('profileBioText').textContent = p.biography || '—';
-    
     var achievements = [
         { icon: 'fa-trophy', title: '2x South African Music Award Winner', category: 'Award', date: '2023, 2025' },
         { icon: 'fa-globe-africa', title: 'Featured artist at Afropunk Festival 2025', category: 'Festival', date: '2025' },
@@ -619,7 +546,6 @@ function refreshSimulation() {
     _employmentData = getFallbackEmployment();
     renderProfile();
     renderEmployment();
-    renderPortfolio('all');
     showToast('Profile refreshed with simulation records', 'success');
 }
 
@@ -709,10 +635,6 @@ window.toggleMoreMenu = toggleMoreMenu;
 window.handleMenuClick = handleMenuClick;
 window.scrollToTop = scrollToTop;
 window.toggleSectionTab = toggleSectionTab;
-window.renderPortfolio = renderPortfolio;
 window.filterPortfolio = filterPortfolio;
-window.openPlayer = openPlayer;
-window.closePlayer = closePlayer;
-window.togglePlay = togglePlay;
-window.playNext = playNext;
-window.playPrev = playPrev;
+window.loadAssetToStage = loadAssetToStage;
+window.closePortfolioStage = closePortfolioStage;

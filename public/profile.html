@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SeekReap · Identity Center</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght=400;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/profile.css">
 </head>
@@ -48,10 +48,10 @@
                             <span class="meta-separator">•</span>
                             <span class="seekreap-id-inline" id="profileSeekReapID">—</span>
                         </div>
-                        <div class="pronouns-roles-line" id="pronounsRolesLine">
+                        <div class="pronouns-roles-line">
                             <span class="pronouns" id="profilePronouns">He/Him</span>
-                            <span class="pronouns-arrow">➡️</span>
-                            <span class="roles-inline" id="profileRolesInline">Musician • Photographer • Videographer • Lyricist</span>
+                            <span class="inline-arrow">➡️</span>
+                            <span class="inline-roles">Musician • Photographer • Videographer • Lyricist</span>
                         </div>
                         <div class="profile-badges" id="profileBadges">
                             <span class="badge-pill badge-verified" id="verifyBadge"><i class="fas fa-check-circle"></i> Verified</span>
@@ -62,7 +62,21 @@
             </div>
             <div class="hero-metrics-actions-bar">
                 <div class="profile-stats-line">
-                    <i class="fas fa-handshake" style="color:var(--primary);margin-right:4px;"></i> Trusted by <strong>3,467</strong> creators &bull; <i class="fas fa-users" style="color:var(--primary);margin-right:4px;"></i> Trusts <strong>5,846</strong> creators &bull; <i class="fas fa-eye" style="color:var(--primary);margin-right:4px;"></i> <strong>23M</strong> Profile Views &bull; <i class="fas fa-share-alt" style="color:var(--primary);margin-right:4px;"></i> <strong>14K</strong> Profile Link Shares
+                    <button class="stat-clickable-pill" onclick="showToast('Trusted by: 3,467 creators', 'info')">
+                        <i class="fas fa-handshake"></i> Trusted by <strong>3,467</strong> creators
+                    </button>
+                    <span class="stat-dot-separator">•</span>
+                    <button class="stat-clickable-pill" onclick="showToast('Trusted Creators: 5,846', 'info')">
+                        <i class="fas fa-users"></i> Trusted Creators <strong>5,846</strong>
+                    </button>
+                    <span class="stat-dot-separator">•</span>
+                    <button class="stat-clickable-pill" onclick="showToast('Profile Views: 23MK', 'info')">
+                        <i class="fas fa-eye"></i> <strong>23MK</strong> Profile views
+                    </button>
+                    <span class="stat-dot-separator">•</span>
+                    <button class="stat-clickable-pill" onclick="showToast('Shares: 14K', 'info')">
+                        <i class="fas fa-share-alt"></i> <strong>14K</strong> Shares
+                    </button>
                 </div>
                 <div class="profile-action-buttons">
                     <button class="btn btn-primary" onclick="showToast('You now trust this creator', 'success')"><i class="fas fa-shield-alt"></i> Trust</button>
@@ -104,6 +118,7 @@
             </div>
         </div>
 
+        <!-- SECTION NAVIGATION TABS -->
         <div class="section-nav-tabs">
             <button class="section-tab active" data-section="biography" onclick="toggleSectionTab(this, 'biography')">
                 <i class="fas fa-align-left"></i> Biography
@@ -134,8 +149,10 @@
             </button>
         </div>
 
+        <!-- PROFILE LAYOUT GRID -->
         <div class="profile-layout-grid">
             <div class="main-lane">
+                <!-- Biography (always visible) -->
                 <div class="profile-card section-content" id="section-biography">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-align-left" style="color:var(--text-dim);"></i> Biography</h3>
@@ -152,6 +169,7 @@
                     </div>
                 </div>
 
+                <!-- Identity Record (hidden by default) -->
                 <div class="profile-card section-content" id="section-identity-record" style="display:none;">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-id-card" style="color:var(--text-dim);"></i> Identity Record</h3>
@@ -160,6 +178,7 @@
                     <div class="profile-card-body" id="identityContainer"></div>
                 </div>
 
+                <!-- Career Accomplishments (hidden by default) -->
                 <div class="profile-card section-content" id="section-accomplishments" style="display:none;">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-trophy" style="color:var(--gold);"></i> Career Accomplishments</h3>
@@ -170,6 +189,7 @@
                     </div>
                 </div>
 
+                <!-- Professional History (hidden by default) -->
                 <div class="profile-card section-content" id="section-professional-history" style="display:none;">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-briefcase" style="color:var(--text-dim);"></i> Professional History</h3>
@@ -178,27 +198,42 @@
                     <div class="profile-card-body" id="employmentContainer"></div>
                 </div>
 
+                <!-- INTEGRATED PUBLIC PORTFOLIO CONTAINER (replaces modal behavior) -->
                 <div class="profile-card section-content" id="section-portfolio" style="display:none;">
-                    <div class="profile-card-header">
+                    <div class="profile-card-header portfolio-inline-header">
                         <h3><i class="fas fa-cubes" style="color:var(--primary);"></i> Public Portfolio</h3>
-                        <div class="portfolio-filter">
-                            <label class="filter-label"><i class="fas fa-filter"></i> View by:</label>
-                            <select class="filter-dropdown" id="portfolioFilter" onchange="filterPortfolio(this.value)">
-                                <option value="all">All</option>
+                        <div class="portfolio-filter-wrapper">
+                            <label for="portfolioViewFilter" class="filter-label">View by:</label>
+                            <select id="portfolioViewFilter" class="portfolio-dropdown" onchange="filterPortfolio(this.value)">
+                                <option value="all">All Assets</option>
                                 <option value="songs">Songs</option>
                                 <option value="photos">Photos</option>
-                                <option value="video">Short Video</option>
+                                <option value="short-video">Short Video</option>
                                 <option value="lyrics">Lyrics</option>
                             </select>
                         </div>
                     </div>
                     <div class="profile-card-body">
-                        <div class="portfolio-grid" id="portfolioGrid"></div>
+                        <!-- Focused Stage Area for separated active playback/viewing -->
+                        <div class="portfolio-stage" id="portfolioStage" style="display: none;">
+                            <div class="stage-header">
+                                <span class="stage-badge"><i class="fas fa-play-circle"></i> Live Operational View</span>
+                                <button class="stage-close-btn" onclick="closePortfolioStage()">&times;</button>
+                            </div>
+                            <div class="stage-display-window" id="stageDisplayWindow"></div>
+                            <div class="stage-info-footer" id="stageInfoFooter"></div>
+                        </div>
+
+                        <!-- Grid Pipeline System -->
+                        <div class="portfolio-grid" id="portfolioGrid">
+                            <!-- Populated Dynamically by JavaScript -->
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="side-lane">
+                <!-- Identity Passports (hidden by default) -->
                 <div class="profile-card section-content" id="section-passports" style="display:none;">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-fingerprint" style="color:var(--primary);"></i> Identity Passports</h3>
@@ -206,6 +241,7 @@
                     <div class="profile-card-body" id="identifiersContainer"></div>
                 </div>
 
+                <!-- Artistic Footprint & Roles (hidden by default) -->
                 <div class="profile-card section-content" id="section-roles" style="display:none;">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-user-tag" style="color:var(--primary);"></i> Artistic Footprint & Roles</h3>
@@ -215,6 +251,7 @@
                     </div>
                 </div>
 
+                <!-- Professional Evolution (hidden by default) -->
                 <div class="profile-card section-content" id="section-evolution" style="display:none;">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-history" style="color:var(--primary);"></i> Professional Evolution</h3>
@@ -224,6 +261,7 @@
                     </div>
                 </div>
 
+                <!-- Linked Networks (hidden by default) -->
                 <div class="profile-card section-content" id="section-networks" style="display:none;">
                     <div class="profile-card-header">
                         <h3><i class="fas fa-share-alt" style="color:var(--info);"></i> Linked Networks</h3>
@@ -235,36 +273,10 @@
     </div>
 </div>
 
+<!-- SCROLL TO TOP BUTTON -->
 <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()" aria-label="Scroll to top">
     <i class="fas fa-arrow-up"></i>
 </button>
-
-<div class="player-modal" id="playerModal">
-    <div class="player-modal-content">
-        <button class="player-modal-close" onclick="closePlayer()">&times;</button>
-        <div class="player-container" id="playerContainer">
-            <div class="player-artwork" id="playerArtwork">
-                <i class="fas fa-music"></i>
-            </div>
-            <div class="player-info">
-                <div class="player-title" id="playerTitle">—</div>
-                <div class="player-meta" id="playerMeta">—</div>
-            </div>
-            <div class="player-controls">
-                <button class="player-btn" onclick="playPrev()"><i class="fas fa-step-backward"></i></button>
-                <button class="player-btn play-btn" onclick="togglePlay()"><i class="fas fa-play" id="playIcon"></i></button>
-                <button class="player-btn" onclick="playNext()"><i class="fas fa-step-forward"></i></button>
-            </div>
-            <div class="player-progress">
-                <span class="player-time" id="playerCurrentTime">0:00</span>
-                <div class="progress-bar" id="progressBar">
-                    <div class="progress-fill" id="progressFill" style="width:0%;"></div>
-                </div>
-                <span class="player-time" id="playerDuration">0:00</span>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="/supabase-config.js"></script>
