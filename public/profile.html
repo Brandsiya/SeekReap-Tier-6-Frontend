@@ -1,287 +1,2142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SeekReap · Identity Center</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght=400;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="/assets/css/profile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="/assets/css/profile.css" />
+    <style>
+        /* ─── ROOT ─────────────────────────────────────────────────────────── */
+        :root {
+            --bg: #f5f4ef;
+            --bg2: #ffffff;
+            --bg3: #eeebe3;
+            --bg4: #e2ded5;
+            --border: #dad6cc;
+            --border-light: #eae6db;
+            --text: #171717;
+            --text-dim: #5c5952;
+            --text-muted: #8e8a7f;
+            --primary: #115e36;
+            --primary-hover: #0b4526;
+            --primary-light: #e6f2eb;
+            --danger: #b22222;
+            --warning: #cc8400;
+            --info: #1a6f9a;
+            --gold: #966f1c;
+            --gold-light: #f7f3e3;
+            --gold-dark: #6e5012;
+            --gold-border: #dfd4b3;
+            --green: #115e36;
+            --radius: 20px;
+            --radius-sm: 12px;
+            --radius-lg: 28px;
+            --shadow: 0 4px 16px rgba(0,0,0,0.04);
+            --shadow-lg: 0 12px 36px rgba(0,0,0,0.08);
+            --transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+            --sidebar-width: 260px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* ─── SIDEBAR ──────────────────────────────────────────────────────── */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 200;
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+        .sidebar-header {
+            padding: 20px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            min-height: 72px;
+        }
+        .sidebar-header .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .sidebar-header .logo span { color: var(--primary); }
+        .sidebar-close-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 22px;
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: var(--transition);
+        }
+        .sidebar-close-btn:hover { color: var(--text); }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+        .sidebar-nav .nav-section { margin-bottom: 20px; }
+        .sidebar-nav .nav-section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 0 10px;
+            margin-bottom: 8px;
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+        .sidebar-nav a:hover { background: var(--bg3); color: var(--text); }
+        .sidebar-nav a.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .sidebar-nav a.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            bottom: 20%;
+            width: 3px;
+            background: var(--primary);
+            border-radius: 0 3px 3px 0;
+        }
+        .sidebar-nav a .nav-icon { width: 20px; text-align: center; font-size: 15px; flex-shrink: 0; }
+        .sidebar-nav a .nav-label { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-nav a .nav-badge {
+            background: var(--danger);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 7px;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+        .sidebar-nav a .nav-badge.warning { background: var(--warning); }
+        .sidebar-nav a .nav-badge.success { background: var(--primary); }
+        .sidebar-nav .nav-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 8px 14px;
+        }
+
+        .sidebar-footer {
+            padding: 16px 12px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .sidebar-footer .user-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .sidebar-footer .user-card:hover { background: var(--bg3); }
+        .sidebar-footer .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .sidebar-footer .user-info { flex: 1; overflow: hidden; }
+        .sidebar-footer .user-info .name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sidebar-footer .user-info .role {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 150;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+
+        /* ─── MOBILE HEADER (hamburger + logo + plan) ────────────────────── */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            z-index: 300;
+            align-items: center;
+            padding: 0 12px;
+            gap: 10px;
+            box-shadow: var(--shadow);
+        }
+        .mobile-header .hamburger-btn {
+            display: flex;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            transition: var(--transition);
+            border-radius: 8px;
+        }
+        .mobile-header .hamburger-btn:hover { background: var(--bg3); color: var(--text); }
+        .mobile-header .hamburger-btn.hidden { display: none; }
+        .mobile-header .mobile-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .mobile-header .mobile-logo span { color: var(--primary); }
+        .mobile-header .plan-indicator {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 9px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+            border: 1px solid var(--primary);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-left: auto;
+        }
+
+        /* ─── MAIN CONTENT ────────────────────────────────────────────────── */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .topbar {
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 64px;
+            gap: 16px;
+            flex-shrink: 0;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            justify-content: flex-end;
+        }
+        .topbar-icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 16px;
+            cursor: pointer;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            position: relative;
+            flex-shrink: 0;
+        }
+        .topbar-icon-btn:hover { background: var(--bg3); color: var(--text); }
+        .topbar-icon-btn .badge-count {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            background: var(--danger);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+            border: 2px solid var(--bg2);
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 0 16px;
+            transition: var(--transition);
+            width: 500px;
+            max-width: 100%;
+            flex: 1;
+            max-width: 500px;
+        }
+        .search-container:focus-within {
+            border-color: var(--primary);
+            background: var(--bg2);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        .search-container input {
+            border: none;
+            background: transparent;
+            padding: 8px 0;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            color: var(--text);
+            outline: none;
+            width: 100%;
+        }
+        .search-container input::placeholder { color: var(--text-muted); }
+        .search-container .search-icon-inline { color: var(--text-muted); font-size: 14px; margin-right: 8px; flex-shrink: 0; }
+        .search-container .search-close-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            font-size: 14px;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        .search-container .search-close-btn:hover { color: var(--text); }
+
+        .more-dropdown-wrapper {
+            position: relative;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .more-popup-box {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            width: 260px;
+            z-index: 200;
+            padding: 8px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .more-popup-box.active { display: block; }
+        .more-menu-group { border-bottom: 1px solid var(--border-light); padding: 6px 0; }
+        .more-menu-group:last-child { border-bottom: none; }
+        .menu-group-header {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 4px 16px;
+            letter-spacing: 0.05em;
+        }
+        .menu-item {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .menu-item i { color: var(--text-muted); }
+        .menu-item:hover { background: var(--bg3); color: var(--text); }
+        .menu-item.text-danger { color: var(--danger); }
+        .menu-item.text-danger:hover { background: #fde8e8; }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-secondary { background: var(--bg3); border: 1px solid var(--border); color: var(--text); }
+        .btn-secondary:hover { background: var(--bg4); }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-sm { padding: 6px 14px; font-size: 11px; border-radius: 8px; }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg2);
+            border-left: 4px solid var(--primary);
+            padding: 16px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            z-index: 1100;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s cubic-bezier(0.4,0,0.2,1);
+            max-width: 350px;
+            transition: opacity 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* ─── RESPONSIVE BASE ─────────────────────────────────────────────── */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .sidebar.mobile-open .sidebar-close-btn { display: block; }
+            .main-content { margin-left: 0 !important; padding-top: 56px; }
+            .mobile-header { display: flex; }
+            .topbar { padding: 0 16px; height: 56px; }
+            .search-container { width: 200px; max-width: 200px; }
+            .search-container .search-close-btn { display: block; }
+        }
+        @media (max-width: 768px) {
+            .topbar { padding: 0 12px; height: 52px; }
+            .search-container { width: 140px; max-width: 140px; }
+            .search-container input::placeholder { font-size: 11px; }
+            .more-popup-box { right: 0; left: auto; min-width: 200px; }
+            .toast { max-width: 280px; padding: 12px 16px; font-size: 12px; bottom: 16px; right: 16px; }
+            .mobile-header { height: 52px; }
+            .main-content { padding-top: 52px; }
+            .topbar-icon-btn { width: 32px; height: 32px; font-size: 14px; }
+        }
+        @media (max-width: 480px) {
+            .search-container { width: 100px; max-width: 100px; }
+            .search-container input::placeholder { font-size: 10px; }
+            .topbar-icon-btn { width: 28px; height: 28px; font-size: 12px; }
+        }
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .search-container .search-close-btn { display: none; }
+        }
+
+        /* ─── PROFILE SPECIFIC STYLES ────────────────────────────────────── */
+        .profile-container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px 32px 48px 32px;
+        }
+
+        .hero-assembly {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: visible;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+        .cover-photo-container {
+            position: relative;
+            height: 280px;
+            width: 100%;
+            background: #2d1b3d;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .cover-photo-container .cover-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .cover-photo-container .cover-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+            pointer-events: none;
+        }
+        .hero-details-container {
+            padding: 0 40px 16px 40px;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .profile-avatar-large {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: #115e36;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            margin-top: -80px;
+            border: 6px solid var(--bg2);
+            box-shadow: var(--shadow-lg);
+            z-index: 10;
+            overflow: hidden;
+        }
+        .profile-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-avatar-large .avatar-overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #fff;
+        }
+        .profile-avatar-large:hover .avatar-overlay { display: flex; }
+        .profile-header-content {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-top: 16px;
+        }
+        .profile-header-info { flex: 1; }
+        .profile-header-info .display-name {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+        .artist-meta-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+        .profile-header-info .artist-name {
+            font-size: 18px;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+        .meta-separator { color: var(--text-muted); }
+        .seekreap-id-inline {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .pronouns-roles-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .profile-header-info .pronouns {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .inline-separator {
+            font-size: 12px;
+            color: var(--text-muted);
+            user-select: none;
+        }
+        .inline-roles {
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 500;
+        }
+        .member-since {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            background: var(--bg3);
+            padding: 2px 10px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        .profile-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+        .badge-verified { background: var(--primary-light); color: var(--primary); }
+        .badge-creator { background: var(--gold-light); color: var(--gold); border: 1px solid var(--gold-border); }
+        .badge-member { background: var(--bg3); color: var(--text-dim); }
+        .badge-unverified { background: #fde8e8; color: var(--danger); }
+
+        .hero-metrics-actions-bar {
+            border-top: 1px solid var(--border-light);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            background: linear-gradient(to bottom, var(--bg2), #fafafa);
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            flex-wrap: wrap;
+        }
+        .profile-stats-line {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .stat-clickable-pill {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-family: inherit;
+            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .stat-clickable-pill:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(17,94,54,0.08);
+        }
+        .stat-clickable-pill strong { color: var(--text); font-weight: 600; }
+        .stat-clickable-pill:hover strong { color: var(--primary); }
+        .stat-clickable-pill i { color: var(--primary); }
+        .stat-dot-separator { color: var(--border); font-weight: bold; user-select: none; }
+
+        .profile-action-buttons { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        .section-nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 24px;
+            padding: 4px 0;
+            border-bottom: 2px solid var(--border-light);
+            align-items: center;
+        }
+        .section-tab {
+            background: none;
+            border: none;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 8px 14px;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .section-tab:hover { color: var(--text); background: var(--bg3); }
+        .section-tab.active { color: var(--primary); background: var(--primary-light); }
+        .section-tab.view-portfolio-btn {
+            background: var(--gold-light);
+            color: var(--gold);
+            border: 1px solid var(--gold-border);
+            min-width: 160px;
+            justify-content: center;
+        }
+        .section-tab.view-portfolio-btn:hover { background: var(--gold); color: #fff; }
+        .section-tab.view-portfolio-btn.active { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+        .portfolio-dropdown-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .portfolio-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            min-width: 280px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            z-index: 200;
+            padding: 6px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .portfolio-dropdown-menu.open { display: block; }
+        .portfolio-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            color: var(--text);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+        }
+        .portfolio-dropdown-item:hover { background: var(--bg3); color: var(--primary); }
+        .portfolio-dropdown-item i { width: 20px; color: var(--text-muted); font-size: 14px; }
+        .portfolio-dropdown-item:hover i { color: var(--primary); }
+
+        /* ─── PORTFOLIO DISPLAY SECTION ──────────────────────────────────── */
+        .portfolio-display-section {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 24px;
+            margin-bottom: 24px;
+            align-items: start;
+        }
+
+        .portfolio-grid-display {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .portfolio-display-item {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+        .portfolio-display-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+        .portfolio-display-item .item-thumb {
+            position: relative;
+            aspect-ratio: 16/10;
+            background: #1a1a1a;
+            overflow: hidden;
+        }
+        .portfolio-display-item .item-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .portfolio-display-item .item-thumb .item-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .portfolio-display-item:hover .item-thumb .item-overlay {
+            opacity: 1;
+        }
+        .portfolio-display-item .item-thumb .item-overlay button {
+            background: var(--bg2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text);
+            font-size: 16px;
+            box-shadow: var(--shadow);
+        }
+        .portfolio-display-item .item-thumb .item-overlay button:hover {
+            background: var(--primary);
+            color: #fff;
+            transform: scale(1.1);
+        }
+        .portfolio-display-item .item-info {
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .portfolio-display-item .item-title {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text);
+            flex: 1;
+            margin-right: 8px;
+        }
+        .portfolio-display-item .item-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .portfolio-display-item .item-actions button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px 6px;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+        .portfolio-display-item .item-actions button:hover {
+            color: var(--primary);
+        }
+
+        /* ─── SIMILAR CREATORS ──────────────────────────────────────────────── */
+        .similar-creators-sidebar {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+        .similar-creators-sidebar h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .similar-creators-sidebar h4 i {
+            color: var(--primary);
+        }
+        .similar-creator-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            color: var(--text);
+        }
+        .similar-creator-item:last-child {
+            border-bottom: none;
+        }
+        .similar-creator-item:hover {
+            background: var(--bg3);
+            margin: 0 -10px;
+            padding: 10px 10px;
+            border-radius: var(--radius-sm);
+        }
+        .similar-creator-item .creator-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--primary-light);
+            border: 2px solid var(--border-light);
+        }
+        .similar-creator-item .creator-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .similar-creator-item .creator-name {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text);
+        }
+        .similar-creator-item .creator-handle {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .similar-creator-item .creator-badge {
+            font-size: 9px;
+            padding: 1px 6px;
+            border-radius: 10px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .similar-creator-item .arrow-icon {
+            color: var(--text-muted);
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .similar-creator-item:hover .arrow-icon {
+            color: var(--primary);
+            transform: translateX(2px);
+        }
+
+        /* ─── SECTION CONTENT ──────────────────────────────────────────────── */
+        .section-content { display: none; }
+        .section-content:first-of-type { display: block; }
+
+        .profile-layout-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1.1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        .main-lane { display: flex; flex-direction: column; gap: 24px; }
+        .side-lane { display: flex; flex-direction: column; gap: 24px; }
+
+        .profile-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        .profile-card-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .profile-card-header h3 {
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.01em;
+        }
+        .profile-card-body { padding: 24px; }
+
+        .bio-location-line {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+        }
+        .bio-location-line i { color: var(--primary); }
+        .bio-location-line span { color: var(--text); font-weight: 600; }
+        .bio-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+
+        .identity-category { margin-bottom: 24px; }
+        .identity-category:last-child { margin-bottom: 0; }
+        .identity-category .cat-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-dim);
+            font-weight: 600;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--bg3);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .identity-category .cat-title i { color: var(--primary); }
+        .identity-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 13px;
+            gap: 16px;
+        }
+        .identity-field:last-child { border-bottom: none; }
+        .identity-field .ilabel { color: var(--text-muted); font-size: 12px; font-weight: 500; }
+        .identity-field .ivalue {
+            font-weight: 500;
+            text-align: right;
+            color: var(--text);
+            max-width: 65%;
+            word-break: break-all;
+        }
+        .identity-field .ivalue.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); }
+        .identity-field .ivalue a { color: var(--primary); text-decoration: none; font-weight: 600; }
+        .identity-field .ivalue a:hover { text-decoration: underline; }
+
+        .employment-list { display: flex; flex-direction: column; gap: 16px; }
+        .employment-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-light);
+            background: var(--bg);
+            transition: var(--transition);
+        }
+        .employment-item:hover { border-color: var(--border); background: var(--bg2); box-shadow: var(--shadow); }
+        .employment-item .org-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            background: var(--bg3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--text-dim);
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
+        .employment-item .org-details { flex: 1; min-width: 0; }
+        .employment-item .org-details .org-name { font-weight: 600; font-size: 14px; color: var(--text); }
+        .employment-item .org-details .job-title { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+        .employment-item .org-details .org-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .employment-item .org-details .org-meta .current-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .employment-item .org-details .org-description {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+        .employment-item .org-details .org-website { font-size: 12px; margin-top: 6px; }
+        .employment-item .org-details .org-website a { color: var(--primary); text-decoration: none; font-weight: 500; }
+        .employment-item .org-details .org-website a:hover { text-decoration: underline; }
+
+        .identifiers-layout { display: flex; flex-direction: column; gap: 24px; }
+        .identifier-group { display: flex; flex-direction: column; gap: 12px; }
+        .identifier-group-name {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 700;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 4px;
+            margin-top: 4px;
+        }
+        .identifier-cards { display: flex; flex-direction: column; gap: 16px; }
+        .passport-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 18px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: var(--transition);
+        }
+        .passport-card:hover { border-color: var(--primary); box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+        .passport-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .passport-meta { display: flex; flex-direction: column; }
+        .passport-type {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1;
+        }
+        .passport-full-name { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .passport-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        .status-verified { background: var(--primary-light); color: var(--primary); }
+        .status-allocated { background: #e8f0f8; color: var(--info); }
+        .passport-value-container {
+            background: var(--bg);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .passport-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            color: var(--text);
+        }
+        .passport-copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            transition: var(--transition);
+        }
+        .passport-copy-btn:hover { color: var(--primary); }
+        .passport-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            font-size: 12px;
+            border-top: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            padding: 10px 0;
+        }
+        .passport-detail-item { display: flex; flex-direction: column; }
+        .p-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 600; }
+        .p-val { font-weight: 500; color: var(--text-dim); margin-top: 2px; }
+        .passport-ecosystem { display: flex; flex-direction: column; gap: 6px; }
+        .ecosystem-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; }
+        .ecosystem-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .eco-tag { font-size: 10px; background: var(--bg3); color: var(--text-dim); padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+        .passport-actions { display: flex; gap: 8px; margin-top: 4px; }
+        .passport-btn {
+            flex: 1;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .p-btn-secondary { background: var(--bg); border: 1px solid var(--border); color: var(--text-dim); }
+        .p-btn-secondary:hover { background: var(--bg3); color: var(--text); }
+        .p-btn-primary { background: var(--primary-light); color: var(--primary); border: 1px solid transparent; }
+        .p-btn-primary:hover { background: var(--primary); color: #fff; }
+
+        .roles-ecosystem { display: flex; flex-direction: column; gap: 16px; }
+        .role-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 18px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .role-card:hover { border-color: var(--primary); box-shadow: var(--shadow-lg); }
+        .role-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .role-title { font-size: 16px; font-weight: 700; color: var(--text); }
+        .role-badge {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        .role-primary { background: var(--gold-light); color: var(--gold); border: 1px solid var(--gold-border); }
+        .role-secondary { background: #e8f0f8; color: var(--info); }
+        .role-mentor { background: var(--primary-light); color: var(--primary); }
+        .role-proficiency { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
+        .role-stars { color: var(--gold); font-size: 11px; }
+        .role-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid var(--border-light);
+        }
+        .role-stat { text-align: center; }
+        .role-stat-val { font-size: 14px; font-weight: 700; color: var(--text); }
+        .role-stat-lbl { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .role-details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 12px;
+            border-top: 1px solid var(--border-light);
+            padding-top: 10px;
+        }
+        .role-detail-row { display: flex; justify-content: space-between; }
+        .role-detail-row .r-lbl { color: var(--text-muted); font-weight: 500; }
+        .role-detail-row .r-val { font-weight: 600; color: var(--text-dim); text-align: right; max-width: 70%; }
+
+        .social-links { display: flex; flex-direction: column; gap: 8px; }
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text-dim);
+            background: var(--bg);
+            text-decoration: none;
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+        }
+        .social-link:hover { background: var(--bg3); color: var(--text); border-color: var(--border); }
+
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            font-size: 20px;
+            transition: var(--transition);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .scroll-top-btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .scroll-top-btn.visible { display: flex; }
+
+        .image-viewer-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            cursor: pointer;
+        }
+        .image-viewer-modal.active { display: flex; }
+        .image-viewer-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+            cursor: default;
+        }
+        .image-viewer-content img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 8px; }
+        .image-viewer-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 32px;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 4px 8px;
+        }
+        .image-viewer-close:hover { transform: scale(1.1); color: #fff; }
+        .image-viewer-caption { color: #fff; text-align: center; font-size: 14px; margin-top: 12px; opacity: 0.7; }
+
+        .achievements-grid { display: flex; flex-direction: column; gap: 12px; }
+        .achievement-card {
+            background: var(--bg);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: 14px 18px;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            transition: var(--transition);
+        }
+        .achievement-card:hover { transform: translateY(-2px); border-color: var(--border); box-shadow: var(--shadow); }
+        .achievement-card .ach-icon {
+            font-size: 16px;
+            color: var(--gold);
+            background: var(--gold-light);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .achievement-card .ach-details { flex: 1; }
+        .achievement-card .ach-title { font-weight: 600; font-size: 13px; color: var(--text); line-height: 1.4; }
+        .achievement-card .ach-category {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 2px;
+        }
+        .achievement-card .ach-date {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* ─── RESPONSIVE ───────────────────────────────────────────────────── */
+        @media (max-width: 1200px) {
+            .profile-container { padding: 24px 24px 48px 24px; }
+            .portfolio-display-section { grid-template-columns: 1fr 240px; }
+            .portfolio-grid-display { grid-template-columns: repeat(2, 1fr); }
+            .search-container { width: 350px; max-width: 350px; }
+        }
+        @media (max-width: 992px) {
+            .profile-layout-grid { grid-template-columns: 1fr; gap: 24px; }
+            .search-container { width: 250px; max-width: 250px; }
+        }
+        @media (max-width: 768px) {
+            .profile-container { padding: 16px; }
+            .cover-photo-container { height: 220px; }
+            .hero-details-container { padding: 0 20px 12px 20px; gap: 16px; flex-direction: row; align-items: flex-end; }
+            .profile-avatar-large { width: 120px; height: 120px; margin-top: -60px; border-width: 4px; }
+            .profile-header-info .display-name { font-size: 24px; }
+            .profile-header-info .artist-name { font-size: 15px; }
+            .hero-metrics-actions-bar { padding: 12px 20px; flex-direction: column; align-items: flex-start; gap: 12px; }
+            .profile-stats-line { font-size: 12px; width: 100%; }
+            .profile-action-buttons { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+            .btn { padding: 8px 14px; font-size: 12px; }
+            
+            .section-nav-tabs { gap: 4px; padding: 4px 0; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+            .section-nav-tabs::-webkit-scrollbar { display: none; }
+            .section-tab { font-size: 11px; padding: 6px 10px; white-space: nowrap; }
+            .section-tab.view-portfolio-btn { min-width: 130px; }
+            .portfolio-dropdown-menu { min-width: 200px; left: auto; right: 0; }
+            
+            .portfolio-display-section { 
+                grid-template-columns: 1fr; 
+                gap: 20px;
+            }
+            .portfolio-grid-display { grid-template-columns: 1fr 1fr; }
+            .similar-creators-sidebar { 
+                display: grid; 
+                grid-template-columns: 1fr 1fr; 
+                gap: 8px;
+                padding: 16px;
+            }
+            .similar-creators-sidebar h4 { grid-column: 1 / -1; margin-bottom: 8px; }
+            .similar-creator-item { padding: 8px 0; }
+            
+            .profile-layout-grid { gap: 16px; }
+            .main-lane { gap: 16px; }
+            .side-lane { gap: 16px; }
+            .profile-card-header { padding: 14px 18px; }
+            .profile-card-header h3 { font-size: 14px; }
+            .profile-card-body { padding: 18px; }
+            
+            .identity-field { flex-direction: column; align-items: flex-start; gap: 4px; padding: 8px 0; }
+            .identity-field .ivalue { text-align: left; max-width: 100%; width: 100%; }
+            .passport-details { grid-template-columns: 1fr; gap: 8px; }
+            .passport-card { padding: 14px; }
+            .passport-actions { flex-direction: column; }
+            .passport-btn { text-align: center; }
+            .role-stats-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+            .role-card { padding: 14px; }
+            .employment-item { flex-direction: column; align-items: center; text-align: center; }
+            .employment-item .org-meta { justify-content: center; }
+            .achievement-card { flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 12px 14px; }
+            .achievement-card .ach-date { white-space: normal; }
+            .search-container { width: 160px; max-width: 160px; }
+        }
+        @media (max-width: 480px) {
+            .cover-photo-container { height: 150px; }
+            .hero-details-container { padding: 0 12px 8px 12px; gap: 12px; }
+            .profile-avatar-large { width: 80px; height: 80px; margin-top: -40px; border-width: 3px; }
+            .profile-header-info .display-name { font-size: 18px; }
+            .profile-header-info .artist-name { font-size: 13px; }
+            .portfolio-grid-display { grid-template-columns: 1fr; }
+            .similar-creators-sidebar { grid-template-columns: 1fr; }
+            .profile-card-header { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
+            .profile-card-header h3 { font-size: 13px; gap: 6px; }
+            .profile-card-body { padding: 14px; }
+            .btn { padding: 6px 12px; font-size: 11px; }
+            .role-stats-grid { grid-template-columns: 1fr; }
+            .role-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .role-detail-row { flex-direction: column; align-items: flex-start; gap: 2px; }
+            .role-detail-row .r-val { text-align: left; max-width: 100%; }
+            .passport-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .toast { max-width: 280px; padding: 12px 16px; font-size: 12px; bottom: 16px; right: 16px; }
+            .search-container { width: 100px; max-width: 100px; }
+            .search-container input::placeholder { font-size: 10px; }
+        }
+    </style>
 </head>
 <body>
-<div class="main-content">
-    <header class="topbar">
-        <div class="topbar-left">
-            <button class="back-btn" onclick="goBack()" aria-label="Go back">
-                <i class="fas fa-arrow-left"></i>
-            </button>
+
+<!-- ─── MOBILE HEADER (hamburger + logo + plan) ─── -->
+<div class="mobile-header" id="mobileHeader">
+    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMobileSidebar()" aria-label="Toggle sidebar">
+        <i class="fas fa-bars"></i>
+    </button>
+    <a href="/dashboard.html" class="mobile-logo">Seek<span>Reap</span></a>
+    <span class="plan-indicator">Free</span>
+</div>
+
+<!-- ─── SIDEBAR OVERLAY ─── -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ─── SIDEBAR ─── -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <a href="/dashboard.html" class="logo">Seek<span>Reap</span></a>
+        <button class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Close sidebar">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">
+            <div class="nav-section-title">Main</div>
+            <a href="/dashboard.html"><span class="nav-icon"><i class="fas fa-th-large"></i></span><span class="nav-label">Dashboard</span></a>
+            <a href="/assets.html"><span class="nav-icon"><i class="fas fa-cube"></i></span><span class="nav-label">Assets</span><span class="nav-badge">156</span></a>
+            <a href="/agreements.html"><span class="nav-icon"><i class="fas fa-file-signature"></i></span><span class="nav-label">Agreements</span><span class="nav-badge warning">12</span></a>
+            <a href="/license_generator.html"><span class="nav-icon"><i class="fas fa-file-contract"></i></span><span class="nav-label">Licenses</span></a>
+            <a href="/earnings.html"><span class="nav-icon"><i class="fas fa-coins"></i></span><span class="nav-label">Earnings</span><span class="nav-badge success">R12.4k</span></a>
         </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Rights</div>
+            <a href="/enforcement.html"><span class="nav-icon"><i class="fas fa-gavel"></i></span><span class="nav-label">Enforcement</span><span class="nav-badge">7</span></a>
+            <a href="/delegations.html"><span class="nav-icon"><i class="fas fa-user-shield"></i></span><span class="nav-label">Delegations</span><span class="nav-badge warning">3</span></a>
+            <a href="/certificate_verify.html"><span class="nav-icon"><i class="fas fa-certificate"></i></span><span class="nav-label">Certificates</span><span class="nav-badge success">311</span></a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Identity</div>
+            <a href="/profile.html" class="active"><span class="nav-icon"><i class="fas fa-user"></i></span><span class="nav-label">Profile</span></a>
+            <a href="/notifications.html"><span class="nav-icon"><i class="fas fa-bell"></i></span><span class="nav-label">Notifications</span><span class="nav-badge">3</span></a>
+            <a href="/billing.html"><span class="nav-icon"><i class="fas fa-receipt"></i></span><span class="nav-label">Billing</span></a>
+            <a href="/security.html"><span class="nav-icon"><i class="fas fa-lock"></i></span><span class="nav-label">Security</span></a>
+        </div>
+        <div class="nav-divider"></div>
+        <a href="/logout_confirm.html" class="logout-link"><span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span><span class="nav-label">Sign Out</span></a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-card" onclick="window.location.href='/profile.html'">
+            <div class="user-avatar" id="sideAvatar">S</div>
+            <div class="user-info">
+                <div class="name" id="sideName">Siya</div>
+                <div class="role">Rights Holder</div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- ─── MAIN CONTENT ─── -->
+<div class="main-content">
+    <!-- TOPBAR -->
+    <header class="topbar">
         <div class="topbar-right">
             <div class="search-container" id="searchContainer">
                 <i class="fas fa-search search-icon-inline"></i>
-                <input type="text" placeholder="Search your profile..." id="headerSearch">
-                <button class="search-close-btn" onclick="toggleSearch()" aria-label="Close search">
-                    <i class="fas fa-times"></i>
-                </button>
+                <input type="text" placeholder="Search by creator or Portfolio name..." id="headerSearch">
+                <button class="search-close-btn" onclick="toggleSearch()" aria-label="Close search"><i class="fas fa-times"></i></button>
             </div>
-            <button class="search-toggle-btn" onclick="toggleSearch()" aria-label="Toggle search">
+            <button class="topbar-icon-btn" onclick="window.location.href='/notifications.html'" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="badge-count">3</span>
+            </button>
+            <button class="topbar-icon-btn" onclick="handleShare()" aria-label="Share">
+                <i class="fas fa-share-alt"></i>
+            </button>
+            <div class="more-dropdown-wrapper topbar-more-wrapper">
+                <button class="topbar-icon-btn more-btn" onclick="toggleMoreMenu(event)" aria-label="More options">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div class="more-popup-box" id="morePopupBox">
+                    <div class="more-menu-group">
+                        <div class="menu-group-header"><i class="fas fa-id-card" style="margin-right:6px;"></i> Identity</div>
+                        <button class="menu-item" onclick="handleMenuClick('View Credentials')"><i class="fas fa-id-card" style="width:18px;"></i> View Credentials</button>
+                        <button class="menu-item" onclick="handleMenuClick('View Reputation')"><i class="fas fa-star" style="width:18px;"></i> View Reputation</button>
+                    </div>
+                    <div class="more-menu-group">
+                        <div class="menu-group-header"><i class="fas fa-compass" style="margin-right:6px;"></i> Discovery</div>
+                        <button class="menu-item" onclick="handleMenuClick('Search Profile')"><i class="fas fa-search" style="width:18px;"></i> Search Profile</button>
+                        <button class="menu-item" onclick="handleMenuClick('Copy Profile Link')"><i class="fas fa-link" style="width:18px;"></i> Copy Profile Link</button>
+                        <button class="menu-item" onclick="handleMenuClick('Save Profile')"><i class="fas fa-bookmark" style="width:18px;"></i> Save Profile</button>
+                    </div>
+                    <div class="more-menu-group">
+                        <div class="menu-group-header"><i class="fas fa-handshake" style="margin-right:6px;"></i> Community</div>
+                        <button class="menu-item" onclick="handleMenuClick('Recommend Creator')"><i class="fas fa-thumbs-up" style="width:18px;"></i> Recommend Creator</button>
+                    </div>
+                    <div class="more-menu-group">
+                        <div class="menu-group-header"><i class="fas fa-shield-alt" style="margin-right:6px;"></i> Safety</div>
+                        <button class="menu-item text-danger" onclick="handleMenuClick('Report Profile')"><i class="fas fa-flag" style="width:18px;"></i> Report Profile</button>
+                        <button class="menu-item text-danger" onclick="handleMenuClick('Block User')"><i class="fas fa-ban" style="width:18px;"></i> Block User</button>
+                    </div>
+                </div>
+            </div>
+            <button class="topbar-icon-btn" onclick="toggleSearch()" aria-label="Toggle search" style="display:none;" id="searchToggleBtn">
                 <i class="fas fa-search"></i>
             </button>
         </div>
     </header>
+
+    <!-- PROFILE CONTENT -->
     <div class="profile-container">
+        <!-- Hero -->
         <div class="hero-assembly">
             <div class="cover-photo-container">
-                <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1200&auto=format&fit=crop" class="cover-image" alt="Cover Banner">
+                <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1200&auto=format&fit=crop" class="cover-image" alt="Cover Banner" onclick="openImageViewer(this.src, 'Cover Photo')">
                 <div class="cover-overlay"></div>
             </div>
             <div class="hero-details-container">
-                <div class="profile-avatar-large" id="profileAvatar">
+                <div class="profile-avatar-large" id="profileAvatar" onclick="openImageViewer(this.querySelector('img').src, 'Profile Photo')">
                     <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop" alt="Avatar">
                     <div class="avatar-overlay"><i class="fas fa-camera"></i></div>
                 </div>
                 <div class="profile-header-content">
                     <div class="profile-header-info">
-                        <div class="display-name" id="profileDisplayName">—</div>
+                        <div class="display-name" id="profileDisplayName">NovaKai</div>
                         <div class="artist-meta-line">
-                            <span class="artist-name" id="profileArtisticName">—</span>
+                            <span class="artist-name" id="profileArtisticName">NovaKai</span>
                             <span class="meta-separator">•</span>
-                            <span class="seekreap-id-inline" id="profileSeekReapID">—</span>
+                            <span class="seekreap-id-inline" id="profileSeekReapID">SR-2026-MR9KZW0B</span>
                         </div>
                         <div class="pronouns-roles-line">
                             <span class="pronouns" id="profilePronouns">He/Him</span>
-                            <span class="inline-arrow">➡️</span>
-                            <span class="inline-roles">Musician • Photographer • Videographer • Lyricist</span>
+                            <span class="inline-separator">•</span>
+                            <span class="inline-roles" id="profileRolesText">Musician • Photographer • Videographer</span>
                         </div>
                         <div class="profile-badges" id="profileBadges">
                             <span class="badge-pill badge-verified" id="verifyBadge"><i class="fas fa-check-circle"></i> Verified</span>
                             <span class="badge-pill badge-creator" id="typeBadge"><i class="fas fa-user-astronaut"></i> Creator</span>
+                            <span class="member-since" id="memberSinceBadge"><i class="far fa-calendar-alt"></i> Member since 2012</span>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="hero-metrics-actions-bar">
                 <div class="profile-stats-line">
-                    <button class="stat-clickable-pill" onclick="showToast('Trusted by: 3,467 creators', 'info')">
-                        <i class="fas fa-handshake"></i> Trusted by <strong>3,467</strong> creators
-                    </button>
+                    <button class="stat-clickable-pill" onclick="showToast('Trusted by: 3,467 creators', 'info')"><i class="fas fa-handshake"></i> Trusted by <strong>3,467</strong></button>
                     <span class="stat-dot-separator">•</span>
-                    <button class="stat-clickable-pill" onclick="showToast('Trusted Creators: 5,846', 'info')">
-                        <i class="fas fa-users"></i> Trusted Creators <strong>5,846</strong>
-                    </button>
+                    <button class="stat-clickable-pill" onclick="showToast('Trusted Creators: 5,846', 'info')"><i class="fas fa-users"></i> <strong>5,846</strong> trusted</button>
                     <span class="stat-dot-separator">•</span>
-                    <button class="stat-clickable-pill" onclick="showToast('Profile Views: 23MK', 'info')">
-                        <i class="fas fa-eye"></i> <strong>23MK</strong> Profile views
-                    </button>
+                    <button class="stat-clickable-pill" onclick="showToast('Profile Views: 23MK', 'info')"><i class="fas fa-eye"></i> <strong>23MK</strong> views</button>
                     <span class="stat-dot-separator">•</span>
-                    <button class="stat-clickable-pill" onclick="showToast('Shares: 14K', 'info')">
-                        <i class="fas fa-share-alt"></i> <strong>14K</strong> Shares
-                    </button>
+                    <button class="stat-clickable-pill" onclick="showToast('Shares: 14K', 'info')"><i class="fas fa-share-alt"></i> <strong>14K</strong> shares</button>
                 </div>
                 <div class="profile-action-buttons">
                     <button class="btn btn-primary" onclick="showToast('You now trust this creator', 'success')"><i class="fas fa-shield-alt"></i> Trust</button>
-                    <button class="btn btn-secondary" onclick="showToast('Link copied to clipboard', 'success')"><i class="fas fa-share-alt"></i> Share</button>
-                    <button class="btn btn-secondary" onclick="showToast('Profile saved', 'success')"><i class="fas fa-bookmark"></i> Save</button>
-                    <div class="more-dropdown-wrapper">
-                        <button class="btn btn-secondary btn-icon more-btn" onclick="toggleMoreMenu(event)" aria-label="More options">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                        <div class="more-popup-box" id="morePopupBox">
-                            <div class="more-menu-group">
-                                <div class="menu-group-header"><i class="fas fa-id-card" style="margin-right:6px;"></i> Identity</div>
-                                <button class="menu-item" onclick="handleMenuClick('View Credentials')"><i class="fas fa-id-card" style="width:18px;"></i> View Credentials</button>
-                                <button class="menu-item" onclick="handleMenuClick('View Certificates')"><i class="fas fa-certificate" style="width:18px;"></i> View Certificates</button>
-                                <button class="menu-item" onclick="handleMenuClick('View Reputation')"><i class="fas fa-star" style="width:18px;"></i> View Reputation</button>
-                            </div>
-                            <div class="more-menu-group">
-                                <div class="menu-group-header"><i class="fas fa-gavel" style="margin-right:6px;"></i> Rights</div>
-                                <button class="menu-item" onclick="handleMenuClick('View Solo Ownership Rights')"><i class="fas fa-user" style="width:18px;"></i> View Solo Ownership Rights</button>
-                                <button class="menu-item" onclick="handleMenuClick('View Co-ownership Rights')"><i class="fas fa-users" style="width:18px;"></i> View Co-ownership Rights</button>
-                            </div>
-                            <div class="more-menu-group">
-                                <div class="menu-group-header"><i class="fas fa-compass" style="margin-right:6px;"></i> Discovery</div>
-                                <button class="menu-item" onclick="handleMenuClick('Search Profile')"><i class="fas fa-search" style="width:18px;"></i> Search Profile</button>
-                                <button class="menu-item" onclick="handleMenuClick('Copy Profile Link')"><i class="fas fa-link" style="width:18px;"></i> Copy Profile Link</button>
-                            </div>
-                            <div class="more-menu-group">
-                                <div class="menu-group-header"><i class="fas fa-handshake" style="margin-right:6px;"></i> Community</div>
-                                <button class="menu-item" onclick="handleMenuClick('Recommend Creator')"><i class="fas fa-thumbs-up" style="width:18px;"></i> Recommend Creator</button>
-                            </div>
-                            <div class="more-menu-group">
-                                <div class="menu-group-header"><i class="fas fa-shield-alt" style="margin-right:6px;"></i> Safety</div>
-                                <button class="menu-item text-danger" onclick="handleMenuClick('Report Profile')"><i class="fas fa-flag" style="width:18px;"></i> Report Profile</button>
-                                <button class="menu-item text-danger" onclick="handleMenuClick('Block User')"><i class="fas fa-ban" style="width:18px;"></i> Block User</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- SECTION NAVIGATION TABS -->
+        <!-- Section Tabs -->
         <div class="section-nav-tabs">
-            <button class="section-tab active" data-section="biography" onclick="toggleSectionTab(this, 'biography')">
-                <i class="fas fa-align-left"></i> Biography
-            </button>
-            <button class="section-tab" data-section="identity-record" onclick="toggleSectionTab(this, 'identity-record')">
-                <i class="fas fa-id-card"></i> Identity Record
-            </button>
-            <button class="section-tab" data-section="accomplishments" onclick="toggleSectionTab(this, 'accomplishments')">
-                <i class="fas fa-trophy"></i> Accomplishments
-            </button>
-            <button class="section-tab" data-section="professional-history" onclick="toggleSectionTab(this, 'professional-history')">
-                <i class="fas fa-briefcase"></i> History
-            </button>
-            <button class="section-tab" data-section="passports" onclick="toggleSectionTab(this, 'passports')">
-                <i class="fas fa-fingerprint"></i> Passports
-            </button>
-            <button class="section-tab" data-section="roles" onclick="toggleSectionTab(this, 'roles')">
-                <i class="fas fa-user-tag"></i> Roles
-            </button>
-            <button class="section-tab" data-section="evolution" onclick="toggleSectionTab(this, 'evolution')">
-                <i class="fas fa-history"></i> Evolution
-            </button>
-            <button class="section-tab" data-section="networks" onclick="toggleSectionTab(this, 'networks')">
-                <i class="fas fa-share-alt"></i> Networks
-            </button>
-            <button class="section-tab view-portfolio-btn" data-section="portfolio" onclick="toggleSectionTab(this, 'portfolio')">
-                <i class="fas fa-eye"></i> View Public Portfolio
-            </button>
+            <button class="section-tab active" data-section="biography" onclick="toggleSectionTab(this, 'biography')"><i class="fas fa-align-left"></i> Biography</button>
+            <button class="section-tab" data-section="identity-record" onclick="toggleSectionTab(this, 'identity-record')"><i class="fas fa-id-card"></i> Identity Record</button>
+            <button class="section-tab" data-section="accomplishments" onclick="toggleSectionTab(this, 'accomplishments')"><i class="fas fa-trophy"></i> Accomplishments</button>
+            <button class="section-tab" data-section="professional-history" onclick="toggleSectionTab(this, 'professional-history')"><i class="fas fa-briefcase"></i> History</button>
+            <button class="section-tab" data-section="passports" onclick="toggleSectionTab(this, 'passports')"><i class="fas fa-fingerprint"></i> Passports</button>
+            <button class="section-tab" data-section="roles" onclick="toggleSectionTab(this, 'roles')"><i class="fas fa-user-tag"></i> Roles</button>
+            <button class="section-tab" data-section="networks" onclick="toggleSectionTab(this, 'networks')"><i class="fas fa-share-alt"></i> Networks</button>
+            <div class="portfolio-dropdown-wrapper">
+                <button class="section-tab view-portfolio-btn" onclick="togglePortfolioDropdown(event)">
+                    <i class="fas fa-folder-open"></i> View portfolios
+                    <i class="fas fa-chevron-down" style="font-size:10px;margin-left:4px;"></i>
+                </button>
+                <div class="portfolio-dropdown-menu" id="portfolioDropdownMenu">
+                    <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Public Portfolio')"><i class="fas fa-globe"></i> Public Portfolio</button>
+                    <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Featured Portfolio')"><i class="fas fa-star"></i> Featured Portfolio</button>
+                    <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Collections')"><i class="fas fa-layer-group"></i> Collections</button>
+                    <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Collaborative Works')"><i class="fas fa-users"></i> Collaborative Works</button>
+                    <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Certified Works')"><i class="fas fa-certificate"></i> Certified Works</button>
+                    <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Latest Works')"><i class="fas fa-clock"></i> Latest Works</button>
+                    <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Works for Licensing')"><i class="fas fa-file-contract"></i> Works for Licensing</button>
+                    <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Works for Sale')"><i class="fas fa-tag"></i> Works for Sale</button>
+                    <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Popular Works')"><i class="fas fa-fire"></i> Popular Works</button>
+                    <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Commission Portfolio')"><i class="fas fa-paint-brush"></i> Commission Portfolio</button>
+                </div>
+            </div>
         </div>
 
-        <!-- PROFILE LAYOUT GRID -->
+        <!-- ─── PORTFOLIO DISPLAY SECTION ────────────────────────────────── -->
+        <div class="portfolio-display-section" id="portfolioDisplaySection">
+            <!-- Portfolio Grid -->
+            <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <h3 style="font-size:16px;font-weight:700;color:var(--text);">
+                        <i class="fas fa-folder-open" style="color:var(--gold);"></i> 
+                        <span id="portfolioDisplayTitle">Public Portfolio</span>
+                    </h3>
+                    <span style="font-size:12px;color:var(--text-muted);">
+                        <span id="portfolioItemCount">6</span> works
+                    </span>
+                </div>
+                <div class="portfolio-grid-display" id="portfolioGridDisplay">
+                    <!-- Rendered by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Similar Creators Sidebar -->
+            <div class="similar-creators-sidebar">
+                <h4><i class="fas fa-users"></i> Similar Creators</h4>
+                <div id="similarCreatorsList">
+                    <!-- Rendered by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Grid (main content) -->
         <div class="profile-layout-grid">
             <div class="main-lane">
-                <!-- Biography (always visible) -->
+                <!-- Biography -->
                 <div class="profile-card section-content" id="section-biography">
-                    <div class="profile-card-header">
-                        <h3><i class="fas fa-align-left" style="color:var(--text-dim);"></i> Biography</h3>
-                        <span class="card-action" onclick="toggleEditMode()">Edit →</span>
-                    </div>
+                    <div class="profile-card-header"><h3><i class="fas fa-align-left" style="color:var(--text-dim);"></i> Biography</h3></div>
                     <div class="profile-card-body">
-                        <div class="bio-location-line">
-                            <i class="fas fa-map-pin" style="color:var(--primary);margin-right:8px;"></i>
-                            Lives in <span id="profileLocationText">— • — • —</span>
-                        </div>
-                        <div class="bio-text" id="profileBioText">
-                            Award-winning music producer and composer with 10+ years of experience creating genre-defying electronic music. Collaborated with artists across Africa, Europe, and the Americas.
-                        </div>
+                        <div class="bio-location-line"><i class="fas fa-map-pin" style="color:var(--primary);margin-right:8px;"></i> Lives in <span id="profileLocationText">South Africa • Western Cape • Cape Town</span></div>
+                        <div class="bio-text" id="profileBioText">Award-winning music producer and composer with 10+ years of experience creating genre-defying electronic music. Collaborated with artists across Africa, Europe, and the Americas.</div>
                     </div>
                 </div>
 
-                <!-- Identity Record (hidden by default) -->
+                <!-- Identity Record -->
                 <div class="profile-card section-content" id="section-identity-record" style="display:none;">
-                    <div class="profile-card-header">
-                        <h3><i class="fas fa-id-card" style="color:var(--text-dim);"></i> Identity Record</h3>
-                        <span class="card-action" onclick="toggleEditMode()">Edit →</span>
+                    <div class="profile-card-header"><h3><i class="fas fa-id-card" style="color:var(--text-dim);"></i> Identity Record</h3></div>
+                    <div class="profile-card-body" id="identityContainer">
+                        <div class="identity-category">
+                            <div class="cat-title"><i class="fas fa-user-shield"></i> Personal Details</div>
+                            <div class="identity-field"><span class="ilabel">SeekReap ID</span><span class="ivalue mono">SR-2026-MR9KZW0B</span></div>
+                            <div class="identity-field"><span class="ilabel">Legal Full Name</span><span class="ivalue">John David Smith</span></div>
+                            <div class="identity-field"><span class="ilabel">Title</span><span class="ivalue">Mr</span></div>
+                            <div class="identity-field"><span class="ilabel">Gender</span><span class="ivalue">Male</span></div>
+                            <div class="identity-field"><span class="ilabel">Date of Birth</span><span class="ivalue">1990-01-15</span></div>
+                            <div class="identity-field"><span class="ilabel">Pronouns</span><span class="ivalue">He/Him</span></div>
+                            <div class="identity-field"><span class="ilabel">Country Code</span><span class="ivalue">ZA</span></div>
+                        </div>
+                        <div class="identity-category">
+                            <div class="cat-title"><i class="fas fa-paint-brush"></i> Creative Details</div>
+                            <div class="identity-field"><span class="ilabel">Display Name</span><span class="ivalue">NovaKai</span></div>
+                            <div class="identity-field"><span class="ilabel">Artistic Name</span><span class="ivalue">NovaKai</span></div>
+                            <div class="identity-field"><span class="ilabel">Location</span><span class="ivalue">South Africa</span></div>
+                            <div class="identity-field"><span class="ilabel">City</span><span class="ivalue">Cape Town</span></div>
+                            <div class="identity-field"><span class="ilabel">Company</span><span class="ivalue">Nova Studios</span></div>
+                        </div>
+                        <div class="identity-category">
+                            <div class="cat-title"><i class="fas fa-envelope-open-text"></i> Contact Details</div>
+                            <div class="identity-field"><span class="ilabel">Recovery Email</span><span class="ivalue"><a href="mailto:nova@seekreap.io">nova@seekreap.io</a></span></div>
+                            <div class="identity-field"><span class="ilabel">Primary Phone</span><span class="ivalue"><a href="tel:+27821234567">+27 82 123 4567</a></span></div>
+                            <div class="identity-field"><span class="ilabel">Contact Preference</span><span class="ivalue">email</span></div>
+                            <div class="identity-field"><span class="ilabel">Preferred Language</span><span class="ivalue">en</span></div>
+                        </div>
                     </div>
-                    <div class="profile-card-body" id="identityContainer"></div>
                 </div>
 
-                <!-- Career Accomplishments (hidden by default) -->
+                <!-- Accomplishments -->
                 <div class="profile-card section-content" id="section-accomplishments" style="display:none;">
-                    <div class="profile-card-header">
-                        <h3><i class="fas fa-trophy" style="color:var(--gold);"></i> Career Accomplishments</h3>
-                        <span class="card-action" onclick="refreshAchievements()">Refresh →</span>
-                    </div>
+                    <div class="profile-card-header"><h3><i class="fas fa-trophy" style="color:var(--gold);"></i> Career Accomplishments</h3></div>
                     <div class="profile-card-body">
-                        <div class="achievements-grid" id="achievementsList"></div>
+                        <div class="achievements-grid" id="achievementsList">
+                            <div class="achievement-card"><div class="ach-icon"><i class="fas fa-trophy"></i></div><div class="ach-details"><div class="ach-category">Award</div><div class="ach-title">2x South African Music Award Winner</div></div><div class="ach-date">2023, 2025</div></div>
+                            <div class="achievement-card"><div class="ach-icon"><i class="fas fa-globe-africa"></i></div><div class="ach-details"><div class="ach-category">Festival</div><div class="ach-title">Featured artist at Afropunk Festival 2025</div></div><div class="ach-date">2025</div></div>
+                            <div class="achievement-card"><div class="ach-icon"><i class="fas fa-compact-disc"></i></div><div class="ach-details"><div class="ach-category">Release</div><div class="ach-title">Album "Nova Dawn" — 5M+ streams</div></div><div class="ach-date">2024</div></div>
+                            <div class="achievement-card"><div class="ach-icon"><i class="fas fa-star"></i></div><div class="ach-details"><div class="ach-category">Collaboration</div><div class="ach-title">Collaborated with 15+ international artists</div></div><div class="ach-date">2016—Present</div></div>
+                            <div class="achievement-card"><div class="ach-icon"><i class="fas fa-certificate"></i></div><div class="ach-details"><div class="ach-category">Credentials</div><div class="ach-title">311+ verified certificates issued</div></div><div class="ach-date">2020—Present</div></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Professional History (hidden by default) -->
+                <!-- Professional History -->
                 <div class="profile-card section-content" id="section-professional-history" style="display:none;">
-                    <div class="profile-card-header">
-                        <h3><i class="fas fa-briefcase" style="color:var(--text-dim);"></i> Professional History</h3>
-                        <span class="card-action" onclick="addEmployment()">Add →</span>
-                    </div>
-                    <div class="profile-card-body" id="employmentContainer"></div>
-                </div>
-
-                <!-- INTEGRATED PUBLIC PORTFOLIO CONTAINER (replaces modal behavior) -->
-                <div class="profile-card section-content" id="section-portfolio" style="display:none;">
-                    <div class="profile-card-header portfolio-inline-header">
-                        <h3><i class="fas fa-cubes" style="color:var(--primary);"></i> Public Portfolio</h3>
-                        <div class="portfolio-filter-wrapper">
-                            <label for="portfolioViewFilter" class="filter-label">View by:</label>
-                            <select id="portfolioViewFilter" class="portfolio-dropdown" onchange="filterPortfolio(this.value)">
-                                <option value="all">All Assets</option>
-                                <option value="songs">Songs</option>
-                                <option value="photos">Photos</option>
-                                <option value="short-video">Short Video</option>
-                                <option value="lyrics">Lyrics</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="profile-card-body">
-                        <!-- Focused Stage Area for separated active playback/viewing -->
-                        <div class="portfolio-stage" id="portfolioStage" style="display: none;">
-                            <div class="stage-header">
-                                <span class="stage-badge"><i class="fas fa-play-circle"></i> Live Operational View</span>
-                                <button class="stage-close-btn" onclick="closePortfolioStage()">&times;</button>
-                            </div>
-                            <div class="stage-display-window" id="stageDisplayWindow"></div>
-                            <div class="stage-info-footer" id="stageInfoFooter"></div>
-                        </div>
-
-                        <!-- Grid Pipeline System -->
-                        <div class="portfolio-grid" id="portfolioGrid">
-                            <!-- Populated Dynamically by JavaScript -->
+                    <div class="profile-card-header"><h3><i class="fas fa-briefcase" style="color:var(--text-dim);"></i> Professional History</h3></div>
+                    <div class="profile-card-body" id="employmentContainer">
+                        <div class="employment-list">
+                            <div class="employment-item"><div class="org-icon"><i class="fas fa-building"></i></div><div class="org-details"><div class="org-name">Nova Studios</div><div class="job-title">Creative Director & Lead Producer</div><div class="org-meta"><span><i class="far fa-calendar"></i> Jan 2020 — Present</span><span class="current-badge"><i class="fas fa-check-circle"></i> Current</span><span><i class="fas fa-clock"></i> Full-time</span></div><div class="org-description">Leading music production and creative strategy.</div><div class="org-website"><a href="https://novastudios.co.za" target="_blank"><i class="fas fa-globe"></i> novastudios.co.za</a></div></div></div>
+                            <div class="employment-item"><div class="org-icon"><i class="fas fa-music"></i></div><div class="org-details"><div class="org-name">AfroSonic Records</div><div class="job-title">Senior Music Producer</div><div class="org-meta"><span><i class="far fa-calendar"></i> Jun 2018 — Dec 2019</span><span><i class="fas fa-clock"></i> Contract</span></div><div class="org-description">Produced tracks for emerging African artists.</div><div class="org-website"><a href="https://afrosonic.com" target="_blank"><i class="fas fa-globe"></i> afrosonic.com</a></div></div></div>
+                            <div class="employment-item"><div class="org-icon"><i class="fas fa-graduation-cap"></i></div><div class="org-details"><div class="org-name">Cape Town Music Institute</div><div class="job-title">Guest Lecturer — Music Production</div><div class="org-meta"><span><i class="far fa-calendar"></i> Sep 2022 — Present</span><span class="current-badge"><i class="fas fa-check-circle"></i> Current</span><span><i class="fas fa-clock"></i> Part-time</span></div><div class="org-description">Teaching music production techniques.</div><div class="org-website"><a href="https://ctmi.edu.za" target="_blank"><i class="fas fa-globe"></i> ctmi.edu.za</a></div></div></div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="side-lane">
-                <!-- Identity Passports (hidden by default) -->
+                <!-- Passports -->
                 <div class="profile-card section-content" id="section-passports" style="display:none;">
-                    <div class="profile-card-header">
-                        <h3><i class="fas fa-fingerprint" style="color:var(--primary);"></i> Identity Passports</h3>
+                    <div class="profile-card-header"><h3><i class="fas fa-fingerprint" style="color:var(--primary);"></i> Identity Passports</h3></div>
+                    <div class="profile-card-body" id="identifiersContainer">
+                        <div class="identifiers-layout">
+                            <div class="identifier-group"><div class="identifier-group-name">Creative Identity</div><div class="identifier-cards">
+                                <div class="passport-card"><div class="passport-header"><div class="passport-meta"><span class="passport-type">ISNI</span><span class="passport-full-name">International Standard Name Identifier</span></div><span class="passport-status status-verified"><i class="fas fa-check-circle"></i> Active</span></div><div class="passport-value-container"><span class="passport-value">0000-0001-2345-6789</span><button class="passport-copy-btn" onclick="copyToClipboard('0000-0001-2345-6789')"><i class="far fa-copy"></i></button></div><div class="passport-details"><div class="passport-detail-item"><span class="p-label">Purpose</span><span class="p-val">Global creator identity</span></div><div class="passport-detail-item"><span class="p-label">Issued By</span><span class="p-val">ISNI International</span></div><div class="passport-detail-item"><span class="p-label">Issued Date</span><span class="p-val">2026-03-11</span></div></div><div class="passport-ecosystem"><span class="ecosystem-label">Verified Uses</span><div class="ecosystem-tags"><span class="eco-tag">✓ Libraries</span><span class="eco-tag">✓ Publishers</span><span class="eco-tag">✓ Music databases</span></div></div><div class="passport-actions"><button class="passport-btn p-btn-secondary" onclick="copyToClipboard('0000-0001-2345-6789')">Copy Code</button><button class="passport-btn p-btn-primary" onclick="showToast('Opening registry for ISNI', 'info')">View Registry <i class="fas fa-external-link-alt"></i></button></div></div>
+                            </div></div>
+                            <div class="identifier-group"><div class="identifier-group-name">Music Rights</div><div class="identifier-cards">
+                                <div class="passport-card"><div class="passport-header"><div class="passport-meta"><span class="passport-type">IPI</span><span class="passport-full-name">Interested Parties Information Name Number</span></div><span class="passport-status status-verified"><i class="fas fa-check-circle"></i> Active</span></div><div class="passport-value-container"><span class="passport-value">00123456789</span><button class="passport-copy-btn" onclick="copyToClipboard('00123456789')"><i class="far fa-copy"></i></button></div><div class="passport-details"><div class="passport-detail-item"><span class="p-label">Purpose</span><span class="p-val">Rightsholder identification</span></div><div class="passport-detail-item"><span class="p-label">Issued By</span><span class="p-val">SAMRO / CISAC</span></div><div class="passport-detail-item"><span class="p-label">Issued Date</span><span class="p-val">2025-09-18</span></div></div><div class="passport-ecosystem"><span class="ecosystem-label">Verified Uses</span><div class="ecosystem-tags"><span class="eco-tag">✓ CMOs</span><span class="eco-tag">✓ Publishers</span><span class="eco-tag">✓ DSP administration</span></div></div><div class="passport-actions"><button class="passport-btn p-btn-secondary" onclick="copyToClipboard('00123456789')">Copy Code</button><button class="passport-btn p-btn-primary" onclick="showToast('Opening registry for IPI', 'info')">View Registry <i class="fas fa-external-link-alt"></i></button></div></div>
+                            </div></div>
+                        </div>
                     </div>
-                    <div class="profile-card-body" id="identifiersContainer"></div>
                 </div>
 
-                <!-- Artistic Footprint & Roles (hidden by default) -->
+                <!-- Roles -->
                 <div class="profile-card section-content" id="section-roles" style="display:none;">
-                    <div class="profile-card-header">
-                        <h3><i class="fas fa-user-tag" style="color:var(--primary);"></i> Artistic Footprint & Roles</h3>
-                    </div>
+                    <div class="profile-card-header"><h3><i class="fas fa-user-tag" style="color:var(--primary);"></i> Artistic Footprint & Roles</h3></div>
                     <div class="profile-card-body">
-                        <div class="roles-ecosystem" id="rolesContainer"></div>
+                        <div class="roles-ecosystem" id="rolesContainer">
+                            <div class="role-card"><div class="role-header"><div><span class="role-title">Producer</span><div class="role-proficiency"><span class="role-stars">★★★★★</span><span>Level 5/5</span></div></div><span class="role-badge role-primary">Primary Role</span></div><div class="role-stats-grid"><div class="role-stat"><div class="role-stat-val">143</div><div class="role-stat-lbl">Works</div></div><div class="role-stat"><div class="role-stat-val">52</div><div class="role-stat-lbl">Collabs</div></div><div class="role-stat"><div class="role-stat-val">18</div><div class="role-stat-lbl">Active</div></div></div><div class="role-details-list"><div class="role-detail-row"><span class="r-lbl">Years Active:</span><span class="r-val">2016—Present</span></div><div class="role-detail-row"><span class="r-lbl">Key Expertise:</span><span class="r-val">Music Production, Mixing, Mastering</span></div><div class="role-detail-row"><span class="r-lbl">Industries:</span><span class="r-val">Music, Film, Gaming</span></div></div></div>
+                            <div class="role-card"><div class="role-header"><div><span class="role-title">Composer</span><div class="role-proficiency"><span class="role-stars">★★★★☆</span><span>Level 4/5</span></div></div><span class="role-badge role-secondary">Secondary Role</span></div><div class="role-stats-grid"><div class="role-stat"><div class="role-stat-val">89</div><div class="role-stat-lbl">Works</div></div><div class="role-stat"><div class="role-stat-val">21</div><div class="role-stat-lbl">Collabs</div></div><div class="role-stat"><div class="role-stat-val">4</div><div class="role-stat-lbl">Active</div></div></div><div class="role-details-list"><div class="role-detail-row"><span class="r-lbl">Years Active:</span><span class="r-val">2014—Present</span></div><div class="role-detail-row"><span class="r-lbl">Key Expertise:</span><span class="r-val">Orchestral Arranging, Film Scoring</span></div><div class="role-detail-row"><span class="r-lbl">Industries:</span><span class="r-val">Film, Theatre</span></div></div></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Professional Evolution (hidden by default) -->
-                <div class="profile-card section-content" id="section-evolution" style="display:none;">
-                    <div class="profile-card-header">
-                        <h3><i class="fas fa-history" style="color:var(--primary);"></i> Professional Evolution</h3>
-                    </div>
-                    <div class="profile-card-body">
-                        <div class="timeline-container" id="timelineContainer"></div>
-                    </div>
-                </div>
-
-                <!-- Linked Networks (hidden by default) -->
+                <!-- Networks -->
                 <div class="profile-card section-content" id="section-networks" style="display:none;">
-                    <div class="profile-card-header">
-                        <h3><i class="fas fa-share-alt" style="color:var(--info);"></i> Linked Networks</h3>
+                    <div class="profile-card-header"><h3><i class="fas fa-share-alt" style="color:var(--info);"></i> Linked Networks</h3></div>
+                    <div class="profile-card-body" id="networksContainer">
+                        <div class="social-links">
+                            <a href="https://novakai.com" target="_blank" class="social-link"><span><i class="fas fa-globe" style="margin-right:8px;color:var(--primary);"></i> Official Website</span><i class="fas fa-external-link-alt"></i></a>
+                            <a href="https://github.com/novakai" target="_blank" class="social-link"><span><i class="fab fa-github" style="margin-right:8px;color:var(--text-dim);"></i> GitHub</span><i class="fas fa-external-link-alt"></i></a>
+                            <a href="https://instagram.com/novakai" target="_blank" class="social-link"><span><i class="fab fa-instagram" style="margin-right:8px;color:var(--text-dim);"></i> Instagram</span><i class="fas fa-external-link-alt"></i></a>
+                            <a href="https://x.com/novakai" target="_blank" class="social-link"><span><i class="fab fa-x-twitter" style="margin-right:8px;color:var(--text-dim);"></i> X</span><i class="fas fa-external-link-alt"></i></a>
+                            <a href="https://youtube.com/@novakai" target="_blank" class="social-link"><span><i class="fab fa-youtube" style="margin-right:8px;color:var(--text-dim);"></i> YouTube</span><i class="fas fa-external-link-alt"></i></a>
+                            <a href="https://linkedin.com/in/novakai" target="_blank" class="social-link"><span><i class="fab fa-linkedin" style="margin-right:8px;color:var(--text-dim);"></i> LinkedIn</span><i class="fas fa-external-link-alt"></i></a>
+                        </div>
                     </div>
-                    <div class="profile-card-body" id="networksContainer"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- SCROLL TO TOP BUTTON -->
-<button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()" aria-label="Scroll to top">
-    <i class="fas fa-arrow-up"></i>
-</button>
+<!-- ─── SCROLL TO TOP ─── -->
+<button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()" aria-label="Scroll to top"><i class="fas fa-arrow-up"></i></button>
+
+<!-- ─── IMAGE VIEWER MODAL ─── -->
+<div class="image-viewer-modal" id="imageViewerModal" onclick="closeImageViewer()">
+    <div class="image-viewer-content">
+        <button class="image-viewer-close" onclick="closeImageViewer()">&times;</button>
+        <img id="imageViewerImg" src="" alt="Full view">
+        <div class="image-viewer-caption" id="imageViewerCaption">Profile Photo</div>
+    </div>
+</div>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="/supabase-config.js"></script>
 <script src="/assets/js/routes.js"></script>
 <script src="/assets/js/auth-guard.js"></script>
 <script src="/assets/js/profile.js"></script>
+
+<script>
+// ─── SIDEBAR TOGGLE ────────────────────────────────────────────────────────
+function toggleMobileSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    var hamburger = document.getElementById('hamburgerBtn');
+    
+    sidebar.classList.toggle('mobile-open');
+    overlay.classList.toggle('active');
+    
+    if (sidebar.classList.contains('mobile-open')) {
+        hamburger.classList.add('hidden');
+    } else {
+        hamburger.classList.remove('hidden');
+    }
+}
+
+function closeSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    var hamburger = document.getElementById('hamburgerBtn');
+    
+    sidebar.classList.remove('mobile-open');
+    overlay.classList.remove('active');
+    hamburger.classList.remove('hidden');
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeSidebar();
+        var container = document.getElementById('searchContainer');
+        if (container && container.classList.contains('active')) { toggleSearch(); }
+        var box = document.getElementById('morePopupBox');
+        if (box) box.classList.remove('active');
+        closeImageViewer();
+    }
+});
+
+document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+        document.querySelectorAll('.sidebar-nav a').forEach(function(l) { l.classList.remove('active'); });
+        this.classList.add('active');
+        closeSidebar();
+        e.preventDefault();
+        showToast('Navigating to: ' + (this.querySelector('.nav-label')?.textContent || 'Page'), 'info');
+    });
+});
+
+// ─── HEADER FUNCTIONS ──────────────────────────────────────────────────────
+function toggleSearch() {
+    var container = document.getElementById('searchContainer');
+    var input = document.getElementById('headerSearch');
+    container.classList.toggle('active');
+    if (container.classList.contains('active')) { 
+        setTimeout(function() { input.focus(); }, 100);
+    } else {
+        input.value = '';
+    }
+}
+
+function toggleMoreMenu(event) {
+    if (event) event.stopPropagation();
+    var box = document.getElementById('morePopupBox');
+    if (box) box.classList.toggle('active');
+}
+
+function handleMenuClick(action) {
+    showToast('Opening: ' + action, 'info');
+    document.getElementById('morePopupBox').classList.remove('active');
+}
+
+function handleShare() {
+    var url = window.location.href;
+    navigator.clipboard.writeText(url).then(function() {
+        showToast('Profile link copied to clipboard!', 'success');
+    }).catch(function() {
+        showToast('Share: ' + url, 'info');
+    });
+}
+
+function openImageViewer(src, caption) {
+    var modal = document.getElementById('imageViewerModal');
+    var img = document.getElementById('imageViewerImg');
+    var cap = document.getElementById('imageViewerCaption');
+    if (modal && img) {
+        img.src = src;
+        cap.textContent = caption || 'Image';
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeImageViewer() {
+    var modal = document.getElementById('imageViewerModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+window.addEventListener('scroll', function() {
+    var btn = document.getElementById('scrollTopBtn');
+    if (window.scrollY > 300) { btn.classList.add('visible'); }
+    else { btn.classList.remove('visible'); }
+});
+
+document.addEventListener('click', function(e) {
+    var box = document.getElementById('morePopupBox');
+    if (box && !box.contains(e.target)) { box.classList.remove('active'); }
+    var menu = document.getElementById('portfolioDropdownMenu');
+    var wrapper = document.querySelector('.portfolio-dropdown-wrapper');
+    if (wrapper && menu && !wrapper.contains(e.target)) { menu.classList.remove('open'); }
+});
+
+// ─── SECTION TABS ──────────────────────────────────────────────────────────
+function toggleSectionTab(btn, sectionId) {
+    var allTabs = document.querySelectorAll('.section-tab');
+    var allSections = document.querySelectorAll('.section-content');
+    allTabs.forEach(function(t) { t.classList.remove('active'); });
+    allSections.forEach(function(s) { s.style.display = 'none'; });
+    btn.classList.add('active');
+    var section = document.getElementById('section-' + sectionId);
+    if (section) { section.style.display = 'block'; }
+}
+
+// ─── PORTFOLIO DROPDOWN ────────────────────────────────────────────────────
+function togglePortfolioDropdown(event) {
+    if (event) { event.stopPropagation(); event.preventDefault(); }
+    var menu = document.getElementById('portfolioDropdownMenu');
+    if (menu) { menu.classList.toggle('open'); }
+}
+
+// ─── PORTFOLIO DATA ────────────────────────────────────────────────────────
+var portfolioItems = {
+    'Public Portfolio': [
+        { id: 'p1', title: 'Studio Console Geometry', image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=400&auto=format&fit=crop' },
+        { id: 'p2', title: 'Stage Flare Exposure', image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=400&auto=format&fit=crop' },
+        { id: 'p3', title: 'Vocal Isolation Profile', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=400&auto=format&fit=crop' },
+        { id: 'p4', title: 'Modular Synthesizer Grid', image: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=400&auto=format&fit=crop' },
+        { id: 'p5', title: 'Backstage Silhouette Study', image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop' },
+        { id: 'p6', title: 'Acoustic Diffuser Shadows', image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=400&auto=format&fit=crop' }
+    ],
+    'Featured Portfolio': [
+        { id: 'f1', title: 'Nova Dawn - Official Music Video', image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop' },
+        { id: 'f2', title: 'Amapiano Sunset Horizon', image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=400&auto=format&fit=crop' },
+        { id: 'f3', title: 'Cinematic Soundscapes - Trailer', image: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=400&auto=format&fit=crop' }
+    ],
+    'Collections': [
+        { id: 'c1', title: 'Urban Poly-Rhythm Drive', image: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=400&auto=format&fit=crop' },
+        { id: 'c2', title: 'Tribal Tech Resonance', image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop' },
+        { id: 'c3', title: 'Cape Coast Low-Fi Ambience', image: 'https://images.unsplash.com/photo-1446057032654-9d8885b76c2a?q=80&w=400&auto=format&fit=crop' },
+        { id: 'c4', title: 'Sub-Saharan Sub Bass Kick', image: 'https://images.unsplash.com/photo-1487180142328-0c4e37023af5?q=80&w=400&auto=format&fit=crop' }
+    ],
+    'Collaborative Works': [
+        { id: 'co1', title: 'African Rhythms - Documentary Short', image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop' },
+        { id: 'co2', title: 'Deep Horizon - Structural Prose', image: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=400&auto=format&fit=crop' },
+        { id: 'co3', title: 'Behind the Scenes - Studio Session', image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=400&auto=format&fit=crop' }
+    ],
+    'Certified Works': [
+        { id: 'ce1', title: 'Nova Dawn - Complete Verse System', image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=400&auto=format&fit=crop' },
+        { id: 'ce2', title: 'Polyphonic Echoes - Text Blueprint', image: 'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?q=80&w=400&auto=format&fit=crop' },
+        { id: 'ce3', title: 'Studio Console Geometry', image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=400&auto=format&fit=crop' }
+    ],
+    'Latest Works': [
+        { id: 'l1', title: 'NovaKai - Artist Masterclass Intro', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=400&auto=format&fit=crop' },
+        { id: 'l2', title: 'Acoustic Diffuser 3D Model', image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=400&auto=format&fit=crop' },
+        { id: 'l3', title: 'Backstage Silhouette Study', image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop' }
+    ],
+    'Works for Licensing': [
+        { id: 'li1', title: 'Electronic Explorations (Live Set)', image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop' },
+        { id: 'li2', title: 'Vocal Isolation Profile', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=400&auto=format&fit=crop' },
+        { id: 'li3', title: 'Modular Synthesizer Grid 3D', image: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=400&auto=format&fit=crop' },
+        { id: 'li4', title: 'Acoustic Diffuser Shadows', image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=400&auto=format&fit=crop' }
+    ],
+    'Works for Sale': [
+        { id: 'sa1', title: 'Amapiano Sunset Horizon', image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=400&auto=format&fit=crop' },
+        { id: 'sa2', title: 'Sub-Saharan Sub Bass Kick', image: 'https://images.unsplash.com/photo-1487180142328-0c4e37023af5?q=80&w=400&auto=format&fit=crop' },
+        { id: 'sa3', title: 'Studio Console Geometry', image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=400&auto=format&fit=crop' }
+    ],
+    'Popular Works': [
+        { id: 'po1', title: 'Nova Dawn - Official Music Video', image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop' },
+        { id: 'po2', title: 'Amapiano Sunset Horizon', image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=400&auto=format&fit=crop' },
+        { id: 'po3', title: 'Tribal Tech Resonance', image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop' },
+        { id: 'po4', title: 'Studio Console Geometry', image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=400&auto=format&fit=crop' },
+        { id: 'po5', title: 'Cinematic Soundscapes - Trailer', image: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=400&auto=format&fit=crop' }
+    ],
+    'Commission Portfolio': [
+        { id: 'cm1', title: 'Stage Flare Exposure', image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=400&auto=format&fit=crop' },
+        { id: 'cm2', title: 'NovaKai - Artist Masterclass Intro', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=400&auto=format&fit=crop' },
+        { id: 'cm3', title: 'Modular Synthesizer Grid 3D', image: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=400&auto=format&fit=crop' },
+        { id: 'cm4', title: 'Electronic Explorations (Live Set)', image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop' }
+    ]
+};
+
+var currentPortfolio = 'Public Portfolio';
+
+// ─── SIMILAR CREATORS DATA (10 creators) ──────────────────────────────────
+var similarCreators = [
+    { name: 'Luna Ray', handle: '@lunaray', avatar: 'https://images.unsplash.com/photo-1494790108376-be9c24b9cf6c?q=80&w=100&auto=format&fit=crop', badge: 'Creator' },
+    { name: 'Kai Sterling', handle: '@kaisterling', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop', badge: 'Verified' },
+    { name: 'Maya Nova', handle: '@mayanova', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=100&auto=format&fit=crop', badge: 'Creator' },
+    { name: 'Eli Stone', handle: '@elistone', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=100&auto=format&fit=crop', badge: 'Verified' },
+    { name: 'Zara Blake', handle: '@zarablake', avatar: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?q=80&w=100&auto=format&fit=crop', badge: 'Creator' },
+    { name: 'Marcus Cole', handle: '@marcuscole', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100&auto=format&fit=crop', badge: 'Verified' },
+    { name: 'Nina Simone', handle: '@ninasimone', avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=100&auto=format&fit=crop', badge: 'Creator' },
+    { name: 'Alex Rivera', handle: '@alexrivera', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=100&auto=format&fit=crop', badge: 'Verified' },
+    { name: 'Sofia Chen', handle: '@sofiachen', avatar: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?q=80&w=100&auto=format&fit=crop', badge: 'Creator' },
+    { name: 'James Park', handle: '@jamespark', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop', badge: 'Verified' }
+];
+
+// ─── RENDER PORTFOLIO DISPLAY ─────────────────────────────────────────────
+function renderPortfolioDisplay(portfolioName) {
+    var items = portfolioItems[portfolioName] || portfolioItems['Public Portfolio'];
+    var grid = document.getElementById('portfolioGridDisplay');
+    var title = document.getElementById('portfolioDisplayTitle');
+    var count = document.getElementById('portfolioItemCount');
+
+    title.textContent = portfolioName;
+    count.textContent = items.length;
+
+    grid.innerHTML = items.map(function(item) {
+        return '<div class="portfolio-display-item">' +
+            '<div class="item-thumb">' +
+                '<img src="' + item.image + '" alt="' + item.title + '">' +
+                '<div class="item-overlay">' +
+                    '<button onclick="event.stopPropagation();showToast(\'Viewing: ' + item.title + '\', \'info\')" title="View Info"><i class="fas fa-info-circle"></i></button>' +
+                    '<button onclick="event.stopPropagation();showToast(\'Opening ' + item.title + ' in Studio\', \'success\')" title="Open in Studio"><i class="fas fa-external-link-alt"></i></button>' +
+                '</div>' +
+            '</div>' +
+            '<div class="item-info">' +
+                '<span class="item-title">' + item.title + '</span>' +
+                '<div class="item-actions">' +
+                    '<button onclick="event.stopPropagation();showToast(\'Viewing: ' + item.title + '\', \'info\')" title="View Info"><i class="fas fa-info-circle"></i></button>' +
+                    '<button onclick="event.stopPropagation();showToast(\'Opening ' + item.title + ' in Studio\', \'success\')" title="Open in Studio"><i class="fas fa-external-link-alt"></i></button>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    }).join('');
+
+    currentPortfolio = portfolioName;
+}
+
+// ─── RENDER SIMILAR CREATORS ──────────────────────────────────────────────
+function renderSimilarCreators() {
+    var container = document.getElementById('similarCreatorsList');
+    container.innerHTML = similarCreators.map(function(creator) {
+        return '<a href="/profile/' + creator.handle.replace('@', '') + '" class="similar-creator-item" onclick="event.preventDefault();showToast(\'Redirecting to ' + creator.name + '\'s profile\', \'info\')">' +
+            '<img src="' + creator.avatar + '" alt="' + creator.name + '" class="creator-avatar">' +
+            '<div class="creator-info">' +
+                '<div class="creator-name">' + creator.name + '</div>' +
+                '<div class="creator-handle">' + creator.handle + ' <span class="creator-badge">' + creator.badge + '</span></div>' +
+            '</div>' +
+            '<i class="fas fa-chevron-right arrow-icon"></i>' +
+        '</a>';
+    }).join('');
+}
+
+// ─── PORTFOLIO DROPDOWN HANDLER ────────────────────────────────────────────
+function handlePortfolioClick(portfolioName) {
+    showToast('Loading: ' + portfolioName, 'info');
+    document.getElementById('portfolioDropdownMenu').classList.remove('open');
+    renderPortfolioDisplay(portfolioName);
+}
+
+// ─── COPY TO CLIPBOARD ─────────────────────────────────────────────────────
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        showToast('Copied: "' + text + '"', 'success');
+    }).catch(function() {
+        showToast('Unable to copy', 'error');
+    });
+}
+
+// ─── TOAST ──────────────────────────────────────────────────────────────────
+function showToast(msg, type) {
+    type = type || 'success';
+    var existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    var t = document.createElement('div');
+    t.className = 'toast';
+    var icon = type === 'success' ? 'fa-check-circle' : type === 'info' ? 'fa-info-circle' : 'fa-exclamation-circle';
+    var color = type === 'success' ? 'var(--primary)' : type === 'info' ? 'var(--info)' : 'var(--danger)';
+    t.innerHTML = '<i class="fas ' + icon + '" style="margin-right:8px;color:' + color + ';"></i> ' + msg;
+    document.body.appendChild(t);
+    setTimeout(function() {
+        t.style.opacity = '0';
+        setTimeout(function() { if (t.parentNode) t.remove(); }, 300);
+    }, 2800);
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+    renderPortfolioDisplay('Public Portfolio');
+    renderSimilarCreators();
+
+    document.getElementById('headerSearch').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && this.value.trim()) {
+            showToast('Searching: "' + this.value.trim() + '"', 'info');
+            toggleSearch();
+        }
+    });
+});
+
+// Expose to window
+window.toggleMobileSidebar = toggleMobileSidebar;
+window.closeSidebar = closeSidebar;
+window.toggleSearch = toggleSearch;
+window.toggleMoreMenu = toggleMoreMenu;
+window.handleMenuClick = handleMenuClick;
+window.handleShare = handleShare;
+window.openImageViewer = openImageViewer;
+window.closeImageViewer = closeImageViewer;
+window.scrollToTop = scrollToTop;
+window.toggleSectionTab = toggleSectionTab;
+window.togglePortfolioDropdown = togglePortfolioDropdown;
+window.handlePortfolioClick = handlePortfolioClick;
+window.showToast = showToast;
+window.copyToClipboard = copyToClipboard;
+</script>
 </body>
 </html>
