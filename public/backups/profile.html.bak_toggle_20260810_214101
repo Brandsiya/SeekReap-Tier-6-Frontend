@@ -973,12 +973,8 @@
         }
 
         /* ─── SECTION CONTENT ──────────────────────────────────────────────── */
-        .section-content { 
-            display: none !important; 
-        }
-        .section-content.active { 
-            display: block !important; 
-        }
+        .section-content { display: none; }
+        .section-content:first-of-type { display: block; }
 
         .profile-layout-grid {
             display: grid;
@@ -1655,7 +1651,7 @@
 
         <!-- Section Tabs -->
         <div class="section-nav-tabs">
-            <button class="section-tab" data-section="biography" onclick="toggleSectionTab(this, 'biography')"><i class="fas fa-align-left"></i> Biography</button>
+            <button class="section-tab active" data-section="biography" onclick="toggleSectionTab(this, 'biography')"><i class="fas fa-align-left"></i> Biography</button>
             <button class="section-tab" data-section="identity-record" onclick="toggleSectionTab(this, 'identity-record')"><i class="fas fa-id-card"></i> Identity Record</button>
             <button class="section-tab" data-section="accomplishments" onclick="toggleSectionTab(this, 'accomplishments')"><i class="fas fa-trophy"></i> Accomplishments</button>
             <button class="section-tab" data-section="professional-history" onclick="toggleSectionTab(this, 'professional-history')"><i class="fas fa-briefcase"></i> History</button>
@@ -1723,7 +1719,7 @@
                 </div>
 
                 <!-- Identity Record -->
-                <div class="profile-card section-content" id="section-identity-record">
+                <div class="profile-card section-content" id="section-identity-record" style="display:none;">
                     <div class="profile-card-header"><h3><i class="fas fa-id-card" style="color:var(--text-dim);"></i> Identity Record</h3></div>
                     <div class="profile-card-body" id="identityContainer">
                         <div class="identity-category">
@@ -1755,7 +1751,7 @@
                 </div>
 
                 <!-- Accomplishments -->
-                <div class="profile-card section-content" id="section-accomplishments">
+                <div class="profile-card section-content" id="section-accomplishments" style="display:none;">
                     <div class="profile-card-header"><h3><i class="fas fa-trophy" style="color:var(--gold);"></i> Career Accomplishments</h3></div>
                     <div class="profile-card-body">
                         <div class="achievements-grid" id="achievementsList">
@@ -1769,7 +1765,7 @@
                 </div>
 
                 <!-- Professional History -->
-                <div class="profile-card section-content" id="section-professional-history">
+                <div class="profile-card section-content" id="section-professional-history" style="display:none;">
                     <div class="profile-card-header"><h3><i class="fas fa-briefcase" style="color:var(--text-dim);"></i> Professional History</h3></div>
                     <div class="profile-card-body" id="employmentContainer">
                         <div class="employment-list">
@@ -1783,7 +1779,7 @@
 
             <div class="side-lane">
                 <!-- Passports -->
-                <div class="profile-card section-content" id="section-passports">
+                <div class="profile-card section-content" id="section-passports" style="display:none;">
                     <div class="profile-card-header"><h3><i class="fas fa-fingerprint" style="color:var(--primary);"></i> Identity Passports</h3></div>
                     <div class="profile-card-body" id="identifiersContainer">
                         <div class="identifiers-layout">
@@ -1798,7 +1794,7 @@
                 </div>
 
                 <!-- Roles -->
-                <div class="profile-card section-content" id="section-roles">
+                <div class="profile-card section-content" id="section-roles" style="display:none;">
                     <div class="profile-card-header"><h3><i class="fas fa-user-tag" style="color:var(--primary);"></i> Artistic Footprint & Roles</h3></div>
                     <div class="profile-card-body">
                         <div class="roles-ecosystem" id="rolesContainer">
@@ -1809,7 +1805,7 @@
                 </div>
 
                 <!-- Networks -->
-                <div class="profile-card section-content" id="section-networks">
+                <div class="profile-card section-content" id="section-networks" style="display:none;">
                     <div class="profile-card-header"><h3><i class="fas fa-share-alt" style="color:var(--info);"></i> Linked Networks</h3></div>
                     <div class="profile-card-body" id="networksContainer">
                         <div class="social-links">
@@ -1967,26 +1963,13 @@ document.addEventListener('click', function(e) {
 
 // ─── SECTION TABS ──────────────────────────────────────────────────────────
 function toggleSectionTab(btn, sectionId) {
-    var section = document.getElementById('section-' + sectionId);
-    var isActive = btn.classList.contains('active');
-    
-    // Remove active class from all tabs and hide all sections
     var allTabs = document.querySelectorAll('.section-tab');
     var allSections = document.querySelectorAll('.section-content');
-    
-    // If the clicked tab is already active, just hide its section and deactivate it
-    if (isActive) {
-        btn.classList.remove('active');
-        section.classList.remove('active');
-        return;
-    }
-    
-    // Otherwise, deactivate all and show the clicked one
     allTabs.forEach(function(t) { t.classList.remove('active'); });
-    allSections.forEach(function(s) { s.classList.remove('active'); });
-    
+    allSections.forEach(function(s) { s.style.display = 'none'; });
     btn.classList.add('active');
-    section.classList.add('active');
+    var section = document.getElementById('section-' + sectionId);
+    if (section) { section.style.display = 'block'; }
 }
 
 // ─── PORTFOLIO DROPDOWN ────────────────────────────────────────────────────
