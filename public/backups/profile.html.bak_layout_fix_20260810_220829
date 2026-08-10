@@ -790,7 +790,6 @@
 
         /* ─── PORTFOLIO DISPLAY SECTION ──────────────────────────────────── */
         .portfolio-display-section {
-            margin-bottom: 24px;
             display: grid;
             grid-template-columns: 1fr 280px;
             gap: 24px;
@@ -982,7 +981,6 @@
         }
 
         .profile-layout-grid {
-            margin-top: 24px;
             display: grid;
             grid-template-columns: 1.1fr 1.1fr;
             gap: 24px;
@@ -1390,17 +1388,42 @@
             font-weight: 500;
             white-space: nowrap;
             flex-shrink: 0;
-        }/* ─── RESPONSIVE ───────────────────────────────────────────────────── */
+        }
+
+
+        /* ─── CONTENT STACK: info cards overlay over portfolio (not above/below) ─── */
+        .content-stack {
+            display: grid;
+        }
+        .content-stack > .portfolio-display-section,
+        .content-stack > .profile-layout-grid {
+            grid-area: 1 / 1;
+        }
+        .portfolio-display-section { position: relative; z-index: 1; }
+        .profile-layout-grid {
+            position: relative;
+            z-index: 60;
+            align-self: start;
+            background: rgba(245, 244, 239, 0.98);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+            padding: 20px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        /* ─── RESPONSIVE ───────────────────────────────────────────────────── */
         @media (max-width: 1200px) {
             .profile-container { padding: 24px 24px 48px 24px; }
-            .portfolio-display-section {
-            margin-bottom: 24px; grid-template-columns: 1fr 240px; }
+            .portfolio-display-section { grid-template-columns: 1fr 240px; }
             .portfolio-grid-display { grid-template-columns: repeat(2, 1fr); }
             .search-container { width: 450px; max-width: 450px; }
         }
         @media (max-width: 992px) {
-            .profile-layout-grid {
-            margin-top: 24px; grid-template-columns: 1fr; gap: 24px; }
+            .profile-layout-grid { grid-template-columns: 1fr; gap: 24px; }
             .search-container { width: 320px; max-width: 320px; }
         }
         @media (max-width: 768px) {
@@ -1421,8 +1444,7 @@
             .section-tab.view-portfolio-btn { min-width: 130px; }
             .portfolio-dropdown-menu { min-width: 200px; left: auto; right: 0; }
             
-            .portfolio-display-section {
-            margin-bottom: 24px; 
+            .portfolio-display-section { 
                 grid-template-columns: 1fr; 
                 gap: 20px;
             }
@@ -1436,8 +1458,7 @@
             .similar-creators-sidebar h4 { grid-column: 1 / -1; margin-bottom: 8px; }
             .similar-creator-item { padding: 8px 0; }
             
-            .profile-layout-grid {
-            margin-top: 24px; gap: 16px; }
+            .profile-layout-grid { gap: 16px; }
             .main-lane { gap: 16px; }
             .side-lane { gap: 16px; }
             .profile-card-header { padding: 14px 18px; }
@@ -1634,7 +1655,7 @@
 
         <!-- Section Tabs -->
         <div class="section-nav-tabs">
-            <button class="section-tab active" data-section="biography" onclick="toggleSectionTab(this, 'biography')"><i class="fas fa-align-left"></i> Biography</button>
+            <button class="section-tab" data-section="biography" onclick="toggleSectionTab(this, 'biography')"><i class="fas fa-align-left"></i> Biography</button>
             <button class="section-tab" data-section="identity-record" onclick="toggleSectionTab(this, 'identity-record')"><i class="fas fa-id-card"></i> Identity Record</button>
             <button class="section-tab" data-section="accomplishments" onclick="toggleSectionTab(this, 'accomplishments')"><i class="fas fa-trophy"></i> Accomplishments</button>
             <button class="section-tab" data-section="professional-history" onclick="toggleSectionTab(this, 'professional-history')"><i class="fas fa-briefcase"></i> History</button>
@@ -1662,7 +1683,7 @@
         </div>
 
         <!-- ─── PORTFOLIO DISPLAY SECTION ────────────────────────────────── -->
-        
+        <div class="content-stack">
         <div class="portfolio-display-section" id="portfolioDisplaySection">
             <!-- Portfolio Grid -->
             <div>
@@ -1693,7 +1714,7 @@
         <div class="profile-layout-grid">
             <div class="main-lane">
                 <!-- Biography -->
-                <div class="profile-card section-content active" id="section-biography">
+                <div class="profile-card section-content" id="section-biography">
                     <div class="profile-card-header"><h3><i class="fas fa-align-left" style="color:var(--text-dim);"></i> Biography</h3></div>
                     <div class="profile-card-body">
                         <div class="bio-location-line"><i class="fas fa-map-pin" style="color:var(--primary);margin-right:8px;"></i> Lives in <span id="profileLocationText">South Africa • Western Cape • Cape Town</span></div>
@@ -1806,6 +1827,8 @@
     </div>
 </div>
 
+</div><!-- /content-stack -->
+
 <!-- ─── SCROLL TO TOP ─── -->
 <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()" aria-label="Scroll to top"><i class="fas fa-arrow-up"></i></button>
 
@@ -1822,6 +1845,7 @@
 <script src="/supabase-config.js"></script>
 <script src="/assets/js/routes.js"></script>
 <script src="/assets/js/auth-guard.js"></script>
+<script src="/assets/js/profile.js"></script>
 
 <script>
 // ─── SIDEBAR TOGGLE ────────────────────────────────────────────────────────
