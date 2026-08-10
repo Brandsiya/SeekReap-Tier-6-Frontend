@@ -66,16 +66,9 @@
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            z-index: 400;
+            z-index: 200;
             transition: transform 0.3s ease;
             overflow: hidden;
-            transform: translateX(-100%);
-        }
-        .sidebar.mobile-open {
-            transform: translateX(0);
-        }
-        .sidebar.mobile-open .sidebar-close-btn {
-            display: block;
         }
         .sidebar-header {
             padding: 20px 18px;
@@ -216,7 +209,7 @@
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.3);
-            z-index: 390;
+            z-index: 150;
             display: none;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -225,7 +218,7 @@
 
         /* ─── MOBILE HEADER (hamburger + logo + plan) ────────────────────── */
         .mobile-header {
-            display: flex;
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
@@ -271,17 +264,17 @@
             border: 1px solid var(--primary);
             letter-spacing: 0.05em;
             text-transform: uppercase;
+            margin-left: auto;
         }
 
         /* ─── MAIN CONTENT ────────────────────────────────────────────────── */
         .main-content {
-            margin-left: 0;
+            margin-left: var(--sidebar-width);
             flex: 1;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             width: 100%;
-            padding-top: 56px;
         }
 
         .topbar {
@@ -1386,41 +1379,16 @@
             flex-shrink: 0;
         }
 
-
-        /* ─── CONTENT STACK: info cards overlay over portfolio (not above/below) ─── */
-        .content-stack {
-            display: grid;
-        }
-        .content-stack > .portfolio-display-section,
-        .content-stack > .profile-layout-grid {
-            grid-area: 1 / 1;
-        }
-        .portfolio-display-section { position: relative; z-index: 1; }
-        .profile-layout-grid {
-            position: relative;
-            z-index: 60;
-            align-self: start;
-            background: rgba(245, 244, 239, 0.98);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-lg);
-            padding: 20px;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-
         /* ─── RESPONSIVE ───────────────────────────────────────────────────── */
         @media (max-width: 1200px) {
             .profile-container { padding: 24px 24px 48px 24px; }
             .portfolio-display-section { grid-template-columns: 1fr 240px; }
             .portfolio-grid-display { grid-template-columns: repeat(2, 1fr); }
-            .search-container { width: 450px; max-width: 450px; }
+            .search-container { width: 350px; max-width: 350px; }
         }
         @media (max-width: 992px) {
             .profile-layout-grid { grid-template-columns: 1fr; gap: 24px; }
-            .search-container { width: 320px; max-width: 320px; }
+            .search-container { width: 250px; max-width: 250px; }
         }
         @media (max-width: 768px) {
             .profile-container { padding: 16px; }
@@ -1473,7 +1441,7 @@
             .employment-item .org-meta { justify-content: center; }
             .achievement-card { flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 12px 14px; }
             .achievement-card .ach-date { white-space: normal; }
-            .search-container { width: 220px; max-width: 220px; }
+            .search-container { width: 160px; max-width: 160px; }
         }
         @media (max-width: 480px) {
             .cover-photo-container { height: 150px; }
@@ -1493,7 +1461,7 @@
             .role-detail-row .r-val { text-align: left; max-width: 100%; }
             .passport-header { flex-direction: column; align-items: flex-start; gap: 4px; }
             .toast { max-width: 280px; padding: 12px 16px; font-size: 12px; bottom: 16px; right: 16px; }
-            .search-container { width: 150px; max-width: 150px; }
+            .search-container { width: 100px; max-width: 100px; }
             .search-container input::placeholder { font-size: 10px; }
         }
     </style>
@@ -1507,45 +1475,6 @@
     </button>
     <a href="/dashboard.html" class="mobile-logo">Seek<span>Reap</span></a>
     <span class="plan-indicator">Free</span>
-    <div class="search-container" id="searchContainer">
-        <i class="fas fa-search search-icon-inline"></i>
-        <input type="text" placeholder="Search by creator or Portfolio name..." id="headerSearch">
-        <button class="search-close-btn" onclick="toggleSearch()" aria-label="Close search"><i class="fas fa-times"></i></button>
-    </div>
-    <button class="topbar-icon-btn" onclick="window.location.href='/notifications.html'" aria-label="Notifications">
-        <i class="fas fa-bell"></i>
-        <span class="badge-count">3</span>
-    </button>
-    <button class="topbar-icon-btn" onclick="handleShare()" aria-label="Share">
-        <i class="fas fa-share-alt"></i>
-    </button>
-    <div class="more-dropdown-wrapper topbar-more-wrapper">
-        <button class="topbar-icon-btn more-btn" onclick="toggleMoreMenu(event)" aria-label="More options">
-            <i class="fas fa-ellipsis-v"></i>
-        </button>
-        <div class="more-popup-box" id="morePopupBox">
-            <div class="more-menu-group">
-                <div class="menu-group-header"><i class="fas fa-id-card" style="margin-right:6px;"></i> Identity</div>
-                <button class="menu-item" onclick="handleMenuClick('View Credentials')"><i class="fas fa-id-card" style="width:18px;"></i> View Credentials</button>
-                <button class="menu-item" onclick="handleMenuClick('View Reputation')"><i class="fas fa-star" style="width:18px;"></i> View Reputation</button>
-            </div>
-            <div class="more-menu-group">
-                <div class="menu-group-header"><i class="fas fa-compass" style="margin-right:6px;"></i> Discovery</div>
-                <button class="menu-item" onclick="handleMenuClick('Search Profile')"><i class="fas fa-search" style="width:18px;"></i> Search Profile</button>
-                <button class="menu-item" onclick="handleMenuClick('Copy Profile Link')"><i class="fas fa-link" style="width:18px;"></i> Copy Profile Link</button>
-                <button class="menu-item" onclick="handleMenuClick('Save Profile')"><i class="fas fa-bookmark" style="width:18px;"></i> Save Profile</button>
-            </div>
-            <div class="more-menu-group">
-                <div class="menu-group-header"><i class="fas fa-handshake" style="margin-right:6px;"></i> Community</div>
-                <button class="menu-item" onclick="handleMenuClick('Recommend Creator')"><i class="fas fa-thumbs-up" style="width:18px;"></i> Recommend Creator</button>
-            </div>
-            <div class="more-menu-group">
-                <div class="menu-group-header"><i class="fas fa-shield-alt" style="margin-right:6px;"></i> Safety</div>
-                <button class="menu-item text-danger" onclick="handleMenuClick('Report Profile')"><i class="fas fa-flag" style="width:18px;"></i> Report Profile</button>
-                <button class="menu-item text-danger" onclick="handleMenuClick('Block User')"><i class="fas fa-ban" style="width:18px;"></i> Block User</button>
-            </div>
-        </div>
-    </div>
 </div>
 
 <!-- ─── SIDEBAR OVERLAY ─── -->
@@ -1598,6 +1527,52 @@
 <!-- ─── MAIN CONTENT ─── -->
 <div class="main-content">
     <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-right">
+            <div class="search-container" id="searchContainer">
+                <i class="fas fa-search search-icon-inline"></i>
+                <input type="text" placeholder="Search by creator or Portfolio name..." id="headerSearch">
+                <button class="search-close-btn" onclick="toggleSearch()" aria-label="Close search"><i class="fas fa-times"></i></button>
+            </div>
+            <button class="topbar-icon-btn" onclick="window.location.href='/notifications.html'" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="badge-count">3</span>
+            </button>
+            <button class="topbar-icon-btn" onclick="handleShare()" aria-label="Share">
+                <i class="fas fa-share-alt"></i>
+            </button>
+            <div class="more-dropdown-wrapper topbar-more-wrapper">
+                <button class="topbar-icon-btn more-btn" onclick="toggleMoreMenu(event)" aria-label="More options">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div class="more-popup-box" id="morePopupBox">
+                    <div class="more-menu-group">
+                        <div class="menu-group-header"><i class="fas fa-id-card" style="margin-right:6px;"></i> Identity</div>
+                        <button class="menu-item" onclick="handleMenuClick('View Credentials')"><i class="fas fa-id-card" style="width:18px;"></i> View Credentials</button>
+                        <button class="menu-item" onclick="handleMenuClick('View Reputation')"><i class="fas fa-star" style="width:18px;"></i> View Reputation</button>
+                    </div>
+                    <div class="more-menu-group">
+                        <div class="menu-group-header"><i class="fas fa-compass" style="margin-right:6px;"></i> Discovery</div>
+                        <button class="menu-item" onclick="handleMenuClick('Search Profile')"><i class="fas fa-search" style="width:18px;"></i> Search Profile</button>
+                        <button class="menu-item" onclick="handleMenuClick('Copy Profile Link')"><i class="fas fa-link" style="width:18px;"></i> Copy Profile Link</button>
+                        <button class="menu-item" onclick="handleMenuClick('Save Profile')"><i class="fas fa-bookmark" style="width:18px;"></i> Save Profile</button>
+                    </div>
+                    <div class="more-menu-group">
+                        <div class="menu-group-header"><i class="fas fa-handshake" style="margin-right:6px;"></i> Community</div>
+                        <button class="menu-item" onclick="handleMenuClick('Recommend Creator')"><i class="fas fa-thumbs-up" style="width:18px;"></i> Recommend Creator</button>
+                    </div>
+                    <div class="more-menu-group">
+                        <div class="menu-group-header"><i class="fas fa-shield-alt" style="margin-right:6px;"></i> Safety</div>
+                        <button class="menu-item text-danger" onclick="handleMenuClick('Report Profile')"><i class="fas fa-flag" style="width:18px;"></i> Report Profile</button>
+                        <button class="menu-item text-danger" onclick="handleMenuClick('Block User')"><i class="fas fa-ban" style="width:18px;"></i> Block User</button>
+                    </div>
+                </div>
+            </div>
+            <button class="topbar-icon-btn" onclick="toggleSearch()" aria-label="Toggle search" style="display:none;" id="searchToggleBtn">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </header>
 
     <!-- PROFILE CONTENT -->
     <div class="profile-container">
@@ -1679,7 +1654,6 @@
         </div>
 
         <!-- ─── PORTFOLIO DISPLAY SECTION ────────────────────────────────── -->
-        <div class="content-stack">
         <div class="portfolio-display-section" id="portfolioDisplaySection">
             <!-- Portfolio Grid -->
             <div>
@@ -1822,8 +1796,6 @@
         </div>
     </div>
 </div>
-
-</div><!-- /content-stack -->
 
 <!-- ─── SCROLL TO TOP ─── -->
 <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()" aria-label="Scroll to top"><i class="fas fa-arrow-up"></i></button>
