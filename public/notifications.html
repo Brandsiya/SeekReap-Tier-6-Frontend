@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SeekReap · Notifications</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="/assets/css/notifications.css" />
+    <style>
+        /* ─── ROOT VARIABLES ─────────────────────────────────────────────── */
+        :root {
+            --bg: #f5f4ef;
+            --bg2: #ffffff;
+            --bg3: #eeebe3;
+            --bg4: #e2ded5;
+            --border: #dad6cc;
+            --border-light: #eae6db;
+            --text: #171717;
+            --text-dim: #5c5952;
+            --text-muted: #8e8a7f;
+            --primary: #115e36;
+            --primary-hover: #0b4526;
+            --primary-light: #e6f2eb;
+            --danger: #b22222;
+            --warning: #cc8400;
+            --info: #1a6f9a;
+            --gold: #966f1c;
+            --gold-light: #f7f3e3;
+            --gold-dark: #6e5012;
+            --gold-border: #dfd4b3;
+            --green: #115e36;
+            --radius: 20px;
+            --radius-sm: 12px;
+            --radius-lg: 28px;
+            --shadow: 0 4px 16px rgba(0,0,0,0.04);
+            --shadow-lg: 0 12px 36px rgba(0,0,0,0.08);
+            --transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+            --sidebar-width: 260px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* ─── SIDEBAR ──────────────────────────────────────────────────────── */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 200;
+            transition: transform 0.3s ease;
+            overflow: hidden;
+            transform: translateX(-100%);
+        }
+        .sidebar.mobile-open { transform: translateX(0); }
+        .sidebar-header {
+            padding: 20px 18px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            min-height: 72px;
+        }
+        .sidebar-header .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .sidebar-header .logo span { color: var(--primary); }
+        .sidebar-close-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 22px;
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: var(--transition);
+        }
+        .sidebar-close-btn:hover { color: var(--text); }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+        .sidebar-nav .nav-section { margin-bottom: 20px; }
+        .sidebar-nav .nav-section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 0 10px;
+            margin-bottom: 8px;
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+        .sidebar-nav a:hover { background: var(--bg3); color: var(--text); }
+        .sidebar-nav a.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .sidebar-nav a.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            bottom: 20%;
+            width: 3px;
+            background: var(--primary);
+            border-radius: 0 3px 3px 0;
+        }
+        .sidebar-nav a .nav-icon { width: 20px; text-align: center; font-size: 15px; flex-shrink: 0; }
+        .sidebar-nav a .nav-label { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-nav a .nav-badge {
+            background: var(--danger);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 7px;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+        .sidebar-nav .nav-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 8px 14px;
+        }
+
+        .sidebar-footer {
+            padding: 16px 12px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .sidebar-footer .user-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .sidebar-footer .user-card:hover { background: var(--bg3); }
+        .sidebar-footer .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .sidebar-footer .user-info { flex: 1; overflow: hidden; }
+        .sidebar-footer .user-info .name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sidebar-footer .user-info .role {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 150;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+
+        /* ─── MOBILE HEADER ───────────────────────────────────────────────── */
+        .mobile-header {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            z-index: 300;
+            align-items: center;
+            padding: 0 12px;
+            gap: 10px;
+            box-shadow: var(--shadow);
+        }
+        .mobile-header .hamburger-btn {
+            display: flex;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            transition: var(--transition);
+            border-radius: 8px;
+        }
+        .mobile-header .hamburger-btn:hover { background: var(--bg3); color: var(--text); }
+        .mobile-header .hamburger-btn.hidden { display: none; }
+        .mobile-header .mobile-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .mobile-header .mobile-logo span { color: var(--primary); }
+
+        /* ─── MAIN CONTENT ─────────────────────────────────────────────────── */
+        .main-content {
+            margin-left: 0;
+            flex: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding-top: 56px;
+        }
+
+        .topbar {
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 64px;
+            gap: 16px;
+            flex-shrink: 0;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 12px; }
+        .topbar-left .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+        }
+        .topbar-left .back-btn:hover { background: var(--bg3); color: var(--text); }
+        .topbar-left .page-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .topbar-icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 16px;
+            cursor: pointer;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .topbar-icon-btn:hover { background: var(--bg3); color: var(--text); }
+
+        /* ─── TOAST ────────────────────────────────────────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg2);
+            border-left: 4px solid var(--primary);
+            padding: 16px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            z-index: 1100;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s cubic-bezier(0.4,0,0.2,1);
+            max-width: 350px;
+            transition: opacity 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* ─── RESPONSIVE ───────────────────────────────────────────────────── */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .sidebar.mobile-open .sidebar-close-btn { display: block; }
+            .main-content { padding-top: 56px; }
+            .mobile-header { display: flex; }
+            .topbar { padding: 0 16px; height: 56px; }
+        }
+        @media (max-width: 768px) {
+            .topbar { padding: 0 12px; height: 52px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ─── MOBILE HEADER ─── -->
+<div class="mobile-header" id="mobileHeader">
+    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMobileSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    <a href="/dashboard.html" class="mobile-logo">Seek<span>Reap</span></a>
+</div>
+
+<!-- ─── SIDEBAR OVERLAY ─── -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ─── SIDEBAR ─── -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <a href="/dashboard.html" class="logo">Seek<span>Reap</span></a>
+        <button class="sidebar-close-btn" onclick="closeSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">
+            <div class="nav-section-title">Main</div>
+            <a href="/dashboard.html"><span class="nav-icon"><i class="fas fa-th-large"></i></span><span class="nav-label">Dashboard</span></a>
+            <a href="/assets.html"><span class="nav-icon"><i class="fas fa-cube"></i></span><span class="nav-label">Assets</span><span class="nav-badge">156</span></a>
+            <a href="/agreements.html"><span class="nav-icon"><i class="fas fa-file-signature"></i></span><span class="nav-label">Agreements</span><span class="nav-badge warning">12</span></a>
+            <a href="/license_generator.html"><span class="nav-icon"><i class="fas fa-file-contract"></i></span><span class="nav-label">Licenses</span></a>
+            <a href="/earnings.html"><span class="nav-icon"><i class="fas fa-coins"></i></span><span class="nav-label">Earnings</span><span class="nav-badge success">R12.4k</span></a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Identity</div>
+            <a href="/profile.html"><span class="nav-icon"><i class="fas fa-user"></i></span><span class="nav-label">Profile</span></a>
+            <a href="/notifications.html" class="active"><span class="nav-icon"><i class="fas fa-bell"></i></span><span class="nav-label">Notifications</span><span class="nav-badge" id="notifBadge">20</span></a>
+            <a href="/billing.html"><span class="nav-icon"><i class="fas fa-receipt"></i></span><span class="nav-label">Billing</span></a>
+            <a href="/security.html"><span class="nav-icon"><i class="fas fa-lock"></i></span><span class="nav-label">Security</span></a>
+        </div>
+        <div class="nav-divider"></div>
+        <a href="/logout_confirm.html" class="logout-link"><span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span><span class="nav-label">Sign Out</span></a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-card" onclick="window.location.href='/profile.html'">
+            <div class="user-avatar" id="sideAvatar">S</div>
+            <div class="user-info">
+                <div class="name" id="sideName">Siya</div>
+                <div class="role">Rights Holder</div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- ─── MAIN CONTENT ─── -->
+<div class="main-content">
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></button>
+            <span class="page-title">Notifications</span>
+        </div>
+        <div class="topbar-right">
+            <button class="topbar-icon-btn" onclick="markAllRead()" title="Mark all as read">
+                <i class="fas fa-check-double"></i>
+            </button>
+            <button class="topbar-icon-btn" onclick="refreshNotifications()" title="Refresh">
+                <i class="fas fa-sync"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="notifications-container">
+        <!-- Header -->
+        <div class="notifications-header">
+            <h1>Notifications</h1>
+            <div class="header-actions">
+                <span class="summary" id="summaryText">20 unread · 48 total</span>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All</button>
+            <button class="filter-btn" data-filter="unread" onclick="setFilter('unread')">Unread <span class="badge warning" id="unreadFilterBadge">20</span></button>
+            <button class="filter-btn" data-filter="rights-assets" onclick="setFilter('rights-assets')">Rights & Assets</button>
+            <button class="filter-btn" data-filter="collaboration" onclick="setFilter('collaboration')">Collaboration</button>
+            <button class="filter-btn" data-filter="social" onclick="setFilter('social')">Social</button>
+            <button class="filter-btn" data-filter="account" onclick="setFilter('account')">Account</button>
+            <button class="filter-btn" data-filter="system" onclick="setFilter('system')">System</button>
+        </div>
+
+        <!-- Notifications List -->
+        <div id="notificationsList">
+            <!-- Rendered by JavaScript -->
+        </div>
+
+        <!-- Load More -->
+        <div class="load-more-container" id="loadMoreContainer">
+            <button class="load-more-btn" onclick="loadMore()">Load more</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script src="/assets/js/routes.js"></script>
+<script src="/assets/js/auth-guard.js"></script>
+<script src="/assets/js/notifications.js"></script>
+
+<script>
+// ─── SIMULATED NOTIFICATIONS DATA ──────────────────────────────────────
+const SIMULATED_NOTIFICATIONS = [
+    {
+        id: '1',
+        type: 'trust_received',
+        title: 'New Trust',
+        message: 'Luna Ray trusted you!',
+        action_label: 'View Profile',
+        action_url: '/profile/lunaray',
+        actor_id: 'lunaray-id',
+        entity_type: 'profile',
+        entity_id: 'lunaray-id',
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+        metadata: { trustor_name: 'Luna Ray' }
+    },
+    {
+        id: '2',
+        type: 'certificate_issued',
+        title: 'Certificate Issued',
+        message: '"Nova Dawn" has been certified. Certificate ID: SR-CERT-2026-001',
+        action_label: 'View Certificate',
+        action_url: '/certificates/SR-CERT-2026-001',
+        entity_type: 'certificate',
+        entity_id: 'SR-CERT-2026-001',
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+        metadata: { work_title: 'Nova Dawn', cert_id: 'SR-CERT-2026-001' }
+    },
+    {
+        id: '3',
+        type: 'agreement_invited',
+        title: 'Co-ownership Invitation',
+        message: 'Kai Sterling invited you to co-own "Digital Horizon"',
+        action_label: 'Review',
+        action_url: '/agreements/invite/123',
+        entity_type: 'agreement',
+        entity_id: '123',
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+        metadata: { inviter: 'Kai Sterling', work_title: 'Digital Horizon' }
+    },
+    {
+        id: '4',
+        type: 'plan_upgraded',
+        title: 'Plan Upgraded',
+        message: 'Your plan has been upgraded to Studio. New certifications will receive High priority processing.',
+        action_label: 'View Billing',
+        action_url: '/billing',
+        entity_type: 'membership',
+        entity_id: null,
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+        metadata: { new_plan: 'Studio', priority: 'High' }
+    },
+    {
+        id: '5',
+        type: 'payment_success',
+        title: 'Payment Successful',
+        message: 'Your payment of R299.99 for Studio plan has been processed.',
+        action_label: 'View Billing',
+        action_url: '/billing',
+        entity_type: 'payment',
+        entity_id: 'pay_123',
+        read_at: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
+        metadata: { amount: 'R299.99', plan: 'Studio' }
+    },
+    {
+        id: '6',
+        type: 'follow_received',
+        title: 'New Follower',
+        message: 'Maya Nova started following you!',
+        action_label: 'View Profile',
+        action_url: '/profile/mayanova',
+        entity_type: 'profile',
+        entity_id: 'mayanova-id',
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+        metadata: { follower_name: 'Maya Nova' }
+    },
+    {
+        id: '7',
+        type: 'comment_received',
+        title: 'New Comment',
+        message: 'Eli Stone commented on your work "Electronic Explorations": "This is incredible!"',
+        action_label: 'View Work',
+        action_url: '/works/electronic-explorations',
+        entity_type: 'work',
+        entity_id: 'work-123',
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(),
+        metadata: { commenter: 'Eli Stone', work_title: 'Electronic Explorations' }
+    },
+    {
+        id: '8',
+        type: 'license_requested',
+        title: 'License Request',
+        message: 'Zara Blake requested a license for "Amapiano Sunset Horizon"',
+        action_label: 'Review Request',
+        action_url: '/licenses/requests/456',
+        entity_type: 'license',
+        entity_id: '456',
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
+        metadata: { requester: 'Zara Blake', work_title: 'Amapiano Sunset Horizon' }
+    },
+    {
+        id: '9',
+        type: 'system_announcement',
+        title: 'New Feature: Similar Creators',
+        message: 'Discover creators who share your creative style with Similar Creators.',
+        action_label: 'Learn More',
+        action_url: '/discover',
+        entity_type: 'system',
+        entity_id: null,
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+        metadata: { feature: 'Similar Creators' }
+    },
+    {
+        id: '10',
+        type: 'trust_received',
+        title: 'New Trust',
+        message: 'Marcus Cole trusted you!',
+        action_label: 'View Profile',
+        action_url: '/profile/marcuscole',
+        entity_type: 'profile',
+        entity_id: 'marcuscole-id',
+        read_at: new Date(Date.now() - 1000 * 60 * 60 * 25).toISOString(),
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 25).toISOString(),
+        metadata: { trustor_name: 'Marcus Cole' }
+    },
+    {
+        id: '11',
+        type: 'collaboration_invited',
+        title: 'Collaboration Invitation',
+        message: 'Sofia Chen invited you to collaborate on a new project.',
+        action_label: 'View Invitation',
+        action_url: '/collaborations/invite/202',
+        entity_type: 'collaboration',
+        entity_id: '202',
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 30).toISOString(),
+        metadata: { inviter: 'Sofia Chen' }
+    },
+    {
+        id: '12',
+        type: 'profile_share',
+        title: 'Profile Shared',
+        message: 'Your profile was shared 3 times today!',
+        action_label: 'View Profile',
+        action_url: '/profile/me',
+        entity_type: 'profile',
+        entity_id: 'me',
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 36).toISOString(),
+        metadata: { share_count: 3 }
+    },
+    {
+        id: '13',
+        type: 'agreement_signed',
+        title: 'Agreement Signed',
+        message: 'Luna Ray has signed the co-ownership agreement for "Nova Dawn"',
+        action_label: 'View Agreement',
+        action_url: '/agreements/789',
+        entity_type: 'agreement',
+        entity_id: '789',
+        read_at: new Date(Date.now() - 1000 * 60 * 60 * 40).toISOString(),
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 40).toISOString(),
+        metadata: { signer: 'Luna Ray', work_title: 'Nova Dawn' }
+    },
+    {
+        id: '14',
+        type: 'payment_failed',
+        title: 'Payment Failed',
+        message: 'Your payment could not be processed. Please update your payment method.',
+        action_label: 'Update Payment',
+        action_url: '/billing',
+        entity_type: 'payment',
+        entity_id: 'pay_456',
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
+        metadata: { error: 'card_declined' }
+    },
+    {
+        id: '15',
+        type: 'license_approved',
+        title: 'License Approved',
+        message: 'Your license request for "Cape Coast Low-Fi Ambience" has been approved.',
+        action_label: 'View License',
+        action_url: '/licenses/approved/101',
+        entity_type: 'license',
+        entity_id: '101',
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 60).toISOString(),
+        metadata: { work_title: 'Cape Coast Low-Fi Ambience' }
+    },
+    {
+        id: '16',
+        type: 'plan_downgraded',
+        title: 'Plan Downgraded',
+        message: 'Your plan has been downgraded to Free. Upgrade to continue enjoying premium features.',
+        action_label: 'View Plans',
+        action_url: '/billing',
+        entity_type: 'membership',
+        entity_id: null,
+        read_at: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(),
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(),
+        metadata: { new_plan: 'Free' }
+    },
+    {
+        id: '17',
+        type: 'trust_received',
+        title: 'New Trust',
+        message: 'Nina Simone trusted you!',
+        action_label: 'View Profile',
+        action_url: '/profile/ninasimone',
+        entity_type: 'profile',
+        entity_id: 'ninasimone-id',
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 84).toISOString(),
+        metadata: { trustor_name: 'Nina Simone' }
+    },
+    {
+        id: '18',
+        type: 'system_announcement',
+        title: 'Platform Update',
+        message: 'We\'ve updated our terms of service. Please review the changes.',
+        action_label: 'Review',
+        action_url: '/legal/terms',
+        entity_type: 'system',
+        entity_id: null,
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 96).toISOString(),
+        metadata: { update_type: 'terms' }
+    },
+    {
+        id: '19',
+        type: 'certificate_issued',
+        title: 'Certificate Issued',
+        message: '"Urban Poly-Rhythm Drive" has been certified.',
+        action_label: 'View Certificate',
+        action_url: '/certificates/SR-CERT-2026-002',
+        entity_type: 'certificate',
+        entity_id: 'SR-CERT-2026-002',
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 108).toISOString(),
+        metadata: { work_title: 'Urban Poly-Rhythm Drive' }
+    },
+    {
+        id: '20',
+        type: 'collaboration_accepted',
+        title: 'Collaboration Accepted',
+        message: 'James Park accepted your collaboration invitation.',
+        action_label: 'View Project',
+        action_url: '/collaborations/project/303',
+        entity_type: 'collaboration',
+        entity_id: '303',
+        read_at: null,
+        created_at: new Date(Date.now() - 1000 * 60 * 60 * 120).toISOString(),
+        metadata: { collaborator: 'James Park' }
+    }
+];
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadNotifications(SIMULATED_NOTIFICATIONS);
+});
+</script>
+</body>
+</html>
