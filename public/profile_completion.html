@@ -1,0 +1,630 @@
+DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SeekReap · Complete Your Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/profile_completion.css">
+</head>
+<body>
+  <div class="profile-card">
+    <!-- Brand -->
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 200 200" fill="none">
+        <defs>
+          <linearGradient id="aGS" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FAFAF8"/>
+            <stop offset="100%" stop-color="#E8C06A"/>
+          </linearGradient>
+          <linearGradient id="aGR" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#C9993A"/>
+            <stop offset="100%" stop-color="#9B7520"/>
+          </linearGradient>
+        </defs>
+        <g stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M100 50 L100 60 M97 55 L103 65 M93 60 L107 72 M88 75 L112 85 M85 90 L115 92" stroke="url(#aGR)" opacity="0.9"/>
+          <path d="M85 105 L115 105 M88 115 L112 115 M93 125 L107 125 M97 135 L103 135 M100 140 L100 150" stroke="url(#aGR)"/>
+          <circle cx="100" cy="100" r="3" fill="url(#aGS)" opacity="0.8"/>
+        </g>
+        <text x="65" y="175" font-size="80" font-weight="700" fill="url(#aGS)" opacity="0.95">S</text>
+        <text x="115" y="175" font-size="80" font-weight="700" fill="url(#aGR)">R</text>
+      </svg>
+      <span class="brand-name"><span class="brand-seek">Seek</span><span class="brand-reap">Reap</span></span>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-container">
+      <div class="progress-steps">
+        <div class="progress-step active" data-step="1" onclick="goToStep(1)">
+          <div class="progress-dot">1</div>
+          <span class="progress-step-label">Photos</span>
+        </div>
+        <div class="progress-step" data-step="2" onclick="goToStep(2)">
+          <div class="progress-dot">2</div>
+          <span class="progress-step-label">Profile</span>
+        </div>
+        <div class="progress-step" data-step="3" onclick="goToStep(3)">
+          <div class="progress-dot">3</div>
+          <span class="progress-step-label">Professional</span>
+        </div>
+        <div class="progress-step" data-step="4" onclick="goToStep(4)">
+          <div class="progress-dot">4</div>
+          <span class="progress-step-label">Contact</span>
+        </div>
+        <div class="progress-step" data-step="5" onclick="goToStep(5)">
+          <div class="progress-dot">5</div>
+          <span class="progress-step-label">Complete</span>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- Message Container -->
+    <div id="message-container"></div>
+
+    <!-- ─── STEP 1: PHOTOS ────────────────────────────────────────────── -->
+    <div class="step active" id="step1">
+      <h2 class="form-title">Upload Your <span>Photos</span></h2>
+      <p class="form-subtitle">Add a cover photo and profile picture to personalize your profile</p>
+
+      <div class="photo-upload-grid">
+        <div class="photo-upload-box" id="coverUploadBox" onclick="document.getElementById('coverInput').click()">
+          <i class="fas fa-image upload-icon"></i>
+          <span class="upload-label">Cover Photo</span>
+          <span class="upload-hint">JPG, PNG • 1200x400px</span>
+          <input type="file" id="coverInput" class="file-input" accept="image/*" onchange="handleFileUpload(event, 'cover')">
+        </div>
+        <div class="photo-upload-box" id="profileUploadBox" onclick="document.getElementById('profileInput').click()">
+          <i class="fas fa-user-circle upload-icon"></i>
+          <span class="upload-label">Profile Photo</span>
+          <span class="upload-hint">JPG, PNG • 400x400px</span>
+          <input type="file" id="profileInput" class="file-input" accept="image/*" onchange="handleFileUpload(event, 'profile')">
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn btn-secondary" onclick="goToStep(2)">
+          Skip <i class="fas fa-arrow-right"></i>
+        </button>
+        <button class="btn btn-primary" onclick="goToStep(2)">
+          Next Step <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── STEP 2: PROFILE INFO ──────────────────────────────────────── -->
+    <div class="step" id="step2">
+      <h2 class="form-title">Tell Us About <span>Yourself</span></h2>
+      <p class="form-subtitle">This information will be visible on your public profile</p>
+
+      <div class="form-row">
+        <div class="input-group">
+          <label>First Name <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-user field-icon"></i>
+            <input type="text" id="firstName" placeholder="e.g. John" autocomplete="given-name" oninput="updateFullName()">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Middle Name <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-user field-icon"></i>
+            <input type="text" id="middleName" placeholder="e.g. David" autocomplete="additional-name" oninput="updateFullName()">
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Last Name <span class="optional">(Optional)</span></label>
+        <div class="input-wrapper">
+          <i class="fas fa-user field-icon"></i>
+          <input type="text" id="lastName" placeholder="e.g. Smith" autocomplete="family-name" oninput="updateFullName()">
+        </div>
+      </div>
+
+      <!-- Full Name Display (Auto-generated) -->
+      <div class="full-name-display">
+        <span class="label">Full Name</span>
+        <span class="name empty" id="fullNameDisplay">—</span>
+      </div>
+
+      <div class="form-row-3">
+        <div class="input-group">
+          <label>Title <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-user-tag field-icon"></i>
+            <select id="title">
+              <option value="">Select title</option>
+              <option value="Mr">Mr</option>
+              <option value="Mrs">Mrs</option>
+              <option value="Ms">Ms</option>
+              <option value="Dr">Dr</option>
+              <option value="Prof">Prof</option>
+              <option value="Rev">Rev</option>
+              <option value="Hon">Hon</option>
+              <option value="Sir">Sir</option>
+              <option value="Dame">Dame</option>
+              <option value="Lord">Lord</option>
+              <option value="Lady">Lady</option>
+              <option value="Mx">Mx</option>
+            </select>
+            <i class="fas fa-chevron-down select-arrow"></i>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Gender <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-venus-mars field-icon"></i>
+            <select id="gender">
+              <option value="">Select gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Non-binary">Non-binary</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+              <option value="Other">Other</option>
+            </select>
+            <i class="fas fa-chevron-down select-arrow"></i>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Date of Birth <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-calendar-alt field-icon"></i>
+            <input type="date" id="dateOfBirth" max="2010-01-01">
+          </div>
+          <span class="hint">You must be at least 16 years old</span>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Display Name <span class="optional">(Optional)</span></label>
+        <div class="input-wrapper">
+          <i class="fas fa-tag field-icon"></i>
+          <input type="text" id="displayName" placeholder="e.g. NovaKai" oninput="updateSlug()" autocomplete="nickname">
+        </div>
+        <span class="hint">This is how you'll appear to the community</span>
+      </div>
+
+      <div class="input-group">
+        <label>Artistic Slug <span class="optional">(Optional)</span></label>
+        <div class="input-wrapper">
+          <span class="slug-prefix">@</span>
+          <input type="text" id="artisticSlug" class="slug-input" placeholder="novakai" oninput="validateSlug()">
+        </div>
+        <span class="hint">Your unique URL: seekreap.io/creator/@<span id="slugPreview">username</span></span>
+      </div>
+
+      <div class="input-group">
+        <label>User Type <span class="optional">(Optional)</span></label>
+        <div class="input-wrapper">
+          <i class="fas fa-users field-icon"></i>
+          <select id="userType">
+            <option value="">Select user type</option>
+            <option value="Creator">Creator</option>
+            <option value="Viewer">Viewer</option>
+            <option value="Delegate">Delegate</option>
+            <option value="Organization">Organization</option>
+          </select>
+          <i class="fas fa-chevron-down select-arrow"></i>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>User Roles <span class="optional">(Optional)</span></label>
+        <div class="tags-container" id="rolesContainer">
+          <i class="fas fa-user-tag field-icon"></i>
+          <div id="rolesTagsList" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"></div>
+          <div class="tag-input-wrapper">
+            <input type="text" id="roleInput" placeholder="e.g. Musician" onkeydown="handleRoleInput(event)">
+          </div>
+        </div>
+        <div class="field-actions">
+          <button class="btn-sm btn-add" onclick="addRoleField()">
+            <i class="fas fa-plus"></i> Add Role
+          </button>
+          <button class="btn-sm btn-remove-item" onclick="removeLastRole()">
+            <i class="fas fa-minus"></i> Remove Role
+          </button>
+        </div>
+        <span class="hint">Type a role and press Enter, or use the buttons above</span>
+      </div>
+
+      <div class="input-group">
+        <label>Biography <span class="optional">(Optional)</span></label>
+        <div class="input-wrapper">
+          <i class="fas fa-align-left field-icon"></i>
+          <textarea id="biography" placeholder="Tell us about yourself, your work, and your creative journey..." maxlength="1200" oninput="updateCharCount()"></textarea>
+        </div>
+        <div class="char-counter">
+          <span id="charCount">0</span> / 1200 characters
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn btn-secondary" onclick="goToStep(1)">
+          <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <button class="btn btn-primary" onclick="goToStep(3)">
+          Next Step <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── STEP 3: PROFESSIONAL ───────────────────────────────────────── -->
+    <div class="step" id="step3">
+      <h2 class="form-title">Your <span>Professional</span> Profile</h2>
+      <p class="form-subtitle">Share your professional background and achievements</p>
+
+      <!-- Employment History -->
+      <div class="section-heading">
+        <span class="heading-icon"><i class="fas fa-briefcase"></i></span>
+        <span class="heading-text">Employment History</span>
+        <span class="heading-count" id="employmentCount">0 items</span>
+      </div>
+
+      <div class="input-group">
+        <div id="employmentList"></div>
+        <button class="btn-sm btn-add" onclick="addEmployment()" style="margin-top:8px;">
+          <i class="fas fa-plus"></i> Add Employment
+        </button>
+        <span class="hint">Add your work experience</span>
+      </div>
+
+      <!-- Education -->
+      <div class="section-heading">
+        <span class="heading-icon"><i class="fas fa-graduation-cap"></i></span>
+        <span class="heading-text">Education</span>
+        <span class="heading-count" id="educationCount">0 items</span>
+      </div>
+
+      <div class="input-group">
+        <div id="educationList"></div>
+        <button class="btn-sm btn-add" onclick="addEducation()" style="margin-top:8px;">
+          <i class="fas fa-plus"></i> Add Education
+        </button>
+        <span class="hint">Add your educational background</span>
+      </div>
+
+      <!-- Skills -->
+      <div class="section-heading">
+        <span class="heading-icon"><i class="fas fa-tools"></i></span>
+        <span class="heading-text">Skills</span>
+        <span class="heading-count" id="skillsCount">0 items</span>
+      </div>
+
+      <div class="input-group">
+        <div id="skillsList"></div>
+        <button class="btn-sm btn-add" onclick="addSkill()" style="margin-top:8px;">
+          <i class="fas fa-plus"></i> Add Skill
+        </button>
+        <span class="hint">Add your professional skills</span>
+      </div>
+
+      <!-- Publications -->
+      <div class="section-heading">
+        <span class="heading-icon"><i class="fas fa-newspaper"></i></span>
+        <span class="heading-text">Publications</span>
+        <span class="heading-count" id="publicationsCount">0 items</span>
+      </div>
+
+      <div class="input-group">
+        <div id="publicationsList"></div>
+        <button class="btn-sm btn-add" onclick="addPublication()" style="margin-top:8px;">
+          <i class="fas fa-plus"></i> Add Publication
+        </button>
+        <span class="hint">Add publications, articles, or press mentions</span>
+      </div>
+
+      <!-- Achievements -->
+      <div class="section-heading">
+        <span class="heading-icon"><i class="fas fa-trophy"></i></span>
+        <span class="heading-text">Achievements</span>
+        <span class="heading-count" id="achievementsCount">0 items</span>
+      </div>
+
+      <div class="input-group">
+        <div id="achievementsList"></div>
+        <button class="btn-sm btn-add" onclick="addAchievement()" style="margin-top:8px;">
+          <i class="fas fa-plus"></i> Add Achievement
+        </button>
+        <span class="hint">Add your awards and recognitions</span>
+      </div>
+
+      <!-- Affiliations / Creative Identifications -->
+      <div class="section-heading">
+        <span class="heading-icon"><i class="fas fa-id-card"></i></span>
+        <span class="heading-text">Affiliation / Creative Identifications</span>
+        <span class="heading-count" id="affiliationsCount">0 items</span>
+      </div>
+
+      <div class="input-group">
+        <div id="affiliationsList"></div>
+        <button class="btn-sm btn-add" onclick="addAffiliation()" style="margin-top:8px;">
+          <i class="fas fa-plus"></i> Add Affiliation
+        </button>
+        <span class="hint">Add professional affiliations and organization IDs</span>
+      </div>
+
+      <div class="button-row">
+        <button class="btn btn-secondary" onclick="goToStep(2)">
+          <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <button class="btn btn-primary" onclick="goToStep(4)">
+          Next Step <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── STEP 4: CONTACT ────────────────────────────────────────────── -->
+    <div class="step" id="step4">
+      <h2 class="form-title">Your <span>Contact</span> Details</h2>
+      <p class="form-subtitle">How can people reach you? All fields are optional.</p>
+
+      <!-- Residential Section -->
+      <div class="section-heading">
+        <span class="heading-icon"><i class="fas fa-home"></i></span>
+        <span class="heading-text">Residential</span>
+      </div>
+
+      <div class="form-row">
+        <div class="input-group">
+          <label>Physical Address Line 1 <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-map-pin field-icon"></i>
+            <input type="text" id="physicalAddress1" placeholder="123 Main Street">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Physical Address Line 2 <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-map-pin field-icon"></i>
+            <input type="text" id="physicalAddress2" placeholder="Apt 4B">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="input-group">
+          <label>Postal Address Line 1 <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope field-icon"></i>
+            <input type="text" id="postalAddress1" placeholder="PO Box 123">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Postal Address Line 2 <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope field-icon"></i>
+            <input type="text" id="postalAddress2" placeholder="Suite 100">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row-3">
+        <div class="input-group">
+          <label>City of Residence <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-city field-icon"></i>
+            <input type="text" id="city" placeholder="Cape Town">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Province of Residence <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-map-marked-alt field-icon"></i>
+            <input type="text" id="province" placeholder="Western Cape">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Country of Residence <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-globe field-icon"></i>
+            <input type="text" id="countryOfResidence" placeholder="South Africa">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row-3">
+        <div class="input-group">
+          <label>City of Birth <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-code field-icon"></i>
+            <input type="text" id="cityCode" placeholder="CPT">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Province of Birth <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-code field-icon"></i>
+            <input type="text" id="provinceCode" placeholder="WC">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Nationality <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-code field-icon"></i>
+            <input type="text" id="countryCode" placeholder="ZA">
+          </div>
+        </div>
+      </div>
+
+      <!-- Communication Section -->
+      <div class="section-heading">
+        <span class="heading-icon"><i class="fas fa-comments"></i></span>
+        <span class="heading-text">Communication</span>
+      </div>
+
+      <div class="form-row">
+        <div class="input-group">
+          <label>Primary Email <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope field-icon"></i>
+            <input type="email" id="primaryEmail" placeholder="creator@seekreap.io">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Secondary Email <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope field-icon"></i>
+            <input type="email" id="secondaryEmail" placeholder="backup@email.com">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="input-group">
+          <label>Primary Phone <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-phone field-icon"></i>
+            <input type="tel" id="primaryPhone" placeholder="+27 82 123 4567">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Secondary Phone <span class="optional">(Optional)</span></label>
+          <div class="input-wrapper">
+            <i class="fas fa-phone field-icon"></i>
+            <input type="tel" id="secondaryPhone" placeholder="+27 82 123 4568">
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Section -->
+      <div class="section-heading">
+        <span class="heading-icon"><i class="fas fa-share-alt"></i></span>
+        <span class="heading-text">Social</span>
+      </div>
+
+      <div class="input-group">
+        <label>Social Platforms <span class="optional">(Optional)</span></label>
+        <div class="tags-container" id="socialContainer">
+          <i class="fas fa-share-alt field-icon"></i>
+          <div id="socialTagsList" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"></div>
+          <div class="tag-input-wrapper" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <select id="socialPlatform" style="background:var(--black-4);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.85rem;min-width:120px;">
+              <option value="Website">Website</option>
+              <option value="GitHub">GitHub</option>
+              <option value="Instagram">Instagram</option>
+              <option value="X">X</option>
+              <option value="YouTube">YouTube</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="Facebook">Facebook</option>
+              <option value="TikTok">TikTok</option>
+              <option value="SoundCloud">SoundCloud</option>
+              <option value="Spotify">Spotify</option>
+              <option value="Bandcamp">Bandcamp</option>
+              <option value="Vimeo">Vimeo</option>
+              <option value="Pinterest">Pinterest</option>
+              <option value="Twitch">Twitch</option>
+              <option value="Discord">Discord</option>
+              <option value="Telegram">Telegram</option>
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="Signal">Signal</option>
+            </select>
+            <input type="text" id="socialHandle" placeholder="Username or URL" style="flex:1;min-width:120px;background:transparent;border:none;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.95rem;padding:6px 0;outline:none;">
+          </div>
+        </div>
+        <div class="field-actions">
+          <button class="btn-sm btn-add" onclick="addSocial()">
+            <i class="fas fa-plus"></i> Add Social
+          </button>
+          <button class="btn-sm btn-remove-item" onclick="removeLastSocial()">
+            <i class="fas fa-minus"></i> Remove Social
+          </button>
+        </div>
+        <span class="hint">Select a platform, enter your handle or URL, and click Add</span>
+      </div>
+
+      <div class="button-row">
+        <button class="btn btn-secondary" onclick="goToStep(3)">
+          <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <button class="btn btn-primary" onclick="goToStep(5)">
+          Next Step <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── STEP 5: COMPLETE ───────────────────────────────────────────── -->
+    <div class="step" id="step5">
+      <h2 class="form-title">You're All <span>Set!</span></h2>
+      <p class="form-subtitle">Your profile is ready to go. You can always edit these details later.</p>
+
+      <div style="background: var(--black-3); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 24px; max-height: 450px; overflow-y: auto;">
+        <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 12px;">
+          <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--black-4); border: 2px solid var(--border); overflow: hidden;" id="summaryProfile">
+            <img id="summaryProfileImg" src="" alt="Profile" style="width:100%;height:100%;object-fit:cover;display:none;">
+          </div>
+          <div>
+            <div style="font-weight: 600; font-size: 1.1rem;" id="summaryDisplayName">—</div>
+            <div style="color: var(--white-dim); font-size: 0.85rem;">@<span id="summarySlug">—</span></div>
+            <div style="color: var(--white-dim); font-size: 0.8rem; opacity: 0.6;" id="summaryFullName">—</div>
+            <div style="color: var(--white-dim); font-size: 0.8rem; opacity: 0.5; margin-top: 2px;" id="summaryDetails">—</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+          <div>
+            <div style="color: var(--white-dim); font-size: 0.7rem; opacity: 0.6; text-transform:uppercase;letter-spacing:0.05em;">User Type</div>
+            <div style="font-size: 0.85rem;" id="summaryUserType">—</div>
+          </div>
+          <div>
+            <div style="color: var(--white-dim); font-size: 0.7rem; opacity: 0.6; text-transform:uppercase;letter-spacing:0.05em;">Roles</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px;" id="summaryRoles">
+              <span style="color: var(--white-dim); font-size: 0.8rem;">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:8px;">
+          <div style="color: var(--white-dim); font-size: 0.7rem; opacity: 0.6; text-transform:uppercase;letter-spacing:0.05em;">Biography</div>
+          <div style="font-size: 0.85rem; color: var(--white-dim); max-height: 40px; overflow-y: auto;" id="summaryBio">—</div>
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:8px;margin-bottom:8px;">
+          <div style="color: var(--white-dim); font-size: 0.7rem; opacity: 0.6; text-transform:uppercase;letter-spacing:0.05em;">Professional</div>
+          <div style="font-size:0.8rem;color:var(--white-dim);" id="summaryProfessional">—</div>
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:8px;margin-bottom:8px;">
+          <div style="color: var(--white-dim); font-size: 0.7rem; opacity: 0.6; text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Residential</div>
+          <div style="font-size:0.8rem;color:var(--white-dim);" id="summaryAddress">—</div>
+          <div style="font-size:0.8rem;color:var(--white-dim);" id="summaryLocation">—</div>
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:8px;margin-bottom:8px;">
+          <div style="color: var(--white-dim); font-size: 0.7rem; opacity: 0.6; text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Communication</div>
+          <div style="font-size:0.8rem;color:var(--white-dim);" id="summaryEmails">—</div>
+          <div style="font-size:0.8rem;color:var(--white-dim);" id="summaryPhones">—</div>
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:8px;">
+          <div style="color: var(--white-dim); font-size: 0.7rem; opacity: 0.6; text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Social</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;" id="summarySocial">
+            <span style="color: var(--white-dim); font-size: 0.8rem;">—</span>
+          </div>
+        </div>
+
+        <div style="width:100%; height:60px; background: var(--black-4); border-radius: 8px; overflow:hidden; margin-top:12px;" id="summaryCover">
+          <img id="summaryCoverImg" src="" alt="Cover" style="width:100%;height:100%;object-fit:cover;display:none;">
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn btn-secondary" onclick="goToStep(4)">
+          <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <button class="btn btn-success" id="completeBtn" onclick="completeProfile()">
+          <i class="fas fa-check"></i> Complete Profile
+        </button>
+      </div>
+    </div>
+  </div>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="/supabase-config.js"></script>
+  <script src="/assets/js/profile_completion.js"></script>
+</body>
+</html>
