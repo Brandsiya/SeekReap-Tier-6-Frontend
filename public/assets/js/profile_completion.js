@@ -7,6 +7,7 @@
     let userRoles = [];
     let socialLinks = [];
     let itemCounter = 0;
+  let _completingProfile = false;
 
     // ─── NAVIGATION ──────────────────────────────────────────────────────────
     function goToStep(step) {
@@ -95,8 +96,8 @@
 
     function addRoleField() {
       const input = document.getElementById('roleInput');
-      const role = input.value.trim();
-      if (role && !userRoles.includes(role)) {
+      const role = input.value;
+      if (role && SELF_SERVICE_ROLES.includes(role) && !userRoles.includes(role)) {
         userRoles.push(role);
         renderRoles();
         input.value = '';
@@ -119,7 +120,7 @@
       const container = document.getElementById('rolesTagsList');
       container.innerHTML = userRoles.map(role => `
         <span class="tag">
-          ${escapeHtml(role)}
+          ${escapeHtml(ROLE_LABELS[role] || role)}
           <button class="remove-tag" onclick="removeRole('${escapeHtml(role)}')">
             <i class="fas fa-times"></i>
           </button>
@@ -225,6 +226,7 @@
       `;
       list.appendChild(item);
       updateSectionCounts();
+      return item;
     }
 
     // ─── EDUCATION ──────────────────────────────────────────────────────────
@@ -304,6 +306,7 @@
       `;
       list.appendChild(item);
       updateSectionCounts();
+      return item;
     }
 
     // ─── SKILLS ─────────────────────────────────────────────────────────────
@@ -378,6 +381,7 @@
       `;
       list.appendChild(item);
       updateSectionCounts();
+      return item;
     }
 
     // ─── PUBLICATIONS ──────────────────────────────────────────────────────
@@ -442,6 +446,7 @@
       `;
       list.appendChild(item);
       updateSectionCounts();
+      return item;
     }
 
     // ─── ACHIEVEMENTS ──────────────────────────────────────────────────────
@@ -521,6 +526,7 @@
       `;
       list.appendChild(item);
       updateSectionCounts();
+      return item;
     }
 
     // ─── AFFILIATIONS ──────────────────────────────────────────────────────
@@ -582,6 +588,7 @@
       `;
       list.appendChild(item);
       updateSectionCounts();
+      return item;
     }
 
     // ─── REMOVE PROFESSIONAL ITEM ──────────────────────────────────────────
@@ -886,100 +893,618 @@
       }
     }
 
-    // ─── COMPLETE PROFILE ─────────────────────────────────────────────────
-    function completeProfile() {
-      setBusy('completeBtn', true);
-      
-      setTimeout(() => {
-        // Collect all professional items data
-        function collectItems(listId) {
-          const list = document.getElementById(listId);
-          const items = [];
-          list.querySelectorAll('.professional-item').forEach(item => {
-            const fields = {};
-            item.querySelectorAll('.field-group').forEach(group => {
-              const label = group.querySelector('.field-label')?.textContent || '';
-              const input = group.querySelector('input, select, textarea');
-              if (input) {
-                fields[label] = input.value;
-              }
-            });
-            items.push(fields);
-          });
-          return items.length > 0 ? items : null;
-        }
+    // ─── API HELPER ─────────────────────────────────────────────────────────
+const TIER4_BASE = 'https://seekreap-tier-4-orchestrator-1.onrender.com';
+let _pcJwt = null;
 
-        const firstName = document.getElementById('firstName').value.trim();
-        const middleName = document.getElementById('middleName').value.trim();
-        const lastName = document.getElementById('lastName').value.trim();
-        const fullName = middleName ? `${firstName} ${middleName} ${lastName}` : `${firstName} ${lastName}`;
+async function _getPcJwt() {
+  if (_pcJwt) return _pcJwt;
+  if (window.supabaseClient) {
+    try {
+      const { data: { session }, error } = await window.supabaseClient.auth.getSession();
+      if (!error && session) {
+        _pcJwt = session.access_token;
+        return _pcJwt;
+      }
+    } catch (e) {
+      console.error('[Auth]', e);
+    }
+  }
+  return null;
+}
 
-        const profileData = {
-          // Personal
-          first_legal_name: firstName || null,
-          middle_legal_name: middleName || null,
-          last_legal_name: lastName || null,
-          legal_full_name: fullName || null,
-          title: document.getElementById('title').value || null,
-          gender: document.getElementById('gender').value || null,
-          date_of_birth: document.getElementById('dateOfBirth').value || null,
-          display_name: document.getElementById('displayName').value.trim() || null,
-          artistic_slug: document.getElementById('artisticSlug').value.trim() || null,
-          user_type: document.getElementById('userType').value || null,
-          user_roles: userRoles.length > 0 ? userRoles : null,
-          biography: document.getElementById('biography').value.trim() || null,
-          
-          // Professional
-          employment_history: collectItems('employmentList'),
-          education: collectItems('educationList'),
-          skills: collectItems('skillsList'),
-          publications: collectItems('publicationsList'),
-          achievements: collectItems('achievementsList'),
-          affiliations: collectItems('affiliationsList'),
-          
-          // Residential
-          physical_address_line1: document.getElementById('physicalAddress1').value.trim() || null,
-          physical_address_line2: document.getElementById('physicalAddress2').value.trim() || null,
-          postal_address_line1: document.getElementById('postalAddress1').value.trim() || null,
-          postal_address_line2: document.getElementById('postalAddress2').value.trim() || null,
-          city_of_residence: document.getElementById('city').value.trim() || null,
-          province_of_residence: document.getElementById('province').value.trim() || null,
-          country_of_residence: document.getElementById('countryOfResidence').value.trim() || null,
-          city_of_birth: document.getElementById('cityCode').value.trim() || null,
-          province_of_birth: document.getElementById('provinceCode').value.trim() || null,
-          nationality: document.getElementById('countryCode').value.trim() || null,
-          
-          // Communication
-          recovery_email: document.getElementById('primaryEmail').value.trim() || null,
-          secondary_email: document.getElementById('secondaryEmail').value.trim() || null,
-          primary_phone: document.getElementById('primaryPhone').value.trim() || null,
-          secondary_phone: document.getElementById('secondaryPhone').value.trim() || null,
-          
-          // Social
-          social_links: socialLinks.length > 0 ? socialLinks : null,
-          
-          // Photos
-          banner_photo_url: coverDataURL || null,
-          profile_photo_url: profileDataURL || null,
-          
-          // Status
-          onboarding_completed: true,
-          onboarding_step: 5,
-          profile_completion_percentage: calculateCompletion()
-        };
+async function profileCompletionApiFetch(path, opts = {}) {
+  const jwt = await _getPcJwt();
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(opts.headers || {})
+  };
+  if (jwt) headers['Authorization'] = 'Bearer ' + jwt;
+  const res = await fetch(TIER4_BASE + path, { ...opts, headers });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || err.detail || 'HTTP ' + res.status);
+  }
+  return res.json();
+}
 
-        console.log('Profile Data:', profileData);
-        
-        showMsg('Profile created successfully! Redirecting...', 'success');
-        setBusy('completeBtn', false);
-        
-        setTimeout(() => {
-          window.location.href = '/profile.html';
-        }, 1500);
-      }, 1500);
+function setProfileField(id, value) {
+  const el = document.getElementById(id);
+  if (!el || value === null || value === undefined) return;
+  if (el.tagName === 'SELECT') {
+    const exists = Array.from(el.options).some(o => o.value === String(value));
+    if (exists) el.value = String(value);
+    return;
+  }
+  el.value = String(value);
+}
+
+// ─── USER TYPE REFERENCE ────────────────────────────────────────────────
+async function loadUserTypeReference() {
+  try {
+    const ref = await profileCompletionApiFetch('/api/profile/reference');
+    const select = document.getElementById('userType');
+    if (!select) return;
+    const types = (ref.user_types || []).filter(t => t.is_active !== false);
+    types.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = t.display_name || t.code || t.id;
+      select.appendChild(opt);
+    });
+  } catch (e) {
+    console.error('[Profile Completion] Failed to load user type reference:', e);
+  }
+}
+
+// ─── PLATFORM ROLES ─────────────────────────────────────────────────────
+const SELF_SERVICE_ROLES = [
+  'creator', 'delegate', 'organization', 'member', 'investor',
+  'collector', 'buyer', 'supporter', 'publisher', 'distributor'
+];
+
+const ROLE_LABELS = {
+  creator: 'Creator', delegate: 'Delegate', organization: 'Organization',
+  member: 'Member', investor: 'Investor', collector: 'Collector',
+  buyer: 'Buyer', supporter: 'Supporter', publisher: 'Publisher',
+  distributor: 'Distributor'
+};
+
+async function loadUserRoles() {
+  const data = await profileCompletionApiFetch('/api/profile/roles');
+  const rows = data.roles || [];
+  userRoles = [...new Set(
+    rows.filter(r => r.active === true && SELF_SERVICE_ROLES.includes(r.role))
+        .map(r => r.role)
+  )];
+  renderRoles();
+}
+
+async function saveUserRoles() {
+  return profileCompletionApiFetch('/api/profile/roles', {
+    method: 'PUT',
+    body: JSON.stringify({ roles: userRoles })
+  });
+}
+
+// ─── PROFESSIONAL PERSISTENCE ──────────────────────────────────────────
+const professionalLoadedIds = {
+  employment: new Set(), education: new Set(), skills: new Set(),
+  publications: new Set(), achievements: new Set(), identifiers: new Set()
+};
+
+function professionalFieldValues(item) {
+  const values = {};
+  item.querySelectorAll('.field-group').forEach(group => {
+    const label = group.querySelector('.field-label')?.textContent?.trim();
+    if (!label) return;
+    const control = group.querySelector('input, select, textarea');
+    if (!control) return;
+    values[label] = control.value?.trim?.() ?? control.value ?? '';
+  });
+  return values;
+}
+
+function professionalHasMeaningfulValue(values) {
+  return Object.values(values).some(v => String(v ?? '').trim() !== '');
+}
+
+function yesNoToBoolean(value) {
+  if (value === 'yes') return true;
+  if (value === 'no') return false;
+  return null;
+}
+
+function numberOrNull(value) {
+  if (value === '' || value == null) return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function professionalSectionContainer(section) {
+  const ids = {
+    employment: 'employmentList', education: 'educationList', skills: 'skillsList',
+    publications: 'publicationsList', achievements: 'achievementsList', identifiers: 'affiliationsList'
+  };
+  return document.getElementById(ids[section]);
+}
+
+function professionalItemIdsInDom(section) {
+  const container = professionalSectionContainer(section);
+  if (!container) return new Set();
+  return new Set(
+    [...container.querySelectorAll('.professional-item[data-persisted-id]')]
+      .map(item => item.dataset.persistedId).filter(Boolean)
+  );
+}
+
+function setProfessionalControl(item, label, value) {
+  if (value === undefined || value === null) return;
+  const groups = [...item.querySelectorAll('.field-group')];
+  for (const group of groups) {
+    const groupLabel = group.querySelector('.field-label')?.textContent?.trim();
+    if (groupLabel !== label) continue;
+    const control = group.querySelector('input, select, textarea');
+    if (!control) return;
+    control.value = String(value);
+    control.dispatchEvent(new Event('change', { bubbles: true }));
+    return;
+  }
+}
+
+function setProfessionalPersistedId(item, id) {
+  if (!item || !id) return;
+  item.dataset.persistedId = String(id);
+}
+
+function normalizeResumeItems(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.items)) return payload.items;
+  return [];
+}
+
+function buildEmploymentPayload(v) {
+  return {
+    organization_name: v['Organization Name'] || null,
+    organization_type: v['Organization Type'] || null,
+    relationship_type: v['Relationship Type'] || null,
+    job_title: v['Job Title'] || null,
+    employment_type: v['Employment Type'] || null,
+    start_date: v['Start Date'] || null,
+    end_date: v['End Date'] || null,
+    is_current: yesNoToBoolean(v['Currently Employed']),
+    description: v['Description'] || null,
+    website: v['Website'] || null,
+    logo_url: v['Logo URL'] || null,
+    is_public: true
+  };
+}
+
+function buildEducationPayload(v) {
+  return {
+    institution_name: v['Institution Name'] || null,
+    institution_type: v['Institution Type'] || null,
+    degree: v['Qualification'] || null,
+    field_of_study: v['Field of Study'] || null,
+    specialization: v['Specialization'] || null,
+    start_date: v['Start Date'] || null,
+    end_date: v['End Date'] || null,
+    currently_studying: yesNoToBoolean(v['Currently Studying']),
+    grade: v['Academic Achievement/Grade'] || null,
+    description: v['Description'] || null,
+    certificate_url: v['Certificate URL'] || null
+  };
+}
+
+function buildSkillPayload(v) {
+  return {
+    skill_name: v['Skill Name'] || null,
+    proficiency_level: v['Proficiency Level'] || null,
+    years_experience: numberOrNull(v['Years of Experience']),
+    skill_provider: v['Skill Provider/Institution'] || null,
+    skill_field: v['Field of Skill'] || null,
+    start_date: v['Start Date'] || null,
+    end_date: v['End Date'] || null,
+    is_currently_attending: yesNoToBoolean(v['Currently Attending']),
+    certificate_url: v['Certificate URL'] || null,
+    metadata: { description: v['Description'] || null }
+  };
+}
+
+function buildPublicationPayload(v) {
+  return {
+    title: v['Publication Title'] || null,
+    publication_type: v['Publication Type'] || null,
+    publisher: v['Publication Name'] || null,
+    publication_date: v['Publication Date'] || null,
+    publication_url: v['Publication URL'] || null,
+    description: v['Publication Description'] || null,
+    metadata: {
+      identifier: v['Publication Identifier'] || null,
+      additional_details: v['Additional Details'] || null
+    }
+  };
+}
+
+function buildAchievementPayload(v) {
+  return {
+    category: v['Achievement Category'] || null,
+    title: v['Achievement Title'] || null,
+    subtitle: v['Achievement Subtitle'] || null,
+    issuer: v['Issuer'] || null,
+    description: v['Description'] || null,
+    achievement_date: v['Achievement Date'] || null,
+    achievement_level: v['Achievement Level'] || null,
+    evidence_url: v['Publication URL'] || null,
+    city: v['City'] || null,
+    country_code: v['Country Code'] ? v['Country Code'].toUpperCase() : null
+  };
+}
+
+function buildAffiliationPayload(v) {
+  return {
+    identifier_type: v['Identification Type'] || null,
+    identifier_value: v['Identification Number'] || null,
+    status: v['Status'] || null,
+    issuing_authority: v['Issuing Authority'] || null,
+    issued_at: v['Issued At'] || null,
+    expires_at: v['Expires At'] || null,
+    is_public: true
+  };
+}
+
+async function persistProfessionalItem(section, item, payload) {
+  const existingId = item.dataset.persistedId;
+  let result;
+  if (existingId) {
+    result = await profileCompletionApiFetch(
+      `/api/profile/resume/${section}/${encodeURIComponent(existingId)}`,
+      { method: 'PATCH', body: JSON.stringify(payload) }
+    );
+  } else {
+    result = await profileCompletionApiFetch(
+      `/api/profile/resume/${section}`,
+      { method: 'POST', body: JSON.stringify(payload) }
+    );
+  }
+  if (!result?.id) {
+    throw new Error(`The ${section} record was saved but no record ID was returned.`);
+  }
+  setProfessionalPersistedId(item, result.id);
+  return result;
+}
+
+async function persistProfessionalSection(section, listId, payloadBuilder) {
+  const list = document.getElementById(listId);
+  if (!list) return [];
+  const items = Array.from(list.querySelectorAll('.professional-item'));
+  const saved = [];
+  for (const item of items) {
+    const values = professionalFieldValues(item);
+    const existingId = item.dataset.persistedId;
+    if (!professionalHasMeaningfulValue(values)) {
+      if (existingId) {
+        await profileCompletionApiFetch(
+          `/api/profile/resume/${section}/${encodeURIComponent(existingId)}`,
+          { method: 'DELETE' }
+        );
+        item.remove();
+      }
+      continue;
+    }
+    const payload = payloadBuilder(values);
+    const result = await persistProfessionalItem(section, item, payload);
+    saved.push(result);
+  }
+  await reconcileDeletedProfessionalItems(section);
+  return saved;
+}
+
+async function reconcileDeletedProfessionalItems(section) {
+  const loaded = professionalLoadedIds[section];
+  if (!loaded) return;
+  const current = professionalItemIdsInDom(section);
+  for (const id of loaded) {
+    if (current.has(id)) continue;
+    await profileCompletionApiFetch(
+      `/api/profile/resume/${section}/${encodeURIComponent(id)}`,
+      { method: 'DELETE' }
+    );
+  }
+  loaded.clear();
+  for (const id of current) loaded.add(id);
+}
+
+async function loadProfessionalSection(section, listId, addFunction, populate) {
+  const payload = await profileCompletionApiFetch(`/api/profile/resume/${section}`, { method: 'GET' });
+  const items = normalizeResumeItems(payload);
+  const container = document.getElementById(listId);
+  if (!container) return;
+  container.querySelectorAll('.professional-item').forEach(i => i.remove());
+  professionalLoadedIds[section].clear();
+  for (const record of items) {
+    const item = addFunction();
+    if (!item) throw new Error(`Unable to create ${section} form card.`);
+    setProfessionalPersistedId(item, record.id);
+    professionalLoadedIds[section].add(String(record.id));
+    populate(item, record);
+  }
+}
+
+function populateEmployment(item, r) {
+  setProfessionalControl(item, 'Organization Name', r.organization_name);
+  setProfessionalControl(item, 'Organization Type', r.organization_type);
+  setProfessionalControl(item, 'Relationship Type', r.relationship_type);
+  setProfessionalControl(item, 'Job Title', r.job_title);
+  setProfessionalControl(item, 'Employment Type', r.employment_type);
+  setProfessionalControl(item, 'Start Date', r.start_date);
+  setProfessionalControl(item, 'End Date', r.end_date);
+  setProfessionalControl(item, 'Currently Employed', r.is_current === true ? 'yes' : r.is_current === false ? 'no' : null);
+  setProfessionalControl(item, 'Description', r.description);
+  setProfessionalControl(item, 'Website', r.website);
+  setProfessionalControl(item, 'Logo URL', r.logo_url);
+}
+
+function populateEducation(item, r) {
+  setProfessionalControl(item, 'Institution Name', r.institution_name);
+  setProfessionalControl(item, 'Institution Type', r.institution_type);
+  setProfessionalControl(item, 'Qualification', r.degree);
+  setProfessionalControl(item, 'Field of Study', r.field_of_study);
+  setProfessionalControl(item, 'Specialization', r.specialization);
+  setProfessionalControl(item, 'Start Date', r.start_date);
+  setProfessionalControl(item, 'End Date', r.end_date);
+  setProfessionalControl(item, 'Currently Studying', r.currently_studying === true ? 'yes' : r.currently_studying === false ? 'no' : null);
+  setProfessionalControl(item, 'Academic Achievement/Grade', r.grade);
+  setProfessionalControl(item, 'Description', r.description);
+  setProfessionalControl(item, 'Certificate URL', r.certificate_url);
+}
+
+function populateSkill(item, r) {
+  setProfessionalControl(item, 'Skill Name', r.skill_name);
+  setProfessionalControl(item, 'Proficiency Level', r.proficiency_level);
+  setProfessionalControl(item, 'Years of Experience', r.years_experience);
+  setProfessionalControl(item, 'Skill Provider/Institution', r.skill_provider);
+  setProfessionalControl(item, 'Start Date', r.start_date);
+  setProfessionalControl(item, 'End Date', r.end_date);
+  setProfessionalControl(item, 'Currently Attending', r.is_currently_attending === true ? 'yes' : r.is_currently_attending === false ? 'no' : null);
+  setProfessionalControl(item, 'Field of Skill', r.skill_field);
+  setProfessionalControl(item, 'Certificate URL', r.certificate_url);
+  setProfessionalControl(item, 'Description', r.metadata?.description);
+}
+
+function populatePublication(item, r) {
+  setProfessionalControl(item, 'Publication Title', r.title);
+  setProfessionalControl(item, 'Publication Type', r.publication_type);
+  setProfessionalControl(item, 'Publication Name', r.publisher);
+  setProfessionalControl(item, 'Publication Date', r.publication_date);
+  setProfessionalControl(item, 'Publication Identifier', r.metadata?.identifier);
+  setProfessionalControl(item, 'Publication Description', r.description);
+  setProfessionalControl(item, 'Publication URL', r.publication_url);
+  setProfessionalControl(item, 'Additional Details', r.metadata?.additional_details);
+}
+
+function populateAchievement(item, r) {
+  setProfessionalControl(item, 'Achievement Category', r.category);
+  setProfessionalControl(item, 'Achievement Title', r.title);
+  setProfessionalControl(item, 'Achievement Subtitle', r.subtitle);
+  setProfessionalControl(item, 'Issuer', r.issuer);
+  setProfessionalControl(item, 'Description', r.description);
+  setProfessionalControl(item, 'Achievement Date', r.achievement_date);
+  setProfessionalControl(item, 'Achievement Level', r.achievement_level);
+  setProfessionalControl(item, 'Publication URL', r.evidence_url);
+  setProfessionalControl(item, 'City', r.city);
+  setProfessionalControl(item, 'Country Code', r.country_code);
+}
+
+function populateAffiliation(item, r) {
+  setProfessionalControl(item, 'Identification Type', r.identifier_type);
+  setProfessionalControl(item, 'Identification Number', r.identifier_value);
+  setProfessionalControl(item, 'Status', r.status);
+  setProfessionalControl(item, 'Issuing Authority', r.issuing_authority);
+  setProfessionalControl(item, 'Issued At', r.issued_at);
+  setProfessionalControl(item, 'Expires At', r.expires_at);
+}
+
+async function loadProfessionalSections() {
+  const sections = [
+    { section: 'employment', listId: 'employmentList', addFunction: addEmployment, populate: populateEmployment },
+    { section: 'education', listId: 'educationList', addFunction: addEducation, populate: populateEducation },
+    { section: 'skills', listId: 'skillsList', addFunction: addSkill, populate: populateSkill },
+    { section: 'publications', listId: 'publicationsList', addFunction: addPublication, populate: populatePublication },
+    { section: 'achievements', listId: 'achievementsList', addFunction: addAchievement, populate: populateAchievement },
+    { section: 'identifiers', listId: 'affiliationsList', addFunction: addAffiliation, populate: populateAffiliation }
+  ];
+  for (const config of sections) {
+    await loadProfessionalSection(config.section, config.listId, config.addFunction, config.populate);
+  }
+}
+
+async function saveProfessionalSections() {
+  await persistProfessionalSection('employment', 'employmentList', buildEmploymentPayload);
+  await persistProfessionalSection('education', 'educationList', buildEducationPayload);
+  await persistProfessionalSection('skills', 'skillsList', buildSkillPayload);
+  await persistProfessionalSection('publications', 'publicationsList', buildPublicationPayload);
+  await persistProfessionalSection('achievements', 'achievementsList', buildAchievementPayload);
+  await persistProfessionalSection('identifiers', 'affiliationsList', buildAffiliationPayload);
+}
+
+// ─── CORE PROFILE ───────────────────────────────────────────────────────
+function buildProfileData() {
+  function val(id) {
+    const el = document.getElementById(id);
+    if (!el) return undefined;
+    const v = el.value.trim();
+    return v === '' ? null : v;
+  }
+
+  const firstName = val('firstName');
+  const middleName = val('middleName');
+  const lastName = val('lastName');
+  const fullName = [firstName, middleName, lastName].filter(Boolean).join(' ') || null;
+
+  const data = {
+    first_legal_name: firstName,
+    middle_legal_name: middleName,
+    last_legal_name: lastName,
+    legal_full_name: fullName,
+    title: val('title'),
+    gender: val('gender'),
+    date_of_birth: val('dateOfBirth'),
+    display_name: val('displayName'),
+    artistic_slug: val('artisticSlug'),
+    biography: val('biography'),
+    physical_address_line1: val('physicalAddress1'),
+    physical_address_line2: val('physicalAddress2'),
+    postal_address_line1: val('postalAddress1'),
+    postal_address_line2: val('postalAddress2'),
+    city_of_residence: val('city'),
+    province_of_residence: val('province'),
+    country_of_residence: val('countryOfResidence'),
+    city_of_birth: val('cityCode'),
+    province_of_birth: val('provinceCode'),
+    nationality: val('countryCode'),
+    secondary_email: val('secondaryEmail'),
+    primary_phone: val('primaryPhone'),
+    secondary_phone: val('secondaryPhone')
+  };
+
+  // user_type_id is NOT NULL in the database - only send it when a real
+  // selection has been made; never send null/empty for this field.
+  const userTypeId = document.getElementById('userType')?.value;
+  if (userTypeId) {
+    data.user_type_id = userTypeId;
+  }
+
+  return data;
+}
+
+async function saveCoreProfile(profileData) {
+  return profileCompletionApiFetch('/api/profile/me', {
+    method: 'PATCH',
+    body: JSON.stringify(profileData)
+  });
+}
+
+async function loadExistingProfile() {
+  try {
+    await loadUserTypeReference();
+
+    const profile = await profileCompletionApiFetch('/api/profile/me');
+
+    if (profile.exists === false) {
+      return null;
     }
 
-    // ─── HELPERS ────────────────────────────────────────────────────────────
+    setProfileField('firstName', profile.first_legal_name);
+    setProfileField('middleName', profile.middle_legal_name);
+    setProfileField('lastName', profile.last_legal_name);
+    setProfileField('title', profile.title);
+    setProfileField('gender', profile.gender);
+    setProfileField('dateOfBirth', profile.date_of_birth);
+    setProfileField('displayName', profile.display_name);
+    setProfileField('artisticSlug', profile.artistic_slug);
+    setProfileField('biography', profile.biography);
+    setProfileField('physicalAddress1', profile.physical_address_line1);
+    setProfileField('physicalAddress2', profile.physical_address_line2);
+    setProfileField('postalAddress1', profile.postal_address_line1);
+    setProfileField('postalAddress2', profile.postal_address_line2);
+    setProfileField('city', profile.city_of_residence);
+    setProfileField('province', profile.province_of_residence);
+    setProfileField('countryOfResidence', profile.country_of_residence);
+    setProfileField('cityCode', profile.city_of_birth);
+    setProfileField('provinceCode', profile.province_of_birth);
+    setProfileField('countryCode', profile.nationality);
+    setProfileField('secondaryEmail', profile.secondary_email);
+    setProfileField('primaryPhone', profile.primary_phone);
+    setProfileField('secondaryPhone', profile.secondary_phone);
+
+    if (profile.user_type_id) {
+      const select = document.getElementById('userType');
+      const exists = Array.from(select.options).some(o => o.value === profile.user_type_id);
+      if (exists) {
+        select.value = profile.user_type_id;
+      } else {
+        console.warn('[Profile Completion] Stored user_type_id not found in active reference data:', profile.user_type_id);
+      }
+    }
+
+    try {
+      await loadUserRoles();
+    } catch (e) {
+      console.error('[Profile Completion] Failed to load roles:', e);
+    }
+
+    try {
+      await loadProfessionalSections();
+    } catch (e) {
+      console.error('[Profile Completion] Failed to load professional sections:', e);
+    }
+
+    updateFullName();
+    updateSummary();
+
+    return profile;
+  } catch (error) {
+    console.error('[Profile Completion] Failed to load profile:', error);
+    showMsg(error.message || 'Unable to load your profile. Please refresh and try again.', 'error');
+    return null;
+  }
+}
+
+// ─── COMPLETE PROFILE ─────────────────────────────────────────────────
+function completeProfile() {
+  if (_completingProfile) return;
+  _completingProfile = true;
+  setBusy('completeBtn', true);
+
+  (async () => {
+    try {
+      const profileData = buildProfileData();
+      await saveCoreProfile(profileData);
+
+      try {
+        await saveProfessionalSections();
+      } catch (professionalError) {
+        console.error('[Profile Completion] Professional sections could not be saved:', professionalError);
+        showMsg('Core profile saved, but some professional records could not be saved. Please try again.', 'error');
+        setBusy('completeBtn', false);
+        _completingProfile = false;
+        return;
+      }
+
+      try {
+        await saveUserRoles();
+      } catch (rolesError) {
+        console.error('[Profile Completion] Roles could not be saved:', rolesError);
+        showMsg('Profile and professional records saved, but platform roles could not be saved. Please try again.', 'error');
+        setBusy('completeBtn', false);
+        _completingProfile = false;
+        return;
+      }
+
+      try {
+        await saveCoreProfile({ onboarding_completed: true, onboarding_step: 5 });
+      } catch (onboardingError) {
+        console.error('[Profile Completion] Onboarding status could not be updated:', onboardingError);
+      }
+
+      showMsg('Your profile has been saved successfully.', 'success');
+      setBusy('completeBtn', false);
+
+      setTimeout(() => {
+        window.location.href = '/profile.html';
+      }, 1200);
+
+    } catch (error) {
+      console.error('[Profile Completion] Save failed:', error);
+      showMsg(error.message || 'Unable to save your profile. Please try again.', 'error');
+      setBusy('completeBtn', false);
+      _completingProfile = false;
+    }
+  })();
+}
+
+// ─── HELPERS ────────────────────────────────────────────────────────────
     function calculateCompletion() {
       let filled = 0;
       const fields = [
@@ -1054,6 +1579,8 @@
     // ─── INIT ────────────────────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('progressFill').style.width = '0%';
+
+      loadExistingProfile();
       
       // Drag and drop
       document.querySelectorAll('.photo-upload-box').forEach(box => {
@@ -1086,9 +1613,6 @@
           updateSlug();
         }
       });
-
-      // Enter key on role input
-      document.getElementById('roleInput').addEventListener('keydown', handleRoleInput);
 
       // Enter key on social handle
       document.getElementById('socialHandle').addEventListener('keydown', (e) => {

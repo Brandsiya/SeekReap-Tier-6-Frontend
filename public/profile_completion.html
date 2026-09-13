@@ -148,8 +148,6 @@ DOCTYPE html>
               <option value="Hon">Hon</option>
               <option value="Sir">Sir</option>
               <option value="Dame">Dame</option>
-              <option value="Lord">Lord</option>
-              <option value="Lady">Lady</option>
               <option value="Mx">Mx</option>
             </select>
             <i class="fas fa-chevron-down select-arrow"></i>
@@ -204,22 +202,30 @@ DOCTYPE html>
           <i class="fas fa-users field-icon"></i>
           <select id="userType">
             <option value="">Select user type</option>
-            <option value="Creator">Creator</option>
-            <option value="Viewer">Viewer</option>
-            <option value="Delegate">Delegate</option>
-            <option value="Organization">Organization</option>
           </select>
           <i class="fas fa-chevron-down select-arrow"></i>
         </div>
       </div>
 
       <div class="input-group">
-        <label>User Roles <span class="optional">(Optional)</span></label>
+        <label>Platform Roles <span class="optional">(Optional)</span></label>
         <div class="tags-container" id="rolesContainer">
           <i class="fas fa-user-tag field-icon"></i>
           <div id="rolesTagsList" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"></div>
           <div class="tag-input-wrapper">
-            <input type="text" id="roleInput" placeholder="e.g. Musician" onkeydown="handleRoleInput(event)">
+            <select id="roleInput">
+              <option value="">Select a platform role</option>
+              <option value="creator">Creator</option>
+              <option value="delegate">Delegate</option>
+              <option value="organization">Organization</option>
+              <option value="member">Member</option>
+              <option value="investor">Investor</option>
+              <option value="collector">Collector</option>
+              <option value="buyer">Buyer</option>
+              <option value="supporter">Supporter</option>
+              <option value="publisher">Publisher</option>
+              <option value="distributor">Distributor</option>
+            </select>
           </div>
         </div>
         <div class="field-actions">
