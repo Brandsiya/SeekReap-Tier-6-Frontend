@@ -220,17 +220,16 @@
                     <div class="profile-header-info">
                         <div class="display-name" id="profileDisplayName">
                             NovaKai
-                            <span class="pronouns-roles-line">
-                                <span class="pronouns" id="profilePronouns">He/Him</span>
-                                <span class="inline-separator">•</span>
-                                <span class="inline-roles" id="profileRolesText">Musician • Photographer • Videographer</span>
-                            </span>
+                        </div>
+                        <div class="pronouns-roles-line">
+                            <span class="pronouns" id="profilePronouns">He/Him</span>
+                            <span class="inline-separator">•</span>
+                            <span class="inline-roles" id="profileRolesText">Musician • Photographer • Videographer</span>
                         </div>
                         <div class="artist-meta-line">
                             <span class="artist-name" id="profileArtisticName">NovaKai</span>
                             <span class="artist-slug">@novakai</span>
-                            <span class="meta-separator">•</span>
-                            <span class="seekreap-id-inline" id="profileSeekReapID">SR-2026-MR9KZW0B</span>
+                            <span class="seekreap-id-inline" id="profileSeekReapID" hidden>SR-2026-MR9KZW0B</span>
                         </div>
                         <div class="profile-badges" id="profileBadges">
                             <span class="badge-pill badge-verified" id="verifyBadge"><i class="fas fa-check-circle"></i> Verified</span>
@@ -249,53 +248,56 @@
                     <button class="stat-clickable-pill" onclick="showToast('Profile Views: 23MK', 'info')"><i class="fas fa-eye"></i> <strong>23MK</strong> views</button>
                     <span class="stat-dot-separator">•</span>
                     <button class="stat-clickable-pill" onclick="showToast('Shares: 14K', 'info')"><i class="fas fa-share-alt"></i> <strong>14K</strong> shares</button>
-                    <span class="stat-dot-separator">•</span>
+                    </div>
 
-                    <div class="request-btn-wrapper" style="display:inline-block;">
-                        <button class="btn btn-sm btn-primary request-btn" onclick="toggleRequestDropdown(event)">
-                            <i class="fas fa-paper-plane"></i> Request
-                            <i class="fas fa-chevron-down" style="font-size:10px;margin-left:4px;"></i>
-                        </button>
-                        <div class="request-dropdown-menu" id="requestDropdownMenu">
-                            <button class="request-dropdown-item" onclick="handleRequestClick('Book Creator')"><i class="fas fa-calendar-plus"></i> Book Creator</button>
-                            <button class="request-dropdown-item" onclick="handleRequestClick('Endorse Creator')"><i class="fas fa-thumbs-up"></i> Endorse Creator</button>
-                            <button class="request-dropdown-item" onclick="handleRequestClick('Request License')"><i class="fas fa-file-contract"></i> Request License</button>
-                            <button class="request-dropdown-item" onclick="handleRequestClick('Request Collaboration')"><i class="fas fa-handshake"></i> Request Collaboration</button>
-                            <button class="request-dropdown-item" onclick="handleRequestClick('Request Interview')"><i class="fas fa-microphone"></i> Request Interview</button>
-                            <button class="request-dropdown-item" onclick="handleRequestClick('Request Feature')"><i class="fas fa-star"></i> Request Feature</button>
-                            <button class="request-dropdown-item" onclick="handleRequestClick('Request Creator Service')"><i class="fas fa-concierge-bell"></i> Request Creator Service</button>
-                            <button class="request-dropdown-item" onclick="handleRequestClick('Hire Creator')"><i class="fas fa-user-plus"></i> Hire Creator</button>
-                            <button class="request-dropdown-item" onclick="window.location.href='/certificate_verify.html'"><i class="fas fa-certificate"></i> Request Certificate Verification Link</button>
+                    <div class="profile-action-buttons">
+                        <div class="request-btn-wrapper">
+                            <button class="btn btn-sm btn-primary request-btn" onclick="toggleRequestDropdown(event)">
+                                <i class="fas fa-paper-plane"></i> Request
+                                <i class="fas fa-chevron-down" style="font-size:10px;margin-left:4px;"></i>
+                            </button>
+                            <div class="request-dropdown-menu" id="requestDropdownMenu">
+                                <button class="request-dropdown-item" onclick="handleRequestClick('Book Creator')"><i class="fas fa-calendar-plus"></i> Book Creator</button>
+                                <button class="request-dropdown-item" onclick="handleRequestClick('Endorse Creator')"><i class="fas fa-thumbs-up"></i> Endorse Creator</button>
+                                <button class="request-dropdown-item" onclick="handleRequestClick('Request License')"><i class="fas fa-file-contract"></i> Request License</button>
+                                <button class="request-dropdown-item" onclick="handleRequestClick('Request Collaboration')"><i class="fas fa-handshake"></i> Request Collaboration</button>
+                                <button class="request-dropdown-item" onclick="handleRequestClick('Request Interview')"><i class="fas fa-microphone"></i> Request Interview</button>
+                                <button class="request-dropdown-item" onclick="handleRequestClick('Request Feature')"><i class="fas fa-star"></i> Request Feature</button>
+                                <button class="request-dropdown-item" onclick="handleRequestClick('Request Creator Service')"><i class="fas fa-concierge-bell"></i> Request Creator Service</button>
+                                <button class="request-dropdown-item" onclick="handleRequestClick('Hire Creator')"><i class="fas fa-user-plus"></i> Hire Creator</button>
+                                <button class="request-dropdown-item" onclick="window.location.href='/certificate_verify.html'"><i class="fas fa-certificate"></i> Request Certificate Verification Link</button>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="appreciate-dropdown-wrapper" style="display:inline-block;">
-                        <button class="btn btn-secondary" id="appreciateBtn" onclick="toggleAppreciateDropdown(event)">
-                            <i class="fas fa-heart" id="appreciateBtnIcon"></i>
-                            <span id="appreciateBtnText">Appreciate</span>
+                        <div class="appreciate-dropdown-wrapper">
+                            <button class="btn btn-secondary" id="appreciateBtn" onclick="toggleAppreciateDropdown(event)">
+                                <i class="fas fa-heart" id="appreciateBtnIcon"></i>
+                                <span id="appreciateBtnText">Appreciate</span>
+                                <i class="fas fa-chevron-down" style="font-size:10px;margin-left:4px;"></i>
+                            </button>
+                            <div class="appreciate-dropdown-menu" id="appreciateDropdownMenu"></div>
+                        </div>
+
+                        <button class="btn btn-primary" id="trustBtn" onclick="handleTrustClick()"><i class="fas fa-shield-alt"></i> <span id="trustBtnText">Trust</span></button>
+
+                        <button class="section-tab view-portfolio-btn" onclick="togglePortfolioDropdown(event)">
+                            <i class="fas fa-folder-open"></i> View portfolios
                             <i class="fas fa-chevron-down" style="font-size:10px;margin-left:4px;"></i>
                         </button>
-                        <div class="appreciate-dropdown-menu" id="appreciateDropdownMenu"></div>
-                    </div>
 
-                    <button class="btn btn-primary" id="trustBtn" onclick="handleTrustClick()"><i class="fas fa-shield-alt"></i> <span id="trustBtnText">Trust</span></button>
-
-                    <button class="section-tab view-portfolio-btn" onclick="togglePortfolioDropdown(event)" style="margin-left:4px;">
-                        <i class="fas fa-folder-open"></i> View portfolios
-                        <i class="fas fa-chevron-down" style="font-size:10px;margin-left:4px;"></i>
-                    </button>
-                    <div class="portfolio-dropdown-wrapper" style="display:inline-block; position:relative;">
-                        <div class="portfolio-dropdown-menu" id="portfolioDropdownMenu">
-                            <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Public Portfolio')"><i class="fas fa-globe"></i> Public Portfolio</button>
-                            <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Featured Portfolio')"><i class="fas fa-star"></i> Featured Portfolio</button>
-                            <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Collections')"><i class="fas fa-layer-group"></i> Collections</button>
-                            <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Collaborative Works')"><i class="fas fa-users"></i> Collaborative Works</button>
-                            <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Certified Works')"><i class="fas fa-certificate"></i> Certified Works</button>
-                            <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Latest Works')"><i class="fas fa-clock"></i> Latest Works</button>
-                            <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Works for Licensing')"><i class="fas fa-file-contract"></i> Works for Licensing</button>
-                            <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Works for Sale')"><i class="fas fa-tag"></i> Works for Sale</button>
-                            <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Popular Works')"><i class="fas fa-fire"></i> Popular Works</button>
-                            <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Commission Portfolio')"><i class="fas fa-paint-brush"></i> Commission Portfolio</button>
+                        <div class="portfolio-dropdown-wrapper">
+                            <div class="portfolio-dropdown-menu" id="portfolioDropdownMenu">
+                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Public Portfolio')"><i class="fas fa-globe"></i> Public Portfolio</button>
+                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Featured Portfolio')"><i class="fas fa-star"></i> Featured Portfolio</button>
+                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Collections')"><i class="fas fa-layer-group"></i> Collections</button>
+                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Collaborative Works')"><i class="fas fa-users"></i> Collaborative Works</button>
+                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Certified Works')"><i class="fas fa-certificate"></i> Certified Works</button>
+                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Latest Works')"><i class="fas fa-clock"></i> Latest Works</button>
+                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Works for Licensing')"><i class="fas fa-file-contract"></i> Works for Licensing</button>
+                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Works for Sale')"><i class="fas fa-tag"></i> Works for Sale</button>
+                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Popular Works')"><i class="fas fa-fire"></i> Popular Works</button>
+                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Commission Portfolio')"><i class="fas fa-paint-brush"></i> Commission Portfolio</button>
+                            </div>
                         </div>
                     </div>
                 </div>
