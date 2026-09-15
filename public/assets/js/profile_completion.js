@@ -8,6 +8,9 @@
     let socialLinks = [];
     let itemCounter = 0;
   let _completingProfile = false;
+  let _existingProfile = null;
+  let profilePhotoRemoved = false;
+  let coverPhotoRemoved = false;
 
     // ─── NAVIGATION ──────────────────────────────────────────────────────────
     function goToStep(step) {
@@ -689,10 +692,12 @@
         if (type === 'cover') {
           coverDataURL = dataURL;
           uploadedFiles.cover = file;
+          coverPhotoRemoved = false;
           updatePhotoBox('coverUploadBox', dataURL, 'cover');
         } else {
           profileDataURL = dataURL;
           uploadedFiles.profile = file;
+          profilePhotoRemoved = false;
           updatePhotoBox('profileUploadBox', dataURL, 'profile');
         }
         showMsg(`${type === 'cover' ? 'Cover' : 'Profile'} photo uploaded successfully!`, 'success');
@@ -738,10 +743,12 @@
       if (type === 'cover') {
         coverDataURL = null;
         uploadedFiles.cover = null;
+        coverPhotoRemoved = true;
         resetPhotoBox('coverUploadBox');
       } else {
         profileDataURL = null;
         uploadedFiles.profile = null;
+        profilePhotoRemoved = true;
         resetPhotoBox('profileUploadBox');
       }
       showMsg(`${type === 'cover' ? 'Cover' : 'Profile'} photo removed.`, 'info');
@@ -1363,6 +1370,7 @@ function buildProfileData() {
     city_of_birth: val('cityCode'),
     province_of_birth: val('provinceCode'),
     nationality: val('countryCode'),
+    primary_email: val('primaryEmail'),
     secondary_email: val('secondaryEmail'),
     primary_phone: val('primaryPhone'),
     secondary_phone: val('secondaryPhone')
@@ -1395,6 +1403,8 @@ async function loadExistingProfile() {
       return null;
     }
 
+    _existingProfile = profile;
+
     setProfileField('firstName', profile.first_legal_name);
     setProfileField('middleName', profile.middle_legal_name);
     setProfileField('lastName', profile.last_legal_name);
@@ -1414,9 +1424,23 @@ async function loadExistingProfile() {
     setProfileField('cityCode', profile.city_of_birth);
     setProfileField('provinceCode', profile.province_of_birth);
     setProfileField('countryCode', profile.nationality);
+    setProfileField('primaryEmail', profile.primary_email);
     setProfileField('secondaryEmail', profile.secondary_email);
     setProfileField('primaryPhone', profile.primary_phone);
     setProfileField('secondaryPhone', profile.secondary_phone);
+
+    profilePhotoRemoved = false;
+    coverPhotoRemoved = false;
+
+    if (profile.profile_photo_url) {
+      profileDataURL = profile.profile_photo_url;
+      updatePhotoBox('profileUploadBox', profile.profile_photo_url, 'profile');
+    }
+
+    if (profile.banner_photo_url) {
+      coverDataURL = profile.banner_photo_url;
+      updatePhotoBox('coverUploadBox', profile.banner_photo_url, 'cover');
+    }
 
     if (profile.user_type_id) {
       const select = document.getElementById('userType');
@@ -1452,15 +1476,146 @@ async function loadExistingProfile() {
 }
 
 // ─── COMPLETE PROFILE ─────────────────────────────────────────────────
+// ─── PROFILE MEDIA STORAGE ──────────────────────────────────────────────
+// Bucket: profile-media (public). Path convention: <user-id>/<type>.<ext>
+// Public URL via getPublicUrl(); rollback removes newly-uploaded objects if
+// the subsequent profile save fails.
+
+function getProfileMediaPathFromUrl(url) {
+  if (!url) return null;
+  const marker = '/public/profile-media/';
+  const idx = url.indexOf(marker);
+  if (idx === -1) return null;
+  return url.slice(idx + marker.length);
+}
+
+async function _getPcUserId() {
+  if (window.supabaseClient) {
+    try {
+      const { data: { session } } = await window.supabaseClient.auth.getSession();
+      return session?.user?.id || null;
+    } catch (e) {
+      console.error('[Auth]', e);
+    }
+  }
+  return null;
+}
+
+async function uploadProfileMedia(file, type) {
+  const userId = await _getPcUserId();
+  if (!userId) {
+    throw new Error('Your session has expired. Please sign in again.');
+  }
+
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  const path = `${userId}/${type}.${ext}`;
+
+  const { error: uploadError } = await window.supabaseClient
+    .storage
+    .from('profile-media')
+    .upload(path, file, { upsert: true, contentType: file.type });
+
+  if (uploadError) {
+    throw new Error(uploadError.message || 'Upload failed.');
+  }
+
+  const { data } = window.supabaseClient
+    .storage
+    .from('profile-media')
+    .getPublicUrl(path);
+
+  return { publicUrl: data.publicUrl, storagePath: path };
+}
+
+async function uploadSelectedProfileMedia() {
+  const uploaded = {};
+  const uploadedStoragePaths = [];
+
+  try {
+    if (uploadedFiles.profile) {
+      const result = await uploadProfileMedia(uploadedFiles.profile, 'profile');
+      uploaded.profile_photo_url = result.publicUrl;
+      uploadedStoragePaths.push(result.storagePath);
+    }
+
+    if (uploadedFiles.cover) {
+      const result = await uploadProfileMedia(uploadedFiles.cover, 'banner');
+      uploaded.banner_photo_url = result.publicUrl;
+      uploadedStoragePaths.push(result.storagePath);
+    }
+
+    uploaded.uploadedStoragePaths = uploadedStoragePaths;
+    return uploaded;
+
+  } catch (error) {
+    if (uploadedStoragePaths.length) {
+      await window.supabaseClient
+        .storage
+        .from('profile-media')
+        .remove(uploadedStoragePaths)
+        .catch((cleanupError) => {
+          console.error('[Profile Media] Upload rollback failed:', cleanupError);
+        });
+    }
+    throw error;
+  }
+}
+
 function completeProfile() {
   if (_completingProfile) return;
   _completingProfile = true;
   setBusy('completeBtn', true);
 
   (async () => {
+    const previousProfileUrl = _existingProfile?.profile_photo_url || null;
+    const previousCoverUrl = _existingProfile?.banner_photo_url || null;
+    let uploadedStoragePaths = [];
+
     try {
+      const uploadedMedia = await uploadSelectedProfileMedia();
+      uploadedStoragePaths = uploadedMedia.uploadedStoragePaths || [];
+
       const profileData = buildProfileData();
-      await saveCoreProfile(profileData);
+      if (uploadedMedia.profile_photo_url) {
+        profileData.profile_photo_url = uploadedMedia.profile_photo_url;
+      } else if (profilePhotoRemoved) {
+        profileData.profile_photo_url = null;
+      }
+      if (uploadedMedia.banner_photo_url) {
+        profileData.banner_photo_url = uploadedMedia.banner_photo_url;
+      } else if (coverPhotoRemoved) {
+        profileData.banner_photo_url = null;
+      }
+
+      try {
+        await saveCoreProfile(profileData);
+      } catch (saveError) {
+        if (uploadedStoragePaths.length) {
+          await window.supabaseClient
+            .storage
+            .from('profile-media')
+            .remove(uploadedStoragePaths)
+            .catch((cleanupError) => {
+              console.error('[Profile Media] Database rollback cleanup failed:', cleanupError);
+            });
+        }
+        throw saveError;
+      }
+
+      const oldStoragePaths = [
+        uploadedFiles.profile ? getProfileMediaPathFromUrl(previousProfileUrl) : null,
+        uploadedFiles.cover ? getProfileMediaPathFromUrl(previousCoverUrl) : null
+      ].filter(Boolean).filter(path => !uploadedStoragePaths.includes(path));
+
+      if (oldStoragePaths.length) {
+        await window.supabaseClient
+          .storage
+          .from('profile-media')
+          .remove(oldStoragePaths)
+          .catch((cleanupError) => {
+            console.warn('[Profile Media] Previous media cleanup failed:', cleanupError);
+          });
+      }
 
       try {
         await saveProfessionalSections();
