@@ -18,8 +18,8 @@
     <a href="/dashboard.html" class="mobile-logo">Seek<span>Reap</span></a>
     <span class="plan-indicator">Free</span>
     <div class="search-container" id="searchContainerMobile">
-        <i class="fas fa-search search-icon-inline"></i>
         <input type="text" placeholder="Search..." id="headerSearchMobile">
+        <i class="fas fa-search search-icon-inline"></i>
     </div>
     <button class="topbar-icon-btn" onclick="window.location.href='/notifications.html'" aria-label="Notifications">
         <i class="fas fa-bell"></i>
@@ -112,8 +112,8 @@
     <div class="topbar">
         <div class="topbar-left">
             <div class="search-container" id="searchContainer">
-                <i class="fas fa-search search-icon-inline"></i>
                 <input type="text" placeholder="Search by creator or Portfolio name..." id="headerSearch">
+                <i class="fas fa-search search-icon-inline"></i>
                 <button class="search-close-btn" onclick="toggleSearch()" aria-label="Close search"><i class="fas fa-times"></i></button>
             </div>
         </div>
@@ -218,25 +218,30 @@
                 </div>
                 <div class="profile-header-content">
                     <div class="profile-header-info">
-                        <div class="display-name" id="profileDisplayName">
+    <div class="name-pronouns-line">
+        <div class="display-name" id="profileDisplayName">
                             NovaKai
                         </div>
-                        <div class="pronouns-roles-line">
+        <span class="inline-separator">•</span>
+        <div class="pronouns-roles-line">
                             <span class="pronouns" id="profilePronouns">He/Him</span>
                             <span class="inline-separator">•</span>
                             <span class="inline-roles" id="profileRolesText">Musician • Photographer • Videographer</span>
                         </div>
-                        <div class="artist-meta-line">
-                            <span class="artist-name" id="profileArtisticName">NovaKai</span>
-                            <span class="artist-slug">@novakai</span>
-                            <span class="seekreap-id-inline" id="profileSeekReapID" hidden>SR-2026-MR9KZW0B</span>
-                        </div>
-                        <div class="profile-badges" id="profileBadges">
+    </div>
+    <div class="artist-meta-line">
+        <div class="artist-name-slug-stack">
+            <span class="artist-name" id="profileArtisticName">NovaKai</span>
+            <span class="artist-slug">@novakai</span>
+        </div>
+        <div class="profile-badges" id="profileBadges">
                             <span class="badge-pill badge-verified" id="verifyBadge"><i class="fas fa-check-circle"></i> Verified</span>
                             <span class="badge-pill badge-creator" id="typeBadge"><i class="fas fa-user-astronaut"></i> Creator</span>
                             <span class="member-since" id="memberSinceBadge"><i class="far fa-calendar-alt"></i> Member since 2012</span>
                         </div>
-                    </div>
+        <span class="seekreap-id-inline" id="profileSeekReapID" hidden>SR-2026-MR9KZW0B</span>
+    </div>
+</div>
                 </div>
             </div>
             <div class="hero-metrics-actions-bar">
@@ -248,10 +253,16 @@
                     <button class="stat-clickable-pill" onclick="showToast('Profile Views: 23MK', 'info')"><i class="fas fa-eye"></i> <strong>23MK</strong> views</button>
                     <span class="stat-dot-separator">•</span>
                     <button class="stat-clickable-pill" onclick="showToast('Shares: 14K', 'info')"><i class="fas fa-share-alt"></i> <strong>14K</strong> shares</button>
-                    </div>
+                    
+    <span class="stat-dot-separator">•</span>
+    <button class="stat-clickable-pill" onclick="showToast('Appreciations: 1,204', 'info')"><i class="fas fa-heart"></i> <strong>1,204</strong> appreciations</button>
+</div>
 
                     <div class="profile-action-buttons">
-                        <div class="request-btn-wrapper">
+    <button class="btn btn-primary" id="trustBtn" onclick="handleTrustClick()"><i class="fas fa-shield-alt"></i> <span id="trustBtnText">Trust</span></button>
+
+    <div class="request-appreciate-group">
+        <div class="request-btn-wrapper">
                             <button class="btn btn-sm btn-primary request-btn" onclick="toggleRequestDropdown(event)">
                                 <i class="fas fa-paper-plane"></i> Request
                                 <i class="fas fa-chevron-down" style="font-size:10px;margin-left:4px;"></i>
@@ -269,7 +280,7 @@
                             </div>
                         </div>
 
-                        <div class="appreciate-dropdown-wrapper">
+        <div class="appreciate-dropdown-wrapper">
                             <button class="btn btn-secondary" id="appreciateBtn" onclick="toggleAppreciateDropdown(event)">
                                 <i class="fas fa-heart" id="appreciateBtnIcon"></i>
                                 <span id="appreciateBtnText">Appreciate</span>
@@ -277,29 +288,8 @@
                             </button>
                             <div class="appreciate-dropdown-menu" id="appreciateDropdownMenu"></div>
                         </div>
-
-                        <button class="btn btn-primary" id="trustBtn" onclick="handleTrustClick()"><i class="fas fa-shield-alt"></i> <span id="trustBtnText">Trust</span></button>
-
-                        <button class="section-tab view-portfolio-btn" onclick="togglePortfolioDropdown(event)">
-                            <i class="fas fa-folder-open"></i> View portfolios
-                            <i class="fas fa-chevron-down" style="font-size:10px;margin-left:4px;"></i>
-                        </button>
-
-                        <div class="portfolio-dropdown-wrapper">
-                            <div class="portfolio-dropdown-menu" id="portfolioDropdownMenu">
-                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Public Portfolio')"><i class="fas fa-globe"></i> Public Portfolio</button>
-                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Featured Portfolio')"><i class="fas fa-star"></i> Featured Portfolio</button>
-                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Collections')"><i class="fas fa-layer-group"></i> Collections</button>
-                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Collaborative Works')"><i class="fas fa-users"></i> Collaborative Works</button>
-                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Certified Works')"><i class="fas fa-certificate"></i> Certified Works</button>
-                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Latest Works')"><i class="fas fa-clock"></i> Latest Works</button>
-                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Works for Licensing')"><i class="fas fa-file-contract"></i> Works for Licensing</button>
-                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Works for Sale')"><i class="fas fa-tag"></i> Works for Sale</button>
-                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Popular Works')"><i class="fas fa-fire"></i> Popular Works</button>
-                                <button class="portfolio-dropdown-item" onclick="handlePortfolioClick('Commission Portfolio')"><i class="fas fa-paint-brush"></i> Commission Portfolio</button>
-                            </div>
-                        </div>
-                    </div>
+    </div>
+</div>
                 </div>
             </div>
         </div>
@@ -319,7 +309,7 @@
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
                     <h3 style="font-size:16px;font-weight:700;color:var(--text);">
                         <i class="fas fa-folder-open" style="color:var(--gold);"></i>
-                        <span id="portfolioDisplayTitle">Public Portfolio</span>
+                        <span id="portfolioDisplayTitle">Portfolios</span>
                     </h3>
                     <div class="portfolio-filter-wrapper">
                         <span style="font-size:12px;color:var(--text-muted);">
@@ -347,6 +337,7 @@
         <div class="profile-layout-grid">
             <div class="main-lane">
                 <div class="profile-card section-content active" id="section-biography">
+    <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-align-left" style="color:var(--text-dim);"></i> Biography</h3></div>
                     <div class="profile-card-body">
                         <div class="bio-location-line"><i class="fas fa-map-pin" style="color:var(--primary);margin-right:8px;"></i> Lives in <span id="profileLocationText">South Africa • Western Cape • Cape Town</span></div>
@@ -355,6 +346,7 @@
                 </div>
 
                 <div class="profile-card section-content" id="section-identity-record">
+    <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-id-card" style="color:var(--text-dim);"></i> Identity Record</h3></div>
                     <div class="profile-card-body" id="identityContainer">
                         <div class="identity-category">
@@ -386,6 +378,7 @@
                 </div>
 
                 <div class="profile-card section-content" id="section-accomplishments">
+    <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-trophy" style="color:var(--gold);"></i> Career Accomplishments</h3></div>
                     <div class="profile-card-body">
                         <div class="achievements-grid" id="achievementsList">
@@ -399,6 +392,7 @@
                 </div>
 
                 <div class="profile-card section-content" id="section-professional-history">
+    <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-briefcase" style="color:var(--text-dim);"></i> Professional History</h3></div>
                     <div class="profile-card-body" id="employmentContainer">
                         <div class="employment-list">
@@ -412,6 +406,7 @@
 
             <div class="side-lane">
                 <div class="profile-card section-content" id="section-passports">
+    <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-fingerprint" style="color:var(--primary);"></i> Identity Passports</h3></div>
                     <div class="profile-card-body" id="identifiersContainer">
                         <div class="identifiers-layout">
@@ -426,6 +421,7 @@
                 </div>
 
                 <div class="profile-card section-content" id="section-roles">
+    <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-user-tag" style="color:var(--primary);"></i> Artistic Footprint & Roles</h3></div>
                     <div class="profile-card-body">
                         <div class="roles-ecosystem" id="rolesContainer">
@@ -436,6 +432,7 @@
                 </div>
 
                 <div class="profile-card section-content" id="section-networks">
+    <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-share-alt" style="color:var(--info);"></i> Linked Networks</h3></div>
                     <div class="profile-card-body" id="networksContainer">
                         <div class="social-links">
