@@ -214,6 +214,7 @@ document.addEventListener('click', function(e) {
 function toggleSectionTab(btn, sectionId) {
     var section = document.getElementById('section-' + sectionId);
     var isActive = btn.classList.contains('active');
+    var zone = document.getElementById('contentOverlayZone');
 
     var allTabs = document.querySelectorAll('.section-tab:not(.view-portfolio-btn)');
     var allSections = document.querySelectorAll('.section-content');
@@ -221,6 +222,7 @@ function toggleSectionTab(btn, sectionId) {
     if (isActive) {
         btn.classList.remove('active');
         section.classList.remove('active');
+        if (zone) { zone.classList.remove('has-active-card'); }
         return;
     }
 
@@ -229,6 +231,7 @@ function toggleSectionTab(btn, sectionId) {
 
     btn.classList.add('active');
     section.classList.add('active');
+    if (zone) { zone.classList.add('has-active-card'); }
 }
 
 // ─── PORTFOLIO ────────────────────────────────────────────────────────────
@@ -239,7 +242,7 @@ function togglePortfolioDropdown(event) {
 }
 
 var portfolioItems = {
-    'Public Portfolio': [
+    'Portfolios': [
         { id: 'p1', title: 'Studio Console Geometry', image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=400&auto=format&fit=crop', category: 'music' },
         { id: 'p2', title: 'Stage Flare Exposure', image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=400&auto=format&fit=crop', category: 'photo' },
         { id: 'p3', title: 'Vocal Isolation Profile', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=400&auto=format&fit=crop', category: 'music' },
@@ -299,7 +302,7 @@ var portfolioItems = {
     ]
 };
 
-var currentPortfolio = 'Public Portfolio';
+var currentPortfolio = 'Portfolios';
 var currentFilter = 'all';
 
 // ─── COLLABORATORS DATA ──────────────────────────────────────────────────
@@ -318,7 +321,7 @@ var collaborators = [
 
 // ─── RENDER PORTFOLIO ──────────────────────────────────────────────────────
 function renderPortfolioDisplay(portfolioName, filter) {
-    var items = portfolioItems[portfolioName] || portfolioItems['Public Portfolio'];
+    var items = portfolioItems[portfolioName] || portfolioItems['Portfolios'];
     var grid = document.getElementById('portfolioGridDisplay');
     var title = document.getElementById('portfolioDisplayTitle');
     var count = document.getElementById('portfolioItemCount');
@@ -453,7 +456,7 @@ function handleAppreciateItemClick(action) {
             btn.className = 'btn btn-danger';
             icon.className = 'fas fa-frown';
             btn.style.opacity = '1';
-            showToast('You now Depreciate this creator', 'info');
+            showToast('You now Appreciate this creator', 'success');
             updateAppreciateDropdown();
         }, 1500);
     } else {
@@ -470,7 +473,7 @@ function handleAppreciateItemClick(action) {
             btn.className = 'btn btn-secondary';
             icon.className = 'fas fa-heart';
             btn.style.opacity = '1';
-            showToast('You now Appreciate this creator', 'success');
+            showToast('You now Depreciate this creator', 'info');
             updateAppreciateDropdown();
         }, 1500);
     }
@@ -499,7 +502,7 @@ function handleTrustClick() {
             btn.className = 'btn btn-danger';
             icon.className = 'fas fa-times';
             btn.style.opacity = '1';
-            showToast('You now Distrust this creator', 'info');
+            showToast('You now Trust this creator', 'success');
         }, 1500);
     } else {
         text.textContent = 'Distrusted!';
@@ -513,7 +516,7 @@ function handleTrustClick() {
             btn.className = 'btn btn-primary';
             icon.className = 'fas fa-shield-alt';
             btn.style.opacity = '1';
-            showToast('You now Trust this creator', 'success');
+            showToast('You now Distrust this creator', 'info');
         }, 1500);
     }
 }
@@ -568,7 +571,7 @@ function showToast(msg, type) {
 
 // ─── INIT ──────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-    renderPortfolioDisplay('Public Portfolio', 'all');
+    renderPortfolioDisplay('Portfolios', 'all');
     renderCollaborators();
     updateAppreciateDropdown();
 

@@ -263,7 +263,7 @@
 
     <div class="request-appreciate-group">
         <div class="request-btn-wrapper">
-                            <button class="btn btn-sm btn-primary request-btn" onclick="toggleRequestDropdown(event)">
+                            <button class="btn btn-primary request-btn" onclick="toggleRequestDropdown(event)">
                                 <i class="fas fa-paper-plane"></i> Request
                                 <i class="fas fa-chevron-down" style="font-size:10px;margin-left:4px;"></i>
                             </button>
@@ -295,7 +295,7 @@
         </div>
 
         <div class="section-nav-tabs">
-            <button class="section-tab active" data-section="biography" onclick="toggleSectionTab(this, 'biography')"><i class="fas fa-align-left"></i> Biography</button>
+            <button class="section-tab" data-section="biography" onclick="toggleSectionTab(this, 'biography')"><i class="fas fa-align-left"></i> Biography</button>
             <button class="section-tab" data-section="identity-record" onclick="toggleSectionTab(this, 'identity-record')"><i class="fas fa-id-card"></i> Identity Record</button>
             <button class="section-tab" data-section="accomplishments" onclick="toggleSectionTab(this, 'accomplishments')"><i class="fas fa-trophy"></i> Accomplishments</button>
             <button class="section-tab" data-section="professional-history" onclick="toggleSectionTab(this, 'professional-history')"><i class="fas fa-briefcase"></i> History</button>
@@ -304,7 +304,8 @@
             <button class="section-tab" data-section="networks" onclick="toggleSectionTab(this, 'networks')"><i class="fas fa-share-alt"></i> Networks</button>
         </div>
 
-        <div class="portfolio-display-section" id="portfolioDisplaySection">
+        <div class="content-overlay-zone" id="contentOverlayZone">
+<div class="portfolio-display-section" id="portfolioDisplaySection">
             <div>
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
                     <h3 style="font-size:16px;font-weight:700;color:var(--text);">
@@ -336,7 +337,7 @@
 
         <div class="profile-layout-grid">
             <div class="main-lane">
-                <div class="profile-card section-content active" id="section-biography">
+                <div class="profile-card section-content" id="section-biography">
     <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-align-left" style="color:var(--text-dim);"></i> Biography</h3></div>
                     <div class="profile-card-body">
@@ -447,6 +448,7 @@
                 </div>
             </div>
         </div>
+</div>
     </div>
 </div>
 
