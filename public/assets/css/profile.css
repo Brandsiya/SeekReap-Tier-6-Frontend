@@ -224,6 +224,7 @@ body {
     display: flex; align-items: center; background: var(--bg3);
     border: 1px solid var(--border); border-radius: 30px; padding: 0 16px;
     transition: var(--transition); width: 100%; max-width: 500px; flex: 1;
+    margin-right: 20px;
 }
 .search-container:focus-within {
     border-color: var(--primary); background: var(--bg2);
@@ -419,7 +420,7 @@ body {
 
 .section-nav-tabs {
     display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
-    margin-top: 24px; margin-bottom: 24px;
+    margin-top: 8px; margin-bottom: 24px;
     padding: 4px 0; border-bottom: 2px solid var(--border-light);
     align-items: center; position: relative; z-index: 5;
 }
@@ -460,8 +461,11 @@ body {
 .section-content { display: none !important; }
 .section-content.active { display: block !important; }
 
+.content-overlay-zone { position: relative; }
+.content-overlay-zone.has-active-card > .portfolio-display-section { display: none; }
+
 .profile-layout-grid {
-    margin-top: 24px; display: grid; position: relative; min-height: 320px;
+    margin-top: 24px; display: grid;
     grid-template-columns: 1.1fr 1.1fr; gap: 24px; align-items: start;
 }
 .main-lane { display: flex; flex-direction: column; gap: 24px; }
@@ -896,7 +900,7 @@ body {
 .appreciate-dropdown-item:hover i,
 .request-dropdown-item:hover i { color: var(--primary); }
 
-.request-btn-wrapper { display: inline-flex; align-items: center; }
+.request-btn-wrapper { position: relative; display: inline-flex; align-items: center; }
 
 .btn:focus-visible,
 .topbar-icon-btn:focus-visible,
@@ -928,14 +932,15 @@ body {
 }
 @media (max-width: 768px) {
     .profile-container { padding: 16px; }
-    .cover-photo-container { height: 220px; }
-    .hero-details-container { padding: 0 20px 12px 20px; gap: 16px; flex-direction: row; align-items: flex-end; }
-    .profile-avatar-large { width: 120px; height: 120px; margin-top: -60px; border-width: 4px; }
     .profile-header-info .display-name { font-size: 24px; }
     .profile-header-info .artist-name { font-size: 15px; }
     .hero-metrics-actions-bar { padding: 12px 20px; flex-direction: column; align-items: flex-start; gap: 12px; }
-    .profile-stats-line { font-size: 12px; width: 100%; }
+    .profile-stats-line { font-size: 12px; width: 100%; flex-direction: column; align-items: flex-start; justify-content: flex-start; }
     .profile-action-buttons { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+    .request-appreciate-group { display: contents; }
+    #trustBtn { order: 1; }
+    .appreciate-dropdown-wrapper { order: 2; }
+    .request-btn-wrapper { order: 3; flex-basis: 100%; }
     .btn { padding: 8px 14px; font-size: 12px; }
 
     .section-nav-tabs { gap: 4px; padding: 4px 0; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
@@ -976,9 +981,6 @@ body {
     .account-dropdown-menu { width: 240px; right: -40px; }
 }
 @media (max-width: 480px) {
-    .cover-photo-container { height: 150px; }
-    .hero-details-container { padding: 0 12px 8px 12px; gap: 12px; }
-    .profile-avatar-large { width: 80px; height: 80px; margin-top: -40px; border-width: 3px; }
     .profile-header-info .display-name { font-size: 18px; }
     .profile-header-info .artist-name { font-size: 13px; }
     .portfolio-grid-display { grid-template-columns: 1fr; }

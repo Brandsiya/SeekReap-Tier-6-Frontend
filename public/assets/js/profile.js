@@ -26,10 +26,7 @@ function switchAccount(index) {
     const account = accounts[index];
     if (!account) return;
 
-    const trigger = document.getElementById('accountTrigger');
-    trigger.innerHTML = `<img src="${account.avatar}" alt="${account.name}">`;
-
-    // Update the new header profile photo (desktop + mobile)
+    // Update the header profile photo (desktop + mobile)
     const desktopPhoto = document.getElementById('desktopHeaderProfilePhoto');
     const mobilePhoto = document.getElementById('mobileHeaderProfilePhoto');
     if (desktopPhoto) desktopPhoto.querySelector('img').src = account.avatar;

@@ -126,15 +126,11 @@
                 <i class="fas fa-share-alt"></i>
             </button>
 
-            <button class="header-profile-photo" id="desktopHeaderProfilePhoto" onclick="openImageViewer(this.querySelector('img').src, 'Profile Photo')" aria-label="Profile photo">
+            <div class="account-dropdown-wrapper">
+    <button class="header-profile-photo" id="desktopHeaderProfilePhoto" onclick="toggleAccountDropdown(event)" aria-label="Switch account">
                 <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="Profile">
             </button>
-
-            <div class="account-dropdown-wrapper">
-                <button class="account-trigger" onclick="toggleAccountDropdown(event)" id="accountTrigger">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="Account">
-                </button>
-                <div class="account-dropdown-menu" id="accountDropdownMenu">
+    <div class="account-dropdown-menu" id="accountDropdownMenu">
                     <button class="account-menu-item active" onclick="switchAccount(0)">
                         <div class="account-avatar"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="NovaKai"></div>
                         <div class="account-info">
@@ -173,7 +169,7 @@
                         </div>
                     </button>
                 </div>
-            </div>
+</div>
 
             <div class="more-dropdown-wrapper">
                 <button class="topbar-icon-btn more-btn" onclick="toggleMoreMenu(event)" aria-label="More options">
