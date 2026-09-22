@@ -8,9 +8,11 @@ let appreciationTimeout = null;
 let trustTimeout = null;
 
 // ─── ACCOUNT SWITCHER ──────────────────────────────────────────────────────
-function toggleAccountDropdown(event) {
+function toggleAccountDropdown(event, menuId) {
     if (event) event.stopPropagation();
-    const menu = document.getElementById('accountDropdownMenu');
+    menuId = menuId || 'accountDropdownMenu';
+    const menu = document.getElementById(menuId);
+    if (!menu) return;
     isAccountDropdownOpen = !isAccountDropdownOpen;
     menu.classList.toggle('open', isAccountDropdownOpen);
 }
@@ -45,7 +47,9 @@ function switchAccount(index) {
     document.getElementById('sideName').textContent = account.name;
     document.getElementById('sideAvatar').textContent = account.name.charAt(0);
 
-    document.getElementById('accountDropdownMenu').classList.remove('open');
+    document.querySelectorAll('.account-dropdown-menu').forEach(function(menu) {
+        menu.classList.remove('open');
+    });
     isAccountDropdownOpen = false;
 
     showToast(`Switched to ${account.name}`, 'success');
@@ -199,12 +203,13 @@ document.addEventListener('click', function(e) {
         isRequestDropdownOpen = false;
     }
 
-    var accountMenu = document.getElementById('accountDropdownMenu');
-    var accountWrapper = document.querySelector('.account-dropdown-wrapper');
-    if (accountWrapper && accountMenu && !accountWrapper.contains(e.target)) {
-        accountMenu.classList.remove('open');
-        isAccountDropdownOpen = false;
-    }
+    document.querySelectorAll('.account-dropdown-wrapper').forEach(function(wrapper) {
+        var menu = wrapper.querySelector('.account-dropdown-menu');
+        if (menu && !wrapper.contains(e.target)) {
+            menu.classList.remove('open');
+        }
+    });
+    isAccountDropdownOpen = false;
 });
 
 // ─── SECTION TABS ──────────────────────────────────────────────────────────
