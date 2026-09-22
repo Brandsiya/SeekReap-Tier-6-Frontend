@@ -21,6 +21,7 @@
         <input type="text" placeholder="Search..." id="headerSearchMobile">
         <i class="fas fa-search search-icon-inline"></i>
     </div>
+    <div class="header-icon-group">
     <button class="topbar-icon-btn" onclick="window.location.href='/notifications.html'" aria-label="Notifications">
         <i class="fas fa-bell"></i>
         <span class="badge-count">3</span>
@@ -58,6 +59,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <!-- ─── SIDEBAR OVERLAY ─── -->
@@ -334,7 +336,7 @@
         <div class="profile-layout-grid">
             <div class="main-lane">
                 <div class="profile-card section-content" id="section-biography">
-    <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
+    <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-align-left" style="color:var(--text-dim);"></i> Biography</h3></div>
                     <div class="profile-card-body">
                         <div class="bio-location-line"><i class="fas fa-map-pin" style="color:var(--primary);margin-right:8px;"></i> Lives in <span id="profileLocationText">South Africa • Western Cape • Cape Town</span></div>
@@ -343,7 +345,7 @@
                 </div>
 
                 <div class="profile-card section-content" id="section-identity-record">
-    <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
+    <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-id-card" style="color:var(--text-dim);"></i> Identity Record</h3></div>
                     <div class="profile-card-body" id="identityContainer">
                         <div class="identity-category">
@@ -375,7 +377,7 @@
                 </div>
 
                 <div class="profile-card section-content" id="section-accomplishments">
-    <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
+    <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-trophy" style="color:var(--gold);"></i> Career Accomplishments</h3></div>
                     <div class="profile-card-body">
                         <div class="achievements-grid" id="achievementsList">
@@ -389,7 +391,7 @@
                 </div>
 
                 <div class="profile-card section-content" id="section-professional-history">
-    <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
+    <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-briefcase" style="color:var(--text-dim);"></i> Professional History</h3></div>
                     <div class="profile-card-body" id="employmentContainer">
                         <div class="employment-list">
@@ -403,7 +405,7 @@
 
             <div class="side-lane">
                 <div class="profile-card section-content" id="section-passports">
-    <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
+    <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-fingerprint" style="color:var(--primary);"></i> Identity Passports</h3></div>
                     <div class="profile-card-body" id="identifiersContainer">
                         <div class="identifiers-layout">
@@ -418,7 +420,7 @@
                 </div>
 
                 <div class="profile-card section-content" id="section-roles">
-    <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
+    <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-user-tag" style="color:var(--primary);"></i> Artistic Footprint & Roles</h3></div>
                     <div class="profile-card-body">
                         <div class="roles-ecosystem" id="rolesContainer">
@@ -429,7 +431,7 @@
                 </div>
 
                 <div class="profile-card section-content" id="section-networks">
-    <button class="card-close-btn" aria-label="Close"><i class="fas fa-times"></i></button>
+    <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
                     <div class="profile-card-header"><h3><i class="fas fa-share-alt" style="color:var(--info);"></i> Linked Networks</h3></div>
                     <div class="profile-card-body" id="networksContainer">
                         <div class="social-links">

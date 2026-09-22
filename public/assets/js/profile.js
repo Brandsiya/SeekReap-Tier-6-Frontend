@@ -208,6 +208,15 @@ document.addEventListener('click', function(e) {
 });
 
 // ─── SECTION TABS ──────────────────────────────────────────────────────────
+function closeSectionCard() {
+    var activeTab = document.querySelector('.section-tab.active');
+    var activeSection = document.querySelector('.section-content.active');
+    var zone = document.getElementById('contentOverlayZone');
+    if (activeTab) { activeTab.classList.remove('active'); }
+    if (activeSection) { activeSection.classList.remove('active'); }
+    if (zone) { zone.classList.remove('has-active-card'); }
+}
+
 function toggleSectionTab(btn, sectionId) {
     var section = document.getElementById('section-' + sectionId);
     var isActive = btn.classList.contains('active');
@@ -597,6 +606,7 @@ window.openImageViewer = openImageViewer;
 window.closeImageViewer = closeImageViewer;
 window.scrollToTop = scrollToTop;
 window.toggleSectionTab = toggleSectionTab;
+window.closeSectionCard = closeSectionCard;
 window.togglePortfolioDropdown = togglePortfolioDropdown;
 window.handlePortfolioClick = handlePortfolioClick;
 window.filterPortfolioWorks = filterPortfolioWorks;

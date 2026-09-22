@@ -186,6 +186,7 @@ body {
     min-width: 18px; text-align: center; border: 2px solid var(--bg2);
 }
 .mobile-header .more-dropdown-wrapper { position: relative; display: inline-block; flex-shrink: 0; }
+.header-icon-group { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-shrink: 0; }
 .mobile-header .more-popup-box {
     display: none; position: absolute; top: calc(100% + 8px); right: 0;
     background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm);
@@ -325,7 +326,7 @@ body {
 .hero-assembly {
     background: var(--bg2); border: 1px solid var(--border);
     border-radius: var(--radius-lg); overflow: visible; box-shadow: var(--shadow);
-    margin-bottom: 24px; display: flex; flex-direction: column;
+    margin-bottom: 0; display: flex; flex-direction: column;
 }
 .cover-photo-container {
     position: relative; height: 280px; width: 100%; background: #2d1b3d;
@@ -420,7 +421,7 @@ body {
 
 .section-nav-tabs {
     display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
-    margin-top: 8px; margin-bottom: 24px;
+    margin-top: 16px; margin-bottom: 24px;
     padding: 4px 0; border-bottom: 2px solid var(--border-light);
     align-items: center; position: relative; z-index: 5;
 }
