@@ -1,5 +1,17 @@
 // ─── STATE ──────────────────────────────────────────────────────────────────
 let appreciateState = 'appreciate';
+
+var REQUEST_TO_ACTION_KEY = {
+    'Book Creator': 'Booking Approval',
+    'Endorse Creator': 'Endorsement Proposal Approval',
+    'Request License': 'License Request Approval',
+    'Request Collaboration': 'Collaboration Request Approval',
+    'Request Interview': 'Interview Request Approval',
+    'Request Feature': 'Feature Proposal Approval',
+    'Request Creator Service': 'Service Request Approval',
+    'Offer Creator Employment': 'Employment Offer Acceptance'
+};
+var sentActionKeys = new Set();
 let trustState = 'trust';
 let isAppreciateDropdownOpen = false;
 let isRequestDropdownOpen = false;
@@ -431,8 +443,8 @@ function toggleAppreciateDropdown(event) {
 function updateAppreciateDropdown() {
     var menu = document.getElementById('appreciateDropdownMenu');
     var items = appreciateState === 'appreciate' ?
-        ['Appreciate Booking Approval', 'Appreciate Endorsement Proposal Approval', 'Appreciate Feature Proposal Approval', 'Appreciate License Request Approval', 'Appreciate Collaboration Request Approval', 'Appreciate Interview Request Approval', 'Appreciate Certificate Verification Link'] :
-        ['Depreciate Booking Approval', 'Depreciate Endorsement Proposal Approval', 'Depreciate Feature Proposal Approval', 'Depreciate License Request Approval', 'Depreciate Collaboration Request Approval', 'Depreciate Interview Request Approval', 'Depreciate Certificate Verification Link'];
+        ['Appreciate Booking Approval', 'Appreciate Endorsement Proposal Approval', 'Appreciate Feature Proposal Approval', 'Appreciate License Request Approval', 'Appreciate Collaboration Request Approval', 'Appreciate Interview Request Approval', 'Appreciate Service Request Approval', 'Appreciate Employment Offer Acceptance', 'Appreciate Certificate Verification Link'] :
+        ['Depreciate Booking Approval', 'Depreciate Endorsement Proposal Approval', 'Depreciate Feature Proposal Approval', 'Depreciate License Request Approval', 'Depreciate Collaboration Request Approval', 'Depreciate Interview Request Approval', 'Depreciate Service Request Approval', 'Depreciate Employment Offer Acceptance', 'Depreciate Certificate Verification Link'];
 
     menu.innerHTML = items.map(function(item) {
         return '<button class="appreciate-dropdown-item" onclick="handleAppreciateItemClick(\'' + item + '\')"><i class="fas fa-' + (appreciateState === 'appreciate' ? 'heart' : 'frown') + '"></i> ' + item + '</button>';
@@ -441,6 +453,20 @@ function updateAppreciateDropdown() {
 
 // Appreciate behaves like Trust: click item -> show appreciated -> permanently switch to depreciate
 function handleAppreciateItemClick(action) {
+    var actionKey = action.replace(/^(Appreciate|Depreciate) /, '');
+
+    if (actionKey !== 'Certificate Verification Link' && !sentActionKeys.has(actionKey)) {
+        var matchingRequest = Object.keys(REQUEST_TO_ACTION_KEY).find(function(k) {
+            return REQUEST_TO_ACTION_KEY[k] === actionKey;
+        });
+        showToast(
+            'You can only appreciate what you have requested. Send a "' +
+            (matchingRequest || actionKey) + '" request first.',
+            'error'
+        );
+        return;
+    }
+
     document.getElementById('appreciateDropdownMenu').classList.remove('open');
     isAppreciateDropdownOpen = false;
 
@@ -550,6 +576,8 @@ function toggleRequestDropdown(event) {
 
 function handleRequestClick(action) {
     showToast('Request: ' + action + ' sent!', 'success');
+    var actionKey = REQUEST_TO_ACTION_KEY[action];
+    if (actionKey) { sentActionKeys.add(actionKey); }
     document.getElementById('requestDropdownMenu').classList.remove('open');
     isRequestDropdownOpen = false;
 }
