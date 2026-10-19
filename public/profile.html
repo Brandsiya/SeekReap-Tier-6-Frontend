@@ -493,6 +493,29 @@
 
 <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()" aria-label="Scroll to top"><i class="fas fa-arrow-up"></i></button>
 
+<div class="share-dialog-modal" id="shareDialogModal" onclick="closeShareDialog()">
+    <div class="share-dialog-content" id="shareDialogContent" onclick="event.stopPropagation()">
+        <button class="share-dialog-close" onclick="closeShareDialog()" aria-label="Close"><i class="fas fa-times"></i></button>
+        <h4 class="share-dialog-title"><i class="fas fa-share-alt"></i> Share <span id="shareDialogItemTitle"></span></h4>
+
+        <div class="share-dialog-options">
+            <button class="share-option-btn" onclick="showShareUserList()">
+                <i class="fas fa-user-friends"></i>
+                <span>Share to SeekReap user</span>
+            </button>
+            <button class="share-option-btn" onclick="shareToNonSeekReapUser()">
+                <i class="fas fa-globe"></i>
+                <span>Share to non-SeekReap user</span>
+            </button>
+        </div>
+
+        <div class="share-dialog-userlist">
+            <button class="share-back-btn" onclick="showShareOptions()"><i class="fas fa-arrow-left"></i> Back</button>
+            <div id="shareUserListItems"></div>
+        </div>
+    </div>
+</div>
+
 <div class="image-viewer-modal" id="imageViewerModal" onclick="closeImageViewer()">
     <div class="image-viewer-content">
         <button class="image-viewer-close" onclick="closeImageViewer()">&times;</button>

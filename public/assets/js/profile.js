@@ -328,6 +328,62 @@ var portfolioItems = {
 var currentPortfolio = 'Portfolios';
 var currentFilter = 'all';
 
+// ─── SHARE DIALOG ─────────────────────────────────────────────────────────
+var shareDialogItemTitle = '';
+
+function openShareDialog(itemTitle) {
+    shareDialogItemTitle = itemTitle;
+    var titleEl = document.getElementById('shareDialogItemTitle');
+    if (titleEl) { titleEl.textContent = '"' + itemTitle + '"'; }
+    showShareOptions();
+    document.getElementById('shareDialogModal').classList.add('active');
+}
+
+function closeShareDialog() {
+    document.getElementById('shareDialogModal').classList.remove('active');
+}
+
+function showShareOptions() {
+    document.getElementById('shareDialogContent').classList.remove('show-users');
+}
+
+function showShareUserList() {
+    var list = document.getElementById('shareUserListItems');
+    list.innerHTML = collaborators.map(function(c, i) {
+        return '<button class="share-user-row" onclick="shareToSeekReapUser(' + i + ')">' +
+            '<img src="' + c.avatar + '" alt="' + c.name + '">' +
+            '<div><div class="share-user-name">' + c.name + '</div>' +
+            '<div class="share-user-handle">' + c.handle + '</div></div>' +
+        '</button>';
+    }).join('');
+    document.getElementById('shareDialogContent').classList.add('show-users');
+}
+
+function shareToSeekReapUser(index) {
+    var user = collaborators[index];
+    if (!user) return;
+    showToast('Shared "' + shareDialogItemTitle + '" with ' + user.name, 'success');
+    closeShareDialog();
+}
+
+function shareToNonSeekReapUser() {
+    var shareData = {
+        title: shareDialogItemTitle,
+        text: 'Check out "' + shareDialogItemTitle + '" on SeekReap',
+        url: window.location.href
+    };
+    if (navigator.share) {
+        navigator.share(shareData).catch(function() {});
+    } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(shareData.url).then(function() {
+            showToast('Sharing is not supported on this browser. Link copied instead.', 'info');
+        });
+    } else {
+        showToast('Sharing is not supported on this browser.', 'info');
+    }
+    closeShareDialog();
+}
+
 // ─── COLLABORATORS DATA ──────────────────────────────────────────────────
 var collaborators = [
     { name: 'Luna Ray', handle: '@lunaray', avatar: 'https://images.unsplash.com/photo-1494790108376-be9c24b9cf6c?q=80&w=100&auto=format&fit=crop', badge: 'Producer' },
@@ -362,20 +418,22 @@ function renderPortfolioDisplay(portfolioName, filter) {
     }
 
     grid.innerHTML = items.map(function(item) {
+        var actionButtons =
+            '<button onclick="event.stopPropagation();showToast(\'Playing: ' + item.title + '\', \'info\')" title="Play here"><i class="fas fa-play"></i></button>' +
+            '<button onclick="event.stopPropagation();openShareDialog(\'' + item.title + '\')" title="Share this work"><i class="fas fa-share-alt"></i></button>' +
+            '<button onclick="event.stopPropagation();showToast(\'Saved: ' + item.title + '\', \'success\')" title="Save this work"><i class="fas fa-bookmark"></i></button>' +
+            '<button onclick="event.stopPropagation();showToast(\'Reported: ' + item.title + '\', \'info\')" title="Report this work"><i class="fas fa-flag"></i></button>' +
+            '<button onclick="event.stopPropagation();showToast(\'Viewing: ' + item.title + '\', \'info\')" title="View Credits"><i class="fas fa-info-circle"></i></button>' +
+            '<button onclick="event.stopPropagation();showToast(\'Opening ' + item.title + ' in Studio\', \'success\')" title="Open in studio"><i class="fas fa-external-link-alt"></i></button>';
+
         return '<div class="portfolio-display-item">' +
             '<div class="item-thumb">' +
                 '<img src="' + item.image + '" alt="' + item.title + '">' +
-                '<div class="item-overlay">' +
-                    '<button onclick="event.stopPropagation();showToast(\'Viewing: ' + item.title + '\', \'info\')" title="View Info"><i class="fas fa-info-circle"></i></button>' +
-                    '<button onclick="event.stopPropagation();showToast(\'Opening ' + item.title + ' in Studio\', \'success\')" title="Open in Studio"><i class="fas fa-external-link-alt"></i></button>' +
-                '</div>' +
+                '<div class="item-overlay">' + actionButtons + '</div>' +
             '</div>' +
             '<div class="item-info">' +
                 '<span class="item-title">' + item.title + '</span>' +
-                '<div class="item-actions">' +
-                    '<button onclick="event.stopPropagation();showToast(\'Viewing: ' + item.title + '\', \'info\')" title="View Info"><i class="fas fa-info-circle"></i></button>' +
-                    '<button onclick="event.stopPropagation();showToast(\'Opening ' + item.title + ' in Studio\', \'success\')" title="Open in Studio"><i class="fas fa-external-link-alt"></i></button>' +
-                '</div>' +
+                '<div class="item-actions">' + actionButtons + '</div>' +
             '</div>' +
         '</div>';
     }).join('');
@@ -640,6 +698,12 @@ window.closeImageViewer = closeImageViewer;
 window.scrollToTop = scrollToTop;
 window.toggleSectionTab = toggleSectionTab;
 window.closeSectionCard = closeSectionCard;
+window.openShareDialog = openShareDialog;
+window.closeShareDialog = closeShareDialog;
+window.showShareOptions = showShareOptions;
+window.showShareUserList = showShareUserList;
+window.shareToSeekReapUser = shareToSeekReapUser;
+window.shareToNonSeekReapUser = shareToNonSeekReapUser;
 window.togglePortfolioDropdown = togglePortfolioDropdown;
 window.handlePortfolioClick = handlePortfolioClick;
 window.filterPortfolioWorks = filterPortfolioWorks;
