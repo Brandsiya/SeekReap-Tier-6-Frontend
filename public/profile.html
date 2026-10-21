@@ -346,16 +346,18 @@
         <div class="content-overlay-zone" id="contentOverlayZone">
 <div class="portfolio-display-section" id="portfolioDisplaySection">
             <div>
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
-                    <h3 style="font-size:16px;font-weight:700;color:var(--text);">
-                        <i class="fas fa-folder-open" style="color:var(--gold);"></i>
-                        <span id="portfolioDisplayTitle">Portfolios</span>
-                    </h3>
-                    <div class="portfolio-filter-wrapper">
-                        <span style="font-size:12px;color:var(--text-muted);">
-                            <span id="portfolioItemCount">6</span> works
-                        </span>
-                        <select class="portfolio-filter-select" id="portfolioFilter" onchange="filterPortfolioWorks(this.value)">
+        <div class="portfolio-header-row">
+            <h3 class="portfolio-heading">
+                <i class="fas fa-folder-open"></i>
+                <span id="portfolioDisplayTitle">Portfolios</span>
+            </h3>
+            <div class="portfolio-search">
+                <input type="text" id="portfolioSearchInput" placeholder="Search assets..." aria-label="Search portfolio" onkeydown="if (event.key === 'Enter') { runPortfolioSearch(); }">
+                <button class="portfolio-search-btn" onclick="runPortfolioSearch()" aria-label="Search" title="Search"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="portfolio-filter-wrapper">
+                <span class="portfolio-count"><span id="portfolioItemCount">0</span> <span id="portfolioCountLabel">works</span></span>
+                <select class="portfolio-filter-select" id="portfolioFilter" onchange="filterPortfolioWorks(this.value)">
                             <option value="all">All Works</option>
                             <option value="music">Music</option>
                             <option value="video">Video</option>
@@ -363,10 +365,17 @@
                             <option value="design">Design</option>
                             <option value="writing">Writing</option>
                         </select>
-                    </div>
-                </div>
-                <div class="portfolio-grid-display" id="portfolioGridDisplay"></div>
             </div>
+        </div>
+        <div class="portfolio-category-tabs" id="portfolioCategoryTabs" role="group" aria-label="Portfolio categories">
+            <button class="portfolio-category-tab active" data-category="assets" aria-pressed="true" onclick="setPortfolioCategory('assets')"><i class="fas fa-cube"></i> Assets</button>
+            <button class="portfolio-category-tab" data-category="gigs" aria-pressed="false" onclick="setPortfolioCategory('gigs')"><i class="fas fa-microphone-alt"></i> Gigs</button>
+            <button class="portfolio-category-tab" data-category="interviews" aria-pressed="false" onclick="setPortfolioCategory('interviews')"><i class="fas fa-comments"></i> Interviews</button>
+            <button class="portfolio-category-tab" data-category="community" aria-pressed="false" onclick="setPortfolioCategory('community')"><i class="fas fa-users"></i> Community Works</button>
+            <button class="portfolio-category-tab" data-category="schedule" aria-pressed="false" onclick="setPortfolioCategory('schedule')"><i class="fas fa-calendar-alt"></i> Schedule</button>
+        </div>
+        <div class="portfolio-grid-display" id="portfolioGridDisplay"></div>
+    </div>
 
             <div class="collaborators-sidebar">
                 <h4><i class="fas fa-handshake"></i> Collaborators</h4>

@@ -409,7 +409,12 @@ function renderPortfolioDisplay(portfolioName, filter) {
         items = items.filter(function(item) { return item.category === filter; });
     }
 
-    title.textContent = portfolioName;
+    if (currentSearch) {
+        var query = currentSearch.toLowerCase();
+        items = items.filter(function(item) { return item.title.toLowerCase().indexOf(query) !== -1; });
+    }
+
+    title.textContent = 'Portfolios';
     count.textContent = items.length;
 
     if (items.length === 0) {
@@ -443,7 +448,8 @@ function renderPortfolioDisplay(portfolioName, filter) {
 }
 
 function filterPortfolioWorks(filter) {
-    renderPortfolioDisplay(currentPortfolio, filter);
+    currentFilter = filter || 'all';
+    renderPortfolioCategory();
 }
 
 function renderCollaborators() {
@@ -668,7 +674,7 @@ function showToast(msg, type) {
 
 // ─── INIT ──────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-    renderPortfolioDisplay('Portfolios', 'all');
+    renderPortfolioCategory();
     renderCollaborators();
     updateAppreciateDropdown();
 
@@ -716,3 +722,315 @@ window.toggleAccountDropdown = toggleAccountDropdown;
 window.switchAccount = switchAccount;
 window.copyToClipboard = copyToClipboard;
 window.showToast = showToast;
+
+/* ----------------------------------------------------------------------
+   PORTFOLIO CATEGORIES: Assets, Gigs, Interviews, Community Works, Schedule
+   All data below is simulated for demonstration purposes.
+   ---------------------------------------------------------------------- */
+var portfolioCategories = {
+    assets:     { unit: 'works',      hasFilter: true,  placeholder: 'Search assets...' },
+    gigs:       { unit: 'gigs',       hasFilter: false, placeholder: 'Search gigs...' },
+    interviews: { unit: 'interviews', hasFilter: false, placeholder: 'Search interviews...' },
+    community:  { unit: 'works',      hasFilter: true,  placeholder: 'Search community works...' },
+    schedule:   { unit: 'events',     hasFilter: false, placeholder: 'Search events...' }
+};
+var currentCategory = 'assets';
+var currentSearch = '';
+
+function daysFromToday(n) {
+    var d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + n);
+    return d;
+}
+
+function portfolioMonthShort(d) {
+    return d.toLocaleDateString('en-GB', { month: 'short' });
+}
+
+portfolioItems['Community Works'] = [
+    { id: 'cw1', title: 'Cape Flats Youth Beat Project', image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop', category: 'music' },
+    { id: 'cw2', title: 'Community Radio Jingle Pack', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=400&auto=format&fit=crop', category: 'music' },
+    { id: 'cw3', title: 'Heritage Day Mural Documentary', image: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=400&auto=format&fit=crop', category: 'video' },
+    { id: 'cw4', title: 'Open Mic Night Live Recordings', image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop', category: 'music' },
+    { id: 'cw5', title: 'Township Stories Short Film', image: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=400&auto=format&fit=crop', category: 'video' },
+    { id: 'cw6', title: 'Neighbourhood Poster Series', image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=400&auto=format&fit=crop', category: 'design' }
+];
+
+var portfolioGigs = [
+    { id: 'g1', title: 'Afropunk Festival Main Stage', venue: 'Cape Town Stadium Park', city: 'Cape Town', type: 'Festival', time: '20:00', date: daysFromToday(6), status: 'Upcoming' },
+    { id: 'g2', title: 'Nova Dawn Album Launch', venue: 'The Assembly', city: 'Cape Town', type: 'Headline show', time: '19:30', date: daysFromToday(13), status: 'Upcoming' },
+    { id: 'g3', title: 'Sunset Sessions Live Set', venue: 'Camps Bay Beach Club', city: 'Cape Town', type: 'Live set', time: '17:00', date: daysFromToday(21), status: 'Upcoming' },
+    { id: 'g4', title: 'Johannesburg Electronic Showcase', venue: 'Untitled Basement', city: 'Johannesburg', type: 'Showcase', time: '21:00', date: daysFromToday(-12), status: 'Completed' },
+    { id: 'g5', title: 'Durban Beat Weekender', venue: 'Fan Park Stage', city: 'Durban', type: 'Festival', time: '16:00', date: daysFromToday(-40), status: 'Completed' },
+    { id: 'g6', title: 'Studio Collaboration Night', venue: 'Nova Studios', city: 'Cape Town', type: 'Studio session', time: '18:00', date: daysFromToday(-75), status: 'Completed' }
+];
+
+var portfolioInterviews = [
+    { id: 'i1', title: 'Album Launch Interview', outlet: 'YFM', format: 'Radio', duration: '30 min', time: '14:30', date: daysFromToday(8), status: 'Upcoming' },
+    { id: 'i2', title: 'Drive Time Interview', outlet: 'Metro FM', format: 'Radio', duration: '24 min', time: '16:10', date: daysFromToday(-9), status: 'Published' },
+    { id: 'i3', title: 'Behind the Beats: NovaKai on Production', outlet: 'Sonic Frequencies', format: 'Podcast', duration: '52 min', time: '11:00', date: daysFromToday(-30), status: 'Published' },
+    { id: 'i4', title: 'The African Electronic Wave', outlet: 'Okay Africa', format: 'Article', duration: '8 min read', time: '09:00', date: daysFromToday(-58), status: 'Published' },
+    { id: 'i5', title: 'Studio Tour with NovaKai', outlet: 'Creators Hub TV', format: 'Video', duration: '18 min', time: '13:00', date: daysFromToday(-90), status: 'Published' }
+];
+
+var portfolioScheduleExtras = [
+    { title: 'Mixing session: Nova Dawn', date: daysFromToday(2), time: '10:00', kind: 'studio' },
+    { title: 'Mastering review', date: daysFromToday(4), time: '15:00', kind: 'studio' },
+    { title: 'Collab session with Luna Ray', date: daysFromToday(11), time: '12:00', kind: 'studio' },
+    { title: 'Brand shoot booking', date: daysFromToday(16), time: '09:30', kind: 'booking' },
+    { title: 'Rehearsal', date: daysFromToday(18), time: '17:00', kind: 'studio' },
+    { title: 'Film scoring consultation', date: daysFromToday(24), time: '11:00', kind: 'booking' }
+];
+
+var scheduleKindLabels = { gig: 'Gig', interview: 'Interview', studio: 'Studio', booking: 'Booking' };
+var scheduleMonth = (function() {
+    var now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+})();
+
+function matchesPortfolioSearch(fields) {
+    if (!currentSearch) { return true; }
+    return fields.join(' ').toLowerCase().indexOf(currentSearch.toLowerCase()) !== -1;
+}
+
+function setPortfolioCategory(category) {
+    if (!portfolioCategories[category]) { return; }
+    currentCategory = category;
+    currentFilter = 'all';
+    var filterSelect = document.getElementById('portfolioFilter');
+    if (filterSelect) { filterSelect.value = 'all'; }
+    renderPortfolioCategory();
+}
+
+function runPortfolioSearch() {
+    var input = document.getElementById('portfolioSearchInput');
+    currentSearch = input ? input.value.trim() : '';
+    renderPortfolioCategory();
+}
+
+function renderPortfolioCategory() {
+    var config = portfolioCategories[currentCategory];
+    var grid = document.getElementById('portfolioGridDisplay');
+    var filterSelect = document.getElementById('portfolioFilter');
+    var label = document.getElementById('portfolioCountLabel');
+    var input = document.getElementById('portfolioSearchInput');
+
+    document.querySelectorAll('.portfolio-category-tab').forEach(function(tab) {
+        var isActive = tab.getAttribute('data-category') === currentCategory;
+        tab.classList.toggle('active', isActive);
+        tab.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+
+    if (filterSelect) { filterSelect.style.display = config.hasFilter ? '' : 'none'; }
+    if (label) { label.textContent = config.unit; }
+    if (input) { input.placeholder = config.placeholder; }
+
+    var isWorkGrid = currentCategory === 'assets' || currentCategory === 'community';
+    grid.className = 'portfolio-grid-display' + (isWorkGrid ? '' : ' list-mode');
+
+    if (currentCategory === 'assets') {
+        renderPortfolioDisplay('Portfolios', currentFilter);
+    } else if (currentCategory === 'community') {
+        renderPortfolioDisplay('Community Works', currentFilter);
+    } else if (currentCategory === 'gigs') {
+        renderGigsList();
+    } else if (currentCategory === 'interviews') {
+        renderInterviewsList();
+    } else {
+        renderSchedule();
+    }
+}
+
+function portfolioListActionButtons(kind, id, withPlay) {
+    var noun = kind === 'gigs' ? 'gig' : 'interview';
+    var attrs = ' data-kind="' + kind + '" data-id="' + id + '" onclick="portfolioListActionFromButton(this)"';
+    var html = '';
+    if (withPlay) {
+        html += '<button data-action="play"' + attrs + ' title="Play here"><i class="fas fa-play"></i></button>';
+    }
+    html += '<button data-action="share"' + attrs + ' title="Share this ' + noun + '"><i class="fas fa-share-alt"></i></button>';
+    html += '<button data-action="save"' + attrs + ' title="Save this ' + noun + '"><i class="fas fa-bookmark"></i></button>';
+    html += '<button data-action="report"' + attrs + ' title="Report this ' + noun + '"><i class="fas fa-flag"></i></button>';
+    return html;
+}
+
+function portfolioListActionFromButton(btn) {
+    portfolioListAction(btn.getAttribute('data-kind'), btn.getAttribute('data-action'), btn.getAttribute('data-id'));
+}
+
+function portfolioListAction(kind, action, id) {
+    var list = kind === 'gigs' ? portfolioGigs : portfolioInterviews;
+    var record = list.filter(function(r) { return r.id === id; })[0];
+    if (!record) { return; }
+    if (action === 'share') {
+        openShareDialog(record.title);
+    } else if (action === 'save') {
+        showToast('Saved: ' + record.title, 'success');
+    } else if (action === 'report') {
+        showToast('Reported: ' + record.title, 'info');
+    } else if (action === 'play') {
+        showToast('Playing: ' + record.title, 'info');
+    }
+}
+
+function renderGigsList() {
+    var grid = document.getElementById('portfolioGridDisplay');
+    var count = document.getElementById('portfolioItemCount');
+    var gigs = portfolioGigs.filter(function(g) {
+        return matchesPortfolioSearch([g.title, g.venue, g.city, g.type, g.status]);
+    });
+    count.textContent = gigs.length;
+    if (gigs.length === 0) {
+        grid.innerHTML = '<div class="portfolio-empty">No gigs found</div>';
+        return;
+    }
+    grid.innerHTML = gigs.map(function(g) {
+        var upcoming = g.status === 'Upcoming';
+        return '<div class="portfolio-list-item">' +
+            '<div class="list-item-date"><span class="list-item-day">' + g.date.getDate() + '</span><span class="list-item-month">' + portfolioMonthShort(g.date) + '</span></div>' +
+            '<div class="list-item-body">' +
+                '<div class="list-item-title">' + g.title + '</div>' +
+                '<div class="list-item-meta">' +
+                    '<span><i class="fas fa-map-marker-alt"></i>' + g.venue + ', ' + g.city + '</span>' +
+                    '<span><i class="fas fa-clock"></i>' + g.time + '</span>' +
+                    '<span class="list-item-tag">' + g.type + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<span class="list-item-status ' + (upcoming ? 'upcoming' : 'completed') + '">' + g.status + '</span>' +
+            '<div class="list-item-actions">' + portfolioListActionButtons('gigs', g.id, false) + '</div>' +
+        '</div>';
+    }).join('');
+}
+
+function renderInterviewsList() {
+    var grid = document.getElementById('portfolioGridDisplay');
+    var count = document.getElementById('portfolioItemCount');
+    var interviews = portfolioInterviews.filter(function(i) {
+        return matchesPortfolioSearch([i.title, i.outlet, i.format, i.status]);
+    });
+    count.textContent = interviews.length;
+    if (interviews.length === 0) {
+        grid.innerHTML = '<div class="portfolio-empty">No interviews found</div>';
+        return;
+    }
+    grid.innerHTML = interviews.map(function(i) {
+        var upcoming = i.status === 'Upcoming';
+        return '<div class="portfolio-list-item">' +
+            '<div class="list-item-date"><span class="list-item-day">' + i.date.getDate() + '</span><span class="list-item-month">' + portfolioMonthShort(i.date) + '</span></div>' +
+            '<div class="list-item-body">' +
+                '<div class="list-item-title">' + i.title + '</div>' +
+                '<div class="list-item-meta">' +
+                    '<span><i class="fas fa-broadcast-tower"></i>' + i.outlet + '</span>' +
+                    '<span><i class="fas fa-clock"></i>' + i.duration + '</span>' +
+                    '<span class="list-item-tag">' + i.format + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<span class="list-item-status ' + (upcoming ? 'upcoming' : 'completed') + '">' + i.status + '</span>' +
+            '<div class="list-item-actions">' + portfolioListActionButtons('interviews', i.id, !upcoming) + '</div>' +
+        '</div>';
+    }).join('');
+}
+
+function getScheduleEvents() {
+    var events = portfolioScheduleExtras.slice();
+    portfolioGigs.forEach(function(g) {
+        events.push({ title: g.title, date: g.date, time: g.time, kind: 'gig' });
+    });
+    portfolioInterviews.forEach(function(i) {
+        events.push({ title: i.title, date: i.date, time: i.time, kind: 'interview' });
+    });
+    events.sort(function(a, b) {
+        if (a.date.getTime() !== b.date.getTime()) { return a.date - b.date; }
+        return a.time < b.time ? -1 : (a.time > b.time ? 1 : 0);
+    });
+    return events;
+}
+
+function changeScheduleMonth(delta) {
+    if (delta === 0) {
+        var now = new Date();
+        scheduleMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    } else {
+        scheduleMonth = new Date(scheduleMonth.getFullYear(), scheduleMonth.getMonth() + delta, 1);
+    }
+    renderPortfolioCategory();
+}
+
+function renderSchedule() {
+    var grid = document.getElementById('portfolioGridDisplay');
+    var count = document.getElementById('portfolioItemCount');
+    var year = scheduleMonth.getFullYear();
+    var month = scheduleMonth.getMonth();
+
+    var events = getScheduleEvents().filter(function(e) {
+        return e.date.getFullYear() === year && e.date.getMonth() === month &&
+            matchesPortfolioSearch([e.title, scheduleKindLabels[e.kind]]);
+    });
+    count.textContent = events.length;
+
+    var firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    var byDay = {};
+    events.forEach(function(e) {
+        var d = e.date.getDate();
+        if (!byDay[d]) { byDay[d] = []; }
+        byDay[d].push(e);
+    });
+
+    var cells = '';
+    for (var blank = 0; blank < firstWeekday; blank++) {
+        cells += '<div class="schedule-day empty"></div>';
+    }
+    for (var day = 1; day <= daysInMonth; day++) {
+        var isToday = new Date(year, month, day).getTime() === today.getTime();
+        var dayEvents = byDay[day] || [];
+        var chips = dayEvents.slice(0, 2).map(function(e) {
+            return '<span class="schedule-chip ' + e.kind + '" title="' + e.time + ' - ' + e.title + '">' + e.title + '</span>';
+        }).join('');
+        if (dayEvents.length > 2) {
+            chips += '<span class="schedule-more">+' + (dayEvents.length - 2) + ' more</span>';
+        }
+        cells += '<div class="schedule-day' + (isToday ? ' today' : '') + '">' +
+            '<span class="schedule-day-num">' + day + '</span>' + chips + '</div>';
+    }
+
+    var agenda;
+    if (events.length === 0) {
+        agenda = '<div class="portfolio-empty">No events scheduled this month</div>';
+    } else {
+        agenda = events.map(function(e) {
+            return '<div class="schedule-agenda-row">' +
+                '<span class="schedule-agenda-date">' + e.date.getDate() + ' ' + portfolioMonthShort(e.date) + '</span>' +
+                '<span class="schedule-agenda-time">' + e.time + '</span>' +
+                '<span class="schedule-agenda-name">' + e.title + '</span>' +
+                '<span class="schedule-agenda-kind ' + e.kind + '">' + scheduleKindLabels[e.kind] + '</span>' +
+            '</div>';
+        }).join('');
+    }
+
+    var monthLabel = scheduleMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+
+    grid.innerHTML =
+        '<div class="schedule-calendar">' +
+            '<div class="schedule-toolbar">' +
+                '<span class="schedule-month-label">' + monthLabel + '</span>' +
+                '<div class="schedule-nav">' +
+                    '<button onclick="changeScheduleMonth(-1)" aria-label="Previous month" title="Previous month"><i class="fas fa-chevron-left"></i></button>' +
+                    '<button onclick="changeScheduleMonth(0)" title="Go to the current month">Today</button>' +
+                    '<button onclick="changeScheduleMonth(1)" aria-label="Next month" title="Next month"><i class="fas fa-chevron-right"></i></button>' +
+                '</div>' +
+            '</div>' +
+            '<div class="schedule-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>' +
+            '<div class="schedule-days">' + cells + '</div>' +
+            '<div class="schedule-agenda"><div class="schedule-agenda-title">Events this month</div>' + agenda + '</div>' +
+        '</div>';
+}
+
+window.setPortfolioCategory = setPortfolioCategory;
+window.runPortfolioSearch = runPortfolioSearch;
+window.changeScheduleMonth = changeScheduleMonth;
+window.portfolioListActionFromButton = portfolioListActionFromButton;
