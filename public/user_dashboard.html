@@ -68,6 +68,8 @@
         
         .topbar-left { display: flex; align-items: center; gap: 16px; flex: 1; }
         .topbar-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+        
+        /* Header Action Buttons */
         .topbar-icon-btn { background: none; border: none; color: var(--text-dim); font-size: 15px; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--t); position: relative; flex-shrink: 0; }
         .topbar-icon-btn:hover { background: var(--surface2); color: var(--gold-light); }
         .topbar-icon-btn .badge-count { position: absolute; top: 0px; right: 0px; background: var(--red); color: #fff; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; min-width: 18px; text-align: center; border: 2px solid var(--bg2); }
@@ -89,19 +91,39 @@
         .upgrade-btn { background: var(--gold); border: none; color: #000; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 12px; cursor: pointer; transition: var(--t); font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; }
         .upgrade-btn:hover { background: var(--gold-light); }
 
-        .header-profile-photo { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--gold-border); cursor: pointer; overflow: hidden; transition: var(--t); background: var(--bg3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .header-profile-photo img { width: 100%; height: 100%; object-fit: cover; }
-        .header-profile-photo:hover { border-color: var(--gold); }
+        /* Dropdowns */
+        .dropdown-wrapper { position: relative; }
+        .dropdown-menu { position: absolute; top: calc(100% + 12px); right: 0; background: var(--bg2); border: 1px solid var(--gold-border); border-radius: var(--radius-sm); box-shadow: 0 12px 36px rgba(0,0,0,0.5); width: 250px; z-index: 1000; padding: 8px 0; display: none; animation: fadeIn 0.2s ease; }
+        .dropdown-menu.open { display: block; }
+        .dropdown-header { padding: 8px 16px; font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700; letter-spacing: 0.05em; }
+        .dropdown-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 16px; background: none; border: none; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: var(--t); text-align: left; }
+        .dropdown-item:hover { background: var(--surface2); color: var(--gold-light); }
+        .dropdown-item i { width: 18px; text-align: center; color: var(--text-dim); font-size: 14px; }
+        .dropdown-item:hover i { color: var(--gold-light); }
+        .dropdown-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 8px 0; }
 
-        /* ─── DASHBOARD GRID LAYOUT ──────────────────────────────────────── */
+        /* Account Switcher Specifics */
+        .account-switcher-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 16px; background: none; border: none; color: var(--text); text-align: left; cursor: pointer; transition: var(--t); }
+        .account-switcher-btn:hover { background: var(--surface2); }
+        .account-switcher-btn.active { background: rgba(255,255,255,0.03); }
+        .account-switcher-btn img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        .account-info-text { flex: 1; overflow: hidden; }
+        .account-info-text .acc-name { font-size: 13px; font-weight: 600; color: var(--text); }
+        .account-info-text .acc-email { font-size: 11px; color: var(--text-dim); }
+        .account-check { color: var(--gold); font-size: 14px; }
+
+        /* Profile Photo Trigger */
+        .header-profile-trigger { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--gold-border); cursor: pointer; transition: var(--t); overflow: hidden; flex-shrink: 0; }
+        .header-profile-trigger img { width: 100%; height: 100%; object-fit: cover; }
+        .header-profile-trigger:hover { border-color: var(--gold); }
+
+        /* ─── DASHBOARD CONTENT ──────────────────────────────────────────── */
         .dashboard-container { max-width: 1300px; width: 100%; margin: 0 auto; padding: 32px; }
         .dashboard-header { margin-bottom: 28px; }
         .dashboard-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
         .dashboard-header h2 { font-size: 16px; font-weight: 500; color: var(--text-dim); }
 
         .content-grid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
-        
-        /* Left Column */
         .left-column { display: flex; flex-direction: column; gap: 24px; }
         .right-column { display: flex; flex-direction: column; gap: 24px; }
 
@@ -140,12 +162,14 @@
         .avatar-edit-overlay:hover { background: rgba(0,0,0,0.8); }
         
         .profile-header-info { padding: 0 24px 24px; position: relative; }
-        .profile-name { margin-top: 12px; font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 700; color: var(--white); }
+        .profile-name { margin-top: 12px; font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 700; color: var(--white); display: flex; align-items: center; gap: 8px; }
+        .verified-badge { font-size: 14px; color: var(--blue); background: rgba(33, 150, 243, 0.15); padding: 2px 8px; border-radius: 10px; display: inline-flex; align-items: center; gap: 4px; font-family: 'DM Sans', sans-serif; font-weight: 600; letter-spacing: 0; }
         .profile-meta { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; }
         .specialties-list { font-size: 13px; color: var(--gold-light); font-style: italic; display: inline-block; margin-left: 8px; }
         
         .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gold); font-weight: 700; margin-top: 28px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center;}
-        .section-title button { background: none; border: none; color: var(--gold); cursor: pointer; font-size: 12px; }
+        .section-title button { background: none; border: none; color: var(--gold); cursor: pointer; font-size: 12px; transition: var(--t); }
+        .section-title button:hover { color: var(--gold-light); }
         
         /* Data Lists (View Mode) */
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -156,10 +180,19 @@
         
         /* Lists for Resume Sections */
         .resume-list { display: flex; flex-direction: column; gap: 12px; }
-        .resume-item { background: var(--bg4); border: 1px solid rgba(255,255,255,0.04); padding: 12px 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: flex-start;}
+        .resume-item { background: var(--bg4); border: 1px solid rgba(255,255,255,0.04); padding: 12px 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: flex-start; position: relative;}
         .resume-item-info h4 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
         .resume-item-info p { font-size: 12px; color: var(--text-dim); }
-        .resume-item-date { font-size: 11px; color: var(--gold-light); white-space: nowrap;}
+        .resume-item-date { font-size: 11px; color: var(--gold-light); white-space: nowrap; margin-right: 24px; }
+        .resume-item .remove-btn { position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--text-dim); cursor: pointer; transition: var(--t); }
+        .resume-item .remove-btn:hover { color: var(--red); }
+
+        /* Social Tags */
+        .social-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .social-tag { background: var(--bg4); border: 1px solid rgba(255,255,255,0.08); padding: 8px 14px; border-radius: 20px; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+        .social-tag i { color: var(--gold); }
+        .social-tag a { color: var(--text-dim); text-decoration: none; font-size: 12px; margin-left: 4px; }
+        .social-tag a:hover { color: var(--gold-light); }
 
         /* Edit Mode Form */
         .edit-form { display: none; padding: 24px; border-top: 1px solid rgba(255,255,255,0.06); }
@@ -172,7 +205,7 @@
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); }
         .form-group textarea { resize: vertical; min-height: 80px; }
         
-        .edit-section-box { background: rgba(0,0,0,0.2); border: 1px dashed rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; margin-bottom: 16px; }
+        .edit-section-box { background: rgba(0,0,0,0.2); border: 1px dashed rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; margin-bottom: 16px; position: relative; }
 
         /* Completion Tracker */
         .completion-card { background: var(--bg3); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 24px; }
@@ -209,7 +242,7 @@
             .mobile-header { display: flex; }
             .content-grid { grid-template-columns: 1fr; }
             .status-grid { grid-template-columns: repeat(2, 1fr); }
-            .header-prefs-block { display: none; } /* Hide on mobile to save space */
+            .header-prefs-block { display: none; }
         }
         @media (max-width: 768px) {
             .dashboard-container { padding: 16px; }
@@ -244,12 +277,54 @@
             <button class="upgrade-btn" onclick="window.location.href='pricing.html'">Upgrade</button>
         </div>
         
+        <!-- Notifications -->
         <button class="topbar-icon-btn" onclick="window.location.href='notifications.html'" aria-label="Notifications">
             <i class="fas fa-bell"></i><span class="badge-count">3</span>
         </button>
-        <button class="header-profile-photo" onclick="window.location.href='profile.html'" aria-label="View Profile">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="Profile">
-        </button>
+
+        <!-- More Menu (Task 1) -->
+        <div class="dropdown-wrapper">
+            <button class="topbar-icon-btn" onclick="toggleDropdown('moreMenu', event)" aria-label="More options">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+            <div class="dropdown-menu" id="moreMenu">
+                <div class="dropdown-header">Profile Actions</div>
+                <button class="dropdown-item" onclick="simulateAction('Downloading Profile as PDF...')"><i class="fas fa-file-pdf"></i> Download Profile as PDF</button>
+                <button class="dropdown-item" onclick="simulateAction('Downloading Profile as PNG...')"><i class="fas fa-file-image"></i> Download Profile as PNG</button>
+                <button class="dropdown-item" onclick="simulateAction('Profile link copied to clipboard!')"><i class="fas fa-link"></i> Share Profile Link</button>
+            </div>
+        </div>
+
+        <!-- Account Switcher Avatar (Task 4) -->
+        <div class="dropdown-wrapper">
+            <div class="header-profile-trigger" onclick="toggleDropdown('accountMenu', event)" aria-label="Switch Account">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="Profile">
+            </div>
+            <div class="dropdown-menu" id="accountMenu" style="width: 280px;">
+                <div class="dropdown-header">Switch Account</div>
+                <!-- Account 1 -->
+                <button class="account-switcher-btn active" onclick="switchAccount('NovaKai', 'nova@seekreap.io', this)">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="NovaKai">
+                    <div class="account-info-text">
+                        <div class="acc-name">NovaKai</div>
+                        <div class="acc-email">nova@seekreap.io</div>
+                    </div>
+                    <i class="fas fa-check-circle account-check"></i>
+                </button>
+                <!-- Account 2 -->
+                <button class="account-switcher-btn" onclick="switchAccount('Kai Sterling', 'kai@seekreap.io', this)">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" alt="Kai">
+                    <div class="account-info-text">
+                        <div class="acc-name">Kai Sterling</div>
+                        <div class="acc-email">kai@seekreap.io</div>
+                    </div>
+                </button>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item" onclick="simulateAction('Opening Add Account flow...')">
+                    <i class="fas fa-plus-circle"></i> Add New Account
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -312,9 +387,9 @@
     </nav>
     <div class="sidebar-footer">
         <div class="user-card" onclick="window.location.href='profile.html'">
-            <div class="user-avatar">N</div>
+            <div class="user-avatar" id="sidebarAvatar">N</div>
             <div class="user-info">
-                <div class="name">NovaKai</div>
+                <div class="name" id="sidebarName">NovaKai</div>
                 <div class="role">Rights Holder</div>
             </div>
         </div>
@@ -330,41 +405,25 @@
         </div>
 
         <div class="content-grid">
-            <!-- LEFT COLUMN: User Profile Info & Completion -->
+            <!-- LEFT COLUMN -->
             <div class="left-column">
                 
-                <!-- Status Grid -->
                 <div class="status-grid">
-                    <div class="status-card">
-                        <div class="status-label"><i class="fas fa-code-branch"></i> Version</div>
-                        <div class="status-value">v1.0</div>
-                    </div>
-                    <div class="status-card">
-                        <div class="status-label"><i class="fas fa-user-tag"></i> User Type</div>
-                        <div class="status-value">Creator</div>
-                    </div>
-                    <div class="status-card">
-                        <div class="status-label"><i class="far fa-calendar-alt"></i> Member Since</div>
-                        <div class="status-value">2012</div>
-                    </div>
-                    <div class="status-card">
-                        <div class="status-label"><i class="fas fa-globe"></i> Visibility</div>
-                        <div class="status-value"><span class="badge-pill">Public</span></div>
-                    </div>
+                    <div class="status-card"><div class="status-label"><i class="fas fa-code-branch"></i> Version</div><div class="status-value">v1.0</div></div>
+                    <div class="status-card"><div class="status-label"><i class="fas fa-user-tag"></i> User Type</div><div class="status-value">Creator</div></div>
+                    <div class="status-card"><div class="status-label"><i class="far fa-calendar-alt"></i> Member Since</div><div class="status-value">2012</div></div>
+                    <div class="status-card"><div class="status-label"><i class="fas fa-globe"></i> Visibility</div><div class="status-value"><span class="badge-pill">Public</span></div></div>
                 </div>
 
-                <!-- Action Bar -->
                 <div class="action-bar">
                     <a href="profile.html" class="btn btn-secondary"><i class="fas fa-eye"></i> View as a Guest</a>
                     <button class="btn btn-primary" id="btnEditProfile" onclick="toggleEditMode()"><i class="fas fa-pen"></i> Edit Profile</button>
                 </div>
 
-                <!-- Profile Card -->
                 <div class="profile-card">
-                    <!-- Banner -->
+                    <!-- Banner with Upload Overlay (Task 2) -->
                     <div class="banner-container">
                         <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1200&auto=format&fit=crop" id="viewBannerImg" alt="Banner">
-                        <!-- Hidden File Input & Overlay -->
                         <input type="file" id="bannerInput" accept="image/*" style="display:none;" onchange="previewImage(this, 'viewBannerImg')">
                         <div class="photo-edit-overlay" onclick="document.getElementById('bannerInput').click()">
                             <i class="fas fa-camera"></i> Change Banner
@@ -372,7 +431,7 @@
                     </div>
                     
                     <div class="profile-header-info">
-                        <!-- Avatar -->
+                        <!-- Avatar with Upload Overlay (Task 2) -->
                         <div class="avatar-container">
                             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop" id="viewAvatarImg" alt="Avatar">
                             <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="previewImage(this, 'viewAvatarImg')">
@@ -383,7 +442,10 @@
                         
                         <!-- VIEW MODE -->
                         <div id="viewMode">
-                            <div class="profile-name">John David Smith</div>
+                            <div class="profile-name">
+                                <span id="viewFullLegalName">John David Smith</span>
+                                <span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>
+                            </div>
                             <div class="profile-meta">
                                 <span id="viewDisplayName">NovaKai</span> 
                                 <span class="specialties-list" id="viewSpecialties">Musician • Photographer</span>
@@ -391,24 +453,19 @@
                                 <span id="viewPronouns">He/Him</span> • <span id="viewArtisticName">NovaKai</span> (<span id="viewArtisticSlug">@novakai</span>)
                             </div>
                             
-                            <!-- Biography -->
                             <div class="section-title">Biography</div>
-                            <div class="bio-text" id="viewBiography">
-                                Award-winning music producer and composer with 10+ years of experience creating genre-defying electronic music. Collaborated with artists across Africa, Europe, and the Americas.
-                            </div>
+                            <div class="bio-text" id="viewBiography">Award-winning music producer and composer with 10+ years of experience creating genre-defying electronic music. Collaborated with artists across Africa, Europe, and the Americas.</div>
 
-                            <!-- Personal Details -->
                             <div class="section-title">Personal Details</div>
                             <div class="info-grid">
-                                <div class="info-item"><span class="info-label">Full Legal Name</span><span class="info-value" id="viewFullLegalName">John David Smith</span></div>
-                                <div class="info-item"><span class="info-label">Title</span><span class="info-value" id="viewTitle">Mr.</span></div>
-                                <div class="info-item"><span class="info-label">Gender</span><span class="info-value" id="viewGender">Male</span></div>
-                                <div class="info-item"><span class="info-label">Date of Birth</span><span class="info-value" id="viewDOB">1990-01-15</span></div>
-                                <div class="info-item"><span class="info-label">Identification</span><span class="info-value" id="viewIdNumber">•••• •••• 1234</span></div>
+                                <div class="info-item"><span class="info-label">Full Legal Name</span><span class="info-value">John David Smith</span></div>
+                                <div class="info-item"><span class="info-label">Title</span><span class="info-value">Mr.</span></div>
+                                <div class="info-item"><span class="info-label">Gender</span><span class="info-value">Male</span></div>
+                                <div class="info-item"><span class="info-label">Date of Birth</span><span class="info-value">1990-01-15</span></div>
+                                <div class="info-item"><span class="info-label">Identification</span><span class="info-value">•••• •••• 1234</span></div>
                                 <div class="info-item"><span class="info-label">SeekReap ID</span><span class="info-value">SR-2026-MR9KZW0B</span></div>
                             </div>
 
-                            <!-- Professional/Creative Details -->
                             <div class="section-title">Professional/Creative Details</div>
                             <div class="info-grid">
                                 <div class="info-item"><span class="info-label">Display Name</span><span class="info-value" id="viewDisplayName2">NovaKai</span></div>
@@ -417,7 +474,6 @@
                                 <div class="info-item"><span class="info-label">Contact Preference</span><span class="info-value">Email</span></div>
                             </div>
 
-                            <!-- Contact Details -->
                             <div class="section-title">Contact Details</div>
                             <div class="info-grid">
                                 <div class="info-item"><span class="info-label">Primary Email</span><span class="info-value">nova@seekreap.io</span></div>
@@ -426,7 +482,6 @@
                                 <div class="info-item"><span class="info-label">Secondary Phone</span><span class="info-value">+27 8* *** *567</span></div>
                             </div>
 
-                            <!-- Residential Details -->
                             <div class="section-title">Residential Details</div>
                             <div class="info-grid">
                                 <div class="info-item"><span class="info-label">Physical Address</span><span class="info-value">123 Main Street, Cape Town</span></div>
@@ -437,69 +492,52 @@
                                 <div class="info-item"><span class="info-label">Nationality</span><span class="info-value">South African</span></div>
                             </div>
 
-                            <!-- NEW: Education -->
+                            <!-- Resume Sections (View) -->
                             <div class="section-title">Education</div>
-                            <div class="resume-list">
+                            <div class="resume-list" id="viewEducationList">
                                 <div class="resume-item">
-                                    <div class="resume-item-info">
-                                        <h4>Cape Town Music Institute</h4>
-                                        <p>Bachelor of Music • Music Production</p>
-                                    </div>
+                                    <div class="resume-item-info"><h4>Cape Town Music Institute</h4><p>Bachelor of Music • Music Production</p></div>
                                     <div class="resume-item-date">2010 — 2013</div>
                                 </div>
                             </div>
 
-                            <!-- NEW: Professional Skills -->
                             <div class="section-title">Professional Skills</div>
-                            <div class="resume-list">
+                            <div class="resume-list" id="viewSkillsList">
                                 <div class="resume-item">
-                                    <div class="resume-item-info">
-                                        <h4>Music Production</h4>
-                                        <p>Expert • 10+ Years Experience</p>
-                                    </div>
-                                </div>
-                                <div class="resume-item">
-                                    <div class="resume-item-info">
-                                        <h4>Mixing & Mastering</h4>
-                                        <p>Advanced • 8 Years Experience</p>
-                                    </div>
+                                    <div class="resume-item-info"><h4>Music Production</h4><p>Expert • 10+ Years Experience</p></div>
                                 </div>
                             </div>
 
-                            <!-- NEW: Employment History -->
                             <div class="section-title">Employment History</div>
-                            <div class="resume-list">
+                            <div class="resume-list" id="viewEmploymentList">
                                 <div class="resume-item">
-                                    <div class="resume-item-info">
-                                        <h4>Nova Studios</h4>
-                                        <p>Creative Director & Lead Producer</p>
-                                    </div>
+                                    <div class="resume-item-info"><h4>Nova Studios</h4><p>Creative Director & Lead Producer</p></div>
                                     <div class="resume-item-date">2020 — Present</div>
                                 </div>
                             </div>
 
-                            <!-- NEW: Achievements -->
                             <div class="section-title">Achievements</div>
-                            <div class="resume-list">
+                            <div class="resume-list" id="viewAchievementsList">
                                 <div class="resume-item">
-                                    <div class="resume-item-info">
-                                        <h4>2x South African Music Award Winner</h4>
-                                        <p>Issued by SAMAs</p>
-                                    </div>
-                                    <div class="resume-item-date">2023, 2025</div>
+                                    <div class="resume-item-info"><h4>2x South African Music Award Winner</h4><p>Issued by SAMAs</p></div>
+                                    <div class="resume-item-date">2023</div>
                                 </div>
                             </div>
 
-                            <!-- NEW: Professional Affiliations -->
                             <div class="section-title">Professional Affiliations</div>
-                            <div class="resume-list">
+                            <div class="resume-list" id="viewAffiliationsList">
                                 <div class="resume-item">
-                                    <div class="resume-item-info">
-                                        <h4>ISNI</h4>
-                                        <p>0000-0001-2345-6789</p>
-                                    </div>
+                                    <div class="resume-item-info"><h4>ISNI</h4><p>0000-0001-2345-6789</p></div>
                                     <div class="resume-item-date">Active</div>
                                 </div>
+                            </div>
+
+                            <!-- Social Engagement (Task 6) -->
+                            <div class="section-title">Social Engagement</div>
+                            <div class="social-tags">
+                                <div class="social-tag"><i class="fas fa-globe"></i> Website <a href="#" target="_blank">novakai.com</a></div>
+                                <div class="social-tag"><i class="fab fa-instagram"></i> Instagram <a href="#" target="_blank">@novakai</a></div>
+                                <div class="social-tag"><i class="fab fa-x-twitter"></i> X <a href="#" target="_blank">@novakai</a></div>
                             </div>
 
                         </div>
@@ -507,13 +545,9 @@
                         <!-- EDIT MODE -->
                         <div class="edit-form" id="editMode">
                             
-                            <!-- Biography -->
                             <div class="section-title" style="margin-top:0;">Biography</div>
-                            <div class="form-group">
-                                <textarea id="editBiography" rows="3">Award-winning music producer and composer with 10+ years of experience creating genre-defying electronic music. Collaborated with artists across Africa, Europe, and the Americas.</textarea>
-                            </div>
+                            <div class="form-group"><textarea id="editBiography" rows="3">Award-winning music producer and composer with 10+ years of experience creating genre-defying electronic music. Collaborated with artists across Africa, Europe, and the Americas.</textarea></div>
 
-                            <!-- Personal Details -->
                             <div class="section-title">Personal Details</div>
                             <div class="form-grid-3">
                                 <div class="form-group"><label>First Name</label><input type="text" id="editFirstName" value="John"></div>
@@ -521,16 +555,10 @@
                                 <div class="form-group"><label>Last Name</label><input type="text" id="editLastName" value="Smith"></div>
                             </div>
                             <div class="form-grid-3">
-                                <div class="form-group"><label>Title</label>
-                                    <select id="editTitle"><option value="Mr" selected>Mr</option><option value="Mrs">Mrs</option><option value="Ms">Ms</option><option value="Dr">Dr</option></select>
-                                </div>
-                                <div class="form-group"><label>Gender</label>
-                                    <select id="editGender"><option value="Male" selected>Male</option><option value="Female">Female</option><option value="Non-binary">Non-binary</option></select>
-                                </div>
+                                <div class="form-group"><label>Title</label><select id="editTitle"><option value="Mr" selected>Mr</option><option value="Mrs">Mrs</option><option value="Ms">Ms</option><option value="Dr">Dr</option></select></div>
+                                <div class="form-group"><label>Gender</label><select id="editGender"><option value="Male" selected>Male</option><option value="Female">Female</option><option value="Non-binary">Non-binary</option></select></div>
                                 <div class="form-group"><label>Date of Birth</label><input type="date" id="editDOB" value="1990-01-15"></div>
                             </div>
-                            
-                            <!-- ID / Passport Toggle -->
                             <div class="form-grid-3">
                                 <div class="form-group">
                                     <label>Identification Type</label>
@@ -539,21 +567,11 @@
                                         <option value="passport">Passport Number</option>
                                     </select>
                                 </div>
-                                <div class="form-group" id="inputIdentityNumber">
-                                    <label>Identity Number</label>
-                                    <input type="text" value="9001155000081">
-                                </div>
-                                <div class="form-group" id="inputPassportNumber" style="display: none;">
-                                    <label>Passport Number</label>
-                                    <input type="text" value="A01234567">
-                                </div>
+                                <div class="form-group" id="inputIdentityNumber"><label>Identity Number</label><input type="text" value="9001155000081"></div>
+                                <div class="form-group" id="inputPassportNumber" style="display: none;"><label>Passport Number</label><input type="text" value="A01234567"></div>
                             </div>
+                            <div class="form-grid"><div class="form-group"><label>Pronouns</label><input type="text" id="editPronouns" value="He/Him"></div></div>
 
-                            <div class="form-grid">
-                                <div class="form-group"><label>Pronouns</label><input type="text" id="editPronouns" value="He/Him"></div>
-                            </div>
-
-                            <!-- Professional/Creative Details -->
                             <div class="section-title">Professional/Creative Details</div>
                             <div class="form-grid-3">
                                 <div class="form-group"><label>Display Name</label><input type="text" id="editDisplayName" value="NovaKai"></div>
@@ -564,7 +582,6 @@
                                 <div class="form-group"><label>Artistic Slug</label><input type="text" id="editArtisticSlug" value="@novakai"></div>
                             </div>
 
-                            <!-- Contact Details -->
                             <div class="section-title">Contact Details</div>
                             <div class="form-grid">
                                 <div class="form-group"><label>Primary Email</label><input type="email" value="nova@seekreap.io"></div>
@@ -573,7 +590,6 @@
                                 <div class="form-group"><label>Secondary Phone</label><input type="tel" value="+27 8* *** *567"></div>
                             </div>
 
-                            <!-- Residential Details -->
                             <div class="section-title">Residential Details</div>
                             <div class="form-grid">
                                 <div class="form-group"><label>Physical Address Line 1</label><input type="text" value="123 Main Street"></div>
@@ -586,68 +602,34 @@
                                 <div class="form-group">
                                     <label>Province</label>
                                     <select id="editProvince">
-                                        <option value="Eastern Cape">Eastern Cape</option>
-                                        <option value="Free State">Free State</option>
-                                        <option value="Gauteng">Gauteng</option>
-                                        <option value="KwaZulu-Natal">KwaZulu-Natal</option>
-                                        <option value="Limpopo">Limpopo</option>
-                                        <option value="Mpumalanga">Mpumalanga</option>
-                                        <option value="Northern Cape">Northern Cape</option>
-                                        <option value="North West">North West</option>
-                                        <option value="Western Cape" selected>Western Cape</option>
+                                        <option value="Eastern Cape">Eastern Cape</option><option value="Free State">Free State</option><option value="Gauteng">Gauteng</option><option value="KwaZulu-Natal">KwaZulu-Natal</option><option value="Limpopo">Limpopo</option><option value="Mpumalanga">Mpumalanga</option><option value="Northern Cape">Northern Cape</option><option value="North West">North West</option><option value="Western Cape" selected>Western Cape</option>
                                     </select>
                                 </div>
                                 <div class="form-group"><label>Country</label><input type="text" value="South Africa"></div>
                             </div>
 
-                            <!-- NEW SECTIONS (SIMULATED FORMS) -->
-                            <div class="section-title">Education <button onclick="showToast('Add Education dialog would open')"><i class="fas fa-plus"></i> Add</button></div>
-                            <div class="edit-section-box">
-                                <div class="form-grid-3">
-                                    <div class="form-group"><label>Institution</label><input type="text" value="Cape Town Music Institute"></div>
-                                    <div class="form-group"><label>Degree</label><input type="text" value="Bachelor of Music"></div>
-                                    <div class="form-group"><label>Field of Study</label><input type="text" value="Music Production"></div>
-                                </div>
-                            </div>
+                            <!-- Real-time Add Simulations (Task 5) -->
+                            <div class="section-title">Education <button onclick="addEducation()"><i class="fas fa-plus"></i> Add</button></div>
+                            <div id="editEducationList"></div>
 
-                            <div class="section-title">Professional Skills <button onclick="showToast('Add Skill dialog would open')"><i class="fas fa-plus"></i> Add</button></div>
-                            <div class="edit-section-box">
-                                <div class="form-grid-3">
-                                    <div class="form-group"><label>Skill Name</label><input type="text" value="Music Production"></div>
-                                    <div class="form-group"><label>Proficiency</label>
-                                        <select><option value="Expert" selected>Expert</option><option value="Advanced">Advanced</option><option value="Intermediate">Intermediate</option></select>
-                                    </div>
-                                    <div class="form-group"><label>Years of Experience</label><input type="number" value="10"></div>
-                                </div>
-                            </div>
+                            <div class="section-title">Professional Skills <button onclick="addSkill()"><i class="fas fa-plus"></i> Add</button></div>
+                            <div id="editSkillsList"></div>
 
-                            <div class="section-title">Employment History <button onclick="showToast('Add Employment dialog would open')"><i class="fas fa-plus"></i> Add</button></div>
-                            <div class="edit-section-box">
-                                <div class="form-grid-3">
-                                    <div class="form-group"><label>Organization</label><input type="text" value="Nova Studios"></div>
-                                    <div class="form-group"><label>Job Title</label><input type="text" value="Creative Director"></div>
-                                    <div class="form-group"><label>Start Date</label><input type="date" value="2020-01-01"></div>
-                                </div>
-                            </div>
+                            <div class="section-title">Employment History <button onclick="addEmployment()"><i class="fas fa-plus"></i> Add</button></div>
+                            <div id="editEmploymentList"></div>
 
-                            <div class="section-title">Achievements <button onclick="showToast('Add Achievement dialog would open')"><i class="fas fa-plus"></i> Add</button></div>
-                            <div class="edit-section-box">
-                                <div class="form-grid-3">
-                                    <div class="form-group"><label>Title</label><input type="text" value="2x South African Music Award Winner"></div>
-                                    <div class="form-group"><label>Issuer</label><input type="text" value="SAMAs"></div>
-                                    <div class="form-group"><label>Date</label><input type="date" value="2023-05-01"></div>
-                                </div>
-                            </div>
+                            <div class="section-title">Achievements <button onclick="addAchievement()"><i class="fas fa-plus"></i> Add</button></div>
+                            <div id="editAchievementsList"></div>
 
-                            <div class="section-title">Professional Affiliations <button onclick="showToast('Add Affiliation dialog would open')"><i class="fas fa-plus"></i> Add</button></div>
-                            <div class="edit-section-box">
-                                <div class="form-grid-3">
-                                    <div class="form-group"><label>Type</label>
-                                        <select><option value="ISNI" selected>ISNI</option><option value="IPI">IPI</option><option value="ORCID">ORCID</option></select>
-                                    </div>
-                                    <div class="form-group"><label>Value</label><input type="text" value="0000-0001-2345-6789"></div>
-                                    <div class="form-group"><label>Authority</label><input type="text" value="ISNI International"></div>
-                                </div>
+                            <div class="section-title">Professional Affiliations <button onclick="addAffiliation()"><i class="fas fa-plus"></i> Add</button></div>
+                            <div id="editAffiliationsList"></div>
+
+                            <!-- Social Engagement (Edit) -->
+                            <div class="section-title">Social Engagement <button onclick="simulateAction('Add Social Link dialog would open')"><i class="fas fa-plus"></i> Add</button></div>
+                            <div class="form-grid-3">
+                                <div class="form-group"><label>Website URL</label><input type="url" value="https://novakai.com"></div>
+                                <div class="form-group"><label>Instagram Handle</label><input type="text" value="@novakai"></div>
+                                <div class="form-group"><label>X Handle</label><input type="text" value="@novakai"></div>
                             </div>
 
                             <div style="display:flex; gap:12px; margin-top:24px;">
@@ -661,61 +643,27 @@
 
                 <!-- Profile Completion Tracker -->
                 <div class="completion-card">
-                    <div class="completion-header">
-                        <h3>Profile Completion</h3>
-                        <span class="percentage">82%</span>
-                    </div>
+                    <div class="completion-header"><h3>Profile Completion</h3><span class="percentage">82%</span></div>
                     <div class="completion-list">
-                        <div class="completion-item">
-                            <div class="completion-labels"><span>Biography</span><span class="text-green">100%</span></div>
-                            <div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width: 100%;"></div></div>
-                        </div>
-                        <div class="completion-item">
-                            <div class="completion-labels"><span>Identity Records (Personal)</span><span class="text-green">100%</span></div>
-                            <div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width: 100%;"></div></div>
-                        </div>
-                        <div class="completion-item">
-                            <div class="completion-labels"><span>Identity Records (Residential)</span><span class="text-yellow">70%</span></div>
-                            <div class="progress-bar-bg"><div class="progress-bar-fill fill-yellow" style="width: 70%;"></div></div>
-                        </div>
-                        <div class="completion-item">
-                            <div class="completion-labels"><span>Professional/Creative</span><span class="text-green">100%</span></div>
-                            <div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width: 100%;"></div></div>
-                        </div>
-                        <div class="completion-item">
-                            <div class="completion-labels"><span>Resume & Portfolio</span><span class="text-yellow">60%</span></div>
-                            <div class="progress-bar-bg"><div class="progress-bar-fill fill-yellow" style="width: 60%;"></div></div>
-                        </div>
+                        <div class="completion-item"><div class="completion-labels"><span>Biography</span><span class="text-green">100%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width: 100%;"></div></div></div>
+                        <div class="completion-item"><div class="completion-labels"><span>Identity Records (Personal)</span><span class="text-green">100%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width: 100%;"></div></div></div>
+                        <div class="completion-item"><div class="completion-labels"><span>Identity Records (Residential)</span><span class="text-yellow">70%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-yellow" style="width: 70%;"></div></div></div>
+                        <div class="completion-item"><div class="completion-labels"><span>Professional/Creative</span><span class="text-green">100%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width: 100%;"></div></div></div>
+                        <div class="completion-item"><div class="completion-labels"><span>Resume & Portfolio</span><span class="text-yellow">60%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-yellow" style="width: 60%;"></div></div></div>
                     </div>
                 </div>
 
             </div>
 
-            <!-- RIGHT COLUMN: Public Stats Vertical -->
+            <!-- RIGHT COLUMN -->
             <div class="right-column">
                 <div class="stats-panel">
                     <h3><i class="fas fa-chart-line" style="color:var(--gold); margin-right:8px;"></i> Public Stats</h3>
-                    
-                    <div class="stat-item">
-                        <div class="stat-item-left"><i class="fas fa-handshake"></i> Trusted By</div>
-                        <div class="stat-item-value">3,467</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-item-left"><i class="fas fa-users"></i> Trusted Creators</div>
-                        <div class="stat-item-value">5,846</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-item-left"><i class="fas fa-eye"></i> Profile Views</div>
-                        <div class="stat-item-value">23MK</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-item-left"><i class="fas fa-share-alt"></i> Shares</div>
-                        <div class="stat-item-value">14K</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-item-left"><i class="fas fa-heart"></i> Appreciations</div>
-                        <div class="stat-item-value">1,204</div>
-                    </div>
+                    <div class="stat-item"><div class="stat-item-left"><i class="fas fa-handshake"></i> Trusted By</div><div class="stat-item-value">3,467</div></div>
+                    <div class="stat-item"><div class="stat-item-left"><i class="fas fa-users"></i> Trusted Creators</div><div class="stat-item-value">5,846</div></div>
+                    <div class="stat-item"><div class="stat-item-left"><i class="fas fa-eye"></i> Profile Views</div><div class="stat-item-value">23MK</div></div>
+                    <div class="stat-item"><div class="stat-item-left"><i class="fas fa-share-alt"></i> Shares</div><div class="stat-item-value">14K</div></div>
+                    <div class="stat-item"><div class="stat-item-left"><i class="fas fa-heart"></i> Appreciations</div><div class="stat-item-value">1,204</div></div>
                 </div>
             </div>
 
@@ -724,63 +672,152 @@
 </div>
 
 <script>
-    // Sidebar Toggle
-    function toggleMobileSidebar() {
-        document.getElementById('sidebar').classList.toggle('mobile-open');
-        document.getElementById('sidebarOverlay').classList.toggle('active');
-    }
-    function closeSidebar() {
-        document.getElementById('sidebar').classList.remove('mobile-open');
-        document.getElementById('sidebarOverlay').classList.remove('active');
+    // ─── GENERAL UTILS ──────────────────────────────────────────
+    function toggleMobileSidebar() { document.getElementById('sidebar').classList.toggle('mobile-open'); document.getElementById('sidebarOverlay').classList.toggle('active'); }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('mobile-open'); document.getElementById('sidebarOverlay').classList.remove('active'); }
+
+    // Toggle Dropdowns
+    function toggleDropdown(menuId, event) {
+        event.stopPropagation();
+        const menu = document.getElementById(menuId);
+        // Close other dropdowns
+        document.querySelectorAll('.dropdown-menu').forEach(m => { if(m.id !== menuId) m.classList.remove('open'); });
+        menu.classList.toggle('open');
     }
 
-    // Edit Profile Simulation Logic
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown-wrapper')) {
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('open'));
+        }
+    });
+
+    // ─── TASK 1: SIMULATE ACTIONS ────────────────────────────────
+    function simulateAction(message) {
+        showToast(message, 'info');
+        // Close all dropdowns after clicking
+        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('open'));
+    }
+
+    // ─── TASK 4: ACCOUNT SWITCHER ─────────────────────────────────
+    function switchAccount(name, email, btnElement) {
+        // 1. Update UI State in menu
+        document.querySelectorAll('.account-switcher-btn').forEach(btn => {
+            btn.classList.remove('active');
+            const check = btn.querySelector('.account-check');
+            if (check) check.remove();
+        });
+
+        btnElement.classList.add('active');
+        if (!btnElement.querySelector('.account-check')) {
+            btnElement.insertAdjacentHTML('beforeend', '<i class="fas fa-check-circle account-check"></i>');
+        }
+
+        // 2. Update Header Avatar & Sidebar text
+        const imgSrc = btnElement.querySelector('img').src;
+        document.querySelector('.header-profile-trigger img').src = imgSrc;
+        
+        document.getElementById('sidebarName').innerText = name;
+        document.getElementById('sidebarAvatar').innerText = name.charAt(0);
+        document.getElementById('viewFullLegalName').innerText = name; // Update profile name visually
+
+        // 3. Close Menu & Show Toast
+        document.getElementById('accountMenu').classList.remove('open');
+        showToast(`Switched to account: ${name}`, 'success');
+    }
+
+    // ─── TASK 2: PHOTO UPLOAD ────────────────────────────────────
+    function previewImage(input, imgId) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById(imgId).src = e.target.result;
+                showToast('Image updated locally. Save changes to confirm.', 'info');
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // ─── EDIT MODE ───────────────────────────────────────────────
     function toggleEditMode() {
         const viewMode = document.getElementById('viewMode');
         const editMode = document.getElementById('editMode');
         const btn = document.getElementById('btnEditProfile');
 
         if (editMode.classList.contains('active')) {
-            // Cancel Edit
             editMode.classList.remove('active');
             viewMode.style.display = 'block';
             btn.innerHTML = '<i class="fas fa-pen"></i> Edit Profile';
         } else {
-            // Enter Edit
             editMode.classList.add('active');
             viewMode.style.display = 'none';
             btn.innerHTML = '<i class="fas fa-times"></i> Cancel Edit';
         }
     }
 
-    // ID vs Passport Toggle
     function toggleIdType(type) {
-        const idInput = document.getElementById('inputIdentityNumber');
-        const passportInput = document.getElementById('inputPassportNumber');
-        
-        if (type === 'identity') {
-            idInput.style.display = 'flex';
-            passportInput.style.display = 'none';
-        } else {
-            idInput.style.display = 'none';
-            passportInput.style.display = 'flex';
-        }
+        document.getElementById('inputIdentityNumber').style.display = type === 'identity' ? 'flex' : 'none';
+        document.getElementById('inputPassportNumber').style.display = type === 'passport' ? 'flex' : 'none';
     }
 
-    // Image Preview
-    function previewImage(input, imgId) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById(imgId).src = e.target.result;
-                showToast('Image updated locally (will save on confirm)', 'info');
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
+    // ─── TASK 5: REAL-TIME ADD SECTIONS ──────────────────────────
+    
+    // Helper to create a new editable block
+    function createEditableBox(containerId, fieldsHtml, removeFnName) {
+        const container = document.getElementById(containerId);
+        const div = document.createElement('div');
+        div.className = 'edit-section-box';
+        div.innerHTML = `
+            <button onclick="this.parentElement.remove()" style="position:absolute; top:10px; right:10px; background:none; border:none; color:var(--red); cursor:pointer;"><i class="fas fa-times"></i></button>
+            <div class="form-grid-3">
+                ${fieldsHtml}
+            </div>
+        `;
+        container.appendChild(div);
     }
 
+    function addEducation() {
+        createEditableBox('editEducationList', `
+            <div class="form-group"><label>Institution</label><input type="text" placeholder="Institution Name"></div>
+            <div class="form-group"><label>Degree</label><input type="text" placeholder="Degree"></div>
+            <div class="form-group"><label>Field of Study</label><input type="text" placeholder="Field"></div>
+        `);
+    }
+
+    function addSkill() {
+        createEditableBox('editSkillsList', `
+            <div class="form-group"><label>Skill Name</label><input type="text" placeholder="e.g. Music Production"></div>
+            <div class="form-group"><label>Proficiency</label><select><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Expert</option></select></div>
+            <div class="form-group"><label>Years</label><input type="number" placeholder="Years"></div>
+        `);
+    }
+
+    function addEmployment() {
+        createEditableBox('editEmploymentList', `
+            <div class="form-group"><label>Organization</label><input type="text" placeholder="Organization Name"></div>
+            <div class="form-group"><label>Job Title</label><input type="text" placeholder="Title"></div>
+            <div class="form-group"><label>Start Date</label><input type="date"></div>
+        `);
+    }
+
+    function addAchievement() {
+        createEditableBox('editAchievementsList', `
+            <div class="form-group"><label>Title</label><input type="text" placeholder="Award Title"></div>
+            <div class="form-group"><label>Issuer</label><input type="text" placeholder="Issuer"></div>
+            <div class="form-group"><label>Date</label><input type="date"></div>
+        `);
+    }
+
+    function addAffiliation() {
+        createEditableBox('editAffiliationsList', `
+            <div class="form-group"><label>Type</label><select><option>ISNI</option><option>IPI</option><option>ORCID</option></select></div>
+            <div class="form-group"><label>Value</label><input type="text" placeholder="ID Number"></div>
+            <div class="form-group"><label>Authority</label><input type="text" placeholder="Issuing Body"></div>
+        `);
+    }
+
+    // ─── SAVE PROFILE (SIMULATION) ───────────────────────────────
     function saveProfile() {
-        // Simulate saving by updating the view mode text with the input values
         const fName = document.getElementById('editFirstName').value;
         const mName = document.getElementById('editMiddleName').value;
         const lName = document.getElementById('editLastName').value;
@@ -791,8 +828,7 @@
         const bio = document.getElementById('editBiography').value;
         const specialties = document.getElementById('editSpecialties').value;
 
-        // Update view mode
-        document.querySelector('.profile-name').innerText = `${fName} ${mName} ${lName}`;
+        // Update View Mode text
         document.getElementById('viewFullLegalName').innerText = `${fName} ${mName} ${lName}`;
         document.getElementById('viewDisplayName').innerText = displayName;
         document.getElementById('viewPronouns').innerText = pronouns;
@@ -800,23 +836,19 @@
         document.getElementById('viewArtisticSlug').innerText = artSlug;
         document.getElementById('viewBiography').innerText = bio;
         
-        // Format specialties with bullets
         const formattedSpecialties = specialties.split(',').map(s => s.trim()).filter(Boolean).join(' • ');
         document.getElementById('viewSpecialties').innerText = formattedSpecialties;
 
-        // Update specific info items
         document.getElementById('viewDisplayName2').innerText = displayName;
         document.getElementById('viewArtisticName2').innerText = artName;
         document.getElementById('viewArtisticSlug2').innerText = artSlug;
 
-        // Switch back to view mode
+        // Switch back
         toggleEditMode();
-        
-        // Show a toast
         showToast('Profile updated successfully!', 'success');
     }
 
-    // Toast Utility
+    // ─── TOAST ──────────────────────────────────────────────────
     function showToast(msg, type) {
         var existing = document.querySelector('.toast');
         if (existing) existing.remove();
