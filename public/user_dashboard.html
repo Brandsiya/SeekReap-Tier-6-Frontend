@@ -69,7 +69,6 @@
         .topbar-left { display: flex; align-items: center; gap: 16px; flex: 1; }
         .topbar-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
         
-        /* Header Action Buttons */
         .topbar-icon-btn { background: none; border: none; color: var(--text-dim); font-size: 15px; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--t); position: relative; flex-shrink: 0; }
         .topbar-icon-btn:hover { background: var(--surface2); color: var(--gold-light); }
         .topbar-icon-btn .badge-count { position: absolute; top: 0px; right: 0px; background: var(--red); color: #fff; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; min-width: 18px; text-align: center; border: 2px solid var(--bg2); }
@@ -80,7 +79,6 @@
         .search-container .search-icon-inline { color: var(--text-dim); font-size: 13px; margin-left: 8px; }
         .search-container:focus-within { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
         
-        /* Header Prefs & Plan */
         .header-prefs-block { display: flex; align-items: center; gap: 6px; background: var(--bg3); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: var(--text-dim); font-weight: 600; }
         .header-prefs-block i { color: var(--gold); }
         .pref-divider { color: rgba(255,255,255,0.1); margin: 0 2px; }
@@ -102,7 +100,6 @@
         .dropdown-item:hover i { color: var(--gold-light); }
         .dropdown-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 8px 0; }
 
-        /* Account Switcher Specifics */
         .account-switcher-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 16px; background: none; border: none; color: var(--text); text-align: left; cursor: pointer; transition: var(--t); }
         .account-switcher-btn:hover { background: var(--surface2); }
         .account-switcher-btn.active { background: rgba(255,255,255,0.03); }
@@ -112,7 +109,6 @@
         .account-info-text .acc-email { font-size: 11px; color: var(--text-dim); }
         .account-check { color: var(--gold); font-size: 14px; }
 
-        /* Profile Photo Trigger */
         .header-profile-trigger { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--gold-border); cursor: pointer; transition: var(--t); overflow: hidden; flex-shrink: 0; }
         .header-profile-trigger img { width: 100%; height: 100%; object-fit: cover; }
         .header-profile-trigger:hover { border-color: var(--gold); }
@@ -120,7 +116,6 @@
         /* ─── DASHBOARD CONTENT ──────────────────────────────────────────── */
         .dashboard-container { max-width: 1300px; width: 100%; margin: 0 auto; padding: 32px; }
         
-        /* Header with Active Status */
         .dashboard-header { margin-bottom: 28px; display: flex; align-items: center; gap: 12px; }
         .dashboard-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 700; color: var(--white); margin: 0; }
         .dashboard-header h2 { font-size: 16px; font-weight: 500; color: var(--text-dim); margin: 0; }
@@ -130,14 +125,12 @@
         .left-column { display: flex; flex-direction: column; gap: 24px; }
         .right-column { display: flex; flex-direction: column; gap: 24px; }
 
-        /* Status Grid (5 items now) */
         .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
         .status-card { background: var(--bg3); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius-sm); padding: 16px; transition: var(--t); }
         .status-card:hover { border-color: var(--gold-border); }
         .status-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); font-weight: 600; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
         .status-value { font-size: 14px; font-weight: 700; color: var(--text); }
         
-        /* Action Bar */
         .action-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
         .btn { padding: 10px 20px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; cursor: pointer; border: none; transition: var(--t); display: inline-flex; align-items: center; gap: 8px; font-family: 'DM Sans', sans-serif; text-decoration: none; }
         .btn-secondary { background: var(--surface2); border: 1px solid rgba(255,255,255,0.08); color: var(--text); }
@@ -147,7 +140,6 @@
         .btn-success { background: var(--green); color: #fff; }
         .btn-success:hover { background: #3d8b40; }
 
-        /* Profile Card & Photos */
         .profile-card { background: var(--bg3); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); overflow: hidden; position: relative; }
         
         .banner-container { height: 160px; background: #2d1b3d; position: relative; }
@@ -167,40 +159,34 @@
         .profile-header-info { padding: 0 24px 24px; position: relative; }
         .profile-name { margin-top: 12px; font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 700; color: var(--white); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         
-        /* Verification Badge - Now Green */
         .verified-badge { font-size: 13px; color: var(--green); background: rgba(76, 175, 80, 0.15); padding: 2px 10px; border-radius: 12px; display: inline-flex; align-items: center; gap: 4px; font-family: 'DM Sans', sans-serif; font-weight: 600; letter-spacing: 0; }
         
         .profile-meta { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; }
         .specialties-list { font-size: 13px; color: var(--gold-light); font-style: italic; display: inline-block; margin-left: 8px; }
         
-        /* Section Headings with Icons */
         .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gold); font-weight: 700; margin-top: 28px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center;}
         .section-title span { display: flex; align-items: center; gap: 8px; }
         .section-title button { background: none; border: none; color: var(--gold); cursor: pointer; font-size: 12px; transition: var(--t); }
         .section-title button:hover { color: var(--gold-light); }
         
-        /* Data Lists (View Mode) */
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .info-item { display: flex; flex-direction: column; gap: 2px; }
         .info-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); font-weight: 600; }
         .info-value { font-size: 14px; color: var(--text); font-weight: 500; }
         .bio-text { font-size: 14px; color: var(--text-mid); line-height: 1.7; }
         
-        /* Lists for Resume Sections */
         .resume-list { display: flex; flex-direction: column; gap: 12px; }
         .resume-item { background: var(--bg4); border: 1px solid rgba(255,255,255,0.04); padding: 12px 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: flex-start; position: relative;}
         .resume-item-info h4 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
         .resume-item-info p { font-size: 12px; color: var(--text-dim); }
         .resume-item-date { font-size: 11px; color: var(--gold-light); white-space: nowrap; margin-right: 24px; }
 
-        /* Social Tags */
         .social-tags { display: flex; flex-wrap: wrap; gap: 8px; }
         .social-tag { background: var(--bg4); border: 1px solid rgba(255,255,255,0.08); padding: 8px 14px; border-radius: 20px; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 8px; }
         .social-tag i { color: var(--gold); }
         .social-tag a { color: var(--text-dim); text-decoration: none; font-size: 12px; margin-left: 4px; }
         .social-tag a:hover { color: var(--gold-light); }
 
-        /* Edit Mode Form */
         .edit-form { display: none; padding: 24px; border-top: 1px solid rgba(255,255,255,0.06); }
         .edit-form.active { display: block; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
@@ -208,19 +194,16 @@
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         .form-group label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gold); font-weight: 600; display: flex; align-items: center; gap: 6px; }
         
-        /* Inputs with Icons */
         .input-wrapper { position: relative; display: flex; align-items: center; }
         .input-wrapper i { position: absolute; left: 14px; color: var(--text-dim); font-size: 13px; pointer-events: none; }
         .input-wrapper input, .input-wrapper select, .input-wrapper textarea { width: 100%; background: var(--bg4); border: 1px solid rgba(255,255,255,0.08); padding: 10px 14px 10px 38px; border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; transition: var(--t); }
         .input-wrapper input:focus, .input-wrapper select:focus, .input-wrapper textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-dim); }
         .input-wrapper textarea { resize: vertical; min-height: 80px; padding-top: 12px; }
         
-        /* Readonly field */
         .input-wrapper input[readonly] { background: rgba(0,0,0,0.4); color: var(--gold-light); cursor: not-allowed; border-style: dashed; }
         
         .edit-section-box { background: rgba(0,0,0,0.2); border: 1px dashed rgba(255,255,255,0.1); padding: 16px; border-radius: 8px; margin-bottom: 16px; position: relative; }
 
-        /* Completion Tracker */
         .completion-card { background: var(--bg3); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 24px; }
         .completion-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .completion-header h3 { font-size: 16px; font-weight: 600; color: var(--text); }
@@ -232,12 +215,10 @@
         .progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; }
         .progress-bar-fill { height: 100%; border-radius: 10px; transition: width 0.4s ease; }
         
-        /* Color Classes */
         .fill-red { background: var(--red); } .text-red { color: var(--red); }
         .fill-yellow { background: var(--amber); } .text-yellow { color: var(--amber); }
         .fill-green { background: var(--green); } .text-green { color: var(--green); }
 
-        /* Right Column */
         .stats-panel { background: var(--bg3); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 24px; }
         .stats-panel h3 { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px; }
         .stat-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
@@ -246,7 +227,6 @@
         .stat-item-left i { width: 16px; text-align: center; color: var(--gold); }
         .stat-item-value { font-weight: 600; font-size: 14px; color: var(--text); }
         
-        /* ─── RESPONSIVE DESIGN ─────────────────────────────────────────── */
         @media (max-width: 1024px) {
             .topbar { display: none; }
             .sidebar { top: 56px; transform: translateX(-100%); }
@@ -284,24 +264,20 @@
         </div>
     </div>
     <div class="topbar-right">
-        <!-- User Prefs Block -->
         <div class="header-prefs-block" title="Language & Timezone">
             <i class="fas fa-globe"></i> EN <span class="pref-divider">|</span> SAST
         </div>
         
-        <!-- Plan Block -->
         <div class="header-plan-block">
             <span class="plan-indicator">Free Plan</span>
             <span class="plan-dot">•</span>
             <button class="upgrade-btn" onclick="window.location.href='pricing.html'">Upgrade</button>
         </div>
         
-        <!-- Notifications -->
         <button class="topbar-icon-btn" onclick="window.location.href='notifications.html'" aria-label="Notifications">
             <i class="fas fa-bell"></i><span class="badge-count">3</span>
         </button>
 
-        <!-- More Menu -->
         <div class="dropdown-wrapper">
             <button class="topbar-icon-btn" onclick="toggleDropdown('moreMenu', event)" aria-label="More options">
                 <i class="fas fa-ellipsis-v"></i>
@@ -314,14 +290,12 @@
             </div>
         </div>
 
-        <!-- Account Switcher Avatar -->
         <div class="dropdown-wrapper">
             <div class="header-profile-trigger" onclick="toggleDropdown('accountMenu', event)" aria-label="Switch Account">
                 <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="Profile">
             </div>
             <div class="dropdown-menu" id="accountMenu" style="width: 280px;">
                 <div class="dropdown-header">Switch Account</div>
-                <!-- Account 1 -->
                 <button class="account-switcher-btn active" onclick="switchAccount('NovaKai', 'nova@seekreap.io', this)">
                     <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="NovaKai">
                     <div class="account-info-text">
@@ -330,7 +304,6 @@
                     </div>
                     <i class="fas fa-check-circle account-check"></i>
                 </button>
-                <!-- Account 2 -->
                 <button class="account-switcher-btn" onclick="switchAccount('Kai Sterling', 'kai@seekreap.io', this)">
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" alt="Kai">
                     <div class="account-info-text">
@@ -418,7 +391,6 @@
 <!-- ─── MAIN CONTENT ─── -->
 <div class="main-content">
     <div class="dashboard-container">
-        <!-- Header with Active Status -->
         <div class="dashboard-header">
             <h1>My Account</h1>
             <span class="status-pill-green"><i class="fas fa-circle" style="font-size:8px;"></i> Active</span>
@@ -429,7 +401,6 @@
             <!-- LEFT COLUMN -->
             <div class="left-column">
                 
-                <!-- Status Grid (Updated: 5 items) -->
                 <div class="status-grid">
                     <div class="status-card"><div class="status-label"><i class="fas fa-code-branch"></i> Version</div><div class="status-value">v1.0</div></div>
                     <div class="status-card"><div class="status-label"><i class="fas fa-user-tag"></i> User Type</div><div class="status-value">Individual</div></div>
@@ -479,12 +450,17 @@
                             <div class="section-title"><span><i class="fas fa-align-left"></i> Biography</span></div>
                             <div class="bio-text" id="viewBiography">Award-winning music producer and composer with 10+ years of experience creating genre-defying electronic music. Collaborated with artists across Africa, Europe, and the Americas.</div>
 
+                            <!-- RESTORED PERSONAL DETAILS -->
                             <div class="section-title"><span><i class="fas fa-user"></i> Personal Details</span></div>
                             <div class="info-grid">
-                                <div class="info-item"><span class="info-label">Title</span><span class="info-value">Mr.</span></div>
-                                <div class="info-item"><span class="info-label">Gender</span><span class="info-value">Male</span></div>
-                                <div class="info-item"><span class="info-label">Date of Birth</span><span class="info-value">1990-01-15</span></div>
-                                <div class="info-item"><span class="info-label">Identification</span><span class="info-value">•••• •••• 1234</span></div>
+                                <div class="info-item"><span class="info-label">Full Legal Name</span><span class="info-value" id="viewFullName">John David Smith</span></div>
+                                <div class="info-item"><span class="info-label">First Legal Name</span><span class="info-value" id="viewFirstName">John</span></div>
+                                <div class="info-item"><span class="info-label">Middle Legal Name</span><span class="info-value" id="viewMiddleName">David</span></div>
+                                <div class="info-item"><span class="info-label">Last Legal Name</span><span class="info-value" id="viewLastName">Smith</span></div>
+                                <div class="info-item"><span class="info-label">Title</span><span class="info-value" id="viewTitle">Mr.</span></div>
+                                <div class="info-item"><span class="info-label">Gender</span><span class="info-value" id="viewGender">Male</span></div>
+                                <div class="info-item"><span class="info-label">Date of Birth</span><span class="info-value" id="viewDOB">1990-01-15</span></div>
+                                <div class="info-item"><span class="info-label">Identification</span><span class="info-value" id="viewIdNumber">•••• •••• 1234</span></div>
                                 <div class="info-item"><span class="info-label">SeekReap ID</span><span class="info-value">SR-2026-MR9KZW0B</span></div>
                             </div>
 
@@ -514,7 +490,6 @@
                                 <div class="info-item"><span class="info-label">Nationality</span><span class="info-value">South African</span></div>
                             </div>
 
-                            <!-- Resume Sections (View) -->
                             <div class="section-title"><span><i class="fas fa-graduation-cap"></i> Education</span></div>
                             <div class="resume-list" id="viewEducationList">
                                 <div class="resume-item">
@@ -581,7 +556,6 @@
                                 <div class="form-group"><label><i class="fas fa-signature"></i> Last Name</label><div class="input-wrapper"><i class="fas fa-user"></i><input type="text" id="editLastName" value="Smith" oninput="updateFullName()"></div></div>
                             </div>
                             
-                            <!-- Full Name (Generated) -->
                             <div class="form-group" style="margin-bottom: 16px;">
                                 <label><i class="fas fa-id-card"></i> Full Legal Name</label>
                                 <div class="input-wrapper">
@@ -648,7 +622,6 @@
                                 <div class="form-group"><label><i class="fas fa-globe"></i> Country</label><div class="input-wrapper"><i class="fas fa-flag"></i><input type="text" value="South Africa"></div></div>
                             </div>
 
-                            <!-- Real-time Add Simulations -->
                             <div class="section-title"><span><i class="fas fa-graduation-cap"></i> Education</span> <button onclick="addEducation()"><i class="fas fa-plus"></i> Add</button></div>
                             <div id="editEducationList"></div>
 
@@ -719,21 +692,18 @@
     function toggleDropdown(menuId, event) {
         event.stopPropagation();
         const menu = document.getElementById(menuId);
-        // Close other dropdowns
         document.querySelectorAll('.dropdown-menu').forEach(m => { if(m.id !== menuId) m.classList.remove('open'); });
         menu.classList.toggle('open');
     }
 
-    // Close dropdowns when clicking outside
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.dropdown-wrapper')) {
             document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('open'));
         }
     });
 
-    // ─── TASK 4: ACCOUNT SWITCHER ─────────────────────────────────
+    // ─── ACCOUNT SWITCHER ─────────────────────────────────
     function switchAccount(name, email, btnElement) {
-        // 1. Update UI State in menu
         document.querySelectorAll('.account-switcher-btn').forEach(btn => {
             btn.classList.remove('active');
             const check = btn.querySelector('.account-check');
@@ -745,20 +715,18 @@
             btnElement.insertAdjacentHTML('beforeend', '<i class="fas fa-check-circle account-check"></i>');
         }
 
-        // 2. Update Header Avatar & Sidebar text
         const imgSrc = btnElement.querySelector('img').src;
         document.querySelector('.header-profile-trigger img').src = imgSrc;
         
         document.getElementById('sidebarName').innerText = name;
         document.getElementById('sidebarAvatar').innerText = name.charAt(0);
-        document.getElementById('viewFullLegalName').innerText = name; // Update profile name visually
+        document.getElementById('viewFullLegalName').innerText = name;
 
-        // 3. Close Menu & Show Toast
         document.getElementById('accountMenu').classList.remove('open');
         showToast(`Switched to account: ${name}`, 'success');
     }
 
-    // ─── TASK 2: PHOTO UPLOAD FIX ────────────────────────────────
+    // ─── PHOTO UPLOAD ────────────────────────────────
     function previewImage(input, imgId) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
@@ -778,15 +746,13 @@
         const btn = document.getElementById('btnEditProfile');
 
         if (editMode.classList.contains('active')) {
-            // EXIT EDIT MODE
             editMode.classList.remove('active');
-            card.classList.remove('editing'); // This hides the photo overlays
+            card.classList.remove('editing'); // Hides photo overlays
             viewMode.style.display = 'block';
             btn.innerHTML = '<i class="fas fa-pen"></i> Edit Profile';
         } else {
-            // ENTER EDIT MODE
             editMode.classList.add('active');
-            card.classList.add('editing'); // This REVEALS the photo overlays
+            card.classList.add('editing'); // REVEALS photo overlays
             viewMode.style.display = 'none';
             btn.innerHTML = '<i class="fas fa-times"></i> Cancel Edit';
         }
@@ -873,6 +839,10 @@
 
         // Update View Mode text
         document.getElementById('viewFullLegalName').innerText = `${fName} ${mName} ${lName}`;
+        document.getElementById('viewFullName').innerText = `${fName} ${mName} ${lName}`;
+        document.getElementById('viewFirstName').innerText = fName;
+        document.getElementById('viewMiddleName').innerText = mName;
+        document.getElementById('viewLastName').innerText = lName;
         document.getElementById('viewDisplayName').innerText = displayName;
         document.getElementById('viewPronouns').innerText = pronouns;
         document.getElementById('viewArtisticName').innerText = artName;
