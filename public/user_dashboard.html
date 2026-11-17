@@ -51,6 +51,12 @@
         .sidebar-nav a .nav-badge.danger { background: var(--red); color: #fff; }
         
         .sidebar-nav .nav-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 12px 10px; }
+        
+                 /* Danger Links */
+        .exit-zone-link { color: var(--red) !important; }
+        .exit-zone-link:hover { background: rgba(244, 67, 54, 0.1) !important; }
+        .exit-zone-link .nav-icon { color: var(--red) !important; }
+        
         .sidebar-footer { padding: 14px 12px; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; background: var(--bg2); }
         .sidebar-footer .user-card { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer; transition: var(--t); }
         .sidebar-footer .user-card:hover { background: var(--surface2); }
@@ -375,6 +381,12 @@
         <div class="nav-section">
             <div class="nav-section-title" style="color: var(--red);">Exit Zone</div>
             <a href="/logout_confirm.html"><span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span><span class="nav-label">Sign Out</span></a>
+        
+            <a href="/deactivate.html" class="exit-zone-link"><span class="nav-icon"><i class="fas fa-user-slash"></i></span>
+            <span class="nav-label">Deactivate Account</span></a>
+            <a href="/delete.html" class="exit-zone-link"><span class="nav-icon"><i class="fas fa-trash-alt"></i></span>
+            <span class="nav-label">Delete Account</span></a>
+        
         </div>
     </nav>
     <div class="sidebar-footer">
@@ -653,8 +665,11 @@
                     </div>
                 </div>
 
-                <!-- Profile Completion Tracker -->
-                <div class="completion-card">
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="right-column">
+                      <div class="completion-card">
                     <div class="completion-header"><h3>Profile Completion</h3><span class="percentage">82%</span></div>
                     <div class="completion-list">
                         <div class="completion-item"><div class="completion-labels"><span>Biography</span><span class="text-green">100%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width: 100%;"></div></div></div>
@@ -663,19 +678,6 @@
                         <div class="completion-item"><div class="completion-labels"><span>Professional/Creative</span><span class="text-green">100%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width: 100%;"></div></div></div>
                         <div class="completion-item"><div class="completion-labels"><span>Resume & Portfolio</span><span class="text-yellow">60%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-yellow" style="width: 60%;"></div></div></div>
                     </div>
-                </div>
-
-            </div>
-
-            <!-- RIGHT COLUMN -->
-            <div class="right-column">
-                <div class="stats-panel">
-                    <h3><i class="fas fa-chart-line" style="color:var(--gold); margin-right:8px;"></i> Public Stats</h3>
-                    <div class="stat-item"><div class="stat-item-left"><i class="fas fa-handshake"></i> Trusted By</div><div class="stat-item-value">3,467</div></div>
-                    <div class="stat-item"><div class="stat-item-left"><i class="fas fa-users"></i> Trusted Creators</div><div class="stat-item-value">5,846</div></div>
-                    <div class="stat-item"><div class="stat-item-left"><i class="fas fa-eye"></i> Profile Views</div><div class="stat-item-value">23MK</div></div>
-                    <div class="stat-item"><div class="stat-item-left"><i class="fas fa-share-alt"></i> Shares</div><div class="stat-item-value">14K</div></div>
-                    <div class="stat-item"><div class="stat-item-left"><i class="fas fa-heart"></i> Appreciations</div><div class="stat-item-value">1,204</div></div>
                 </div>
             </div>
 
