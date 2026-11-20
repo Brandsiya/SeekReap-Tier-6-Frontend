@@ -94,6 +94,15 @@
         .plan-dot { color: var(--gold-border); font-weight: bold; font-size: 12px; }
         .upgrade-btn { background: var(--gold); border: none; color: #000; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 12px; cursor: pointer; transition: var(--t); font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; }
         .upgrade-btn:hover { background: var(--gold-light); }
+        
+                /* Search Bar Wrapper */
+        .search-bar-wrapper { display: flex; align-items: center; gap: 8px; flex: 1; max-width: 420px; }
+        .search-bar-wrapper .search-container { position: relative; flex: 1; margin-right: 0; padding-right: 36px; }
+        .search-clear-btn { display: none; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; padding: 4px; transition: var(--t); }
+        .search-clear-btn:hover { color: var(--text); }
+        .search-clear-btn.visible { display: block; }
+        .search-submit-btn { background: var(--bg3); border: 1px solid rgba(255,255,255,0.08); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; color: var(--text-dim); cursor: pointer; transition: var(--t); flex-shrink: 0; }
+        .search-submit-btn:hover { border-color: var(--gold); color: var(--gold); }
 
         /* Dropdowns */
         .dropdown-wrapper { position: relative; }
@@ -224,6 +233,19 @@
         .fill-red { background: var(--red); } .text-red { color: var(--red); }
         .fill-yellow { background: var(--amber); } .text-yellow { color: var(--amber); }
         .fill-green { background: var(--green); } .text-green { color: var(--green); }
+        
+                /* Full Width Content Wrapper */
+        .dashboard-content-wrapper { display: flex; flex-direction: column; gap: 24px; }
+
+        /* Horizontal Completion Tracker */
+        .completion-card-horizontal { background: var(--bg3); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 20px 24px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+        .completion-card-horizontal .completion-header { display: flex; flex-direction: column; align-items: flex-start; gap: 0; margin-bottom: 0; border-right: 1px solid rgba(255,255,255,0.06); padding-right: 24px; flex-shrink: 0; }
+        .completion-card-horizontal .completion-header h3 { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; }
+        .completion-card-horizontal .completion-header .percentage { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; color: var(--gold); }
+        .completion-card-horizontal .completion-list { display: flex; flex-direction: row; flex: 1; gap: 20px; flex-wrap: wrap; }
+        .completion-card-horizontal .completion-item { flex: 1; min-width: 100px; gap: 4px; }
+        .completion-card-horizontal .completion-labels { font-size: 11px; }
+        .completion-card-horizontal .progress-bar-bg { height: 4px; }
 
         .stats-panel { background: var(--bg3); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 24px; }
         .stats-panel h3 { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px; }
@@ -264,9 +286,12 @@
 <div class="topbar">
     <div class="topbar-left">
         <a href="/user_dashboard.html" class="logo" style="font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; color: var(--gold-light); text-decoration: none; margin-right: 24px;">SeekReap</a>
-        <div class="search-container">
-            <input type="text" placeholder="Search assets, agreements, creators..." id="headerSearch">
-            <i class="fas fa-search search-icon-inline"></i>
+                    <div class="search-bar-wrapper">
+            <div class="search-container">
+                <input type="text" placeholder="Search assets, agreements, creators..." id="headerSearch" oninput="toggleSearchClear()">
+                <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()"><i class="fas fa-times"></i></button>
+            </div>
+            <button class="search-submit-btn"><i class="fas fa-search"></i></button>
         </div>
     </div>
     <div class="topbar-right">
@@ -381,11 +406,30 @@
             <a href="/requests.html"><span class="nav-icon"><i class="fas fa-inbox"></i></span><span class="nav-label">Requests</span></a>
         </div>
         <div class="nav-divider"></div>
-        <div class="nav-section">
+                <div class="nav-section">
             <div class="nav-section-title">Billing</div>
             <a href="/pricing.html"><span class="nav-icon"><i class="fas fa-tags"></i></span><span class="nav-label">Plans & Pricing</span></a>
             <a href="/billing.html"><span class="nav-icon"><i class="fas fa-receipt"></i></span><span class="nav-label">Invoices & Receipts</span></a>
         </div>
+        
+        <div class="nav-divider"></div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">Help & Support</div>
+            <a href="/certificate_verify.html"><span class="nav-icon"><i class="fas fa-search-location"></i></span><span class="nav-label">Verify Certificate</span></a>
+            <a href="/report_problem.html"><span class="nav-icon"><i class="fas fa-bug"></i></span><span class="nav-label">Report a Problem</span></a>
+        </div>
+        
+        <div class="nav-divider"></div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">Legal</div>
+            <a href="/terms.html"><span class="nav-icon"><i class="fas fa-file-signature"></i></span><span class="nav-label">Terms of Service</span></a>
+            <a href="/privacy.html"><span class="nav-icon"><i class="fas fa-shield-alt"></i></span><span class="nav-label">Privacy Policy</span></a>
+            <a href="/cookies.html"><span class="nav-icon"><i class="fas fa-cookie-bite"></i></span><span class="nav-label">Cookies Policy</span></a>
+            <a href="/refunds.html"><span class="nav-icon"><i class="fas fa-undo"></i></span><span class="nav-label">Refund Policy</span></a>
+        </div>
+        
         <div class="nav-divider"></div>
         <div class="nav-section">
             <div class="nav-section-title" style="color: var(--red);">Exit Zone</div>
@@ -416,10 +460,8 @@
             <h1>My Account</h1>
             <span class="status-pill-green"><i class="fas fa-circle" style="font-size:8px;"></i> Active</span>
         </div>
-        <h2 style="font-size: 16px; font-weight: 500; color: var(--text-dim); margin-top: -20px; margin-bottom: 28px;">Profile</h2>
-
-        <div class="content-grid">
-            <!-- LEFT COLUMN -->
+        <h2 style="font-size: 16px; font-weight: 500; color: var(--text-dim); margin-top: -20px; margin-bottom: 28px;">Manage your Profile, Security & Privacy, Settings, and Audit Log</h2>
+        <div class="dashboard-content-wrapper">
             <div class="left-column">
                 
                 <div class="status-grid">
@@ -433,6 +475,22 @@
                 <div class="action-bar">
                     <a href="profile.html" class="btn btn-secondary"><i class="fas fa-eye"></i> View as a Guest</a>
                     <button class="btn btn-primary" id="btnEditProfile" onclick="toggleEditMode()"><i class="fas fa-pen"></i> Edit Profile</button>
+                </div>
+                
+                <!-- RIGHT COLUMN -->
+                <!-- Horizontal Profile Completion -->
+                <div class="completion-card-horizontal">
+                    <div class="completion-header">
+                        <h3>Profile Completion</h3>
+                        <span class="percentage">82%</span>
+                    </div>
+                    <div class="completion-list">
+                        <div class="completion-item"><div class="completion-labels"><span>Biography</span><span class="text-green">100%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width: 100%;"></div></div></div>
+                        <div class="completion-item"><div class="completion-labels"><span>Personal</span><span class="text-green">100%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width: 100%;"></div></div></div>
+                        <div class="completion-item"><div class="completion-labels"><span>Residential</span><span class="text-yellow">70%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-yellow" style="width: 70%;"></div></div></div>
+                        <div class="completion-item"><div class="completion-labels"><span>Professional</span><span class="text-green">100%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width: 100%;"></div></div></div>
+                        <div class="completion-item"><div class="completion-labels"><span>Resume</span><span class="text-yellow">60%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-yellow" style="width: 60%;"></div></div></div>
+                    </div>
                 </div>
 
                 <div class="profile-card" id="profileCard">
@@ -676,20 +734,6 @@
 
             </div>
 
-            <!-- RIGHT COLUMN -->
-            <div class="right-column">
-                      <div class="completion-card">
-                    <div class="completion-header"><h3>Profile Completion</h3><span class="percentage">82%</span></div>
-                    <div class="completion-list">
-                        <div class="completion-item"><div class="completion-labels"><span>Biography</span><span class="text-green">100%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width: 100%;"></div></div></div>
-                        <div class="completion-item"><div class="completion-labels"><span>Identity Records (Personal)</span><span class="text-green">100%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width: 100%;"></div></div></div>
-                        <div class="completion-item"><div class="completion-labels"><span>Identity Records (Residential)</span><span class="text-yellow">70%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-yellow" style="width: 70%;"></div></div></div>
-                        <div class="completion-item"><div class="completion-labels"><span>Professional/Creative</span><span class="text-green">100%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width: 100%;"></div></div></div>
-                        <div class="completion-item"><div class="completion-labels"><span>Resume & Portfolio</span><span class="text-yellow">60%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill fill-yellow" style="width: 60%;"></div></div></div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 </div>
@@ -698,7 +742,21 @@
     // ─── GENERAL UTILS ──────────────────────────────────────────
     function toggleMobileSidebar() { document.getElementById('sidebar').classList.toggle('mobile-open'); document.getElementById('sidebarOverlay').classList.toggle('active'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('mobile-open'); document.getElementById('sidebarOverlay').classList.remove('active'); }
-
+    function toggleSearchClear() {
+        const input = document.getElementById('headerSearch');
+        const btn = document.getElementById('searchClearBtn');
+        if (input.value.length > 0) {
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
+    }
+    function clearSearch() {
+        const input = document.getElementById('headerSearch');
+        input.value = '';
+        document.getElementById('searchClearBtn').classList.remove('visible');
+        input.focus();
+    }
     // Toggle Dropdowns
     function toggleDropdown(menuId, event) {
         event.stopPropagation();
