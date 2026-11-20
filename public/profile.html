@@ -3,247 +3,539 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SeekReap · Identity Center</title>
+    <title>SeekReap · Profile View</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    <link rel="stylesheet" href="assets/css/profile.css" />
+    
+    <style>
+        /* ─── UNIFIED DARK THEME ───────── */
+        :root {
+            --gold: #C9993A; --gold-light: #E8C06A; --gold-dark: #9B7520;
+            --gold-dim: rgba(201, 153, 58, 0.12); --gold-border: rgba(201, 153, 58, 0.25);
+            --bg: #08080E; --bg2: #0F0F18; --bg3: #161622; --bg4: #1E1E2A;
+            --surface: rgba(255, 255, 255, 0.03); --surface2: rgba(255, 255, 255, 0.06);
+            --text: #F0F0F0; --text-dim: #808098; --text-mid: #B0B0C8;
+            --green: #4CAF50; --red: #F44336; --amber: #FF9800; --blue: #2196F3;
+            --radius: 16px; --radius-sm: 10px; --sidebar-width: 260px;
+            --t: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.6; display: flex; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--gold-border); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+        /* ─── LAYOUT SHELL ───────────────────────────────────────────────── */
+        .topbar { position: fixed; top: 0; left: 0; right: 0; height: 64px; z-index: 500; background: rgba(15, 15, 24, 0.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--gold-border); padding: 0 32px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+        .main-content { margin-left: var(--sidebar-width); padding-top: 64px; width: calc(100% - var(--sidebar-width)); min-height: 100vh; display: flex; flex-direction: column; }
+        
+        .sidebar { position: fixed; top: 64px; left: 0; bottom: 0; width: var(--sidebar-width); background: var(--bg2); border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; z-index: 400; transition: transform 0.3s ease; overflow: hidden; }
+        .sidebar.mobile-open { transform: translateX(0); } 
+        .sidebar-header { padding: 20px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; min-height: 72px; }
+        .sidebar-header .logo { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; color: var(--gold-light); text-decoration: none; white-space: nowrap; overflow: hidden; }
+        
+        .sidebar-close-btn { display: none; background: none; border: none; color: var(--text-dim); font-size: 22px; cursor: pointer; padding: 4px 8px; transition: var(--t); }
+        .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+        .sidebar-nav .nav-section { margin-bottom: 20px; }
+        .sidebar-nav .nav-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); font-weight: 700; padding: 0 12px; margin-bottom: 8px; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-sm); color: var(--text-mid); text-decoration: none; font-size: 13px; font-weight: 500; transition: var(--t); position: relative; }
+        .sidebar-nav a:hover { background: var(--surface2); color: var(--text); }
+        .sidebar-nav a.active { background: var(--gold-dim); color: var(--gold-light); font-weight: 600; }
+        .sidebar-nav a.active::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px; background: var(--gold); border-radius: 0 3px 3px 0; }
+        .sidebar-nav a .nav-icon { width: 20px; text-align: center; font-size: 14px; flex-shrink: 0; }
+        .sidebar-nav a .nav-label { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-nav a .nav-badge { background: var(--gold); color: #000; font-size: 9px; font-weight: 700; padding: 1px 7px; border-radius: 10px; flex-shrink: 0; }
+        .sidebar-nav a .nav-badge.danger { background: var(--red); color: #fff; }
+        
+        .sidebar-nav .nav-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 12px 10px; }
+        .sidebar-footer { padding: 14px 12px; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; background: var(--bg2); }
+        .sidebar-footer .user-card { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer; transition: var(--t); }
+        .sidebar-footer .user-card:hover { background: var(--surface2); }
+        .sidebar-footer .user-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #000; flex-shrink: 0; }
+        .sidebar-footer .user-info { flex: 1; overflow: hidden; }
+        .sidebar-footer .user-info .name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-footer .user-info .role { font-size: 11px; color: var(--text-dim); }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 390; display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+
+        /* ─── TOPBAR ─────────────────────────────────────────────────────── */
+        .mobile-header { display: none; position: fixed; top: 0; left: 0; right: 0; height: 56px; background: var(--bg2); border-bottom: 1px solid var(--gold-border); z-index: 500; align-items: center; padding: 0 16px; gap: 12px; }
+        .mobile-header .hamburger-btn { background: none; border: none; color: var(--text-dim); font-size: 18px; cursor: pointer; padding: 8px; transition: var(--t); border-radius: 8px; }
+        .mobile-header .mobile-logo { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--white); text-decoration: none; }
+        
+        .topbar-left { display: flex; align-items: center; gap: 16px; flex: 1; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+        .topbar-icon-btn { background: none; border: none; color: var(--text-dim); font-size: 15px; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--t); position: relative; flex-shrink: 0; }
+        .topbar-icon-btn:hover { background: var(--surface2); color: var(--gold-light); }
+        .topbar-icon-btn .badge-count { position: absolute; top: 0px; right: 0px; background: var(--red); color: #fff; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; min-width: 18px; text-align: center; border: 2px solid var(--bg2); }
+        
+        .search-container { display: flex; align-items: center; background: var(--bg3); border: 1px solid rgba(255,255,255,0.08); border-radius: 30px; padding: 0 16px; transition: var(--t); width: 100%; max-width: 400px; flex: 1; }
+        .search-container input { border: none; background: transparent; padding: 8px 0; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); outline: none; width: 100%; }
+        .search-container input::placeholder { color: var(--text-dim); }
+        .search-container .search-icon-inline { color: var(--text-dim); font-size: 13px; margin-left: 8px; }
+        .search-container:focus-within { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-dim); }
+        
+        .header-plan-block { display: flex; align-items: center; gap: 6px; background: var(--gold-dim); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--gold-border); flex-shrink: 0; }
+        .plan-indicator { font-size: 10px; font-weight: 700; color: var(--gold-light); text-transform: uppercase; letter-spacing: 0.05em; }
+        .plan-dot { color: var(--gold-border); font-weight: bold; font-size: 12px; }
+        .upgrade-btn { background: var(--gold); border: none; color: #000; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 12px; cursor: pointer; transition: var(--t); font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; }
+        .upgrade-btn:hover { background: var(--gold-light); }
+
+        .header-profile-photo { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--gold-border); cursor: pointer; overflow: hidden; transition: var(--t); background: var(--bg3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .header-profile-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .header-profile-photo:hover { border-color: var(--gold); }
+
+        /* ─── PROFILE SPECIFIC STYLES ─── */
+        .profile-container { max-width: 1400px; width: 100%; margin: 0 auto; padding: 24px 32px 48px 32px; }
+
+        .hero-assembly { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: visible; box-shadow: var(--shadow); margin-bottom: 0; display: flex; flex-direction: column; }
+        .cover-photo-container { position: relative; height: 280px; width: 100%; background: var(--bg3); border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow: hidden; cursor: pointer; }
+        .cover-photo-container .cover-image { width: 100%; height: 100%; object-fit: cover; }
+        .cover-photo-container .cover-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); pointer-events: none; }
+        
+        .hero-details-container { padding: 0 40px 16px 40px; position: relative; display: flex; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+        .profile-avatar-large { width: 160px; height: 160px; border-radius: 50%; background: var(--primary); flex-shrink: 0; cursor: pointer; transition: var(--transition); position: relative; margin-top: -80px; border: 6px solid var(--bg2); box-shadow: var(--shadow-lg); z-index: 10; overflow: hidden; }
+        .profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-avatar-large .avatar-overlay { position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; font-size: 16px; color: #fff; }
+        .profile-avatar-large:hover .avatar-overlay { display: flex; }
+        
+        .profile-header-content { flex: 1; display: flex; justify-content: space-between; align-items: flex-end; padding-top: 16px; flex-wrap: wrap; gap: 12px; }
+        .profile-header-info { flex: 1; }
+        .profile-header-info .display-name { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; color: var(--text); }
+        .artist-meta-line { display: flex; align-items: center; gap: 16px; margin-top: 6px; flex-wrap: wrap; }
+        .artist-name-slug-stack { display: flex; flex-direction: column; gap: 2px; }
+        .name-pronouns-line { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+        .profile-header-info .artist-name { font-size: 18px; color: var(--text-dim); font-weight: 500; }
+        .artist-slug { font-size: 14px; color: var(--text-muted); font-weight: 400; font-style: italic; }
+        .seekreap-id-inline { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--gold); background: var(--gold-dim); padding: 1px 6px; border-radius: 4px; font-weight: 500; }
+        .pronouns-roles-line { display: flex; align-items: center; gap: 8px; margin-left: 0; margin-top: 4px; flex-wrap: wrap; }
+        .profile-header-info .pronouns { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+        .inline-separator { font-size: 12px; color: var(--text-muted); user-select: none; }
+        .inline-roles { font-size: 13px; color: var(--text); font-weight: 500; }
+        .member-since { font-size: 12px; color: var(--text-muted); font-weight: 500; background: var(--bg3); padding: 2px 10px; border-radius: 12px; display: inline-block; }
+        .profile-badges { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .badge-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 14px; border-radius: 30px; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; }
+        .badge-verified { background: rgba(76, 175, 80, 0.15); color: var(--green); }
+        .badge-creator { background: var(--gold-light); color: var(--gold); border: 1px solid var(--gold-border); }
+
+        .hero-metrics-actions-bar { border-top: 1px solid var(--border-light); padding: 16px 40px; display: flex; flex-direction: column; align-items: stretch; gap: 16px; background: linear-gradient(to bottom, var(--bg2), var(--bg3)); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+        .profile-stats-line { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 14px; width: 100%; }
+        .stat-clickable-pill { background: var(--bg2); border: 1px solid var(--border); color: var(--text-dim); font-family: inherit; font-size: 13px; padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 6px; }
+        .stat-clickable-pill:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); transform: translateY(-1px); }
+        .stat-clickable-pill strong { color: var(--text); font-weight: 600; }
+        .stat-clickable-pill:hover strong { color: var(--gold); }
+        .stat-clickable-pill i { color: var(--gold); }
+        .stat-dot-separator { color: var(--border); font-weight: bold; user-select: none; }
+
+        .profile-action-buttons { display: flex; align-items: center; justify-content: flex-start; gap: 28px; flex-wrap: wrap; }
+        .request-appreciate-group { display: flex; align-items: center; gap: 10px; }
+        .btn { padding: 10px 20px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13px; cursor: pointer; border: none; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; font-family: 'DM Sans', sans-serif; }
+        .btn-primary { background: var(--gold); color: #000; }
+        .btn-primary:hover { background: var(--gold-light); }
+        .btn-secondary { background: var(--bg3); border: 1px solid var(--border); color: var(--text); }
+        .btn-secondary:hover { background: var(--bg4); }
+        .btn-success { background: var(--green); color: #fff; }
+        .btn-danger { background: var(--red); color: #fff; }
+
+        .section-nav-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 24px; margin-bottom: 24px; padding: 4px 0; border-bottom: 2px solid var(--border-light); align-items: center; position: relative; z-index: 5; }
+        .section-tab { background: none; border: none; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; color: var(--text-muted); padding: 8px 14px; cursor: pointer; border-radius: var(--radius-sm); transition: var(--transition); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+        .section-tab:hover { color: var(--text); background: var(--bg3); }
+        .section-tab.active { color: var(--gold); background: var(--gold-dim); }
+
+        .section-content { display: none !important; }
+        .section-content.active { display: block !important; }
+        .content-overlay-zone { position: relative; }
+        .content-overlay-zone.has-active-card > .portfolio-display-section { display: none; }
+
+        .profile-layout-grid { margin-top: 24px; display: grid; grid-template-columns: 1.1fr 1.1fr; gap: 24px; align-items: start; }
+        .main-lane { display: flex; flex-direction: column; gap: 24px; }
+        .side-lane { display: flex; flex-direction: column; gap: 24px; }
+
+        .profile-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); transition: var(--transition); position: relative; }
+        .section-content.active { position: absolute; top: 0; left: 0; width: 100%; z-index: 50; box-shadow: var(--shadow-lg); }
+        .card-close-btn { position: absolute; top: 12px; right: 12px; z-index: 5; background: var(--bg3); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-dim); font-size: 14px; transition: var(--transition); }
+        .card-close-btn:hover { background: var(--bg4); color: var(--text); }
+        .profile-card-header { padding: 18px 24px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; }
+        .profile-card-header h3 { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 10px; letter-spacing: -0.01em; color: var(--text); }
+        .profile-card-body { padding: 24px; }
+
+        .portfolio-display-section { margin-bottom: 24px; display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: start; }
+        .portfolio-header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+        .portfolio-heading { font-size: 16px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+        .portfolio-heading i { color: var(--gold); }
+        .portfolio-search { display: flex; align-items: center; flex: 1 1 220px; max-width: 360px; background: var(--bg3); border: 1px solid var(--border); border-radius: 30px; padding: 0 6px 0 16px; transition: var(--transition); }
+        .portfolio-search:focus-within { border-color: var(--gold); background: var(--bg2); }
+        .portfolio-search input { flex: 1; min-width: 0; border: none; background: transparent; padding: 7px 0; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); outline: none; }
+        .portfolio-search input::placeholder { color: var(--text-muted); }
+        .portfolio-search-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); flex-shrink: 0; }
+        .portfolio-search-btn:hover { background: var(--gold-dim); color: var(--gold); }
+        .portfolio-count { font-size: 12px; color: var(--text-muted); }
+        .portfolio-filter-wrapper { display: flex; align-items: center; gap: 12px; }
+        .portfolio-filter-select { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text-dim); cursor: pointer; transition: var(--transition); height: 30px; }
+        .portfolio-filter-select:focus { outline: none; border-color: var(--gold); }
+
+        .portfolio-category-tabs { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 2px; }
+        .portfolio-category-tabs::-webkit-scrollbar { display: none; }
+        .portfolio-category-tab { background: var(--bg2); border: 1px solid var(--border); color: var(--text-dim); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 20px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; transition: var(--transition); flex-shrink: 0; }
+        .portfolio-category-tab:hover { border-color: var(--gold); color: var(--gold); }
+        .portfolio-category-tab.active { background: var(--gold); border-color: var(--gold); color: #000; }
+
+        .portfolio-grid-display { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .portfolio-display-item { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; transition: var(--transition); box-shadow: var(--shadow); }
+        .portfolio-display-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--gold); }
+        .portfolio-display-item .item-thumb { position: relative; aspect-ratio: 16/10; background: #1a1a1a; overflow: hidden; }
+        .portfolio-display-item .item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .portfolio-display-item .item-thumb .item-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; gap: 12px; opacity: 0; transition: var(--transition); }
+        .portfolio-display-item:hover .item-thumb .item-overlay { opacity: 1; }
+        .portfolio-display-item .item-thumb .item-overlay button { background: var(--bg2); border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); color: var(--text); font-size: 16px; box-shadow: var(--shadow); }
+        .portfolio-display-item .item-thumb .item-overlay button:hover { background: var(--gold); color: #000; transform: scale(1.1); }
+        .portfolio-display-item .item-info { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; }
+        .portfolio-display-item .item-title { font-weight: 600; font-size: 13px; color: var(--text); flex: 1; margin-right: 8px; }
+        .portfolio-display-item .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .portfolio-display-item .item-actions button { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px 6px; transition: var(--transition); font-size: 14px; }
+        .portfolio-display-item .item-actions button:hover { color: var(--gold); }
+
+        .collaborators-sidebar { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 20px; box-shadow: var(--shadow); }
+        .collaborators-sidebar h4 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .collaborators-sidebar h4 i { color: var(--gold); }
+        .collaborator-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-light); cursor: pointer; transition: var(--transition); text-decoration: none; color: var(--text); }
+        .collaborator-item:last-child { border-bottom: none; }
+        .collaborator-item:hover { background: var(--bg3); margin: 0 -10px; padding: 10px 10px; border-radius: var(--radius-sm); }
+        .collaborator-item .collaborator-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: var(--gold-dim); border: 2px solid var(--border-light); }
+        .collaborator-item .collaborator-info { flex: 1; min-width: 0; }
+        .collaborator-item .collaborator-name { font-weight: 600; font-size: 13px; color: var(--text); }
+        .collaborator-item .collaborator-handle { font-size: 11px; color: var(--text-muted); }
+        .collaborator-item .collaborator-badge { font-size: 9px; padding: 1px 6px; border-radius: 10px; background: var(--gold-dim); color: var(--gold); font-weight: 600; }
+        .collaborator-item .arrow-icon { color: var(--text-muted); font-size: 12px; flex-shrink: 0; }
+
+        .bio-location-line { font-size: 13px; font-weight: 500; color: var(--text-dim); margin-bottom: 12px; }
+        .bio-location-line i { color: var(--gold); }
+        .bio-location-line span { color: var(--text); font-weight: 600; }
+        .bio-text { font-size: 14px; line-height: 1.7; color: var(--text-dim); font-weight: 400; }
+
+        .identity-category { margin-bottom: 24px; }
+        .identity-category:last-child { margin-bottom: 0; }
+        .identity-category .cat-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); font-weight: 600; padding-bottom: 8px; border-bottom: 2px solid var(--bg3); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .identity-category .cat-title i { color: var(--gold); }
+        .identity-field { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-light); font-size: 13px; gap: 16px; }
+        .identity-field:last-child { border-bottom: none; }
+        .identity-field .ilabel { color: var(--text-muted); font-size: 12px; font-weight: 500; }
+        .identity-field .ivalue { font-weight: 500; text-align: right; color: var(--text); max-width: 65%; word-break: break-all; }
+        .identity-field .ivalue.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); }
+        .identity-field .ivalue a { color: var(--gold); text-decoration: none; font-weight: 600; }
+
+        .achievements-grid { display: flex; flex-direction: column; gap: 12px; }
+        .achievement-card { background: var(--bg3); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 14px 18px; display: flex; gap: 14px; align-items: center; transition: var(--transition); }
+        .achievement-card:hover { transform: translateY(-2px); border-color: var(--border); box-shadow: var(--shadow); }
+        .achievement-card .ach-icon { font-size: 16px; color: var(--gold); background: var(--gold-dim); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .achievement-card .ach-details { flex: 1; }
+        .achievement-card .ach-title { font-weight: 600; font-size: 13px; color: var(--text); line-height: 1.4; }
+        .achievement-card .ach-category { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+        .achievement-card .ach-date { font-size: 11px; color: var(--text-muted); font-weight: 500; white-space: nowrap; flex-shrink: 0; }
+
+        .employment-list { display: flex; flex-direction: column; gap: 16px; }
+        .employment-item { display: flex; gap: 16px; padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-light); background: var(--bg3); transition: var(--transition); }
+        .employment-item:hover { border-color: var(--border); background: var(--bg2); box-shadow: var(--shadow); }
+        .employment-item .org-icon { width: 48px; height: 48px; border-radius: var(--radius-sm); background: var(--bg4); display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--text-dim); flex-shrink: 0; border: 1px solid var(--border); }
+        .employment-item .org-details { flex: 1; min-width: 0; }
+        .employment-item .org-details .org-name { font-weight: 600; font-size: 14px; color: var(--text); }
+        .employment-item .org-details .job-title { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+        .employment-item .org-details .org-meta { font-size: 12px; color: var(--text-muted); margin-top: 6px; display: flex; flex-wrap: wrap; gap: 10px; }
+        .employment-item .org-details .org-meta .current-badge { background: var(--gold-dim); color: var(--gold); padding: 0 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+        .employment-item .org-details .org-description { font-size: 13px; color: var(--text-dim); margin-top: 8px; line-height: 1.5; }
+        .employment-item .org-details .org-website { font-size: 12px; margin-top: 6px; }
+        .employment-item .org-details .org-website a { color: var(--gold); text-decoration: none; font-weight: 500; }
+
+        .identifiers-layout { display: flex; flex-direction: column; gap: 24px; }
+        .identifier-group { display: flex; flex-direction: column; gap: 12px; }
+        .identifier-group-name { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-top: 4px; }
+        .identifier-cards { display: flex; flex-direction: column; gap: 16px; }
+        .passport-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 18px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px; transition: var(--transition); }
+        .passport-card:hover { border-color: var(--gold); box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+        .passport-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .passport-meta { display: flex; flex-direction: column; }
+        .passport-type { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700; color: var(--text); line-height: 1; }
+        .passport-full-name { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .passport-status { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 12px; }
+        .status-verified { background: rgba(76, 175, 80, 0.15); color: var(--green); }
+        .passport-value-container { background: var(--bg3); border: 1px dashed var(--border); border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+        .passport-value { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 500; letter-spacing: 0.05em; color: var(--text); }
+        .passport-copy-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; transition: var(--transition); }
+        .passport-copy-btn:hover { color: var(--gold); }
+        .passport-details { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 12px; border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light); padding: 10px 0; }
+        .passport-detail-item { display: flex; flex-direction: column; }
+        .p-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 600; }
+        .p-val { font-weight: 500; color: var(--text-dim); margin-top: 2px; }
+        .passport-ecosystem { display: flex; flex-direction: column; gap: 6px; }
+        .ecosystem-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; }
+        .ecosystem-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .eco-tag { font-size: 10px; background: var(--bg3); color: var(--text-dim); padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+        .passport-actions { display: flex; gap: 8px; margin-top: 4px; }
+        .passport-btn { flex: 1; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer; transition: var(--transition); font-family: inherit; }
+        .p-btn-secondary { background: var(--bg3); border: 1px solid var(--border); color: var(--text-dim); }
+        .p-btn-secondary:hover { background: var(--bg4); color: var(--text); }
+        .p-btn-primary { background: var(--gold-dim); color: var(--gold); border: 1px solid transparent; }
+        .p-btn-primary:hover { background: var(--gold); color: #000; }
+
+        .roles-ecosystem { display: flex; flex-direction: column; gap: 16px; }
+        .role-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 18px; box-shadow: var(--shadow); transition: var(--transition); display: flex; flex-direction: column; gap: 12px; }
+        .role-card:hover { border-color: var(--gold); box-shadow: var(--shadow-lg); }
+        .role-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .role-title { font-size: 16px; font-weight: 700; color: var(--text); }
+        .role-badge { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 12px; }
+        .role-primary { background: var(--gold-light); color: var(--gold); border: 1px solid var(--gold-border); }
+        .role-secondary { background: rgba(33, 150, 243, 0.15); color: var(--info); }
+        .role-proficiency { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
+        .role-stars { color: var(--gold); font-size: 11px; }
+        .role-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: var(--bg3); border-radius: 8px; padding: 10px; border: 1px solid var(--border-light); }
+        .role-stat { text-align: center; }
+        .role-stat-val { font-size: 14px; font-weight: 700; color: var(--text); }
+        .role-stat-lbl { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .role-details-list { display: flex; flex-direction: column; gap: 8px; font-size: 12px; border-top: 1px solid var(--border-light); padding-top: 10px; }
+        .role-detail-row { display: flex; justify-content: space-between; }
+        .role-detail-row .r-lbl { color: var(--text-muted); font-weight: 500; }
+        .role-detail-row .r-val { font-weight: 600; color: var(--text-dim); text-align: right; max-width: 70%; }
+
+        .social-links { display: flex; flex-direction: column; gap: 8px; }
+        .social-link { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 8px; font-size: 12px; color: var(--text-dim); background: var(--bg3); text-decoration: none; transition: var(--transition); border: 1px solid var(--border-light); }
+        .social-link:hover { background: var(--bg4); color: var(--text); border-color: var(--border); }
+
+        /* Dropdowns & Modals */
+        .request-dropdown-wrapper, .appreciate-dropdown-wrapper { position: relative; display: inline-block; }
+        .request-dropdown-menu, .appreciate-dropdown-menu { display: none; position: absolute; top: calc(100% + 4px); left: 0; min-width: 280px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow-lg); z-index: 200; padding: 6px 0; max-height: 400px; overflow-y: auto; }
+        .request-dropdown-menu.open, .appreciate-dropdown-menu.open { display: block; }
+        .request-dropdown-item, .appreciate-dropdown-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 16px; border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); cursor: pointer; transition: var(--transition); text-align: left; }
+        .request-dropdown-item:hover, .appreciate-dropdown-item:hover { background: var(--bg3); color: var(--gold); }
+        .request-dropdown-item i, .appreciate-dropdown-item i { width: 20px; color: var(--text-muted); font-size: 14px; }
+        .request-dropdown-item:hover i, .appreciate-dropdown-item:hover i { color: var(--gold); }
+
+        .share-dialog-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1050; align-items: center; justify-content: center; padding: 20px; }
+        .share-dialog-modal.active { display: flex; }
+        .share-dialog-content { position: relative; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-lg); width: 100%; max-width: 420px; max-height: 80vh; overflow-y: auto; padding: 24px; }
+        .share-dialog-close { position: absolute; top: 12px; right: 12px; background: var(--bg3); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-dim); transition: var(--transition); }
+        .share-dialog-close:hover { background: var(--bg4); color: var(--text); }
+        .share-dialog-title { font-size: 15px; font-weight: 700; margin-bottom: 16px; padding-right: 36px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--text); }
+        .share-dialog-title i { color: var(--gold); }
+        .share-dialog-options { display: flex; flex-direction: column; gap: 10px; }
+        .share-option-btn { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 16px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; color: var(--text); cursor: pointer; transition: var(--transition); text-align: left; }
+        .share-option-btn:hover { border-color: var(--gold); background: var(--gold-dim); color: var(--gold); }
+        .share-option-btn i { width: 20px; text-align: center; color: var(--gold); font-size: 16px; }
+        .share-dialog-userlist { display: none; }
+        .share-dialog-content.show-users .share-dialog-options { display: none; }
+        .share-dialog-content.show-users .share-dialog-userlist { display: block; }
+        .share-back-btn { background: none; border: none; color: var(--text-dim); font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; padding: 4px 0; margin-bottom: 12px; display: inline-flex; align-items: center; gap: 6px; transition: var(--transition); }
+        .share-back-btn:hover { color: var(--gold); }
+        .share-user-row { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 8px; background: none; border: none; border-bottom: 1px solid var(--border-light); cursor: pointer; font-family: inherit; text-align: left; transition: var(--transition); border-radius: 8px; }
+        .share-user-row:last-child { border-bottom: none; }
+        .share-user-row:hover { background: var(--bg3); }
+        .share-user-row img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+        .share-user-name { font-weight: 600; font-size: 13px; color: var(--text); }
+        .share-user-handle { font-size: 11px; color: var(--text-muted); }
+
+        .image-viewer-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; align-items: center; justify-content: center; padding: 20px; cursor: pointer; }
+        .image-viewer-modal.active { display: flex; }
+        .image-viewer-content { max-width: 90vw; max-height: 90vh; position: relative; cursor: default; }
+        .image-viewer-close { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5); border: none; color: #fff; font-size: 24px; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); z-index: 10; }
+        .image-viewer-close:hover { background: rgba(0,0,0,0.8); transform: scale(1.05); }
+        .image-viewer-content img { max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 8px; }
+        .image-viewer-caption { color: #fff; text-align: center; font-size: 14px; margin-top: 12px; opacity: 0.7; }
+
+        .scroll-top-btn { position: fixed; bottom: 30px; right: 30px; width: 48px; height: 48px; border-radius: 50%; background: var(--gold); color: #000; border: none; box-shadow: var(--shadow-lg); cursor: pointer; font-size: 20px; transition: var(--transition); z-index: 1000; display: none; align-items: center; justify-content: center; }
+        .scroll-top-btn:hover { background: var(--gold-light); transform: translateY(-2px); }
+        .scroll-top-btn.visible { display: flex; }
+
+        .toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg2); border-left: 4px solid var(--gold); padding: 16px 24px; border-radius: var(--radius-sm); font-size: 13px; z-index: 1100; box-shadow: var(--shadow-lg); animation: slideIn 0.3s cubic-bezier(0.4,0,0.2,1); max-width: 350px; transition: opacity 0.3s ease; color: var(--text); display: flex; align-items: center; gap: 10px; }
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 1024px) {
+            .topbar { display: none; }
+            .sidebar { top: 56px; transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .main-content { margin-left: 0 !important; padding-top: 56px; width: 100%; }
+            .mobile-header { display: flex; }
+            .profile-layout-grid { grid-template-columns: 1fr; gap: 24px; }
+            .portfolio-display-section { grid-template-columns: 1fr 240px; }
+            .portfolio-grid-display { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .profile-container { padding: 16px; }
+            .profile-header-info .display-name { font-size: 24px; }
+            .profile-header-info .artist-name { font-size: 15px; }
+            .hero-metrics-actions-bar { padding: 12px 20px; flex-direction: column; align-items: flex-start; gap: 12px; }
+            .profile-stats-line { font-size: 12px; width: 100%; flex-direction: column; align-items: flex-start; justify-content: flex-start; }
+            .profile-action-buttons { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+            .request-appreciate-group { display: contents; }
+            #trustBtn { order: 1; }
+            .appreciate-dropdown-wrapper { order: 2; }
+            .request-btn-wrapper { order: 3; flex-basis: 100%; }
+            .btn { padding: 8px 14px; font-size: 12px; }
+            .section-nav-tabs { gap: 4px; padding: 4px 0; overflow-x: auto; flex-wrap: nowrap; }
+            .section-nav-tabs::-webkit-scrollbar { display: none; }
+            .section-tab { font-size: 11px; padding: 6px 10px; white-space: nowrap; }
+            .portfolio-display-section { grid-template-columns: 1fr; gap: 20px; }
+            .portfolio-grid-display { grid-template-columns: 1fr 1fr; }
+            .collaborators-sidebar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 16px; }
+            .collaborators-sidebar h4 { grid-column: 1 / -1; margin-bottom: 8px; }
+            .collaborator-item { padding: 8px 0; }
+            .identity-field { flex-direction: column; align-items: flex-start; gap: 4px; padding: 8px 0; }
+            .identity-field .ivalue { text-align: left; max-width: 100%; width: 100%; }
+            .passport-details { grid-template-columns: 1fr; gap: 8px; }
+            .passport-card { padding: 14px; }
+            .passport-actions { flex-direction: column; }
+            .passport-btn { text-align: center; }
+            .role-stats-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+            .role-card { padding: 14px; }
+            .employment-item { flex-direction: column; align-items: center; text-align: center; }
+            .employment-item .org-meta { justify-content: center; }
+            .achievement-card { flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 12px 14px; }
+            .achievement-card .ach-date { white-space: normal; }
+        }
+        @media (max-width: 480px) {
+            .profile-header-info .display-name { font-size: 18px; }
+            .profile-header-info .artist-name { font-size: 13px; }
+            .portfolio-grid-display { grid-template-columns: 1fr; }
+            .collaborators-sidebar { grid-template-columns: 1fr; }
+            .profile-card-header { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
+            .profile-card-header h3 { font-size: 13px; gap: 6px; }
+            .profile-card-body { padding: 14px; }
+            .btn { padding: 6px 12px; font-size: 11px; }
+            .role-stats-grid { grid-template-columns: 1fr; }
+            .role-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .role-detail-row { flex-direction: column; align-items: flex-start; gap: 2px; }
+            .role-detail-row .r-val { text-align: left; max-width: 100%; }
+            .passport-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .toast { max-width: 280px; padding: 12px 16px; font-size: 12px; bottom: 16px; right: 16px; }
+        }
+    </style>
 </head>
 <body>
 
-<!-- ─── MOBILE HEADER ─── -->
-<div class="mobile-header" id="mobileHeader">
-    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMobileSidebar()" aria-label="Toggle sidebar">
-        <i class="fas fa-bars"></i>
-    </button>
-    <a href="/dashboard.html" class="mobile-logo">Seek<span>Reap</span></a>
-    <span class="plan-indicator">Free</span>
-    <div class="search-container" id="searchContainerMobile">
-        <input type="text" placeholder="Search..." id="headerSearchMobile">
-        <i class="fas fa-search search-icon-inline"></i>
-    </div>
-    <div class="header-icon-group">
-    <button class="topbar-icon-btn" onclick="window.location.href='/notifications.html'" aria-label="Notifications">
-        <i class="fas fa-bell"></i>
-        <span class="badge-count">3</span>
-    </button>
-    <button class="topbar-icon-btn" onclick="handleShare()" aria-label="Share">
-        <i class="fas fa-share-alt"></i>
-    </button>
-    <div class="account-dropdown-wrapper">
-    <button class="header-profile-photo" id="mobileHeaderProfilePhoto" onclick="toggleAccountDropdown(event, 'accountDropdownMenuMobile')" aria-label="Switch account">
-        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="Profile">
-    </button>
-    <div class="account-dropdown-menu" id="accountDropdownMenuMobile">
-                    <button class="account-menu-item active" onclick="switchAccount(0)">
-                        <div class="account-avatar"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="NovaKai"></div>
-                        <div class="account-info">
-                            <div class="account-name">NovaKai</div>
-                            <div class="account-email">nova@seekreap.io</div>
-                        </div>
-                        <i class="fas fa-check-circle account-check"></i>
-                    </button>
-                    <button class="account-menu-item" onclick="switchAccount(1)">
-                        <div class="account-avatar"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Kai"></div>
-                        <div class="account-info">
-                            <div class="account-name">Kai Sterling</div>
-                            <div class="account-email">kai@seekreap.io</div>
-                        </div>
-                    </button>
-                    <button class="account-menu-item" onclick="switchAccount(2)">
-                        <div class="account-avatar"><img src="https://images.unsplash.com/photo-1494790108376-be9c24b9cf6c?q=80&w=100&auto=format&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Luna"></div>
-                        <div class="account-info">
-                            <div class="account-name">Luna Ray</div>
-                            <div class="account-email">luna@seekreap.io</div>
-                        </div>
-                    </button>
-                    <button class="account-menu-item" onclick="switchAccount(3)">
-                        <div class="account-avatar"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=100&auto=format&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Eli"></div>
-                        <div class="account-info">
-                            <div class="account-name">Eli Stone</div>
-                            <div class="account-email">eli@seekreap.io</div>
-                        </div>
-                    </button>
-                    <div class="account-divider"></div>
-                    <button class="account-menu-item" onclick="handleMenuClick('Add Account')">
-                        <div class="account-avatar" style="background:var(--primary-light);color:var(--primary);"><i class="fas fa-plus"></i></div>
-                        <div class="account-info">
-                            <div class="account-name">Add Account</div>
-                            <div class="account-email" style="color:var(--primary);">Create new profile</div>
-                        </div>
-                    </button>
-                </div>
-</div>
-    <div class="more-dropdown-wrapper">
-        <button class="topbar-icon-btn more-btn" onclick="toggleMoreMenuMobile(event)" aria-label="More options">
-            <i class="fas fa-ellipsis-v"></i>
-        </button>
-        <div class="more-popup-box" id="morePopupBoxMobile">
-            <div class="more-menu-group">
-                <div class="menu-group-header"><i class="fas fa-id-card" style="margin-right:6px;"></i> Identity</div>
-                <button class="menu-item" onclick="handleMenuClick('View Credentials')"><i class="fas fa-id-card" style="width:18px;"></i> View Credentials</button>
-                <button class="menu-item" onclick="handleMenuClick('View Reputation')"><i class="fas fa-star" style="width:18px;"></i> View Reputation</button>
-            </div>
-            <div class="more-menu-group">
-                <div class="menu-group-header"><i class="fas fa-compass" style="margin-right:6px;"></i> Discovery</div>
-                <button class="menu-item" onclick="handleMenuClick('Search Profile')"><i class="fas fa-search" style="width:18px;"></i> Search Profile</button>
-                <button class="menu-item" onclick="handleMenuClick('Copy Profile Link')"><i class="fas fa-link" style="width:18px;"></i> Copy Profile Link</button>
-                <button class="menu-item" onclick="handleMenuClick('Save Profile')"><i class="fas fa-bookmark" style="width:18px;"></i> Save Profile</button>
-            </div>
-            <div class="more-menu-group">
-                <div class="menu-group-header"><i class="fas fa-handshake" style="margin-right:6px;"></i> Community</div>
-                <button class="menu-item" onclick="handleMenuClick('Recommend Creator')"><i class="fas fa-thumbs-up" style="width:18px;"></i> Recommend Creator</button>
-            </div>
-            <div class="more-menu-group">
-                <div class="menu-group-header"><i class="fas fa-shield-alt" style="margin-right:6px;"></i> Safety</div>
-                <button class="menu-item text-danger" onclick="handleMenuClick('Report Profile')"><i class="fas fa-flag" style="width:18px;"></i> Report Profile</button>
-                <button class="menu-item text-danger" onclick="handleMenuClick('Block User')"><i class="fas fa-ban" style="width:18px;"></i> Block User</button>
-            </div>
+<!-- ─── DESKTOP TOPBAR (Viewer's Shell) ─── -->
+<div class="topbar">
+    <div class="topbar-left">
+        <a href="/user_dashboard.html" class="logo" style="font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; color: var(--gold-light); text-decoration: none; margin-right: 24px;">SeekReap</a>
+        <div class="search-container">
+            <input type="text" placeholder="Search creators, organizations..." id="headerSearch">
+            <i class="fas fa-search search-icon-inline"></i>
         </div>
     </div>
+    <div class="topbar-right">
+        <div class="header-plan-block">
+            <span class="plan-indicator">Free Plan</span>
+            <span class="plan-dot">•</span>
+            <button class="upgrade-btn" onclick="window.location.href='pricing.html'">Upgrade</button>
+        </div>
+        <button class="topbar-icon-btn" onclick="window.location.href='notifications.html'" aria-label="Notifications">
+            <i class="fas fa-bell"></i><span class="badge-count">3</span>
+        </button>
+        <button class="header-profile-photo" onclick="window.location.href='user_dashboard.html'" aria-label="View Dashboard">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="Profile">
+        </button>
+    </div>
 </div>
+
+<!-- ─── MOBILE HEADER ─── -->
+<div class="mobile-header" id="mobileHeader">
+    <button class="hamburger-btn" onclick="toggleMobileSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    <a href="/user_dashboard.html" class="mobile-logo">SeekReap</a>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
+        <button class="header-profile-photo" onclick="window.location.href='user_dashboard.html'">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="Profile">
+        </button>
+    </div>
 </div>
 
 <!-- ─── SIDEBAR OVERLAY ─── -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-<!-- ─── SIDEBAR ─── -->
+<!-- ─── SIDEBAR (Viewer's Shell) ─── -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <a href="/dashboard.html" class="logo">Seek<span>Reap</span></a>
-        <button class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Close sidebar">
-            <i class="fas fa-times"></i>
-        </button>
+        <a href="/user_dashboard.html" class="logo">Dashboard</a>
+        <button class="sidebar-close-btn" onclick="closeSidebar()"><i class="fas fa-times"></i></button>
     </div>
     <nav class="sidebar-nav">
+        <!-- NEW: Public View Section -->
         <div class="nav-section">
-            <div class="nav-section-title">Main</div>
-            <a href="/dashboard.html"><span class="nav-icon"><i class="fas fa-th-large"></i></span><span class="nav-label">Dashboard</span></a>
-            <a href="/assets.html"><span class="nav-icon"><i class="fas fa-cube"></i></span><span class="nav-label">Assets</span><span class="nav-badge">156</span></a>
-            <a href="/agreements.html"><span class="nav-icon"><i class="fas fa-file-signature"></i></span><span class="nav-label">Agreements</span><span class="nav-badge warning">12</span></a>
-            <a href="/license_generator.html"><span class="nav-icon"><i class="fas fa-file-contract"></i></span><span class="nav-label">Licenses</span></a>
-            <a href="/earnings.html"><span class="nav-icon"><i class="fas fa-coins"></i></span><span class="nav-label">Earnings</span><span class="nav-badge success">R12.4k</span></a>
+            <div class="nav-section-title">Public View</div>
+            <a href="/persons.html"><span class="nav-icon"><i class="fas fa-user-friends"></i></span><span class="nav-label">Persons</span></a>
+            <a href="/organizations.html"><span class="nav-icon"><i class="fas fa-building"></i></span><span class="nav-label">Organizations</span></a>
         </div>
-        <div class="nav-section">
-            <div class="nav-section-title">Rights</div>
-            <a href="/enforcement.html"><span class="nav-icon"><i class="fas fa-gavel"></i></span><span class="nav-label">Enforcement</span><span class="nav-badge">7</span></a>
-            <a href="/delegations.html"><span class="nav-icon"><i class="fas fa-user-shield"></i></span><span class="nav-label">Delegations</span><span class="nav-badge warning">3</span></a>
-            <a href="/certificate_verify.html"><span class="nav-icon"><i class="fas fa-certificate"></i></span><span class="nav-label">Certificates</span><span class="nav-badge success">311</span></a>
-        </div>
-        <div class="nav-section">
-            <div class="nav-section-title">Identity</div>
-            <a href="/profile.html" class="active"><span class="nav-icon"><i class="fas fa-user"></i></span><span class="nav-label">Profile</span></a>
-            <a href="/notifications.html"><span class="nav-icon"><i class="fas fa-bell"></i></span><span class="nav-label">Notifications</span><span class="nav-badge">3</span></a>
-            <a href="/billing.html"><span class="nav-icon"><i class="fas fa-receipt"></i></span><span class="nav-label">Billing</span></a>
-            <a href="/security.html"><span class="nav-icon"><i class="fas fa-lock"></i></span><span class="nav-label">Security</span></a>
-        </div>
+
         <div class="nav-divider"></div>
-        <a href="/logout_confirm.html" class="logout-link"><span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span><span class="nav-label">Sign Out</span></a>
+
+        <!-- My Account Section -->
+        <div class="nav-section">
+            <div class="nav-section-title">My Account</div>
+            <a href="/user_dashboard.html"><span class="nav-icon"><i class="fas fa-user-circle"></i></span><span class="nav-label">Profile Dashboard</span></a>
+            <a href="/security_privacy.html"><span class="nav-icon"><i class="fas fa-shield-alt"></i></span><span class="nav-label">Security & Privacy</span></a>
+            <a href="/settings_preferences.html"><span class="nav-icon"><i class="fas fa-cog"></i></span><span class="nav-label">Settings & Preferences</span></a>
+            <a href="/audit_log.html"><span class="nav-icon"><i class="fas fa-history"></i></span><span class="nav-label">Audit Log</span></a>
+        </div>
+
+        <!-- Workspace Section -->
+        <div class="nav-section">
+            <div class="nav-section-title">Workspace</div>
+            <a href="/certification_portal.html"><span class="nav-icon"><i class="fas fa-certificate"></i></span><span class="nav-label">Certify New Work</span></a>
+            <a href="/assets.html"><span class="nav-icon"><i class="fas fa-cube"></i></span><span class="nav-label">Assets</span><span class="nav-badge">156</span></a>
+            <a href="/agreements.html"><span class="nav-icon"><i class="fas fa-file-signature"></i></span><span class="nav-label">Agreements</span><span class="nav-badge danger">12</span></a>
+            <a href="/license_generator.html"><span class="nav-icon"><i class="fas fa-file-contract"></i></span><span class="nav-label">Licenses</span></a>
+            <a href="/enforcement.html"><span class="nav-icon"><i class="fas fa-gavel"></i></span><span class="nav-label">Enforcement</span><span class="nav-badge danger">3</span></a>
+            <a href="/delegations.html"><span class="nav-icon"><i class="fas fa-user-shield"></i></span><span class="nav-label">Delegations</span></a>
+            <a href="/earnings.html"><span class="nav-icon"><i class="fas fa-coins"></i></span><span class="nav-label">Earnings</span></a>
+            <a href="/network.html"><span class="nav-icon"><i class="fas fa-users"></i></span><span class="nav-label">Network</span></a>
+        </div>
+
+        <!-- Inbox & Activity Section -->
+        <div class="nav-section">
+            <div class="nav-section-title">Inbox & Activity</div>
+            <a href="/notifications.html"><span class="nav-icon"><i class="fas fa-bell"></i></span><span class="nav-label">Notifications</span><span class="nav-badge danger">3</span></a>
+            <a href="/requests.html"><span class="nav-icon"><i class="fas fa-inbox"></i></span><span class="nav-label">Requests</span></a>
+        </div>
+
+        <!-- Billing Section -->
+        <div class="nav-section">
+            <div class="nav-section-title">Billing</div>
+            <a href="/pricing.html"><span class="nav-icon"><i class="fas fa-tags"></i></span><span class="nav-label">Plans & Pricing</span></a>
+            <a href="/billing.html"><span class="nav-icon"><i class="fas fa-receipt"></i></span><span class="nav-label">Invoices & Receipts</span></a>
+        </div>
+
+        <!-- Support Section -->
+        <div class="nav-section">
+            <div class="nav-section-title">Support</div>
+            <a href="/certificate_verify.html"><span class="nav-icon"><i class="fas fa-search-location"></i></span><span class="nav-label">Verify Certificate</span></a>
+            <a href="/help_support.html"><span class="nav-icon"><i class="fas fa-question-circle"></i></span><span class="nav-label">Help & Support</span></a>
+        </div>
+        
+        <div class="nav-divider"></div>
+        
+        <!-- Exit Zone Section -->
+        <div class="nav-section">
+            <div class="nav-section-title" style="color: var(--red);">Exit Zone</div>
+            <a href="/logout_confirm.html"><span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span><span class="nav-label">Sign Out</span></a>
+            <a href="/deactivate.html" class="exit-zone-link"><span class="nav-icon"><i class="fas fa-user-slash"></i></span><span class="nav-label">Deactivate Account</span></a>
+            <a href="/delete.html" class="exit-zone-link"><span class="nav-icon"><i class="fas fa-trash-alt"></i></span><span class="nav-label">Delete Account</span></a>
+        </div>
     </nav>
     <div class="sidebar-footer">
-        <div class="user-card" onclick="window.location.href='/profile.html'">
-            <div class="user-avatar" id="sideAvatar">N</div>
+        <div class="user-card" onclick="window.location.href='user_dashboard.html'">
+            <div class="user-avatar" id="sidebarAvatar">N</div>
             <div class="user-info">
-                <div class="name" id="sideName">NovaKai</div>
+                <div class="name" id="sidebarName">NovaKai</div>
                 <div class="role">Rights Holder</div>
             </div>
         </div>
     </div>
 </aside>
 
-<!-- ─── MAIN CONTENT ─── -->
+<!-- ─── MAIN CONTENT (The Public Profile Data) ─── -->
 <div class="main-content">
-    <div class="topbar">
-        <div class="topbar-left">
-            <div class="search-container" id="searchContainer">
-                <input type="text" placeholder="Search by creator or Portfolio name..." id="headerSearch">
-                <i class="fas fa-search search-icon-inline"></i>
-                <button class="search-close-btn" onclick="toggleSearch()" aria-label="Close search"><i class="fas fa-times"></i></button>
-            </div>
-        </div>
-        <div class="topbar-right">
-            <button class="topbar-icon-btn" onclick="window.location.href='/notifications.html'" aria-label="Notifications">
-                <i class="fas fa-bell"></i>
-                <span class="badge-count">3</span>
-            </button>
-            <button class="topbar-icon-btn" onclick="handleShare()" aria-label="Share">
-                <i class="fas fa-share-alt"></i>
-            </button>
-
-            <div class="account-dropdown-wrapper">
-    <button class="header-profile-photo" id="desktopHeaderProfilePhoto" onclick="toggleAccountDropdown(event)" aria-label="Switch account">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="Profile">
-            </button>
-    <div class="account-dropdown-menu" id="accountDropdownMenu">
-                    <button class="account-menu-item active" onclick="switchAccount(0)">
-                        <div class="account-avatar"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="NovaKai"></div>
-                        <div class="account-info">
-                            <div class="account-name">NovaKai</div>
-                            <div class="account-email">nova@seekreap.io</div>
-                        </div>
-                        <i class="fas fa-check-circle account-check"></i>
-                    </button>
-                    <button class="account-menu-item" onclick="switchAccount(1)">
-                        <div class="account-avatar"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Kai"></div>
-                        <div class="account-info">
-                            <div class="account-name">Kai Sterling</div>
-                            <div class="account-email">kai@seekreap.io</div>
-                        </div>
-                    </button>
-                    <button class="account-menu-item" onclick="switchAccount(2)">
-                        <div class="account-avatar"><img src="https://images.unsplash.com/photo-1494790108376-be9c24b9cf6c?q=80&w=100&auto=format&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Luna"></div>
-                        <div class="account-info">
-                            <div class="account-name">Luna Ray</div>
-                            <div class="account-email">luna@seekreap.io</div>
-                        </div>
-                    </button>
-                    <button class="account-menu-item" onclick="switchAccount(3)">
-                        <div class="account-avatar"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=100&auto=format&fit=crop" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Eli"></div>
-                        <div class="account-info">
-                            <div class="account-name">Eli Stone</div>
-                            <div class="account-email">eli@seekreap.io</div>
-                        </div>
-                    </button>
-                    <div class="account-divider"></div>
-                    <button class="account-menu-item" onclick="handleMenuClick('Add Account')">
-                        <div class="account-avatar" style="background:var(--primary-light);color:var(--primary);"><i class="fas fa-plus"></i></div>
-                        <div class="account-info">
-                            <div class="account-name">Add Account</div>
-                            <div class="account-email" style="color:var(--primary);">Create new profile</div>
-                        </div>
-                    </button>
-                </div>
-</div>
-
-            <div class="more-dropdown-wrapper">
-                <button class="topbar-icon-btn more-btn" onclick="toggleMoreMenu(event)" aria-label="More options">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-                <div class="more-popup-box" id="morePopupBox">
-                    <div class="more-menu-group">
-                        <div class="menu-group-header"><i class="fas fa-id-card" style="margin-right:6px;"></i> Identity</div>
-                        <button class="menu-item" onclick="handleMenuClick('View Credentials')"><i class="fas fa-id-card" style="width:18px;"></i> View Credentials</button>
-                        <button class="menu-item" onclick="handleMenuClick('View Reputation')"><i class="fas fa-star" style="width:18px;"></i> View Reputation</button>
-                    </div>
-                    <div class="more-menu-group">
-                        <div class="menu-group-header"><i class="fas fa-compass" style="margin-right:6px;"></i> Discovery</div>
-                        <button class="menu-item" onclick="handleMenuClick('Search Profile')"><i class="fas fa-search" style="width:18px;"></i> Search Profile</button>
-                        <button class="menu-item" onclick="handleMenuClick('Copy Profile Link')"><i class="fas fa-link" style="width:18px;"></i> Copy Profile Link</button>
-                        <button class="menu-item" onclick="handleMenuClick('Save Profile')"><i class="fas fa-bookmark" style="width:18px;"></i> Save Profile</button>
-                    </div>
-                    <div class="more-menu-group">
-                        <div class="menu-group-header"><i class="fas fa-handshake" style="margin-right:6px;"></i> Community</div>
-                        <button class="menu-item" onclick="handleMenuClick('Recommend Creator')"><i class="fas fa-thumbs-up" style="width:18px;"></i> Recommend Creator</button>
-                    </div>
-                    <div class="more-menu-group">
-                        <div class="menu-group-header"><i class="fas fa-shield-alt" style="margin-right:6px;"></i> Safety</div>
-                        <button class="menu-item text-danger" onclick="handleMenuClick('Report Profile')"><i class="fas fa-flag" style="width:18px;"></i> Report Profile</button>
-                        <button class="menu-item text-danger" onclick="handleMenuClick('Block User')"><i class="fas fa-ban" style="width:18px;"></i> Block User</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="profile-container">
         <div class="hero-assembly">
             <div class="cover-photo-container">
@@ -257,30 +549,28 @@
                 </div>
                 <div class="profile-header-content">
                     <div class="profile-header-info">
-    <div class="name-pronouns-line">
-        <div class="display-name" id="profileDisplayName">
-                            NovaKai
-                        </div>
-        <span class="inline-separator">•</span>
-        <div class="pronouns-roles-line">
-                            <span class="pronouns" id="profilePronouns">He/Him</span>
+                        <div class="name-pronouns-line">
+                            <div class="display-name" id="profileDisplayName">NovaKai</div>
                             <span class="inline-separator">•</span>
-                            <span class="inline-roles" id="profileRolesText">Musician • Photographer • Videographer</span>
+                            <div class="pronouns-roles-line">
+                                <span class="pronouns" id="profilePronouns">He/Him</span>
+                                <span class="inline-separator">•</span>
+                                <span class="inline-roles" id="profileRolesText">Musician • Photographer • Videographer</span>
+                            </div>
                         </div>
-    </div>
-    <div class="artist-meta-line">
-        <div class="artist-name-slug-stack">
-            <span class="artist-name" id="profileArtisticName">NovaKai</span>
-            <span class="artist-slug">@novakai</span>
-        </div>
-        <div class="profile-badges" id="profileBadges">
-                            <span class="badge-pill badge-verified" id="verifyBadge"><i class="fas fa-check-circle"></i> Verified</span>
-                            <span class="badge-pill badge-creator" id="typeBadge"><i class="fas fa-user-astronaut"></i> Creator</span>
-                            <span class="member-since" id="memberSinceBadge"><i class="far fa-calendar-alt"></i> Member since 2012</span>
+                        <div class="artist-meta-line">
+                            <div class="artist-name-slug-stack">
+                                <span class="artist-name" id="profileArtisticName">NovaKai</span>
+                                <span class="artist-slug">@novakai</span>
+                            </div>
+                            <div class="profile-badges" id="profileBadges">
+                                <span class="badge-pill badge-verified" id="verifyBadge"><i class="fas fa-check-circle"></i> Verified</span>
+                                <span class="badge-pill badge-creator" id="typeBadge"><i class="fas fa-user-astronaut"></i> Creator</span>
+                                <span class="member-since" id="memberSinceBadge"><i class="far fa-calendar-alt"></i> Member since 2012</span>
+                            </div>
+                            <span class="seekreap-id-inline" id="profileSeekReapID" hidden>SR-2026-MR9KZW0B</span>
                         </div>
-        <span class="seekreap-id-inline" id="profileSeekReapID" hidden>SR-2026-MR9KZW0B</span>
-    </div>
-</div>
+                    </div>
                 </div>
             </div>
             <div class="hero-metrics-actions-bar">
@@ -292,19 +582,16 @@
                     <button class="stat-clickable-pill" onclick="showToast('Profile Views: 23MK', 'info')"><i class="fas fa-eye"></i> <strong>23MK</strong> views</button>
                     <span class="stat-dot-separator">•</span>
                     <button class="stat-clickable-pill" onclick="showToast('Shares: 14K', 'info')"><i class="fas fa-share-alt"></i> <strong>14K</strong> shares</button>
-                    
-    <span class="stat-dot-separator">•</span>
-    <button class="stat-clickable-pill" onclick="showToast('Appreciations: 1,204', 'info')"><i class="fas fa-heart"></i> <strong>1,204</strong> appreciations</button>
-</div>
+                    <span class="stat-dot-separator">•</span>
+                    <button class="stat-clickable-pill" onclick="showToast('Appreciations: 1,204', 'info')"><i class="fas fa-heart"></i> <strong>1,204</strong> appreciations</button>
+                </div>
 
-                    <div class="profile-action-buttons">
-    <button class="btn btn-primary" id="trustBtn" onclick="handleTrustClick()"><i class="fas fa-shield-alt"></i> <span id="trustBtnText">Trust</span></button>
-
-    <div class="request-appreciate-group">
-        <div class="request-btn-wrapper">
+                <div class="profile-action-buttons">
+                    <button class="btn btn-primary" id="trustBtn" onclick="handleTrustClick()"><i class="fas fa-shield-alt"></i> <span id="trustBtnText">Trust</span></button>
+                    <div class="request-appreciate-group">
+                        <div class="request-btn-wrapper">
                             <button class="btn btn-primary request-btn" onclick="toggleRequestDropdown(event)">
-                                <i class="fas fa-paper-plane"></i> Request
-                                <i class="fas fa-chevron-down" style="font-size:10px;margin-left:4px;"></i>
+                                <i class="fas fa-paper-plane"></i> Request <i class="fas fa-chevron-down" style="font-size:10px;margin-left:4px;"></i>
                             </button>
                             <div class="request-dropdown-menu" id="requestDropdownMenu">
                                 <button class="request-dropdown-item" onclick="handleRequestClick('Book Creator')"><i class="fas fa-calendar-plus"></i> Book Creator</button>
@@ -318,17 +605,13 @@
                                 <button class="request-dropdown-item" onclick="window.location.href='/certificate_verify.html'"><i class="fas fa-certificate"></i> Request Certificate Verification Link</button>
                             </div>
                         </div>
-
-        <div class="appreciate-dropdown-wrapper">
+                        <div class="appreciate-dropdown-wrapper">
                             <button class="btn btn-secondary" id="appreciateBtn" onclick="toggleAppreciateDropdown(event)">
-                                <i class="fas fa-heart" id="appreciateBtnIcon"></i>
-                                <span id="appreciateBtnText">Appreciate</span>
-                                <i class="fas fa-chevron-down" style="font-size:10px;margin-left:4px;"></i>
+                                <i class="fas fa-heart" id="appreciateBtnIcon"></i> <span id="appreciateBtnText">Appreciate</span> <i class="fas fa-chevron-down" style="font-size:10px;margin-left:4px;"></i>
                             </button>
                             <div class="appreciate-dropdown-menu" id="appreciateDropdownMenu"></div>
                         </div>
-    </div>
-</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -344,159 +627,155 @@
         </div>
 
         <div class="content-overlay-zone" id="contentOverlayZone">
-<div class="portfolio-display-section" id="portfolioDisplaySection">
-            <div>
-        <div class="portfolio-header-row">
-            <h3 class="portfolio-heading">
-                <i class="fas fa-folder-open"></i>
-                <span id="portfolioDisplayTitle">Portfolios</span>
-            </h3>
-            <div class="portfolio-search">
-                <input type="text" id="portfolioSearchInput" placeholder="Search assets..." aria-label="Search portfolio" onkeydown="if (event.key === 'Enter') { runPortfolioSearch(); }">
-                <button class="portfolio-search-btn" onclick="runPortfolioSearch()" aria-label="Search" title="Search"><i class="fas fa-search"></i></button>
-            </div>
-            <div class="portfolio-filter-wrapper">
-                <span class="portfolio-count"><span id="portfolioItemCount">0</span> <span id="portfolioCountLabel">works</span></span>
-                <select class="portfolio-filter-select" id="portfolioFilter" onchange="filterPortfolioWorks(this.value)">
-                            <option value="all">All Works</option>
-                            <option value="music">Music</option>
-                            <option value="video">Video</option>
-                            <option value="photo">Photography</option>
-                            <option value="design">Design</option>
-                            <option value="writing">Writing</option>
-                        </select>
-            </div>
-        </div>
-        <div class="portfolio-category-tabs" id="portfolioCategoryTabs" role="group" aria-label="Portfolio categories">
-            <button class="portfolio-category-tab active" data-category="assets" aria-pressed="true" onclick="setPortfolioCategory('assets')"><i class="fas fa-cube"></i> Assets</button>
-            <button class="portfolio-category-tab" data-category="gigs" aria-pressed="false" onclick="setPortfolioCategory('gigs')"><i class="fas fa-microphone-alt"></i> Gigs</button>
-            <button class="portfolio-category-tab" data-category="interviews" aria-pressed="false" onclick="setPortfolioCategory('interviews')"><i class="fas fa-comments"></i> Interviews</button>
-            <button class="portfolio-category-tab" data-category="community" aria-pressed="false" onclick="setPortfolioCategory('community')"><i class="fas fa-users"></i> Community Works</button>
-            <button class="portfolio-category-tab" data-category="schedule" aria-pressed="false" onclick="setPortfolioCategory('schedule')"><i class="fas fa-calendar-alt"></i> Schedule</button>
-        </div>
-        <div class="portfolio-grid-display" id="portfolioGridDisplay"></div>
-    </div>
-
-            <div class="collaborators-sidebar">
-                <h4><i class="fas fa-handshake"></i> Collaborators</h4>
-                <div id="collaboratorsList"></div>
-            </div>
-        </div>
-
-        <div class="profile-layout-grid">
-            <div class="main-lane">
-                <div class="profile-card section-content" id="section-biography">
-    <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
-                    <div class="profile-card-header"><h3><i class="fas fa-align-left" style="color:var(--text-dim);"></i> Biography</h3></div>
-                    <div class="profile-card-body">
-                        <div class="bio-location-line"><i class="fas fa-map-pin" style="color:var(--primary);margin-right:8px;"></i> Lives in <span id="profileLocationText">South Africa • Western Cape • Cape Town</span></div>
-                        <div class="bio-text" id="profileBioText">Award-winning music producer and composer with 10+ years of experience creating genre-defying electronic music. Collaborated with artists across Africa, Europe, and the Americas.</div>
+            <div class="portfolio-display-section" id="portfolioDisplaySection">
+                <div>
+                    <div class="portfolio-header-row">
+                        <h3 class="portfolio-heading"><i class="fas fa-folder-open"></i> <span id="portfolioDisplayTitle">Portfolios</span></h3>
+                        <div class="portfolio-search">
+                            <input type="text" id="portfolioSearchInput" placeholder="Search assets..." aria-label="Search portfolio" onkeydown="if (event.key === 'Enter') { runPortfolioSearch(); }">
+                            <button class="portfolio-search-btn" onclick="runPortfolioSearch()" aria-label="Search"><i class="fas fa-search"></i></button>
+                        </div>
+                        <div class="portfolio-filter-wrapper">
+                            <span class="portfolio-count"><span id="portfolioItemCount">0</span> <span id="portfolioCountLabel">works</span></span>
+                            <select class="portfolio-filter-select" id="portfolioFilter" onchange="filterPortfolioWorks(this.value)">
+                                <option value="all">All Works</option>
+                                <option value="music">Music</option>
+                                <option value="video">Video</option>
+                                <option value="photo">Photography</option>
+                                <option value="design">Design</option>
+                                <option value="writing">Writing</option>
+                            </select>
+                        </div>
                     </div>
+                    <div class="portfolio-category-tabs" id="portfolioCategoryTabs" role="group" aria-label="Portfolio categories">
+                        <button class="portfolio-category-tab active" data-category="assets" aria-pressed="true" onclick="setPortfolioCategory('assets')"><i class="fas fa-cube"></i> Assets</button>
+                        <button class="portfolio-category-tab" data-category="gigs" aria-pressed="false" onclick="setPortfolioCategory('gigs')"><i class="fas fa-microphone-alt"></i> Gigs</button>
+                        <button class="portfolio-category-tab" data-category="interviews" aria-pressed="false" onclick="setPortfolioCategory('interviews')"><i class="fas fa-comments"></i> Interviews</button>
+                        <button class="portfolio-category-tab" data-category="community" aria-pressed="false" onclick="setPortfolioCategory('community')"><i class="fas fa-users"></i> Community Works</button>
+                        <button class="portfolio-category-tab" data-category="schedule" aria-pressed="false" onclick="setPortfolioCategory('schedule')"><i class="fas fa-calendar-alt"></i> Schedule</button>
+                    </div>
+                    <div class="portfolio-grid-display" id="portfolioGridDisplay"></div>
                 </div>
-
-                <div class="profile-card section-content" id="section-identity-record">
-    <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
-                    <div class="profile-card-header"><h3><i class="fas fa-id-card" style="color:var(--text-dim);"></i> Identity Record</h3></div>
-                    <div class="profile-card-body" id="identityContainer">
-                        <div class="identity-category">
-                            <div class="cat-title"><i class="fas fa-user-shield"></i> Personal Details</div>
-                            <div class="identity-field"><span class="ilabel">SeekReap ID</span><span class="ivalue mono">SR-2026-MR9KZW0B</span></div>
-                            <div class="identity-field"><span class="ilabel">Legal Full Name</span><span class="ivalue">John David Smith</span></div>
-                            <div class="identity-field"><span class="ilabel">Title</span><span class="ivalue">Mr</span></div>
-                            <div class="identity-field"><span class="ilabel">Gender</span><span class="ivalue">Male</span></div>
-                            <div class="identity-field"><span class="ilabel">Date of Birth</span><span class="ivalue">1990-01-15</span></div>
-                            <div class="identity-field"><span class="ilabel">Pronouns</span><span class="ivalue">He/Him</span></div>
-                            <div class="identity-field"><span class="ilabel">Country Code</span><span class="ivalue">ZA</span></div>
-                        </div>
-                        <div class="identity-category">
-                            <div class="cat-title"><i class="fas fa-paint-brush"></i> Creative Details</div>
-                            <div class="identity-field"><span class="ilabel">Display Name</span><span class="ivalue">NovaKai</span></div>
-                            <div class="identity-field"><span class="ilabel">Artistic Name</span><span class="ivalue">NovaKai</span></div>
-                            <div class="identity-field"><span class="ilabel">Location</span><span class="ivalue">South Africa</span></div>
-                            <div class="identity-field"><span class="ilabel">City</span><span class="ivalue">Cape Town</span></div>
-                            <div class="identity-field"><span class="ilabel">Company</span><span class="ivalue">Nova Studios</span></div>
-                        </div>
-                        <div class="identity-category">
-                            <div class="cat-title"><i class="fas fa-envelope-open-text"></i> Contact Details</div>
-                            <div class="identity-field"><span class="ilabel">Recovery Email</span><span class="ivalue"><a href="mailto:nova@seekreap.io">nova@seekreap.io</a></span></div>
-                            <div class="identity-field"><span class="ilabel">Primary Phone</span><span class="ivalue"><a href="tel:+27821234567">+27 82 123 4567</a></span></div>
-                            <div class="identity-field"><span class="ilabel">Contact Preference</span><span class="ivalue">email</span></div>
-                            <div class="identity-field"><span class="ilabel">Preferred Language</span><span class="ivalue">en</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="profile-card section-content" id="section-accomplishments">
-    <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
-                    <div class="profile-card-header"><h3><i class="fas fa-trophy" style="color:var(--gold);"></i> Career Accomplishments</h3></div>
-                    <div class="profile-card-body">
-                        <div class="achievements-grid" id="achievementsList">
-                            <div class="achievement-card"><div class="ach-icon"><i class="fas fa-trophy"></i></div><div class="ach-details"><div class="ach-category">Award</div><div class="ach-title">2x South African Music Award Winner</div></div><div class="ach-date">2023, 2025</div></div>
-                            <div class="achievement-card"><div class="ach-icon"><i class="fas fa-globe-africa"></i></div><div class="ach-details"><div class="ach-category">Festival</div><div class="ach-title">Featured artist at Afropunk Festival 2025</div></div><div class="ach-date">2025</div></div>
-                            <div class="achievement-card"><div class="ach-icon"><i class="fas fa-compact-disc"></i></div><div class="ach-details"><div class="ach-category">Release</div><div class="ach-title">Album "Nova Dawn" — 5M+ streams</div></div><div class="ach-date">2024</div></div>
-                            <div class="achievement-card"><div class="ach-icon"><i class="fas fa-star"></i></div><div class="ach-details"><div class="ach-category">Collaboration</div><div class="ach-title">Collaborated with 15+ international artists</div></div><div class="ach-date">2016—Present</div></div>
-                            <div class="achievement-card"><div class="ach-icon"><i class="fas fa-certificate"></i></div><div class="ach-details"><div class="ach-category">Credentials</div><div class="ach-title">311+ verified certificates issued</div></div><div class="ach-date">2020—Present</div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="profile-card section-content" id="section-professional-history">
-    <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
-                    <div class="profile-card-header"><h3><i class="fas fa-briefcase" style="color:var(--text-dim);"></i> Professional History</h3></div>
-                    <div class="profile-card-body" id="employmentContainer">
-                        <div class="employment-list">
-                            <div class="employment-item"><div class="org-icon"><i class="fas fa-building"></i></div><div class="org-details"><div class="org-name">Nova Studios</div><div class="job-title">Creative Director & Lead Producer</div><div class="org-meta"><span><i class="far fa-calendar"></i> Jan 2020 — Present</span><span class="current-badge"><i class="fas fa-check-circle"></i> Current</span><span><i class="fas fa-clock"></i> Full-time</span></div><div class="org-description">Leading music production and creative strategy.</div><div class="org-website"><a href="https://novastudios.co.za" target="_blank"><i class="fas fa-globe"></i> novastudios.co.za</a></div></div></div>
-                            <div class="employment-item"><div class="org-icon"><i class="fas fa-music"></i></div><div class="org-details"><div class="org-name">AfroSonic Records</div><div class="job-title">Senior Music Producer</div><div class="org-meta"><span><i class="far fa-calendar"></i> Jun 2018 — Dec 2019</span><span><i class="fas fa-clock"></i> Contract</span></div><div class="org-description">Produced tracks for emerging African artists.</div><div class="org-website"><a href="https://afrosonic.com" target="_blank"><i class="fas fa-globe"></i> afrosonic.com</a></div></div></div>
-                            <div class="employment-item"><div class="org-icon"><i class="fas fa-graduation-cap"></i></div><div class="org-details"><div class="org-name">Cape Town Music Institute</div><div class="job-title">Guest Lecturer — Music Production</div><div class="org-meta"><span><i class="far fa-calendar"></i> Sep 2022 — Present</span><span class="current-badge"><i class="fas fa-check-circle"></i> Current</span><span><i class="fas fa-clock"></i> Part-time</span></div><div class="org-description">Teaching music production techniques.</div><div class="org-website"><a href="https://ctmi.edu.za" target="_blank"><i class="fas fa-globe"></i> ctmi.edu.za</a></div></div></div>
-                        </div>
-                    </div>
+                <div class="collaborators-sidebar">
+                    <h4><i class="fas fa-handshake"></i> Collaborators</h4>
+                    <div id="collaboratorsList"></div>
                 </div>
             </div>
 
-            <div class="side-lane">
-                <div class="profile-card section-content" id="section-passports">
-    <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
-                    <div class="profile-card-header"><h3><i class="fas fa-fingerprint" style="color:var(--primary);"></i> Identity Passports</h3></div>
-                    <div class="profile-card-body" id="identifiersContainer">
-                        <div class="identifiers-layout">
-                            <div class="identifier-group"><div class="identifier-group-name">Creative Identity</div><div class="identifier-cards">
-                                <div class="passport-card"><div class="passport-header"><div class="passport-meta"><span class="passport-type">ISNI</span><span class="passport-full-name">International Standard Name Identifier</span></div><span class="passport-status status-verified"><i class="fas fa-check-circle"></i> Active</span></div><div class="passport-value-container"><span class="passport-value">0000-0001-2345-6789</span><button class="passport-copy-btn" onclick="copyToClipboard('0000-0001-2345-6789')"><i class="far fa-copy"></i></button></div><div class="passport-details"><div class="passport-detail-item"><span class="p-label">Purpose</span><span class="p-val">Global creator identity</span></div><div class="passport-detail-item"><span class="p-label">Issued By</span><span class="p-val">ISNI International</span></div><div class="passport-detail-item"><span class="p-label">Issued Date</span><span class="p-val">2026-03-11</span></div></div><div class="passport-ecosystem"><span class="ecosystem-label">Verified Uses</span><div class="ecosystem-tags"><span class="eco-tag">✓ Libraries</span><span class="eco-tag">✓ Publishers</span><span class="eco-tag">✓ Music databases</span></div></div><div class="passport-actions"><button class="passport-btn p-btn-secondary" onclick="copyToClipboard('0000-0001-2345-6789')">Copy Code</button><button class="passport-btn p-btn-primary" onclick="showToast('Opening registry for ISNI', 'info')">View Registry <i class="fas fa-external-link-alt"></i></button></div></div>
-                            </div></div>
-                            <div class="identifier-group"><div class="identifier-group-name">Music Rights</div><div class="identifier-cards">
-                                <div class="passport-card"><div class="passport-header"><div class="passport-meta"><span class="passport-type">IPI</span><span class="passport-full-name">Interested Parties Information Name Number</span></div><span class="passport-status status-verified"><i class="fas fa-check-circle"></i> Active</span></div><div class="passport-value-container"><span class="passport-value">00123456789</span><button class="passport-copy-btn" onclick="copyToClipboard('00123456789')"><i class="far fa-copy"></i></button></div><div class="passport-details"><div class="passport-detail-item"><span class="p-label">Purpose</span><span class="p-val">Rightsholder identification</span></div><div class="passport-detail-item"><span class="p-label">Issued By</span><span class="p-val">SAMRO / CISAC</span></div><div class="passport-detail-item"><span class="p-label">Issued Date</span><span class="p-val">2025-09-18</span></div></div><div class="passport-ecosystem"><span class="ecosystem-label">Verified Uses</span><div class="ecosystem-tags"><span class="eco-tag">✓ CMOs</span><span class="eco-tag">✓ Publishers</span><span class="eco-tag">✓ DSP administration</span></div></div><div class="passport-actions"><button class="passport-btn p-btn-secondary" onclick="copyToClipboard('00123456789')">Copy Code</button><button class="passport-btn p-btn-primary" onclick="showToast('Opening registry for IPI', 'info')">View Registry <i class="fas fa-external-link-alt"></i></button></div></div>
-                            </div></div>
+            <div class="profile-layout-grid">
+                <div class="main-lane">
+                    <div class="profile-card section-content" id="section-biography">
+                        <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
+                        <div class="profile-card-header"><h3><i class="fas fa-align-left" style="color:var(--text-dim);"></i> Biography</h3></div>
+                        <div class="profile-card-body">
+                            <div class="bio-location-line"><i class="fas fa-map-pin" style="color:var(--gold);margin-right:8px;"></i> Lives in <span id="profileLocationText">South Africa • Western Cape • Cape Town</span></div>
+                            <div class="bio-text" id="profileBioText">Award-winning music producer and composer with 10+ years of experience creating genre-defying electronic music. Collaborated with artists across Africa, Europe, and the Americas.</div>
+                        </div>
+                    </div>
+
+                    <div class="profile-card section-content" id="section-identity-record">
+                        <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
+                        <div class="profile-card-header"><h3><i class="fas fa-id-card" style="color:var(--text-dim);"></i> Identity Record</h3></div>
+                        <div class="profile-card-body" id="identityContainer">
+                            <div class="identity-category">
+                                <div class="cat-title"><i class="fas fa-user-shield"></i> Personal Details</div>
+                                <div class="identity-field"><span class="ilabel">SeekReap ID</span><span class="ivalue mono">SR-2026-MR9KZW0B</span></div>
+                                <div class="identity-field"><span class="ilabel">Legal Full Name</span><span class="ivalue">John David Smith</span></div>
+                                <div class="identity-field"><span class="ilabel">Title</span><span class="ivalue">Mr</span></div>
+                                <div class="identity-field"><span class="ilabel">Gender</span><span class="ivalue">Male</span></div>
+                                <div class="identity-field"><span class="ilabel">Date of Birth</span><span class="ivalue">1990-01-15</span></div>
+                                <div class="identity-field"><span class="ilabel">Pronouns</span><span class="ivalue">He/Him</span></div>
+                                <div class="identity-field"><span class="ilabel">Country Code</span><span class="ivalue">ZA</span></div>
+                            </div>
+                            <div class="identity-category">
+                                <div class="cat-title"><i class="fas fa-paint-brush"></i> Creative Details</div>
+                                <div class="identity-field"><span class="ilabel">Display Name</span><span class="ivalue">NovaKai</span></div>
+                                <div class="identity-field"><span class="ilabel">Artistic Name</span><span class="ivalue">NovaKai</span></div>
+                                <div class="identity-field"><span class="ilabel">Location</span><span class="ivalue">South Africa</span></div>
+                                <div class="identity-field"><span class="ilabel">City</span><span class="ivalue">Cape Town</span></div>
+                                <div class="identity-field"><span class="ilabel">Company</span><span class="ivalue">Nova Studios</span></div>
+                            </div>
+                            <div class="identity-category">
+                                <div class="cat-title"><i class="fas fa-envelope-open-text"></i> Contact Details</div>
+                                <div class="identity-field"><span class="ilabel">Recovery Email</span><span class="ivalue"><a href="mailto:nova@seekreap.io">nova@seekreap.io</a></span></div>
+                                <div class="identity-field"><span class="ilabel">Primary Phone</span><span class="ivalue"><a href="tel:+27821234567">+27 82 123 4567</a></span></div>
+                                <div class="identity-field"><span class="ilabel">Contact Preference</span><span class="ivalue">email</span></div>
+                                <div class="identity-field"><span class="ilabel">Preferred Language</span><span class="ivalue">en</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-card section-content" id="section-accomplishments">
+                        <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
+                        <div class="profile-card-header"><h3><i class="fas fa-trophy" style="color:var(--gold);"></i> Career Accomplishments</h3></div>
+                        <div class="profile-card-body">
+                            <div class="achievements-grid" id="achievementsList">
+                                <div class="achievement-card"><div class="ach-icon"><i class="fas fa-trophy"></i></div><div class="ach-details"><div class="ach-category">Award</div><div class="ach-title">2x South African Music Award Winner</div></div><div class="ach-date">2023, 2025</div></div>
+                                <div class="achievement-card"><div class="ach-icon"><i class="fas fa-globe-africa"></i></div><div class="ach-details"><div class="ach-category">Festival</div><div class="ach-title">Featured artist at Afropunk Festival 2025</div></div><div class="ach-date">2025</div></div>
+                                <div class="achievement-card"><div class="ach-icon"><i class="fas fa-compact-disc"></i></div><div class="ach-details"><div class="ach-category">Release</div><div class="ach-title">Album "Nova Dawn" — 5M+ streams</div></div><div class="ach-date">2024</div></div>
+                                <div class="achievement-card"><div class="ach-icon"><i class="fas fa-star"></i></div><div class="ach-details"><div class="ach-category">Collaboration</div><div class="ach-title">Collaborated with 15+ international artists</div></div><div class="ach-date">2016—Present</div></div>
+                                <div class="achievement-card"><div class="ach-icon"><i class="fas fa-certificate"></i></div><div class="ach-details"><div class="ach-category">Credentials</div><div class="ach-title">311+ verified certificates issued</div></div><div class="ach-date">2020—Present</div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-card section-content" id="section-professional-history">
+                        <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
+                        <div class="profile-card-header"><h3><i class="fas fa-briefcase" style="color:var(--text-dim);"></i> Professional History</h3></div>
+                        <div class="profile-card-body" id="employmentContainer">
+                            <div class="employment-list">
+                                <div class="employment-item"><div class="org-icon"><i class="fas fa-building"></i></div><div class="org-details"><div class="org-name">Nova Studios</div><div class="job-title">Creative Director & Lead Producer</div><div class="org-meta"><span><i class="far fa-calendar"></i> Jan 2020 — Present</span><span class="current-badge"><i class="fas fa-check-circle"></i> Current</span><span><i class="fas fa-clock"></i> Full-time</span></div><div class="org-description">Leading music production and creative strategy.</div><div class="org-website"><a href="https://novastudios.co.za" target="_blank"><i class="fas fa-globe"></i> novastudios.co.za</a></div></div></div>
+                                <div class="employment-item"><div class="org-icon"><i class="fas fa-music"></i></div><div class="org-details"><div class="org-name">AfroSonic Records</div><div class="job-title">Senior Music Producer</div><div class="org-meta"><span><i class="far fa-calendar"></i> Jun 2018 — Dec 2019</span><span><i class="fas fa-clock"></i> Contract</span></div><div class="org-description">Produced tracks for emerging African artists.</div><div class="org-website"><a href="https://afrosonic.com" target="_blank"><i class="fas fa-globe"></i> afrosonic.com</a></div></div></div>
+                                <div class="employment-item"><div class="org-icon"><i class="fas fa-graduation-cap"></i></div><div class="org-details"><div class="org-name">Cape Town Music Institute</div><div class="job-title">Guest Lecturer — Music Production</div><div class="org-meta"><span><i class="far fa-calendar"></i> Sep 2022 — Present</span><span class="current-badge"><i class="fas fa-check-circle"></i> Current</span><span><i class="fas fa-clock"></i> Part-time</span></div><div class="org-description">Teaching music production techniques.</div><div class="org-website"><a href="https://ctmi.edu.za" target="_blank"><i class="fas fa-globe"></i> ctmi.edu.za</a></div></div></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="profile-card section-content" id="section-roles">
-    <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
-                    <div class="profile-card-header"><h3><i class="fas fa-user-tag" style="color:var(--primary);"></i> Artistic Footprint & Roles</h3></div>
-                    <div class="profile-card-body">
-                        <div class="roles-ecosystem" id="rolesContainer">
-                            <div class="role-card"><div class="role-header"><div><span class="role-title">Producer</span><div class="role-proficiency"><span class="role-stars">★★★★★</span><span>Level 5/5</span></div></div><span class="role-badge role-primary">Primary Role</span></div><div class="role-stats-grid"><div class="role-stat"><div class="role-stat-val">143</div><div class="role-stat-lbl">Works</div></div><div class="role-stat"><div class="role-stat-val">52</div><div class="role-stat-lbl">Collabs</div></div><div class="role-stat"><div class="role-stat-val">18</div><div class="role-stat-lbl">Active</div></div></div><div class="role-details-list"><div class="role-detail-row"><span class="r-lbl">Years Active:</span><span class="r-val">2016—Present</span></div><div class="role-detail-row"><span class="r-lbl">Key Expertise:</span><span class="r-val">Music Production, Mixing, Mastering</span></div><div class="role-detail-row"><span class="r-lbl">Industries:</span><span class="r-val">Music, Film, Gaming</span></div></div></div>
-                            <div class="role-card"><div class="role-header"><div><span class="role-title">Composer</span><div class="role-proficiency"><span class="role-stars">★★★★☆</span><span>Level 4/5</span></div></div><span class="role-badge role-secondary">Secondary Role</span></div><div class="role-stats-grid"><div class="role-stat"><div class="role-stat-val">89</div><div class="role-stat-lbl">Works</div></div><div class="role-stat"><div class="role-stat-val">21</div><div class="role-stat-lbl">Collabs</div></div><div class="role-stat"><div class="role-stat-val">4</div><div class="role-stat-lbl">Active</div></div></div><div class="role-details-list"><div class="role-detail-row"><span class="r-lbl">Years Active:</span><span class="r-val">2014—Present</span></div><div class="role-detail-row"><span class="r-lbl">Key Expertise:</span><span class="r-val">Orchestral Arranging, Film Scoring</span></div><div class="role-detail-row"><span class="r-lbl">Industries:</span><span class="r-val">Film, Theatre</span></div></div></div>
+                <div class="side-lane">
+                    <div class="profile-card section-content" id="section-passports">
+                        <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
+                        <div class="profile-card-header"><h3><i class="fas fa-fingerprint" style="color:var(--gold);"></i> Identity Passports</h3></div>
+                        <div class="profile-card-body" id="identifiersContainer">
+                            <div class="identifiers-layout">
+                                <div class="identifier-group"><div class="identifier-group-name">Creative Identity</div><div class="identifier-cards">
+                                    <div class="passport-card"><div class="passport-header"><div class="passport-meta"><span class="passport-type">ISNI</span><span class="passport-full-name">International Standard Name Identifier</span></div><span class="passport-status status-verified"><i class="fas fa-check-circle"></i> Active</span></div><div class="passport-value-container"><span class="passport-value">0000-0001-2345-6789</span><button class="passport-copy-btn" onclick="copyToClipboard('0000-0001-2345-6789')"><i class="far fa-copy"></i></button></div><div class="passport-details"><div class="passport-detail-item"><span class="p-label">Purpose</span><span class="p-val">Global creator identity</span></div><div class="passport-detail-item"><span class="p-label">Issued By</span><span class="p-val">ISNI International</span></div><div class="passport-detail-item"><span class="p-label">Issued Date</span><span class="p-val">2026-03-11</span></div></div><div class="passport-ecosystem"><span class="ecosystem-label">Verified Uses</span><div class="ecosystem-tags"><span class="eco-tag">✓ Libraries</span><span class="eco-tag">✓ Publishers</span><span class="eco-tag">✓ Music databases</span></div></div><div class="passport-actions"><button class="passport-btn p-btn-secondary" onclick="copyToClipboard('0000-0001-2345-6789')">Copy Code</button><button class="passport-btn p-btn-primary" onclick="showToast('Opening registry for ISNI', 'info')">View Registry <i class="fas fa-external-link-alt"></i></button></div></div>
+                                </div></div>
+                                <div class="identifier-group"><div class="identifier-group-name">Music Rights</div><div class="identifier-cards">
+                                    <div class="passport-card"><div class="passport-header"><div class="passport-meta"><span class="passport-type">IPI</span><span class="passport-full-name">Interested Parties Information Name Number</span></div><span class="passport-status status-verified"><i class="fas fa-check-circle"></i> Active</span></div><div class="passport-value-container"><span class="passport-value">00123456789</span><button class="passport-copy-btn" onclick="copyToClipboard('00123456789')"><i class="far fa-copy"></i></button></div><div class="passport-details"><div class="passport-detail-item"><span class="p-label">Purpose</span><span class="p-val">Rightsholder identification</span></div><div class="passport-detail-item"><span class="p-label">Issued By</span><span class="p-val">SAMRO / CISAC</span></div><div class="passport-detail-item"><span class="p-label">Issued Date</span><span class="p-val">2025-09-18</span></div></div><div class="passport-ecosystem"><span class="ecosystem-label">Verified Uses</span><div class="ecosystem-tags"><span class="eco-tag">✓ CMOs</span><span class="eco-tag">✓ Publishers</span><span class="eco-tag">✓ DSP administration</span></div></div><div class="passport-actions"><button class="passport-btn p-btn-secondary" onclick="copyToClipboard('00123456789')">Copy Code</button><button class="passport-btn p-btn-primary" onclick="showToast('Opening registry for IPI', 'info')">View Registry <i class="fas fa-external-link-alt"></i></button></div></div>
+                                </div></div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="profile-card section-content" id="section-networks">
-    <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
-                    <div class="profile-card-header"><h3><i class="fas fa-share-alt" style="color:var(--info);"></i> Linked Networks</h3></div>
-                    <div class="profile-card-body" id="networksContainer">
-                        <div class="social-links">
-                            <a href="https://novakai.com" target="_blank" class="social-link"><span><i class="fas fa-globe" style="margin-right:8px;color:var(--primary);"></i> Official Website</span><i class="fas fa-external-link-alt"></i></a>
-                            <a href="https://github.com/novakai" target="_blank" class="social-link"><span><i class="fab fa-github" style="margin-right:8px;color:var(--text-dim);"></i> GitHub</span><i class="fas fa-external-link-alt"></i></a>
-                            <a href="https://instagram.com/novakai" target="_blank" class="social-link"><span><i class="fab fa-instagram" style="margin-right:8px;color:var(--text-dim);"></i> Instagram</span><i class="fas fa-external-link-alt"></i></a>
-                            <a href="https://x.com/novakai" target="_blank" class="social-link"><span><i class="fab fa-x-twitter" style="margin-right:8px;color:var(--text-dim);"></i> X</span><i class="fas fa-external-link-alt"></i></a>
-                            <a href="https://youtube.com/@novakai" target="_blank" class="social-link"><span><i class="fab fa-youtube" style="margin-right:8px;color:var(--text-dim);"></i> YouTube</span><i class="fas fa-external-link-alt"></i></a>
-                            <a href="https://linkedin.com/in/novakai" target="_blank" class="social-link"><span><i class="fab fa-linkedin" style="margin-right:8px;color:var(--text-dim);"></i> LinkedIn</span><i class="fas fa-external-link-alt"></i></a>
+                    <div class="profile-card section-content" id="section-roles">
+                        <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
+                        <div class="profile-card-header"><h3><i class="fas fa-user-tag" style="color:var(--gold);"></i> Artistic Footprint & Roles</h3></div>
+                        <div class="profile-card-body">
+                            <div class="roles-ecosystem" id="rolesContainer">
+                                <div class="role-card"><div class="role-header"><div><span class="role-title">Producer</span><div class="role-proficiency"><span class="role-stars">★★★★★</span><span>Level 5/5</span></div></div><span class="role-badge role-primary">Primary Role</span></div><div class="role-stats-grid"><div class="role-stat"><div class="role-stat-val">143</div><div class="role-stat-lbl">Works</div></div><div class="role-stat"><div class="role-stat-val">52</div><div class="role-stat-lbl">Collabs</div></div><div class="role-stat"><div class="role-stat-val">18</div><div class="role-stat-lbl">Active</div></div></div><div class="role-details-list"><div class="role-detail-row"><span class="r-lbl">Years Active:</span><span class="r-val">2016—Present</span></div><div class="role-detail-row"><span class="r-lbl">Key Expertise:</span><span class="r-val">Music Production, Mixing, Mastering</span></div><div class="role-detail-row"><span class="r-lbl">Industries:</span><span class="r-val">Music, Film, Gaming</span></div></div></div>
+                                <div class="role-card"><div class="role-header"><div><span class="role-title">Composer</span><div class="role-proficiency"><span class="role-stars">★★★★☆</span><span>Level 4/5</span></div></div><span class="role-badge role-secondary">Secondary Role</span></div><div class="role-stats-grid"><div class="role-stat"><div class="role-stat-val">89</div><div class="role-stat-lbl">Works</div></div><div class="role-stat"><div class="role-stat-val">21</div><div class="role-stat-lbl">Collabs</div></div><div class="role-stat"><div class="role-stat-val">4</div><div class="role-stat-lbl">Active</div></div></div><div class="role-details-list"><div class="role-detail-row"><span class="r-lbl">Years Active:</span><span class="r-val">2014—Present</span></div><div class="role-detail-row"><span class="r-lbl">Key Expertise:</span><span class="r-val">Orchestral Arranging, Film Scoring</span></div><div class="role-detail-row"><span class="r-lbl">Industries:</span><span class="r-val">Film, Theatre</span></div></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-card section-content" id="section-networks">
+                        <button class="card-close-btn" onclick="closeSectionCard()" aria-label="Close"><i class="fas fa-times"></i></button>
+                        <div class="profile-card-header"><h3><i class="fas fa-share-alt" style="color:var(--info);"></i> Linked Networks</h3></div>
+                        <div class="profile-card-body" id="networksContainer">
+                            <div class="social-links">
+                                <a href="https://novakai.com" target="_blank" class="social-link"><span><i class="fas fa-globe" style="margin-right:8px;color:var(--gold);"></i> Official Website</span><i class="fas fa-external-link-alt"></i></a>
+                                <a href="https://github.com/novakai" target="_blank" class="social-link"><span><i class="fab fa-github" style="margin-right:8px;color:var(--text-dim);"></i> GitHub</span><i class="fas fa-external-link-alt"></i></a>
+                                <a href="https://instagram.com/novakai" target="_blank" class="social-link"><span><i class="fab fa-instagram" style="margin-right:8px;color:var(--text-dim);"></i> Instagram</span><i class="fas fa-external-link-alt"></i></a>
+                                <a href="https://x.com/novakai" target="_blank" class="social-link"><span><i class="fab fa-x-twitter" style="margin-right:8px;color:var(--text-dim);"></i> X</span><i class="fas fa-external-link-alt"></i></a>
+                                <a href="https://youtube.com/@novakai" target="_blank" class="social-link"><span><i class="fab fa-youtube" style="margin-right:8px;color:var(--text-dim);"></i> YouTube</span><i class="fas fa-external-link-alt"></i></a>
+                                <a href="https://linkedin.com/in/novakai" target="_blank" class="social-link"><span><i class="fab fa-linkedin" style="margin-right:8px;color:var(--text-dim);"></i> LinkedIn</span><i class="fas fa-external-link-alt"></i></a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-</div>
     </div>
 </div>
 
@@ -506,18 +785,10 @@
     <div class="share-dialog-content" id="shareDialogContent" onclick="event.stopPropagation()">
         <button class="share-dialog-close" onclick="closeShareDialog()" aria-label="Close"><i class="fas fa-times"></i></button>
         <h4 class="share-dialog-title"><i class="fas fa-share-alt"></i> Share <span id="shareDialogItemTitle"></span></h4>
-
         <div class="share-dialog-options">
-            <button class="share-option-btn" onclick="showShareUserList()">
-                <i class="fas fa-user-friends"></i>
-                <span>Share to SeekReap user</span>
-            </button>
-            <button class="share-option-btn" onclick="shareToNonSeekReapUser()">
-                <i class="fas fa-globe"></i>
-                <span>Share to non-SeekReap user</span>
-            </button>
+            <button class="share-option-btn" onclick="showShareUserList()"><i class="fas fa-user-friends"></i> Share to SeekReap user</button>
+            <button class="share-option-btn" onclick="shareToNonSeekReapUser()"><i class="fas fa-globe"></i> Share to non-SeekReap user</button>
         </div>
-
         <div class="share-dialog-userlist">
             <button class="share-back-btn" onclick="showShareOptions()"><i class="fas fa-arrow-left"></i> Back</button>
             <div id="shareUserListItems"></div>
@@ -533,6 +804,405 @@
     </div>
 </div>
 
-<script src="assets/js/profile.js"></script>
+<script>
+    // ─── GENERAL UTILS ──────────────────────────────────────────
+    function toggleMobileSidebar() { document.getElementById('sidebar').classList.toggle('mobile-open'); document.getElementById('sidebarOverlay').classList.toggle('active'); }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('mobile-open'); document.getElementById('sidebarOverlay').classList.remove('active'); }
+
+    // ─── TOAST ───
+    function showToast(msg, type = 'info') {
+        const existing = document.querySelector('.toast');
+        if (existing) existing.remove();
+        const t = document.createElement('div');
+        t.className = 'toast';
+        const icon = type === 'success' ? 'fa-check-circle' : 'fa-info-circle';
+        const color = type === 'success' ? 'var(--green)' : 'var(--gold)';
+        t.innerHTML = `<i class="fas ${icon}" style="color:${color}; font-size:16px;"></i> <span>${msg}</span>`;
+        document.body.appendChild(t);
+        setTimeout(() => {
+            t.style.opacity = '0';
+            setTimeout(() => { if (t.parentNode) t.remove(); }, 300);
+        }, 2800);
+    }
+
+    // ─── STATE ───
+    let appreciateState = 'appreciate';
+    let trustState = 'trust';
+    let isRequestDropdownOpen = false;
+    let isAppreciateDropdownOpen = false;
+    let appreciationTimeout = null;
+    let trustTimeout = null;
+    let currentPortfolio = 'Portfolios';
+    let currentFilter = 'all';
+    let currentSearch = '';
+    let currentCategory = 'assets';
+
+    const collaborators = [
+        { name: 'Luna Ray', handle: '@lunaray', avatar: 'https://images.unsplash.com/photo-1494790108376-be9c24b9cf6c?q=80&w=100&auto=format&fit=crop', badge: 'Producer' },
+        { name: 'Kai Sterling', handle: '@kaisterling', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop', badge: 'Videographer' },
+        { name: 'Maya Nova', handle: '@mayanova', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=100&auto=format&fit=crop', badge: 'Photographer' },
+        { name: 'Eli Stone', handle: '@elistone', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=100&auto=format&fit=crop', badge: 'Composer' },
+        { name: 'Zara Blake', handle: '@zarablake', avatar: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?q=80&w=100&auto=format&fit=crop', badge: 'Designer' }
+    ];
+
+    const portfolioItems = {
+        'Portfolios': [
+            { id: 'p1', title: 'Studio Console Geometry', image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=400&auto=format&fit=crop', category: 'music' },
+            { id: 'p2', title: 'Stage Flare Exposure', image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=400&auto=format&fit=crop', category: 'photo' },
+            { id: 'p3', title: 'Vocal Isolation Profile', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=400&auto=format&fit=crop', category: 'music' },
+            { id: 'p4', title: 'Modular Synthesizer Grid', image: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=400&auto=format&fit=crop', category: 'design' },
+            { id: 'p5', title: 'Backstage Silhouette Study', image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop', category: 'photo' },
+            { id: 'p6', title: 'Acoustic Diffuser Shadows', image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=400&auto=format&fit=crop', category: 'design' }
+        ],
+        'Community Works': [
+            { id: 'cw1', title: 'Cape Flats Youth Beat Project', image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop', category: 'music' },
+            { id: 'cw2', title: 'Community Radio Jingle Pack', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=400&auto=format&fit=crop', category: 'music' },
+            { id: 'cw3', title: 'Heritage Day Mural Documentary', image: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=400&auto=format&fit=crop', category: 'video' }
+        ]
+    };
+
+    // ─── INTERACTIONS ───
+    function toggleSectionTab(btn, sectionId) {
+        const section = document.getElementById('section-' + sectionId);
+        const isActive = btn.classList.contains('active');
+        const zone = document.getElementById('contentOverlayZone');
+        const allTabs = document.querySelectorAll('.section-tab');
+        const allSections = document.querySelectorAll('.section-content');
+
+        if (isActive) {
+            btn.classList.remove('active');
+            section.classList.remove('active');
+            if (zone) zone.classList.remove('has-active-card');
+            return;
+        }
+
+        allTabs.forEach(t => t.classList.remove('active'));
+        allSections.forEach(s => s.classList.remove('active'));
+
+        btn.classList.add('active');
+        section.classList.add('active');
+        if (zone) zone.classList.add('has-active-card');
+    }
+
+    function closeSectionCard() {
+        const activeTab = document.querySelector('.section-tab.active');
+        const activeSection = document.querySelector('.section-content.active');
+        const zone = document.getElementById('contentOverlayZone');
+        if (activeTab) activeTab.classList.remove('active');
+        if (activeSection) activeSection.classList.remove('active');
+        if (zone) zone.classList.remove('has-active-card');
+    }
+
+    // ─── DROPDOWNS ───
+    function toggleRequestDropdown(event) {
+        if (event) event.stopPropagation();
+        const menu = document.getElementById('requestDropdownMenu');
+        if (isRequestDropdownOpen) {
+            menu.classList.remove('open');
+            isRequestDropdownOpen = false;
+        } else {
+            document.getElementById('appreciateDropdownMenu').classList.remove('open');
+            isAppreciateDropdownOpen = false;
+            menu.classList.add('open');
+            isRequestDropdownOpen = true;
+        }
+    }
+
+    function handleRequestClick(action) {
+        showToast('Request sent: ' + action, 'success');
+        document.getElementById('requestDropdownMenu').classList.remove('open');
+        isRequestDropdownOpen = false;
+    }
+
+    function toggleAppreciateDropdown(event) {
+        if (event) event.stopPropagation();
+        const menu = document.getElementById('appreciateDropdownMenu');
+        const btn = document.getElementById('appreciateBtn');
+        const btnText = document.getElementById('appreciateBtnText');
+        const btnIcon = document.getElementById('appreciateBtnIcon');
+
+        if (isAppreciateDropdownOpen) {
+            menu.classList.remove('open');
+            isAppreciateDropdownOpen = false;
+        } else {
+            document.getElementById('requestDropdownMenu').classList.remove('open');
+            isRequestDropdownOpen = false;
+
+            if (appreciateState === 'appreciate') {
+                btnText.textContent = 'Appreciate';
+                btnIcon.className = 'fas fa-heart';
+                btn.className = 'btn btn-secondary';
+            } else {
+                btnText.textContent = 'Depreciate';
+                btnIcon.className = 'fas fa-frown';
+                btn.className = 'btn btn-danger';
+            }
+
+            updateAppreciateDropdown();
+            menu.classList.add('open');
+            isAppreciateDropdownOpen = true;
+        }
+    }
+
+    function updateAppreciateDropdown() {
+        const menu = document.getElementById('appreciateDropdownMenu');
+        const items = appreciateState === 'appreciate' ?
+            ['Appreciate Booking Approval', 'Appreciate Endorsement Proposal Approval', 'Appreciate Feature Proposal Approval'] :
+            ['Depreciate Booking Approval', 'Depreciate Endorsement Proposal Approval', 'Depreciate Feature Proposal Approval'];
+
+        menu.innerHTML = items.map(item => {
+            return `<button class="appreciate-dropdown-item" onclick="handleAppreciateItemClick('${item}')"><i class="fas fa-${appreciateState === 'appreciate' ? 'heart' : 'frown'}"></i> ${item}</button>`;
+        }).join('');
+    }
+
+    function handleAppreciateItemClick(action) {
+        document.getElementById('appreciateDropdownMenu').classList.remove('open');
+        isAppreciateDropdownOpen = false;
+
+        if (appreciationTimeout) clearTimeout(appreciationTimeout);
+
+        const btn = document.getElementById('appreciateBtn');
+        const text = document.getElementById('appreciateBtnText');
+        const icon = document.getElementById('appreciateBtnIcon');
+
+        if (appreciateState === 'appreciate') {
+            text.textContent = 'Appreciated!';
+            btn.className = 'btn btn-success';
+            icon.className = 'fas fa-check';
+            btn.style.opacity = '0.8';
+            showToast(action + ' ✓', 'success');
+
+            appreciationTimeout = setTimeout(() => {
+                appreciateState = 'depreciate';
+                text.textContent = 'Depreciate';
+                btn.className = 'btn btn-danger';
+                icon.className = 'fas fa-frown';
+                btn.style.opacity = '1';
+                updateAppreciateDropdown();
+            }, 1500);
+        } else {
+            text.textContent = 'Depreciated!';
+            btn.className = 'btn btn-danger';
+            icon.className = 'fas fa-check';
+            btn.style.opacity = '0.8';
+            showToast(action + ' ✓', 'success');
+
+            appreciationTimeout = setTimeout(() => {
+                appreciateState = 'appreciate';
+                text.textContent = 'Appreciate';
+                btn.className = 'btn btn-secondary';
+                icon.className = 'fas fa-heart';
+                btn.style.opacity = '1';
+                updateAppreciateDropdown();
+            }, 1500);
+        }
+    }
+
+    function handleTrustClick() {
+        if (trustTimeout) clearTimeout(trustTimeout);
+
+        const btn = document.getElementById('trustBtn');
+        const text = document.getElementById('trustBtnText');
+        const icon = btn.querySelector('i');
+
+        if (trustState === 'trust') {
+            text.textContent = 'Trusted!';
+            btn.className = 'btn btn-success';
+            icon.className = 'fas fa-check';
+            btn.style.opacity = '0.8';
+            showToast('You now Trust this creator', 'success');
+
+            trustTimeout = setTimeout(() => {
+                trustState = 'distrust';
+                text.textContent = 'Distrust';
+                btn.className = 'btn btn-danger';
+                icon.className = 'fas fa-times';
+                btn.style.opacity = '1';
+            }, 1500);
+        } else {
+            text.textContent = 'Distrusted!';
+            btn.className = 'btn btn-danger';
+            icon.className = 'fas fa-check';
+            btn.style.opacity = '0.8';
+            showToast('You now Distrust this creator', 'info');
+
+            trustTimeout = setTimeout(() => {
+                trustState = 'trust';
+                text.textContent = 'Trust';
+                btn.className = 'btn btn-primary';
+                icon.className = 'fas fa-shield-alt';
+                btn.style.opacity = '1';
+            }, 1500);
+        }
+    }
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', function(e) {
+        const appreciateMenu = document.getElementById('appreciateDropdownMenu');
+        const appreciateWrapper = document.querySelector('.appreciate-dropdown-wrapper');
+        if (appreciateWrapper && appreciateMenu && !appreciateWrapper.contains(e.target)) {
+            appreciateMenu.classList.remove('open');
+            isAppreciateDropdownOpen = false;
+        }
+
+        const requestMenu = document.getElementById('requestDropdownMenu');
+        const requestWrapper = document.querySelector('.request-btn-wrapper');
+        if (requestWrapper && requestMenu && !requestWrapper.contains(e.target)) {
+            requestMenu.classList.remove('open');
+            isRequestDropdownOpen = false;
+        }
+    });
+
+    // ─── PORTFOLIO & COLLABORATORS ───
+    function renderCollaborators() {
+        const container = document.getElementById('collaboratorsList');
+        container.innerHTML = collaborators.map(c => {
+            return `<a href="/profile/${c.handle.replace('@', '')}" class="collaborator-item" onclick="event.preventDefault();showToast('Redirecting to ${c.name}\\'s profile', 'info')">
+                <img src="${c.avatar}" alt="${c.name}" class="collaborator-avatar">
+                <div class="collaborator-info">
+                    <div class="collaborator-name">${c.name}</div>
+                    <div class="collaborator-handle">${c.handle} <span class="collaborator-badge">${c.badge}</span></div>
+                </div>
+                <i class="fas fa-chevron-right arrow-icon"></i>
+            </a>`;
+        }).join('');
+    }
+
+    function renderPortfolioDisplay(category) {
+        const grid = document.getElementById('portfolioGridDisplay');
+        const count = document.getElementById('portfolioItemCount');
+        let items = portfolioItems[category === 'community' ? 'Community Works' : 'Portfolios'];
+        
+        if (currentFilter && currentFilter !== 'all') {
+            items = items.filter(item => item.category === currentFilter);
+        }
+        if (currentSearch) {
+            const query = currentSearch.toLowerCase();
+            items = items.filter(item => item.title.toLowerCase().includes(query));
+        }
+
+        count.textContent = items.length;
+
+        if (items.length === 0) {
+            grid.innerHTML = '<div class="portfolio-empty">No works found in this category</div>';
+            return;
+        }
+
+        grid.innerHTML = items.map(item => {
+            const actionButtons = `
+                <button onclick="event.stopPropagation();showToast('Playing: ${item.title}', 'info')" title="Play here"><i class="fas fa-play"></i></button>
+                <button onclick="event.stopPropagation();openShareDialog('${item.title}')" title="Share this work"><i class="fas fa-share-alt"></i></button>
+                <button onclick="event.stopPropagation();showToast('Saved: ${item.title}', 'success')" title="Save this work"><i class="fas fa-bookmark"></i></button>
+                <button onclick="event.stopPropagation();showToast('Reported: ${item.title}', 'info')" title="Report this work"><i class="fas fa-flag"></i></button>
+            `;
+            return `<div class="portfolio-display-item">
+                <div class="item-thumb">
+                    <img src="${item.image}" alt="${item.title}">
+                    <div class="item-overlay">${actionButtons}</div>
+                </div>
+                <div class="item-info">
+                    <span class="item-title">${item.title}</span>
+                    <div class="item-actions">${actionButtons}</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function filterPortfolioWorks(filter) {
+        currentFilter = filter;
+        renderPortfolioDisplay(currentCategory);
+    }
+
+    function runPortfolioSearch() {
+        const input = document.getElementById('portfolioSearchInput');
+        currentSearch = input ? input.value.trim() : '';
+        renderPortfolioDisplay(currentCategory);
+    }
+
+    function setPortfolioCategory(category) {
+        currentCategory = category;
+        document.querySelectorAll('.portfolio-category-tab').forEach(tab => {
+            const isActive = tab.getAttribute('data-category') === category;
+            tab.classList.toggle('active', isActive);
+            tab.setAttribute('aria-pressed', isActive);
+        });
+        renderPortfolioDisplay(category);
+    }
+
+    // ─── SHARE DIALOG ───
+    function openShareDialog(title) {
+        document.getElementById('shareDialogItemTitle').textContent = '"' + title + '"';
+        document.getElementById('shareDialogContent').classList.remove('show-users');
+        document.getElementById('shareDialogModal').classList.add('active');
+    }
+
+    function closeShareDialog() {
+        document.getElementById('shareDialogModal').classList.remove('active');
+    }
+
+    function showShareUserList() {
+        const list = document.getElementById('shareUserListItems');
+        list.innerHTML = collaborators.map((c, i) => {
+            return `<button class="share-user-row" onclick="shareToSeekReapUser('${c.name}')">
+                <img src="${c.avatar}" alt="${c.name}">
+                <div><div class="share-user-name">${c.name}</div><div class="share-user-handle">${c.handle}</div></div>
+            </button>`;
+        }).join('');
+        document.getElementById('shareDialogContent').classList.add('show-users');
+    }
+
+    function showShareOptions() {
+        document.getElementById('shareDialogContent').classList.remove('show-users');
+    }
+
+    function shareToSeekReapUser(name) {
+        showToast('Shared with ' + name, 'success');
+        closeShareDialog();
+    }
+
+    function shareToNonSeekReapUser() {
+        showToast('Share link copied to clipboard!', 'info');
+        closeShareDialog();
+    }
+
+    // ─── IMAGE VIEWER ───
+    function openImageViewer(src, caption) {
+        document.getElementById('imageViewerImg').src = src;
+        document.getElementById('imageViewerCaption').textContent = caption;
+        document.getElementById('imageViewerModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageViewer() {
+        document.getElementById('imageViewerModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // ─── UTILS ───
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Copied: "' + text + '"', 'success');
+        }).catch(() => {
+            showToast('Unable to copy', 'error');
+        });
+    }
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.addEventListener('scroll', () => {
+        const btn = document.getElementById('scrollTopBtn');
+        if (window.scrollY > 300) btn.classList.add('visible');
+        else btn.classList.remove('visible');
+    });
+
+    // ─── INIT ───
+    document.addEventListener('DOMContentLoaded', () => {
+        renderCollaborators();
+        renderPortfolioDisplay('assets');
+        document.getElementById('portfolioSearchInput').addEventListener('input', runPortfolioSearch);
+    });
+</script>
 </body>
 </html>
